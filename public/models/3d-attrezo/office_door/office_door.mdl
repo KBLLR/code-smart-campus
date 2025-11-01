@@ -1,0 +1,40 @@
+mdl 1.3;
+
+using state import *;
+
+import adobe::mtl::*;
+import adobe::util::*;
+import ::tex::gamma_mode;
+import ::state::normal;
+
+export material door_frame_Mat(*)
+  = adobe::mtl::standard(
+    opacity : adobe::util::float_texture( texture_2d("office_door/door_frame_opacity.png", ::tex::gamma_linear) ),
+    baseColor : adobe::util::color_texture( texture_2d("office_door/door_frame_baseColor.png", ::tex::gamma_srgb) ),
+    translucence : float(0.0),
+    glow : adobe::util::float_texture( texture_2d("office_door/door_frame_glow.png", ::tex::gamma_linear) ),
+    indexOfRefraction : float(1.5),
+    density : float(0.0),
+    roughness : adobe::util::float_texture( texture_2d("office_door/door_frame_roughness.png", ::tex::gamma_linear) ),
+    normal : adobe::util::normal_texture( texture_2d("office_door/door_frame_normal.png", ::tex::gamma_linear) ),
+    interiorColor : color(1.0, 1.0, 1.0),
+    metallic : adobe::util::float_texture( texture_2d("office_door/door_frame_metallic.png", ::tex::gamma_linear) ),
+    height : float(0.5),
+    heightScale : float(1.0)
+    );
+
+export material door_body_Mat(*)
+  = adobe::mtl::standard(
+    opacity : adobe::util::float_texture( texture_2d("office_door/door_body_opacity.png", ::tex::gamma_linear) ),
+    baseColor : adobe::util::color_texture( texture_2d("office_door/door_body_baseColor.png", ::tex::gamma_srgb) ),
+    translucence : float(0.0),
+    glow : adobe::util::float_texture( texture_2d("office_door/door_body_glow.png", ::tex::gamma_linear) ),
+    indexOfRefraction : float(1.5),
+    density : float(0.0),
+    roughness : adobe::util::float_texture( texture_2d("office_door/door_body_roughness.png", ::tex::gamma_linear) ),
+    normal : adobe::util::normal_texture( texture_2d("office_door/door_body_normal.png", ::tex::gamma_linear) ),
+    interiorColor : color(1.0, 1.0, 1.0),
+    metallic : adobe::util::float_texture( texture_2d("office_door/door_body_metallic.png", ::tex::gamma_linear) ),
+    height : float(0.5),
+    heightScale : float(1.0)
+    );

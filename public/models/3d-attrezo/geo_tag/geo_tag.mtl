@@ -1,0 +1,18 @@
+newmtl geo_tag_Mat
+Ni 1.6
+Ka 0 0 0
+map_Ke geo_tag/geo_tag_glow.png
+d 1
+Kd 0 0 0
+adobe_map_normal geo_tag/geo_tag_normal.png
+map_d geo_tag/geo_tag_opacity.png
+Tr 0
+illum 7
+Ks 1 1 1
+adobe_translucence 0.0
+adobe_map_roughness geo_tag/geo_tag_roughness.png
+adobe_interior_color 1.0 1.0 1.0
+adobe_density 0.0
+map_Pm geo_tag/geo_tag_metallic.png
+Ns 16
+map_Kd geo_tag/geo_tag_baseColor.png

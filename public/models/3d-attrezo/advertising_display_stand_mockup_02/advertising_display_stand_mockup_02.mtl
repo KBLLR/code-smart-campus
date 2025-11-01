@@ -1,0 +1,34 @@
+newmtl surface_Mat
+Ni 1.6
+Ka 0 0 0
+d 1.0
+Ke 0.0
+Kd 0 0 0
+adobe_map_normal advertising_display_stand_mockup_02/surface_Mat_normal.png
+Tr 0
+illum 7
+Ks 1 1 1
+adobe_translucence 0.0
+adobe_map_roughness advertising_display_stand_mockup_02/surface_Mat_roughness.png
+adobe_interior_color 1.0 1.0 1.0
+adobe_density 0.0
+map_Pm advertising_display_stand_mockup_02/surface_Mat_metallic.png
+Ns 16
+map_Kd advertising_display_stand_mockup_02/surface_Mat_baseColor.png
+newmtl frame_Mat
+Ni 1.6
+Ka 0 0 0
+d 1.0
+Ke 0.0
+Kd 0 0 0
+adobe_map_normal advertising_display_stand_mockup_02/frame_Mat_normal.png
+Tr 0
+illum 7
+Ks 1 1 1
+adobe_translucence 0.0
+adobe_map_roughness advertising_display_stand_mockup_02/frame_Mat_roughness.png
+adobe_interior_color 1.0 1.0 1.0
+adobe_density 0.0
+map_Pm advertising_display_stand_mockup_02/frame_Mat_metallic.png
+Ns 16
+map_Kd advertising_display_stand_mockup_02/frame_Mat_baseColor.png

@@ -1,0 +1,437 @@
+Entity ID,Friendly Name,Naming Issues
+person.makerspace,MakerSpace,"Too short, Type not in name"
+person.smartcampus,smartcampus,"Too short, Type not in name"
+person.code_community,CODE Community,Type not in name
+person.daniel,Daniel,"Too short, Type not in name"
+person.climate_dashboard,Climate Dashboard,Type not in name
+person.noahfrank,NoahFrank,"Too short, Type not in name"
+update.home_assistant_supervisor_update,Home Assistant Supervisor Update,OK
+update.home_assistant_core_update,Home Assistant Core Update,OK
+update.piper_update,Piper Update,OK
+update.studio_code_server_update,Studio Code Server Update,OK
+update.whisper_update,Whisper Update,OK
+update.esphome_device_builder_update,ESPHome Device Builder Update,OK
+update.speech_to_phrase_update,Speech-to-Phrase Update,Contains special characters
+update.mosquitto_broker_update,Mosquitto broker Update,OK
+update.home_assistant_operating_system_update,Home Assistant Operating System Update,OK
+binary_sensor.remote_ui,Remote UI,Type not in name
+stt.home_assistant_cloud,Home Assistant Cloud,Type not in name
+tts.home_assistant_cloud,Home Assistant Cloud,Type not in name
+conversation.home_assistant,Home Assistant,Type not in name
+zone.home,CODE MakerSpace,Type not in name
+input_number.battery_threshold,battery threshold,Type not in name
+light.ikea_power_socket_1,Smart plug LED 1,Type not in name
+light.ikea_power_socket_2,Smart plug LED 2,Type not in name
+light.smart_switch_led_2,smart plug LED 3,Type not in name
+number.bottles,bottles,"Too short, Type not in name"
+number.pfand,pfand,"Too short, Type not in name"
+sensor.low_battery_devices,Low Battery Devices,Type not in name
+sensor.unoccupied_rooms,Unoccupied rooms,Type not in name
+sun.sun,Sun,Too short
+sensor.sun_next_dawn,Sun Next dawn,Type not in name
+sensor.sun_next_dusk,Sun Next dusk,Type not in name
+sensor.sun_next_midnight,Sun Next midnight,Type not in name
+sensor.sun_next_noon,Sun Next noon,Type not in name
+sensor.sun_next_rising,Sun Next rising,Type not in name
+sensor.sun_next_setting,Sun Next setting,Type not in name
+tts.google_translate_en_com,Google Translate en com,Type not in name
+binary_sensor.xxx_xxx_x_x_focus,xxx.xxx.x.x Focus,Type not in name
+device_tracker.xxx_xxx_x_x,xxx.xxx.x.x,"Too short, Type not in name"
+sensor.xxx_xxx_x_x_connection_type,xxx.xxx.x.x Connection Type,Type not in name
+sensor.xxx_xxx_x_x_battery_level,xxx.xxx.x.x Battery Level,Type not in name
+sensor.xxx_xxx_x_x_ssid,xxx.xxx.x.x SSID,Type not in name
+sensor.xxx_xxx_x_x_bssid,xxx.xxx.x.x BSSID,Type not in name
+sensor.xxx_xxx_x_x_battery_state,xxx.xxx.x.x Battery State,Type not in name
+sensor.xxx_xxx_x_x_storage,xxx.xxx.x.x Storage,Type not in name
+sensor.xxx_xxx_x_x_sim_2,xxx.xxx.x.x SIM 2,Type not in name
+sensor.xxx_xxx_x_x_geocoded_location,xxx.xxx.x.x Geocoded Location,Type not in name
+sensor.xxx_xxx_x_x_sim_1,xxx.xxx.x.x SIM 1,Type not in name
+sensor.xxx_xxx_x_x_last_update_trigger,xxx.xxx.x.x Last Update Trigger,Type not in name
+sensor.xxx_xxx_x_x_app_version,xxx.xxx.x.x App Version,Type not in name
+sensor.xxx_xxx_x_x_location_permission,xxx.xxx.x.x Location permission,Type not in name
+sensor.xxx_xxx_x_x_audio_output,xxx.xxx.x.x Audio Output,Type not in name
+sensor.xxx_xxx_x_x_activity,xxx.xxx.x.x Activity,Type not in name
+sensor.xxx_xxx_x_x_floors_descended,xxx.xxx.x.x Floors Descended,Type not in name
+sensor.xxx_xxx_x_x_steps,xxx.xxx.x.x Steps,Type not in name
+sensor.xxx_xxx_x_x_distance,xxx.xxx.x.x Distance,Type not in name
+sensor.xxx_xxx_x_x_floors_ascended,xxx.xxx.x.x Floors Ascended,Type not in name
+sensor.xxx_xxx_x_x_average_active_pace,xxx.xxx.x.x Average Active Pace,Type not in name
+binary_sensor.macbook_pro_21_camera_in_use,MacBook Pro (21) Camera In Use,Type not in name
+binary_sensor.macbook_pro_21_audio_input_in_use,MacBook Pro (21) Audio Input In Use,Type not in name
+binary_sensor.macbook_pro_21_audio_output_in_use,MacBook Pro (21) Audio Output In Use,Type not in name
+binary_sensor.macbook_pro_21_focus,MacBook Pro (21) Focus,Type not in name
+binary_sensor.macbook_pro_21_active,MacBook Pro (21) Active,Type not in name
+device_tracker.macbook_pro_21,MacBook Pro (21),Type not in name
+sensor.macbook_pro_21_internal_battery_level,MacBook Pro (21) Internal Battery Level,Type not in name
+sensor.macbook_pro_21_connection_type,MacBook Pro (21) Connection Type,Type not in name
+sensor.macbook_pro_21_storage,MacBook Pro (21) Storage,Type not in name
+sensor.macbook_pro_21_bssid,MacBook Pro (21) BSSID,Type not in name
+sensor.macbook_pro_21_internal_battery_state,MacBook Pro (21) Internal Battery State,Type not in name
+sensor.macbook_pro_21_ssid,MacBook Pro (21) SSID,Type not in name
+sensor.macbook_pro_21_geocoded_location,MacBook Pro (21) Geocoded Location,Type not in name
+sensor.macbook_pro_21_active_camera,MacBook Pro (21) Active Camera,Type not in name
+sensor.macbook_pro_21_active_audio_input,MacBook Pro (21) Active Audio Input,Type not in name
+sensor.macbook_pro_21_active_audio_output,MacBook Pro (21) Active Audio Output,Type not in name
+sensor.macbook_pro_21_displays,MacBook Pro (21) Displays,Type not in name
+sensor.macbook_pro_21_primary_display_name,MacBook Pro (21) Primary Display Name,Type not in name
+sensor.macbook_pro_21_frontmost_app,MacBook Pro (21) Frontmost App,Type not in name
+sensor.macbook_pro_21_primary_display_id,MacBook Pro (21) Primary Display ID,Type not in name
+sensor.macbook_pro_21_last_update_trigger,MacBook Pro (21) Last Update Trigger,Type not in name
+sensor.macbook_pro_21_location_permission,MacBook Pro (21) Location permission,Type not in name
+sensor.macbook_pro_21_app_version,MacBook Pro (21) App Version,Type not in name
+sensor.macbook_pro_21_audio_output,MacBook Pro (21) Audio Output,Type not in name
+device_tracker.smaller_black_slab,Smaller black slab,Type not in name
+sensor.smaller_black_slab_storage,Smaller black slab Storage,Type not in name
+sensor.smaller_black_slab_battery_state,Smaller black slab Battery State,Type not in name
+sensor.smaller_black_slab_battery_level,Smaller black slab Battery Level,Type not in name
+sensor.smaller_black_slab_ssid,Smaller black slab SSID,Type not in name
+sensor.smaller_black_slab_sim_2,Smaller black slab SIM 2,Type not in name
+sensor.smaller_black_slab_sim_1,Smaller black slab SIM 1,Type not in name
+sensor.smaller_black_slab_geocoded_location,Smaller black slab Geocoded Location,Type not in name
+sensor.smaller_black_slab_bssid,Smaller black slab BSSID,Type not in name
+sensor.smaller_black_slab_connection_type,Smaller black slab Connection Type,Type not in name
+sensor.smaller_black_slab_last_update_trigger,Smaller black slab Last Update Trigger,Type not in name
+sensor.smaller_black_slab_app_version,Smaller black slab App Version,Type not in name
+sensor.smaller_black_slab_location_permission,Smaller black slab Location permission,Type not in name
+sensor.smaller_black_slab_audio_output,Smaller black slab Audio Output,Type not in name
+binary_sensor.macbook_pro_21_camera_in_use_2,MacBook Pro (21) Camera In Use,Type not in name
+binary_sensor.macbook_pro_21_audio_input_in_use_2,MacBook Pro (21) Audio Input In Use,Type not in name
+binary_sensor.macbook_pro_21_audio_output_in_use_2,MacBook Pro (21) Audio Output In Use,Type not in name
+binary_sensor.macbook_pro_21_active_2,MacBook Pro (21) Active,Type not in name
+binary_sensor.macbook_pro_21_focus_2,MacBook Pro (21) Focus,Type not in name
+device_tracker.macbook_pro_db,MacBook Pro (21),Type not in name
+sensor.macbook_pro_21_internal_battery_level_2,MacBook Pro (21) Internal Battery Level,Type not in name
+sensor.macbook_pro_21_storage_2,MacBook Pro (21) Storage,Type not in name
+sensor.macbook_pro_21_internal_battery_state_2,MacBook Pro (21) Internal Battery State,Type not in name
+sensor.macbook_pro_21_bssid_2,MacBook Pro (21) BSSID,Type not in name
+sensor.macbook_pro_21_ssid_2,MacBook Pro (21) SSID,Type not in name
+sensor.macbook_pro_21_connection_type_2,MacBook Pro (21) Connection Type,Type not in name
+sensor.macbook_pro_21_geocoded_location_2,MacBook Pro (21) Geocoded Location,Type not in name
+sensor.macbook_pro_21_active_camera_2,MacBook Pro (21) Active Camera,Type not in name
+sensor.macbook_pro_21_active_audio_input_2,MacBook Pro (21) Active Audio Input,Type not in name
+sensor.macbook_pro_21_active_audio_output_2,MacBook Pro (21) Active Audio Output,Type not in name
+sensor.macbook_pro_21_displays_2,MacBook Pro (21) Displays,Type not in name
+sensor.macbook_pro_21_primary_display_name_2,MacBook Pro (21) Primary Display Name,Type not in name
+sensor.macbook_pro_21_primary_display_id_2,MacBook Pro (21) Primary Display ID,Type not in name
+sensor.macbook_pro_21_frontmost_app_2,MacBook Pro (21) Frontmost App,Type not in name
+sensor.macbook_pro_21_last_update_trigger_2,MacBook Pro (21) Last Update Trigger,Type not in name
+sensor.macbook_pro_21_app_version_2,MacBook Pro (21) App Version,Type not in name
+sensor.macbook_pro_21_location_permission_2,MacBook Pro (21) Location permission,Type not in name
+sensor.macbook_pro_21_audio_output_2,MacBook Pro (21) Audio Output,Type not in name
+device_tracker.daniels_ipad,Daniel’s iPad,Type not in name
+sensor.daniels_ipad_battery_level,Daniel’s iPad Battery Level,Type not in name
+sensor.daniels_ipad_bssid,Daniel’s iPad BSSID,Type not in name
+sensor.daniels_ipad_connection_type,Daniel’s iPad Connection Type,Type not in name
+sensor.daniels_ipad_geocoded_location,Daniel’s iPad Geocoded Location,Type not in name
+sensor.daniels_ipad_last_update_trigger,Daniel’s iPad Last Update Trigger,Type not in name
+sensor.daniels_ipad_battery_state,Daniel’s iPad Battery State,Type not in name
+sensor.daniels_ipad_storage,Daniel’s iPad Storage,Type not in name
+sensor.daniels_ipad_ssid,Daniel’s iPad SSID,Type not in name
+binary_sensor.octoprint_printing,OctoPrint Printing,Type not in name
+binary_sensor.octoprint_printing_error,OctoPrint Printing Error,Type not in name
+button.octoprint_resume_job,OctoPrint Resume Job,Type not in name
+button.octoprint_pause_job,OctoPrint Pause Job,Type not in name
+button.octoprint_stop_job,OctoPrint Stop Job,Type not in name
+button.octoprint_shutdown_system,OctoPrint Shutdown System,Type not in name
+button.octoprint_reboot_system,OctoPrint Reboot System,Type not in name
+button.octoprint_restart_octoprint,OctoPrint Restart Octoprint,Type not in name
+sensor.octoprint_actual_a_temp,OctoPrint actual A temp,Type not in name
+sensor.octoprint_target_a_temp,OctoPrint target A temp,Type not in name
+sensor.octoprint_actual_e_temp,OctoPrint actual E temp,Type not in name
+sensor.octoprint_target_e_temp,OctoPrint target E temp,Type not in name
+sensor.octoprint_actual_p_temp,OctoPrint actual P temp,Type not in name
+sensor.octoprint_target_p_temp,OctoPrint target P temp,Type not in name
+sensor.octoprint_actual_w_temp,OctoPrint actual W temp,Type not in name
+sensor.octoprint_target_w_temp,OctoPrint target W temp,Type not in name
+sensor.octoprint_actual_bed_temp,OctoPrint actual bed temp,Type not in name
+sensor.octoprint_target_bed_temp,OctoPrint target bed temp,Type not in name
+sensor.octoprint_actual_tool0_temp,OctoPrint actual tool0 temp,Type not in name
+sensor.octoprint_target_tool0_temp,OctoPrint target tool0 temp,Type not in name
+sensor.octoprint_current_state,OctoPrint Current State,Type not in name
+sensor.octoprint_job_percentage,OctoPrint Job Percentage,Type not in name
+sensor.octoprint_estimated_finish_time,OctoPrint Estimated Finish Time,Type not in name
+sensor.octoprint_start_time,OctoPrint Start Time,Type not in name
+camera.octoprint_camera,OctoPrint Camera,OK
+update.ha_floorplan_your_imagination_just_became_the_new_limit_update,ha-floorplan 🖌🎨 | Your imagination just became the new limit update,Contains special characters
+update.hacs_update,HACS update,OK
+update.template_entity_row_update,template-entity-row update,Contains special characters
+binary_sensor.rpi_power_status,RPi Power status,Type not in name
+sensor.backup_backup_manager_state,Backup Backup Manager state,Type not in name
+sensor.backup_next_scheduled_automatic_backup,Backup Next scheduled automatic backup,Type not in name
+sensor.backup_last_successful_automatic_backup,Backup Last successful automatic backup,Type not in name
+stt.faster_whisper,faster-whisper,"Contains special characters, Too short, Type not in name"
+stt.speech_to_phrase,speech-to-phrase,"Contains special characters, Too short, Type not in name"
+tts.piper,piper,"Too short, Type not in name"
+weather.forecast_home,Forecast CODE MakerSpace,Type not in name
+sensor.karl_marx_strasse_berlin_germany_air_quality_index,"Karl-Marx-Straße, Berlin, Germany Air quality index","Contains special characters, Type not in name"
+sensor.karl_marx_strasse_berlin_germany_humidity,"Karl-Marx-Straße, Berlin, Germany Humidity","Contains special characters, Type not in name"
+sensor.karl_marx_strasse_berlin_germany_pressure,"Karl-Marx-Straße, Berlin, Germany Pressure","Contains special characters, Type not in name"
+sensor.karl_marx_strasse_berlin_germany_temperature,"Karl-Marx-Straße, Berlin, Germany Temperature","Contains special characters, Type not in name"
+sensor.karl_marx_strasse_berlin_germany_nitrogen_dioxide,"Karl-Marx-Straße, Berlin, Germany Nitrogen dioxide","Contains special characters, Type not in name"
+sensor.karl_marx_strasse_berlin_germany_pm10,"Karl-Marx-Straße, Berlin, Germany PM10","Contains special characters, Type not in name"
+sensor.karl_marx_strasse_berlin_germany_pm2_5,"Karl-Marx-Straße, Berlin, Germany PM2.5","Contains special characters, Type not in name"
+sensor.karl_marx_strasse_berlin_germany_dominant_pollutant,"Karl-Marx-Straße, Berlin, Germany Dominant pollutant","Contains special characters, Type not in name"
+sensor.pfand_hx711_value,Pfand HX711 Value,Type not in name
+select.home_assistant_voice_093f20_assistant,Home Assistant Voice 093f20 Assistant,Type not in name
+select.home_assistant_voice_093f20_finished_speaking_detection,Home Assistant Voice 093f20 Finished speaking detection,Type not in name
+select.home_assistant_voice_093f20_wake_word,Home Assistant Voice 093f20 Wake word,Type not in name
+media_player.home_assistant_voice_093f20_media_player,Home Assistant Voice 093f20 Media Player,Type not in name
+switch.home_assistant_voice_093f20_mute,Home Assistant Voice 093f20 Mute,Type not in name
+switch.home_assistant_voice_093f20_wake_sound,Home Assistant Voice 093f20 Wake sound,Type not in name
+light.home_assistant_voice_093f20_led_ring,Home Assistant Voice 093f20 LED Ring,Type not in name
+event.home_assistant_voice_093f20_button_press,Home Assistant Voice 093f20 Button press,Type not in name
+update.home_assistant_voice_093f20_home_assistant_voice_093f20,Home Assistant Voice 093f20 ,Type not in name
+calendar.code_1_w_room_b_7_4,B7,"Too short, Type not in name"
+calendar.code_1_b_4_4,B4,"Too short, Type not in name"
+calendar.code_1_b_present_b_5_4,B5,"Too short, Type not in name"
+calendar.code_1_peace_b_3_6,B3,"Too short, Type not in name"
+calendar.code_1_babylon_a_1_12_conferencing_system,A1,"Too short, Type not in name"
+calendar.code_1_muted_a_6_40,A6,"Too short, Type not in name"
+calendar.code_1_pandora_a_24_36,A24,"Too short, Type not in name"
+calendar.code_1_ris_a_12_32,A12,"Too short, Type not in name"
+calendar.code_1_tet_a_11_68,A11,"Too short, Type not in name"
+calendar.code_1_mf_room_b_10_1,B10,"Too short, Type not in name"
+calendar.code_1_jungle_a_2_36,A2,"Too short, Type not in name"
+calendar.code_1_b_after_b_6_4,B6,"Too short, Type not in name"
+calendar.code_1_han_s_zimmer_b_12_1,B12,"Too short, Type not in name"
+calendar.birthdays,Birthdays,"Too short, Type not in name"
+calendar.code_1_dark_matter_b_14_36,B14,"Too short, Type not in name"
+assist_satellite.home_assistant_voice_093f20_assist_satellite,Home Assistant Voice 093f20 Assist satellite,Type not in name
+binary_sensor.makerspace_occupancy_occupancy,MakerSpace Occupancy,Type not in name
+binary_sensor.b3_occupancy_occupancy,B3 Occupancy,Type not in name
+binary_sensor.b4_occupancy_occupancy,B4 Occupancy,Type not in name
+binary_sensor.b5_occupancy,B5 Occupancy,Type not in name
+binary_sensor.b6_occupancy_occupancy_2,B6 Occupancy,Type not in name
+binary_sensor.b7_occupancy_occupancy_2,B7 Occupancy,Type not in name
+binary_sensor.unknown_occupancy_3,B10 Occupancy,Type not in name
+binary_sensor.b12_occupancy_occupancy_3,B12 Occupancy,Type not in name
+binary_sensor.a6_occupancy_occupancy_4,A6 Occupancy,Type not in name
+binary_sensor.ewelink_ms01,Phone Booth 1 Occupancy,Type not in name
+binary_sensor.ewelink_ms01_2,Phone Booth 3 Occupancy,Type not in name
+binary_sensor.unk_manufacturer_unk_model,Phone Booth 2 Occupancy,Type not in name
+binary_sensor.ewelink_ms01_3,Phone Booth 4 Occupancy,Type not in name
+button.ikea_power_socket_1_identify,Ikea power socket 1 Identify,Type not in name
+button.makerspace_occupancy_identify,Makerspace occupancy Identify,Type not in name
+button.ikea_aq_sensor_identify,IKEA AQ sensor Identify,Type not in name
+button.ikea_tradfri_driver_1_identify,IKEA tradfri driver 1 Identify,Type not in name
+button.ikea_tradfri_driver_2_identify_2,IKEA tradfri driver 2 Identify,Type not in name
+button.ikea_of_sweden_remote_control_n2_identify,IKEA of Sweden Remote Control N2 Identify,Type not in name
+button.ikea_power_socket_2_identify,Ikea power socket 2 Identify,Type not in name
+button.sonoff_snzb_02d_temp_humidity_identify,SONOFF SNZB-02D temp humidity Identify,"Contains special characters, Type not in name"
+button.sonoff_snzb_02d_humid_temp_identify,SONOFF SNZB-02D humid temp Identify,"Contains special characters, Type not in name"
+button.sonoff_snzb_02d_temp_humid_identify,SONOFF SNZB-02D temp humid Identify,"Contains special characters, Type not in name"
+button.sonoff_snzb_02d_identify,SONOFF SNZB-02D humid temp Identify,"Contains special characters, Type not in name"
+button.ikea_power_socket_identify,IKEA power socket Identify,Type not in name
+button.sonoff_snzb_02d_humid_temp_identify_2,SONOFF SNZB-02D humid temp Identify,"Contains special characters, Type not in name"
+button.sonoff_snzb_02d_identify_2,SONOFF SNZB-02D humid temp Identify,"Contains special characters, Type not in name"
+button.ikea_of_sweden_tretakt_smart_plug_identify,IKEA of Sweden TRETAKT Smart plug Identify,Type not in name
+button.al001_wg001_z01_wifi_extender_identify,AL001 WG001-Z01 wifi extender Identify,"Contains special characters, Type not in name"
+button.sonoff_snzb_02d_humid_temp_identify_3,SONOFF SNZB-02D humid temp Identify,"Contains special characters, Type not in name"
+button.sonoff_snzb_02d_identify_3,SONOFF SNZB-02D humid temp  Identify,"Contains special characters, Type not in name"
+button.ikea_of_sweden_tradfri_driver_30w_3_identify,IKEA of Sweden TRADFRI Driver 30W 3 Identify,Type not in name
+button.ikea_tradfri_driver_4_laser_cutter_identify,IKEA tradfri driver 4 laser cutter Identify,Type not in name
+button.ikea_tradfri_driver_4_identify,IKEA tradfri Driver 4 Identify,Type not in name
+button.b3_occupancy_identify,B3 occupancy Identify,Type not in name
+button.sonoff_snzb_02d_identify_4,SONOFF SNZB-02D Identify,"Contains special characters, Type not in name"
+button.b4_occupancy_identify,B4 Occupancy Identify,Type not in name
+button.sonoff_snzb_06p_identify,B5 Occupancy Identify,Type not in name
+button.b6_occupancy_identify_2,B6 Occupancy Identify,Type not in name
+button.b7_occupancy_identify_2,B7 occupancy Identify,Type not in name
+button.unknown_identify_3,§ Identify,Type not in name
+button.b12_occupancy_identify_3,B12 occupancy Identify,Type not in name
+button.a6_occupancy_identify_4,A6 occupancy Identify,Type not in name
+button.smart_switch_led_2_identify_2,smart switch LED 2 Identify,Type not in name
+button.ewelink_ms01_identify,eWeLink MS01 Identify,Type not in name
+button.frient_a_s_aqszb_110_identify,frient A/S AQSZB-110 Identify,"Contains special characters, Type not in name"
+button.ewelink_ms01_identify_2,eWeLink MS01 Identify,Type not in name
+button.unk_manufacturer_unk_model_identify,unk_manufacturer unk_model Identify,"Contains special characters, Type not in name"
+button.ewelink_ms01_identify_3,eWeLink MS01 Identify,Type not in name
+light.ikea_tradfri_driver_1_light,IKEA tradfri driver 1 Light,OK
+light.ikea_tradfri_driver_2_light_2,IKEA tradfri driver 2 Light,OK
+light.ikea_of_sweden_tradfri_driver_30w_3_light,IKEA tradfri driver 3 light,OK
+light.ikea_tradfri_driver_4_laser_cutter_light,IKEA tradfri driver laser cutter Light,OK
+light.ikea_tradfri_driver_4_light,IKEA tradfri driver 4 Light,OK
+light.generic_zigbee_coordinator_ezsp_makerspace_lights, Generic Zigbee Coordinator (EZSP) makerspace lights,OK
+number.makerspace_occupancy_presence_detection_timeout,Makerspace occupancy Presence detection timeout,Type not in name
+number.ikea_tradfri_driver_1_on_off_transition_time,IKEA tradfri driver 1 On/Off transition time,Type not in name
+number.ikea_tradfri_driver_1_on_level,IKEA tradfri driver 1 On level,Type not in name
+number.ikea_tradfri_driver_1_start_up_current_level,IKEA tradfri driver 1 Start-up current level,"Contains special characters, Type not in name"
+number.ikea_tradfri_driver_2_on_off_transition_time_2,IKEA tradfri driver 2 On/Off transition time,Type not in name
+number.ikea_tradfri_driver_2_on_level_2,IKEA tradfri driver 2 On level,Type not in name
+number.ikea_tradfri_driver_2_start_up_current_level_2,IKEA tradfri driver 2 Start-up current level,"Contains special characters, Type not in name"
+number.sonoff_snzb_02d_temp_humidity_comfort_temperature_min,SONOFF SNZB-02D temp humidity Comfort temperature min,"Contains special characters, Type not in name"
+number.sonoff_snzb_02d_temp_humidity_comfort_temperature_max,SONOFF SNZB-02D temp humidity Comfort temperature max,"Contains special characters, Type not in name"
+number.sonoff_snzb_02d_temp_humidity_comfort_humidity_min,SONOFF SNZB-02D temp humidity Comfort humidity min,"Contains special characters, Type not in name"
+number.sonoff_snzb_02d_temp_humidity_comfort_humidity_max,SONOFF SNZB-02D temp humidity Comfort humidity max,"Contains special characters, Type not in name"
+number.sonoff_snzb_02d_humid_temp_comfort_temperature_min,SONOFF SNZB-02D humid temp Comfort temperature min,"Contains special characters, Type not in name"
+number.sonoff_snzb_02d_humid_temp_comfort_temperature_max,SONOFF SNZB-02D humid temp Comfort temperature max,"Contains special characters, Type not in name"
+number.sonoff_snzb_02d_humid_temp_comfort_humidity_min,SONOFF SNZB-02D humid temp Comfort humidity min,"Contains special characters, Type not in name"
+number.sonoff_snzb_02d_humid_temp_comfort_humidity_max,SONOFF SNZB-02D humid temp Comfort humidity max,"Contains special characters, Type not in name"
+number.sonoff_snzb_02d_temp_humid_comfort_temperature_min,SONOFF SNZB-02D temp humid Comfort temperature min,"Contains special characters, Type not in name"
+number.sonoff_snzb_02d_temp_humid_comfort_temperature_max,SONOFF SNZB-02D temp humid Comfort temperature max,"Contains special characters, Type not in name"
+number.sonoff_snzb_02d_temp_humid_comfort_humidity_min,SONOFF SNZB-02D temp humid Comfort humidity min,"Contains special characters, Type not in name"
+number.sonoff_snzb_02d_temp_humid_comfort_humidity_max,SONOFF SNZB-02D temp humid Comfort humidity max,"Contains special characters, Type not in name"
+number.sonoff_snzb_02d_humid_temp_comfort_temperature_min_2,SONOFF SNZB-02D humid temp Comfort temperature min,"Contains special characters, Type not in name"
+number.sonoff_snzb_02d_humid_temp_comfort_temperature_max_2,SONOFF SNZB-02D humid temp Comfort temperature max,"Contains special characters, Type not in name"
+number.sonoff_snzb_02d_humid_temp_comfort_humidity_min_2,SONOFF SNZB-02D humid temp Comfort humidity min,"Contains special characters, Type not in name"
+number.sonoff_snzb_02d_humid_temp_comfort_humidity_max_2,SONOFF SNZB-02D humid temp Comfort humidity max,"Contains special characters, Type not in name"
+number.sonoff_snzb_02d_humid_temp_comfort_temperature_min_3,SONOFF SNZB-02D humid temp Comfort temperature min,"Contains special characters, Type not in name"
+number.sonoff_snzb_02d_humid_temp_comfort_temperature_max_3,SONOFF SNZB-02D humid temp Comfort temperature max,"Contains special characters, Type not in name"
+number.sonoff_snzb_02d_humid_temp_comfort_humidity_min_3,SONOFF SNZB-02D humid temp Comfort humidity min,"Contains special characters, Type not in name"
+number.sonoff_snzb_02d_humid_temp_comfort_humidity_max_3,SONOFF SNZB-02D humid temp Comfort humidity max,"Contains special characters, Type not in name"
+number.sonoff_snzb_02d_humid_temp_comfort_temperature_min_4,SONOFF SNZB-02D humid temp Comfort temperature min,"Contains special characters, Type not in name"
+number.sonoff_snzb_02d_humid_temp_comfort_temperature_max_4,SONOFF SNZB-02D humid temp Comfort temperature max,"Contains special characters, Type not in name"
+number.sonoff_snzb_02d_humid_temp_comfort_humidity_min_4,SONOFF SNZB-02D humid temp Comfort humidity min,"Contains special characters, Type not in name"
+number.sonoff_snzb_02d_humid_temp_comfort_humidity_max_4,SONOFF SNZB-02D humid temp Comfort humidity max,"Contains special characters, Type not in name"
+number.sonoff_snzb_02d_humid_temp_comfort_temperature_min_5,SONOFF SNZB-02D humid temp Comfort temperature min,"Contains special characters, Type not in name"
+number.sonoff_snzb_02d_humid_temp_comfort_temperature_max_5,SONOFF SNZB-02D humid temp Comfort temperature max,"Contains special characters, Type not in name"
+number.sonoff_snzb_02d_humid_temp_comfort_humidity_min_5,SONOFF SNZB-02D humid temp Comfort humidity min,"Contains special characters, Type not in name"
+number.sonoff_snzb_02d_humid_temp_comfort_humidity_max_5,SONOFF SNZB-02D humid temp Comfort humidity max,"Contains special characters, Type not in name"
+number.sonoff_snzb_02d_humid_temp_comfort_temperature_min_6,SONOFF SNZB-02D humid temp  Comfort temperature min,"Contains special characters, Type not in name"
+number.sonoff_snzb_02d_humid_temp_comfort_temperature_max_6,SONOFF SNZB-02D humid temp  Comfort temperature max,"Contains special characters, Type not in name"
+number.sonoff_snzb_02d_humid_temp_comfort_humidity_min_6,SONOFF SNZB-02D humid temp  Comfort humidity min,"Contains special characters, Type not in name"
+number.sonoff_snzb_02d_humid_temp_comfort_humidity_max_6,SONOFF SNZB-02D humid temp  Comfort humidity max,"Contains special characters, Type not in name"
+number.ikea_of_sweden_tradfri_driver_30w_3_on_off_transition_time,IKEA of Sweden TRADFRI Driver 30W 3 On/Off transition time,Type not in name
+number.ikea_of_sweden_tradfri_driver_30w_3_on_level,IKEA of Sweden TRADFRI Driver 30W 3 On level,Type not in name
+number.ikea_of_sweden_tradfri_driver_30w_3_start_up_current_level,IKEA of Sweden TRADFRI Driver 30W 3 Start-up current level,"Contains special characters, Type not in name"
+number.ikea_tradfri_driver_4_laser_cutter_on_off_transition_time,IKEA tradfri driver 4 laser cutter On/Off transition time,Type not in name
+number.ikea_tradfri_driver_4_laser_cutter_on_level,IKEA tradfri driver 4 laser cutter On level,Type not in name
+number.ikea_tradfri_driver_4_laser_cutter_start_up_current_level,IKEA tradfri driver 4 laser cutter Start-up current level,"Contains special characters, Type not in name"
+number.ikea_tradfri_driver_4_on_off_transition_time,IKEA tradfri Driver 4 On/Off transition time,Type not in name
+number.ikea_tradfri_driver_4_on_level,IKEA tradfri Driver 4 On level,Type not in name
+number.ikea_tradfri_driver_4_start_up_current_level,IKEA tradfri Driver 4 Start-up current level,"Contains special characters, Type not in name"
+number.b3_occupancy_presence_detection_timeout,B3 occupancy Presence detection timeout,Type not in name
+number.sonoff_snzb_02d_comfort_temperature_min,SONOFF SNZB-02D Comfort temperature min,"Contains special characters, Type not in name"
+number.sonoff_snzb_02d_comfort_temperature_max,SONOFF SNZB-02D Comfort temperature max,"Contains special characters, Type not in name"
+number.sonoff_snzb_02d_comfort_humidity_min,SONOFF SNZB-02D Comfort humidity min,"Contains special characters, Type not in name"
+number.sonoff_snzb_02d_comfort_humidity_max,SONOFF SNZB-02D Comfort humidity max,"Contains special characters, Type not in name"
+number.b4_occupancy_presence_detection_timeout,B4 Occupancy Presence detection timeout,Type not in name
+number.sonoff_snzb_06p_presence_detection_timeout,B5 Occupancy Presence detection timeout,Type not in name
+number.b6_occupancy_presence_detection_timeout_2,B6 Occupancy Presence detection timeout,Type not in name
+number.b7_occupancy_presence_detection_timeout_2,B7 occupancy Presence detection timeout,Type not in name
+number.unknown_presence_detection_timeout_3,§ Presence detection timeout,Type not in name
+number.b12_occupancy_presence_detection_timeout_3,B12 occupancy Presence detection timeout,Type not in name
+number.a6_occupancy_presence_detection_timeout_4,A6 occupancy Presence detection timeout,Type not in name
+select.ikea_power_socket_1_start_up_behavior,Ikea power socket 1 Start-up behavior,"Contains special characters, Type not in name"
+select.makerspace_occupancy_detection_sensitivity,Makerspace occupancy Detection Sensitivity,Type not in name
+select.ikea_tradfri_driver_1_start_up_behavior,IKEA tradfri driver 1 Start-up behavior,"Contains special characters, Type not in name"
+select.ikea_tradfri_driver_2_start_up_behavior_2,IKEA tradfri driver 2 Start-up behavior,"Contains special characters, Type not in name"
+select.ikea_power_socket_2_start_up_behavior,Ikea power socket 2 Start-up behavior,"Contains special characters, Type not in name"
+select.sonoff_snzb_02d_temp_humidity_display_unit,SONOFF SNZB-02D temp humidity Display unit,"Contains special characters, Type not in name"
+select.sonoff_snzb_02d_humid_temp_display_unit,SONOFF SNZB-02D humid temp Display unit,"Contains special characters, Type not in name"
+select.sonoff_snzb_02d_temp_humid_display_unit,SONOFF SNZB-02D temp humid Display unit,"Contains special characters, Type not in name"
+select.sonoff_snzb_02d_humid_temp_display_unit_2,SONOFF SNZB-02D humid temp Display unit,"Contains special characters, Type not in name"
+select.ikea_power_socket_start_up_behavior,IKEA power socket Start-up behavior,"Contains special characters, Type not in name"
+select.sonoff_snzb_02d_humid_temp_display_unit_3,SONOFF SNZB-02D humid temp Display unit,"Contains special characters, Type not in name"
+select.sonoff_snzb_02d_humid_temp_display_unit_4,SONOFF SNZB-02D humid temp Display unit,"Contains special characters, Type not in name"
+select.ikea_of_sweden_tretakt_smart_plug_start_up_behavior,IKEA of Sweden TRETAKT Smart plug Start-up behaviour,"Contains special characters, Type not in name"
+select.sonoff_snzb_02d_humid_temp_display_unit_5,SONOFF SNZB-02D humid temp Display unit,"Contains special characters, Type not in name"
+select.sonoff_snzb_02d_humid_temp_display_unit_6,SONOFF SNZB-02D humid temp  Display unit,"Contains special characters, Type not in name"
+select.ikea_of_sweden_tradfri_driver_30w_3_start_up_behavior,IKEA of Sweden TRADFRI Driver 30W 3 Start-up behavior,"Contains special characters, Type not in name"
+select.ikea_tradfri_driver_4_laser_cutter_start_up_behavior,IKEA tradfri driver 4 laser cutter Start-up behavior,"Contains special characters, Type not in name"
+select.ikea_tradfri_driver_4_start_up_behavior,IKEA tradfri Driver 4 Start-up behavior,"Contains special characters, Type not in name"
+select.b3_occupancy_detection_sensitivity,B3 occupancy Detection Sensitivity,Type not in name
+select.sonoff_snzb_02d_display_unit,SONOFF SNZB-02D Display unit,"Contains special characters, Type not in name"
+select.b4_occupancy_detection_sensitivity,B4 Occupancy Detection Sensitivity,Type not in name
+select.sonoff_snzb_06p_detection_sensitivity,B5 Occupancy Detection Sensitivity,Type not in name
+select.b6_occupancy_detection_sensitivity_2,B6 Occupancy Detection Sensitivity,Type not in name
+select.b7_occupancy_detection_sensitivity_2,B7 occupancy Detection Sensitivity,Type not in name
+select.unknown_detection_sensitivity_3,§ Detection Sensitivity,Type not in name
+select.b12_occupancy_detection_sensitivity_3,B12 occupancy Detection Sensitivity,Type not in name
+select.a6_occupancy_detection_sensitivity_4,A6 occupancy Detection Sensitivity,Type not in name
+select.smart_switch_led_2_start_up_behaviour,smart switch LED 2 Start-up behaviour,"Contains special characters, Type not in name"
+sensor.makerspace_occupancy_last_illumination_state,MakerSpace Last illumination state,Type not in name
+sensor.ikea_aq_sensor_temperature,B3 Temperature,Type not in name
+sensor.ikea_aq_sensor_pm2_5,B3 PM2.5,Type not in name
+sensor.ikea_aq_sensor_humidity,B3 Humidity,Type not in name
+sensor.ikea_aq_sensor_voc_index,B3 VOC index,Type not in name
+sensor.ikea_of_sweden_remote_control_n2_battery,MakerSpace light switch,Type not in name
+sensor.sonoff_snzb_02d_temp_humidity_battery,B.3 Sensor Battery,OK
+sensor.sonoff_snzb_02d_temp_humidity_temperature,MakerSpace Temperature,Type not in name
+sensor.sonoff_snzb_02d_temp_humidity_humidity,MakerSpace Humidity,Type not in name
+sensor.sonoff_snzb_02d_humid_temp_battery,B.4 Sensor Battery,OK
+sensor.sonoff_snzb_02d_humid_temp_temperature,B.4 Temperature,Type not in name
+sensor.sonoff_snzb_02d_humid_temp_humidity,B.4 Humidity,Type not in name
+sensor.sonoff_snzb_02d_temp_humid_battery,B.5 Sensor Battery,OK
+sensor.sonoff_snzb_02d_temp_humid_temperature,B.5 Temperature,Type not in name
+sensor.sonoff_snzb_02d_temp_humid_humidity,B.5 Humidity,Type not in name
+sensor.sonoff_snzb_02d_battery,B.6 Sensor Battery,OK
+sensor.sonoff_snzb_02d_temperature,B.6 Temperature,Type not in name
+sensor.sonoff_snzb_02d_humidity,B.6 Humidity,Type not in name
+sensor.sonoff_snzb_02d_humid_temp_battery_2,B.7 Sensor Battery,OK
+sensor.sonoff_snzb_02d_humid_temp_temperature_2,B.7 Temperature,Type not in name
+sensor.sonoff_snzb_02d_humid_temp_humidity_2,B.7 Humidity,Type not in name
+sensor.sonoff_snzb_02d_battery_2,A.6 Sensor Battery,OK
+sensor.sonoff_snzb_02d_temperature_2,A.6 Temperature,Type not in name
+sensor.sonoff_snzb_02d_humidity_2,A.6 Humidity,Type not in name
+sensor.sonoff_snzb_02d_humid_temp_battery_3,B.12 Sensor Battery,OK
+sensor.sonoff_snzb_02d_humid_temp_temperature_3,B.12 Temperature,Type not in name
+sensor.sonoff_snzb_02d_humid_temp_humidity_3,B.12 Humidity,Type not in name
+sensor.sonoff_snzb_02d_battery_3,Kitchen Sensor Battery,OK
+sensor.sonoff_snzb_02d_temperature_3,Kitchen Temperature,Type not in name
+sensor.sonoff_snzb_02d_humidity_3,Kitchen Humidity,Type not in name
+sensor.b3_occupancy_last_illumination_state,B3 Last illumination state,Type not in name
+sensor.sonoff_snzb_02d_battery_4,Team HQ Sensor Battery,OK
+sensor.sonoff_snzb_02d_temperature_4,Team HQ temperature,Type not in name
+sensor.sonoff_snzb_02d_humidity_4,Team HQ humidity,Type not in name
+sensor.b4_occupancy_last_illumination_state,B4 Last illumination state,Type not in name
+sensor.sonoff_snzb_06p_last_illumination_state,B5 Last Illumination state,Type not in name
+sensor.b6_occupancy_last_illumination_state_2,B6 Last illumination state,Type not in name
+sensor.b7_occupancy_last_illumination_state_2,B7 Last illumination state,Type not in name
+sensor.unknown_last_illumination_state_3,B10 Last illumination state,Type not in name
+sensor.b12_occupancy_last_illumination_state_3,B12 Last illumination state,Type not in name
+sensor.a6_occupancy_last_illumination_state_4,A6 occupancy Last illumination state,Type not in name
+sensor.ewelink_ms01_battery,eWeLink MS01 Battery,Type not in name
+sensor.frient_a_s_aqszb_110_battery,frient A/S AQSZB-110 Battery,"Contains special characters, Type not in name"
+sensor.frient_a_s_aqszb_110_temperature,frient A/S AQSZB-110 Temperature,"Contains special characters, Type not in name"
+sensor.frient_a_s_aqszb_110_humidity,frient A/S AQSZB-110 Humidity,"Contains special characters, Type not in name"
+sensor.ewelink_ms01_battery_2,eWeLink MS01 Battery,Type not in name
+sensor.unk_manufacturer_unk_model_battery,unk_manufacturer unk_model Battery,"Contains special characters, Type not in name"
+sensor.ewelink_ms01_battery_3,eWeLink MS01 Battery,Type not in name
+switch.ikea_power_socket_1_switch,Smart plug 1 LED,Type not in name
+switch.ikea_power_socket_2_switch,Smart plug LED 2,Type not in name
+switch.ikea_of_sweden_tretakt_smart_plug_switch,Library Smart Plug,Type not in name
+switch.smart_switch_led_2,smart plug LED 3,Type not in name
+switch.generic_zigbee_coordinator_ezsp_makerspace_lights, Generic Zigbee Coordinator (EZSP) makerspace lights,Type not in name
+update.ikea_power_socket_1_firmware,Ikea power socket 1 Firmware,Type not in name
+update.makerspace_occupancy_firmware,Makerspace occupancy Firmware,Type not in name
+update.ikea_aq_sensor_firmware,IKEA AQ sensor Firmware,Type not in name
+update.ikea_tradfri_driver_1_firmware,IKEA tradfri driver 1 Firmware,Type not in name
+update.ikea_tradfri_driver_2_firmware_2,IKEA tradfri driver 2 Firmware,Type not in name
+update.ikea_of_sweden_remote_control_n2_firmware,IKEA of Sweden Remote Control N2 Firmware,Type not in name
+update.ikea_power_socket_2_firmware,Ikea power socket 2 Firmware,Type not in name
+update.sonoff_snzb_02d_temp_humidity_firmware,SONOFF SNZB-02D temp humidity Firmware,"Contains special characters, Type not in name"
+update.sonoff_snzb_02d_humid_temp_firmware,SONOFF SNZB-02D humid temp Firmware,"Contains special characters, Type not in name"
+update.sonoff_snzb_02d_temp_humid_firmware,SONOFF SNZB-02D temp humid Firmware,"Contains special characters, Type not in name"
+update.sonoff_snzb_02d_firmware,SONOFF SNZB-02D humid temp Firmware,"Contains special characters, Type not in name"
+update.ikea_power_socket_firmware,IKEA power socket Firmware,Type not in name
+update.sonoff_snzb_02d_humid_temp_firmware_2,SONOFF SNZB-02D humid temp Firmware,"Contains special characters, Type not in name"
+update.sonoff_snzb_02d_firmware_2,SONOFF SNZB-02D humid temp Firmware,"Contains special characters, Type not in name"
+update.ikea_of_sweden_tretakt_smart_plug_firmware,IKEA of Sweden TRETAKT Smart plug Firmware,Type not in name
+update.al001_wg001_z01_wifi_extender_firmware,AL001 WG001-Z01 wifi extender Firmware,"Contains special characters, Type not in name"
+update.sonoff_snzb_02d_humid_temp_firmware_3,SONOFF SNZB-02D humid temp Firmware,"Contains special characters, Type not in name"
+update.sonoff_snzb_02d_firmware_3,SONOFF SNZB-02D humid temp  Firmware,"Contains special characters, Type not in name"
+update.ikea_of_sweden_tradfri_driver_30w_3_firmware,IKEA of Sweden TRADFRI Driver 30W 3 Firmware,Type not in name
+update.ikea_tradfri_driver_4_laser_cutter_firmware,IKEA tradfri driver 4 laser cutter Firmware,Type not in name
+update.ikea_tradfri_driver_4_firmware,IKEA tradfri Driver 4 Firmware,Type not in name
+update.b3_occupancy_firmware,B3 occupancy Firmware,Type not in name
+update.sonoff_snzb_02d_firmware_4,SONOFF SNZB-02D Firmware,"Contains special characters, Type not in name"
+update.b4_occupancy_firmware,B4 Occupancy Firmware,Type not in name
+update.sonoff_snzb_06p_firmware,B5 Occupancy Firmware,Type not in name
+update.b6_occupancy_firmware_2,B6 Occupancy Firmware,Type not in name
+update.b7_occupancy_firmware_2,B7 occupancy Firmware,Type not in name
+update.unknown_firmware_3,§ Firmware,Type not in name
+update.b12_occupancy_firmware_3,B12 occupancy Firmware,Type not in name
+update.a6_occupancy_firmware_4,A6 occupancy Firmware,Type not in name
+update.smart_switch_led_2_firmware_2,smart switch LED 2 Firmware,Type not in name
+update.frient_a_s_aqszb_110_firmware,frient A/S AQSZB-110 Firmware,"Contains special characters, Type not in name"
+automation.ikea_switch_maker_space_lights_on,Ikea switch maker space lights on,Type not in name
+automation.ikea_switch_makerspace_lights_off,Ikea switch makerspace lights off,Type not in name
+automation.makerspace_presence_lights_on,Makerspace presence lights on,Type not in name
+automation.makerspace_presence_lights_off,Makerspace presence lights off,Type not in name
+automation.new_bottle,New bottle,Type not in name
+sensor.hp_envy_4520_series_black_ink,black ink,Type not in name
+sensor.hp_envy_4520_series_tri_color_ink,tri-color ink,"Contains special characters, Type not in name"
+sensor.local_raw_printer,Local Raw Printer,Type not in name
+update.kiosk_mode_update,Kiosk Mode update,OK
+binary_sensor.unoccupied_rooms,Unoccupied rooms,Type not in name

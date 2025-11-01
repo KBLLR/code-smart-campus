@@ -12,6 +12,27 @@
     "isolatedModules": true,
     "moduleDetection": "force",
     "noEmit": true,
+    "baseUrl": "../",
+    "paths": {
+      "@/*": ["./*"],
+      "@components/*": ["./ui/components/*"],
+      "@molecules/*": ["./ui/components/molecules/*"],
+      "@atoms/*": ["./ui/components/atoms/*"],
+      "@organisms/*": ["./ui/components/organisms/*"],
+      "@home_assistant/*": ["./home_assistant/*"],
+      "@data/*": ["./data/*"],
+      "@registries/*": ["./registries/*"],
+      "@config/*": ["./config/*"],
+      "@utils/*": ["./utils/*"],
+      "@ui/*": ["./ui/*"],
+      "@widgets/*": ["./ui/widgets/*"],
+      "@three/*": ["./three/*"],
+      "@lib/*": ["./lib/*"],
+      "@debug/*": ["./debug/*"],
+      "@panes/*": ["./debug/panes/*"],
+      "@tools/*": ["./tools/*"],
+      "@network/*": ["./network/*"]
+    },
 
     /* Linting */
     "strict": true,

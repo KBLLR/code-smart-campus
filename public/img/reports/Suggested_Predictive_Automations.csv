@@ -1,0 +1,21 @@
+Trigger Entity,Action Entity,Suggested Rule
+xxx.xxx.x.x Focus,Smart plug LED 1,If 'xxx.xxx.x.x Focus' changes → then 'Smart plug LED 1' should activate
+xxx.xxx.x.x Focus,Smart plug LED 2,If 'xxx.xxx.x.x Focus' changes → then 'Smart plug LED 2' should activate
+xxx.xxx.x.x Focus,smart plug LED 3,If 'xxx.xxx.x.x Focus' changes → then 'smart plug LED 3' should activate
+xxx.xxx.x.x Focus,Home Assistant Voice 093f20 Media Player,If 'xxx.xxx.x.x Focus' changes → then 'Home Assistant Voice 093f20 Media Player' should activate
+xxx.xxx.x.x Focus,Home Assistant Voice 093f20 Mute,If 'xxx.xxx.x.x Focus' changes → then 'Home Assistant Voice 093f20 Mute' should activate
+xxx.xxx.x.x Focus,Home Assistant Voice 093f20 Wake sound,If 'xxx.xxx.x.x Focus' changes → then 'Home Assistant Voice 093f20 Wake sound' should activate
+xxx.xxx.x.x Focus,Home Assistant Voice 093f20 LED Ring,If 'xxx.xxx.x.x Focus' changes → then 'Home Assistant Voice 093f20 LED Ring' should activate
+xxx.xxx.x.x Focus,IKEA tradfri driver 1 Light,If 'xxx.xxx.x.x Focus' changes → then 'IKEA tradfri driver 1 Light' should activate
+xxx.xxx.x.x Focus,IKEA tradfri driver 2 Light,If 'xxx.xxx.x.x Focus' changes → then 'IKEA tradfri driver 2 Light' should activate
+xxx.xxx.x.x Focus,IKEA tradfri driver 3 light,If 'xxx.xxx.x.x Focus' changes → then 'IKEA tradfri driver 3 light' should activate
+xxx.xxx.x.x Focus,IKEA tradfri driver laser cutter Light,If 'xxx.xxx.x.x Focus' changes → then 'IKEA tradfri driver laser cutter Light' should activate
+xxx.xxx.x.x Focus,IKEA tradfri driver 4 Light,If 'xxx.xxx.x.x Focus' changes → then 'IKEA tradfri driver 4 Light' should activate
+xxx.xxx.x.x Focus, Generic Zigbee Coordinator (EZSP) makerspace lights,If 'xxx.xxx.x.x Focus' changes → then ' Generic Zigbee Coordinator (EZSP) makerspace lights' should activate
+xxx.xxx.x.x Focus,Smart plug 1 LED,If 'xxx.xxx.x.x Focus' changes → then 'Smart plug 1 LED' should activate
+xxx.xxx.x.x Focus,Smart plug LED 2,If 'xxx.xxx.x.x Focus' changes → then 'Smart plug LED 2' should activate
+xxx.xxx.x.x Focus,Library Smart Plug,If 'xxx.xxx.x.x Focus' changes → then 'Library Smart Plug' should activate
+xxx.xxx.x.x Focus,smart plug LED 3,If 'xxx.xxx.x.x Focus' changes → then 'smart plug LED 3' should activate
+xxx.xxx.x.x Focus, Generic Zigbee Coordinator (EZSP) makerspace lights,If 'xxx.xxx.x.x Focus' changes → then ' Generic Zigbee Coordinator (EZSP) makerspace lights' should activate
+xxx.xxx.x.x Geocoded Location,Smart plug LED 1,If 'xxx.xxx.x.x Geocoded Location' changes → then 'Smart plug LED 1' should activate
+xxx.xxx.x.x Geocoded Location,Smart plug LED 2,If 'xxx.xxx.x.x Geocoded Location' changes → then 'Smart plug LED 2' should activate

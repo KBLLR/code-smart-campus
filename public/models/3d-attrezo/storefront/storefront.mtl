@@ -1,0 +1,71 @@
+newmtl glass_MAT
+Ni 1.6
+Ka 0 0 0
+map_Ke storefront/glass_MAT_glow.png
+d 1
+Kd 0 0 0
+adobe_map_normal storefront/glass_MAT_normal.png
+map_d storefront/glass_MAT_opacity.png
+Tr 0
+illum 7
+Ks 1 1 1
+adobe_map_roughness storefront/glass_MAT_roughness.png
+adobe_interior_color 1.0 1.0 1.0
+adobe_density 0.0
+map_Pm storefront/glass_MAT_metallic.png
+Ns 16
+adobe_map_translucence storefront/glass_MAT_translucence.png
+map_Kd storefront/glass_MAT_baseColor.png
+newmtl metal_MAT
+Ni 1.6
+Ka 0 0 0
+map_Ke storefront/metal_MAT_glow.png
+d 1
+Kd 0 0 0
+adobe_map_normal storefront/metal_MAT_normal.png
+map_d storefront/metal_MAT_opacity.png
+Tr 0
+illum 7
+Ks 1 1 1
+adobe_translucence 0.0
+adobe_map_roughness storefront/metal_MAT_roughness.png
+adobe_interior_color 1.0 1.0 1.0
+adobe_density 0.0
+map_Pm storefront/metal_MAT_metallic.png
+Ns 16
+map_Kd storefront/metal_MAT_baseColor.png
+newmtl tiles_MAT
+Ni 1.6
+Ka 0 0 0
+map_Ke storefront/tiles_MAT_glow.png
+d 1
+Kd 0 0 0
+adobe_map_normal storefront/tiles_MAT_normal.png
+map_d storefront/tiles_MAT_opacity.png
+Tr 0
+illum 7
+Ks 1 1 1
+adobe_map_roughness storefront/tiles_MAT_roughness.png
+adobe_interior_color 1.0 1.0 1.0
+adobe_density 0.0
+map_Pm storefront/tiles_MAT_metallic.png
+Ns 16
+map_Kd storefront/tiles_MAT_baseColor.png
+newmtl paint_MAT
+Ni 1.6
+Ka 0 0 0
+map_Ke storefront/paint_MAT_glow.png
+d 1
+Kd 0 0 0
+adobe_map_normal storefront/paint_MAT_normal.png
+map_d storefront/paint_MAT_opacity.png
+Tr 0
+illum 7
+Ks 1 1 1
+adobe_translucence 0.0
+adobe_map_roughness storefront/paint_MAT_roughness.png
+adobe_interior_color 1.0 1.0 1.0
+adobe_density 0.0
+map_Pm storefront/paint_MAT_metallic.png
+Ns 16
+map_Kd storefront/paint_MAT_baseColor.png

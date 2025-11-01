@@ -1,0 +1,36 @@
+newmtl door_body_Mat
+Ni 1.5
+Ka 0 0 0
+map_Ke office_door/door_body_glow.png
+d 1
+Kd 0 0 0
+adobe_map_normal office_door/door_body_normal.png
+map_d office_door/door_body_opacity.png
+Tr 0
+illum 7
+Ks 1 1 1
+adobe_translucence 0.0
+adobe_map_roughness office_door/door_body_roughness.png
+adobe_interior_color 1.0 1.0 1.0
+adobe_density 0.0
+map_Pm office_door/door_body_metallic.png
+Ns 16
+map_Kd office_door/door_body_baseColor.png
+newmtl door_frame_Mat
+Ni 1.5
+Ka 0 0 0
+map_Ke office_door/door_frame_glow.png
+d 1
+Kd 0 0 0
+adobe_map_normal office_door/door_frame_normal.png
+map_d office_door/door_frame_opacity.png
+Tr 0
+illum 7
+Ks 1 1 1
+adobe_translucence 0.0
+adobe_map_roughness office_door/door_frame_roughness.png
+adobe_interior_color 1.0 1.0 1.0
+adobe_density 0.0
+map_Pm office_door/door_frame_metallic.png
+Ns 16
+map_Kd office_door/door_frame_baseColor.png
