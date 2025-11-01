@@ -1,0 +1,311 @@
+smart-campus-live-integration
+.
+├── index.html
+├── package-lock.json
+├── package.json
+├── public
+│   ├── floorplan.svg
+│   ├── hdri
+│   │   ├── night.hdr
+│   │   ├── night1k.hdr
+│   │   └── night2k.hdr
+│   ├── ico.jpg
+│   ├── icons
+│   │   ├── adjustments-alt.svg
+│   │   ├── ai.svg
+│   │   ├── air-quality-bad.svg
+│   │   ├── air-quality-good.svg
+│   │   ├── air.svg
+│   │   ├── aligned.svg
+│   │   ├── artboard.svg
+│   │   ├── badge-3d.svg
+│   │   ├── brand-github.svg
+│   │   ├── brand-google-drive.svg
+│   │   ├── calendar.svg
+│   │   ├── camera.svg
+│   │   ├── cardboards.svg
+│   │   ├── device-airpods-case.svg
+│   │   ├── droplet-minus.svg
+│   │   ├── eye-closed.svg
+│   │   ├── eye-dotted.svg
+│   │   ├── eye.svg
+│   │   ├── file-type-csv.svg
+│   │   ├── file-type-jsx.svg
+│   │   ├── filter-code.svg
+│   │   ├── flame.svg
+│   │   ├── floorplan.svg
+│   │   ├── folder-check.svg
+│   │   ├── grid.svg
+│   │   ├── hand.svg
+│   │   ├── heartbeat.svg
+│   │   ├── humidity.svg
+│   │   ├── info.svg
+│   │   ├── lamp.svg
+│   │   ├── layout-dashboard.svg
+│   │   ├── layout-grid-add.svg
+│   │   ├── layout.svg
+│   │   ├── light-off.svg
+│   │   ├── light-on.svg
+│   │   ├── light.svg
+│   │   ├── lighter.svg
+│   │   ├── matrix.svg
+│   │   ├── menu-4.svg
+│   │   ├── mood-tongue-wink-2.svg
+│   │   ├── mood-tongue-wink.svg
+│   │   ├── moon.svg
+│   │   ├── movie.svg
+│   │   ├── occupancy.svg
+│   │   ├── person.svg
+│   │   ├── photo-square-rounded.svg
+│   │   ├── pointer-code.svg
+│   │   ├── radial.svg
+│   │   ├── send.svg
+│   │   ├── shirt.svg
+│   │   ├── spiral.svg
+│   │   ├── sun.svg
+│   │   ├── table-spark.svg
+│   │   ├── tagged.svg
+│   │   ├── target.svg
+│   │   ├── temperature-minus.svg
+│   │   ├── temperature-plus.svg
+│   │   ├── temperature.svg
+│   │   ├── template.svg
+│   │   ├── toggle-left.svg
+│   │   ├── toggle-right.svg
+│   │   ├── undefined.svg
+│   │   ├── unknown.svg
+│   │   ├── user-code.svg
+│   │   ├── view-360-arrow.svg
+│   │   ├── view-360-number.svg
+│   │   └── zoom-scan.svg
+│   └── img
+│       ├── 20250407_2341_Retro App Interface_simple_compose_01jr9368edfjzr5zyevvfwz09b.png
+│       └── particle.png
+├── scripts
+│   └── generateRoomRegistry.js
+├── src
+│   ├── animation
+│   │   └── AnimationLoop.js
+│   ├── api
+│   │   └── generate-labels.js
+│   ├── data
+│   │   ├── labelRegistry.js
+│   │   ├── Room_entity_data.js
+│   │   ├── roomRegistry.js
+│   │   ├── Rooms_with_Zero_Center.csv
+│   │   └── Sensor_Coverage_Report.csv
+│   ├── debug
+│   │   ├── Debugger.js
+│   │   ├── DebugState.js
+│   │   └── README.md
+│   ├── gltf-EXT
+│   │   ├── examples
+│   │   │   ├── assets
+│   │   │   │   ├── fonts
+│   │   │   │   │   └── helvetiker_regular.typeface.json
+│   │   │   │   ├── gltf
+│   │   │   │   │   ├── BoomBox
+│   │   │   │   │   │   ├── glb
+│   │   │   │   │   │   │   └── BoomBox.glb
+│   │   │   │   │   │   ├── glb-lod
+│   │   │   │   │   │   │   └── BoomBox.glb
+│   │   │   │   │   │   ├── glTF-dds
+│   │   │   │   │   │   │   ├── BoomBox_baseColor.dds
+│   │   │   │   │   │   │   ├── BoomBox_baseColor.png
+│   │   │   │   │   │   │   ├── BoomBox_emissive.dds
+│   │   │   │   │   │   │   ├── BoomBox_emissive.png
+│   │   │   │   │   │   │   ├── BoomBox_normal.dds
+│   │   │   │   │   │   │   ├── BoomBox_normal.png
+│   │   │   │   │   │   │   ├── BoomBox_occlusionRoughnessMetallic.dds
+│   │   │   │   │   │   │   ├── BoomBox_occlusionRoughnessMetallic.png
+│   │   │   │   │   │   │   ├── BoomBox.bin
+│   │   │   │   │   │   │   └── BoomBox.gltf
+│   │   │   │   │   │   └── glTF-text
+│   │   │   │   │   │       ├── BoomBox_baseColor.png
+│   │   │   │   │   │       ├── BoomBox_emissive.png
+│   │   │   │   │   │       ├── BoomBox_normal.png
+│   │   │   │   │   │       ├── BoomBox_occlusionRoughnessMetallic.png
+│   │   │   │   │   │       ├── BoomBox.bin
+│   │   │   │   │   │       └── BoomBox.gltf
+│   │   │   │   │   ├── Box
+│   │   │   │   │   │   └── glTF-texture-video
+│   │   │   │   │   │       ├── BoxTextured.gltf
+│   │   │   │   │   │       ├── BoxTextured0.bin
+│   │   │   │   │   │       ├── CesiumLogoFlat.png
+│   │   │   │   │   │       └── kinect.mp4
+│   │   │   │   │   ├── MaterialsVariantsShoe
+│   │   │   │   │   │   ├── glTF
+│   │   │   │   │   │   │   ├── diffuseBeach.jpg
+│   │   │   │   │   │   │   ├── diffuseMidnight.jpg
+│   │   │   │   │   │   │   ├── diffuseStreet.jpg
+│   │   │   │   │   │   │   ├── MaterialsVariantsShoe.bin
+│   │   │   │   │   │   │   ├── MaterialsVariantsShoe.gltf
+│   │   │   │   │   │   │   ├── normal.jpg
+│   │   │   │   │   │   │   └── occlusionRougnessMetalness.jpg
+│   │   │   │   │   │   ├── README.md
+│   │   │   │   │   │   └── screenshot
+│   │   │   │   │   │       └── screenshot.jpg
+│   │   │   │   │   └── Teapots
+│   │   │   │   │       └── glTF-instancing
+│   │   │   │   │           ├── mesh_2.bin
+│   │   │   │   │           ├── mesh.bin
+│   │   │   │   │           ├── teapots_galore.gltf
+│   │   │   │   │           └── transforms.bin
+│   │   │   │   └── textures
+│   │   │   │       └── equirectangular
+│   │   │   │           └── royal_esplanade_1k.hdr
+│   │   │   ├── EXT_mesh_gpu_instancing.html
+│   │   │   ├── EXT_text.html
+│   │   │   ├── EXT_texture_video.html
+│   │   │   ├── GLB_range_requests.html
+│   │   │   ├── ic_menu_black_24dp.svg
+│   │   │   ├── index.css
+│   │   │   ├── index.html
+│   │   │   ├── KHR_materials_variants.html
+│   │   │   ├── libs
+│   │   │   │   └── dat.gui.module.js
+│   │   │   ├── main.css
+│   │   │   ├── MSFT_lod.html
+│   │   │   ├── MSFT_texture_dds.html
+│   │   │   └── utils
+│   │   ├── exporters
+│   │   │   ├── EXT_mesh_gpu_instancing
+│   │   │   │   ├── EXT_mesh_gpu_instancing_exporter.js
+│   │   │   │   └── README.md
+│   │   │   ├── KHR_materials_variants
+│   │   │   │   ├── KHR_materials_variants_exporter.js
+│   │   │   │   └── README.md
+│   │   │   └── README.md
+│   │   ├── LICENSE
+│   │   ├── loaders
+│   │   │   ├── EXT_mesh_gpu_instancing
+│   │   │   │   ├── EXT_mesh_gpu_instancing.js
+│   │   │   │   └── README.md
+│   │   │   ├── EXT_text
+│   │   │   │   ├── EXT_text.js
+│   │   │   │   └── README.md
+│   │   │   ├── EXT_texture_video
+│   │   │   │   ├── EXT_texture_video.js
+│   │   │   │   └── README.md
+│   │   │   ├── GLB_range_requests
+│   │   │   │   ├── GLB_range_requests.js
+│   │   │   │   └── README.md
+│   │   │   ├── KHR_materials_variants
+│   │   │   │   ├── KHR_materials_variants.js
+│   │   │   │   └── README.md
+│   │   │   ├── MSFT_lod
+│   │   │   │   ├── MSFT_lod.js
+│   │   │   │   └── README.md
+│   │   │   ├── MSFT_texture_dds
+│   │   │   │   ├── MSFT_texture_dds.js
+│   │   │   │   └── README.md
+│   │   │   └── README.md
+│   │   ├── package-lock.json
+│   │   ├── package.json
+│   │   └── README.md
+│   ├── gltf-khronos+EXT
+│   │   ├── GLTFExporter.js
+│   │   └── test
+│   │       ├── build
+│   │       │   └── unit.js
+│   │       ├── EXT_mesh_gpu_instancing.js
+│   │       ├── EXT_text.js
+│   │       ├── EXT_texture_video.js
+│   │       ├── index.html
+│   │       ├── index.js
+│   │       ├── KHR_materials_variants.js
+│   │       ├── MSFT_lod.js
+│   │       ├── MSFT_texture_dds.js
+│   │       ├── package-lock.json
+│   │       ├── package.json
+│   │       └── rollup.unit.config.js
+│   ├── ha.js
+│   ├── home_assistant
+│   │   ├── HA_bridge.ts
+│   │   ├── HA_dashboard.ts
+│   │   ├── HA_rest.js
+│   │   ├── HA_ws.js
+│   │   └── ha-bridge.ts
+│   ├── lib
+│   │   ├── BloomComposer.ts
+│   │   ├── GenColor.ts
+│   │   ├── geometries.ts
+│   │   ├── HomeAssistantSocket.js
+│   │   ├── LabelManager.js
+│   │   ├── PanelBuilder.js
+│   │   ├── ParticleSystem.ts
+│   │   ├── Response.js
+│   │   ├── SensorDashboard.js
+│   │   ├── shaderHelper.ts
+│   │   ├── tweaks.ts
+│   │   └── Uniforms.ts
+│   ├── main-prev.js
+│   ├── main.js
+│   ├── mainAAA.js
+│   ├── mainB.js
+│   ├── network
+│   │   ├── WebSocketConnector.js
+│   │   └── WebSocketStatus.js
+│   ├── README.md
+│   ├── scene.js
+│   ├── sensors-mock.json
+│   ├── Setup.js
+│   ├── shaders
+│   │   ├── edge
+│   │   │   └── edgeShader.glsl.ts
+│   │   ├── noise.glsl
+│   │   ├── particle
+│   │   │   ├── fragment.glsl
+│   │   │   └── vertex.glsl
+│   │   └── quark-shaders-master.zip
+│   ├── style.css
+│   ├── three
+│   │   ├── FloorGeometry.js
+│   │   ├── LoadSVGAndExtrude.js
+│   │   ├── RaycasterHandler.js
+│   │   └── RoundedBlockGenerator.js
+│   ├── tools
+│   │   ├── generateLabelRegistry.js
+│   │   ├── generateRoomRegistry.js
+│   │   └── uiUpdater.js
+│   ├── tsconfig.json
+│   ├── ui
+│   │   ├── components
+│   │   │   ├── atoms
+│   │   │   │   ├── Button.js
+│   │   │   │   ├── Icon.js
+│   │   │   │   ├── Label.js
+│   │   │   │   └── Toggle.js
+│   │   │   ├── Loader.js
+│   │   │   ├── molecules
+│   │   │   │   ├── FloatingToolbar.js
+│   │   │   │   ├── LabelDockUI.js
+│   │   │   │   ├── LabelModal.js
+│   │   │   │   ├── ScrollBoxModal.js
+│   │   │   │   ├── ToggleDockUI.js
+│   │   │   │   ├── ViewModePanel.js
+│   │   │   │   └── WSBar.js
+│   │   │   ├── organisms
+│   │   │   │   └── Toolbar.js
+│   │   │   └── ThemeButton.js
+│   │   ├── createLabel.js
+│   │   ├── LabelInjector.js
+│   │   ├── makeTextTexture.js
+│   │   ├── theme.js
+│   │   ├── Themer.js
+│   │   ├── uiUpdater.js
+│   │   └── widgets
+│   ├── uiUpdater.js
+│   ├── utils
+│   │   ├── entityUtils.js
+│   │   ├── GenColor.js
+│   │   ├── initCoordinator.js
+│   │   ├── intensityMapper.js
+│   │   ├── LabelLayoutManager.js
+│   │   ├── loader.js
+│   │   ├── save.js
+│   │   └── toggleLabelsButton.js
+│   └── vite-env.d.ts
+├── vite.api.js
+├── vite.config.js
+└── vite.server.js

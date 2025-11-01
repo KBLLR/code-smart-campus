@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Smart Campus Dashboard</title>
+  <style>
+    .room-list { display: flex; flex-wrap: wrap; gap: 1rem; }
+    .room-card {
+      border: 1px solid #ccc;
+      padding: 1rem;
+      border-radius: 10px;
+      width: 200px;
+      font-family: sans-serif;
+      background: #f4f4f4;
+    }
+    .room-card h3 {
+      margin-top: 0;
+    }
+  </style>
+</head>
+<body>
+  <div>
+    <button onclick="window.refreshDashboardUI()">♺ Refresh</button>
+    <div class="room-list">
+      <div class="room-card" id="kitchen">
+        <h3>Kitchen</h3>
+        <div>Temp: <span class="temperature">No data</span></div>
+        <div>Humidity: <span class="humidity">No data</span></div>
+      </div>
+      <div class="room-card" id="makerspace">
+        <h3>MakerSpace</h3>
+        <div>Temp: <span class="temperature">No data</span></div>
+        <div>Humidity: <span class="humidity">No data</span></div>
+        <div>Occupancy: <span class="occupancy">No data</span></div>
+      </div>
+    </div>
+  </div>
+  <script type="module">
+    import { refreshDashboardUI } from './ha-dashboard-bridge.js';
+    window.refreshDashboardUI = refreshDashboardUI;
+    refreshDashboardUI(); // Initial load
+  </script>
+</body>
+</html>

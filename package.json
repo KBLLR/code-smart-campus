@@ -1,0 +1,35 @@
+{
+  "name": "smart-campus-live-integration",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "predev": "node src/tools/generateRoomRegistry.js",
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx",
+    "generateLabelRegistry": "node src/tools/generateLabelRegistry.js",
+    "generateRoomRegistry": "node src/tools/generateRoomRegistry.js"
+  },
+  "dependencies": {
+    "@tweakpane/plugin-essentials": "^0.2.1",
+    "@tweenjs/tween.js": "^25.0.0",
+    "canvas": "^3.1.0",
+    "dotenv": "^16.4.7",
+    "gsap": "^3.12.7",
+    "node-html-parser": "^7.0.1",
+    "stats-gl": "^3.6.0",
+    "three": "^0.181.0",
+    "tweakpane": "^4.0.5"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.0.0",
+    "@tweakpane/core": "^2.0.5",
+    "@types/three": "^0.181.0",
+    "acorn": "^8.14.1",
+    "jsdom": "^27.1.0",
+    "tailwindcss": "^4.0.0",
+    "typescript": "^5.9.3",
+    "vite": "^7.1.12"
+  }
+}

@@ -1,0 +1,528 @@
+title: Room Dashboard
+views:
+- cards:
+  - entity: sensor.low_battery_devices
+    icon: mdi:information
+    name: Low Battery Devices
+    type: entity
+  - entity: sensor.pfand_hx71_value
+    icon: mdi:currency-eur
+    name: Pfand HX71 Value
+    type: entity
+  - entity: sensor.unoccupied_rooms
+    icon: mdi:information
+    name: Unoccupied rooms
+    type: entity
+  path: sensor
+  theme: default
+  title: Sensor
+  type: panel
+- cards:
+  - entity: sensor.makerspace_lights_(battery)
+    icon: mdi:lightbulb
+    name: Makerspace lights (battery)
+    type: entity
+  - entity: sensor.makerspace_lights_(lightbulb)
+    icon: mdi:lightbulb
+    name: Makerspace lights (lightbulb)
+    type: entity
+  path: generic_zigbee_coordinator
+  theme: default
+  title: Generic Zigbee Coordinator
+  type: panel
+- cards:
+  - entity: sensor.air_quality_index
+    icon: mdi:air-filter
+    name: Air quality index
+    type: entity
+  - entity: sensor.dominant_pollutant
+    icon: mdi:information
+    name: Dominant pollutant
+    type: entity
+  - entity: sensor.humidity
+    icon: mdi:water-percent
+    name: Humidity
+    type: entity
+  - entity: sensor.nitrogen_dioxide
+    icon: mdi:information
+    name: Nitrogen dioxide
+    type: entity
+  - entity: sensor.pm10
+    icon: mdi:information
+    name: PM10
+    type: entity
+  - entity: sensor.pm2.5
+    icon: mdi:information
+    name: PM2.5
+    type: entity
+  - entity: sensor.pressure
+    icon: mdi:information
+    name: Pressure
+    type: entity
+  - entity: sensor.temperature
+    icon: mdi:thermometer
+    name: Temperature
+    type: entity
+  path: "weather_(karl-marx-stra\xDFe,_berlin,_germa...)"
+  theme: default
+  title: "Weather (Karl-Marx-Stra\xDFe, Berlin, Germa...)"
+  type: panel
+- cards:
+  - entity: sensor.ikea_tradfri_driver_1_light
+    icon: mdi:lightbulb
+    name: IKEA tradfri driver 1 Light
+    type: entity
+  - entity: sensor.ikea_tradfri_driver_2_light
+    icon: mdi:lightbulb
+    name: IKEA tradfri driver 2 Light
+    type: entity
+  - entity: sensor.ikea_tradfri_driver_3_light
+    icon: mdi:lightbulb
+    name: IKEA tradfri driver 3 Light
+    type: entity
+  - entity: sensor.ikea_tradfri_driver_4_light
+    icon: mdi:lightbulb
+    name: IKEA tradfri driver 4 Light
+    type: entity
+  - entity: sensor.ikea_tradfri_driver_laser_cutter_light
+    icon: mdi:lightbulb
+    name: IKEA tradfri driver laser cutter Light
+    type: entity
+  - entity: sensor.smart_plug_led_1
+    icon: mdi:power-plug
+    name: Smart plug LED 1
+    type: entity
+  - entity: sensor.smart_plug_led_2
+    icon: mdi:power-plug
+    name: Smart plug LED 2
+    type: entity
+  - entity: sensor.smart_plug_led_3
+    icon: mdi:power-plug
+    name: Smart plug LED 3
+    type: entity
+  - entity: sensor.frient_a/s_aqszb-110_humidity
+    icon: mdi:water-percent
+    name: frient A/S AQSZB-110 Humidity
+    type: entity
+  - entity: sensor.frient_a/s_aqszb-110_temperature
+    icon: mdi:thermometer
+    name: frient A/S AQSZB-110 Temperature
+    type: entity
+  - entity: sensor.humidity
+    icon: mdi:water-percent
+    name: Humidity
+    type: entity
+  - entity: sensor.last_illumination_state
+    icon: mdi:information
+    name: Last Illumination state
+    type: entity
+  - entity: sensor.occupancy
+    icon: mdi:account
+    name: Occupancy
+    type: entity
+  - entity: sensor.octoprint_actual_a_temp
+    icon: mdi:printer-3d
+    name: OctoPrint actual A temp
+    type: entity
+  - entity: sensor.octoprint_actual_bed_temp
+    icon: mdi:printer-3d
+    name: OctoPrint actual bed temp
+    type: entity
+  - entity: sensor.octoprint_actual_e_temp
+    icon: mdi:printer-3d
+    name: OctoPrint actual E temp
+    type: entity
+  - entity: sensor.octoprint_actual_p_temp
+    icon: mdi:printer-3d
+    name: OctoPrint actual P temp
+    type: entity
+  - entity: sensor.octoprint_actual_tool0_temp
+    icon: mdi:printer-3d
+    name: OctoPrint actual tool0 temp
+    type: entity
+  - entity: sensor.octoprint_actual_w_temp
+    icon: mdi:printer-3d
+    name: OctoPrint actual W temp
+    type: entity
+  - entity: sensor.octoprint_current_state
+    icon: mdi:printer-3d
+    name: OctoPrint Current State
+    type: entity
+  - entity: sensor.octoprint_estimated_finish_time
+    icon: mdi:printer-3d
+    name: OctoPrint Estimated Finish Time
+    type: entity
+  - entity: sensor.octoprint_job_percentage
+    icon: mdi:printer-3d
+    name: OctoPrint Job Percentage
+    type: entity
+  - entity: sensor.octoprint_printing
+    icon: mdi:printer-3d
+    name: OctoPrint Printing
+    type: entity
+  - entity: sensor.octoprint_printing_error
+    icon: mdi:printer-3d
+    name: OctoPrint Printing Error
+    type: entity
+  - entity: sensor.octoprint_start_time
+    icon: mdi:printer-3d
+    name: OctoPrint Start Time
+    type: entity
+  - entity: sensor.octoprint_target_a_temp
+    icon: mdi:printer-3d
+    name: OctoPrint target A temp
+    type: entity
+  - entity: sensor.octoprint_target_bed_temp
+    icon: mdi:printer-3d
+    name: OctoPrint target bed temp
+    type: entity
+  - entity: sensor.octoprint_target_e_temp
+    icon: mdi:printer-3d
+    name: OctoPrint target E temp
+    type: entity
+  - entity: sensor.octoprint_target_p_temp
+    icon: mdi:printer-3d
+    name: OctoPrint target P temp
+    type: entity
+  - entity: sensor.octoprint_target_tool0_temp
+    icon: mdi:printer-3d
+    name: OctoPrint target tool0 temp
+    type: entity
+  - entity: sensor.octoprint_target_w_temp
+    icon: mdi:printer-3d
+    name: OctoPrint target W temp
+    type: entity
+  - entity: sensor.temperature
+    icon: mdi:thermometer
+    name: Temperature
+    type: entity
+  path: makerspace
+  theme: default
+  title: Makerspace
+  type: panel
+- cards:
+  - entity: sensor.smart_plug
+    icon: mdi:power-plug
+    name: Smart Plug
+    type: entity
+  path: library
+  theme: default
+  title: Library
+  type: panel
+- cards:
+  - entity: sensor.occupancy
+    icon: mdi:account
+    name: Occupancy
+    type: entity
+  path: phone_booth_2
+  theme: default
+  title: Phone Booth 2
+  type: panel
+- cards:
+  - entity: sensor.occupancy
+    icon: mdi:account
+    name: Occupancy
+    type: entity
+  path: phone_booth_4
+  theme: default
+  title: Phone Booth 4
+  type: panel
+- cards:
+  - entity: sensor.unoccupied_rooms
+    icon: mdi:information
+    name: Unoccupied rooms
+    type: entity
+  path: binary_sensor
+  theme: default
+  title: Binary Sensor
+  type: panel
+- cards:
+  - entity: sensor.battery_threshold
+    icon: mdi:information
+    name: battery threshold
+    type: entity
+  path: helpers
+  theme: default
+  title: Helpers
+  type: panel
+- cards:
+  - entity: sensor.occupancy
+    icon: mdi:account
+    name: Occupancy
+    type: entity
+  path: phone_booth_1
+  theme: default
+  title: Phone Booth 1
+  type: panel
+- cards:
+  - entity: sensor.occupancy
+    icon: mdi:account
+    name: Occupancy
+    type: entity
+  path: phone_booth_3
+  theme: default
+  title: Phone Booth 3
+  type: panel
+- cards:
+  - entity: sensor.black_ink
+    icon: mdi:information
+    name: black ink
+    type: entity
+  - entity: sensor.hp_envy_4520_series
+    icon: mdi:information
+    name: hp envy 4520 series
+    type: entity
+  - entity: sensor.humidity
+    icon: mdi:water-percent
+    name: Humidity
+    type: entity
+  - entity: sensor.local_raw_printer
+    icon: mdi:printer-3d
+    name: Local Raw Printer
+    type: entity
+  - entity: sensor.temperature
+    icon: mdi:thermometer
+    name: Temperature
+    type: entity
+  - entity: sensor.tri-color_ink
+    icon: mdi:information
+    name: tri-color ink
+    type: entity
+  path: team_hq
+  theme: default
+  title: Team HQ
+  type: panel
+- cards:
+  - entity: sensor.a1
+    icon: mdi:information
+    name: A1
+    type: entity
+  - entity: sensor.a11
+    icon: mdi:information
+    name: A11
+    type: entity
+  - entity: sensor.a12
+    icon: mdi:information
+    name: A12
+    type: entity
+  - entity: sensor.a2
+    icon: mdi:information
+    name: A2
+    type: entity
+  - entity: sensor.a24
+    icon: mdi:information
+    name: A24
+    type: entity
+  - entity: sensor.b14
+    icon: mdi:information
+    name: B14
+    type: entity
+  path: calendar
+  theme: default
+  title: Calendar
+  type: panel
+- cards:
+  - entity: sensor.b10
+    icon: mdi:information
+    name: B10
+    type: entity
+  - entity: sensor.last_illumination_state
+    icon: mdi:information
+    name: Last illumination state
+    type: entity
+  - entity: sensor.occupancy
+    icon: mdi:account
+    name: Occupancy
+    type: entity
+  path: b10
+  theme: default
+  title: B10
+  type: panel
+- cards:
+  - entity: sensor.b12
+    icon: mdi:information
+    name: B12
+    type: entity
+  - entity: sensor.b12_humidity
+    icon: mdi:water-percent
+    name: B12 Humidity
+    type: entity
+  - entity: sensor.b12_temperature
+    icon: mdi:thermometer
+    name: B12 Temperature
+    type: entity
+  - entity: sensor.last_illumination_state
+    icon: mdi:information
+    name: Last illumination state
+    type: entity
+  - entity: sensor.occupancy
+    icon: mdi:account
+    name: Occupancy
+    type: entity
+  path: b12
+  theme: default
+  title: B12
+  type: panel
+- cards:
+  - entity: sensor.b3
+    icon: mdi:information
+    name: B3
+    type: entity
+  - entity: sensor.humidity
+    icon: mdi:water-percent
+    name: Humidity
+    type: entity
+  - entity: sensor.last_illumination_state
+    icon: mdi:information
+    name: Last illumination state
+    type: entity
+  - entity: sensor.occupancy
+    icon: mdi:account
+    name: Occupancy
+    type: entity
+  - entity: sensor.pm2.5
+    icon: mdi:information
+    name: PM2.5
+    type: entity
+  - entity: sensor.temperature
+    icon: mdi:thermometer
+    name: Temperature
+    type: entity
+  - entity: sensor.voc_index
+    icon: mdi:weather-windy
+    name: VOC index
+    type: entity
+  path: b3
+  theme: default
+  title: B3
+  type: panel
+- cards:
+  - entity: sensor.b4
+    icon: mdi:information
+    name: B4
+    type: entity
+  - entity: sensor.b4_humidity
+    icon: mdi:water-percent
+    name: B4 Humidity
+    type: entity
+  - entity: sensor.b4_temperature
+    icon: mdi:thermometer
+    name: B4 Temperature
+    type: entity
+  - entity: sensor.last_illumination_state
+    icon: mdi:information
+    name: Last illumination state
+    type: entity
+  - entity: sensor.occupancy
+    icon: mdi:account
+    name: Occupancy
+    type: entity
+  path: b4
+  theme: default
+  title: B4
+  type: panel
+- cards:
+  - entity: sensor.b5
+    icon: mdi:information
+    name: B5
+    type: entity
+  - entity: sensor.b5_humidity
+    icon: mdi:water-percent
+    name: B5 Humidity
+    type: entity
+  - entity: sensor.b5_temperature
+    icon: mdi:thermometer
+    name: B5 Temperature
+    type: entity
+  - entity: sensor.last_illumination_state
+    icon: mdi:information
+    name: Last illumination state
+    type: entity
+  - entity: sensor.occupancy
+    icon: mdi:account
+    name: Occupancy
+    type: entity
+  path: b5
+  theme: default
+  title: B5
+  type: panel
+- cards:
+  - entity: sensor.b6
+    icon: mdi:information
+    name: B6
+    type: entity
+  - entity: sensor.b6_humidity
+    icon: mdi:water-percent
+    name: B6 Humidity
+    type: entity
+  - entity: sensor.b6_temperature
+    icon: mdi:thermometer
+    name: B6 Temperature
+    type: entity
+  - entity: sensor.last_illumination_state
+    icon: mdi:information
+    name: Last illumination state
+    type: entity
+  - entity: sensor.occupancy
+    icon: mdi:account
+    name: Occupancy
+    type: entity
+  path: b6
+  theme: default
+  title: B6
+  type: panel
+- cards:
+  - entity: sensor.b7
+    icon: mdi:information
+    name: B7
+    type: entity
+  - entity: sensor.b7_humidity
+    icon: mdi:water-percent
+    name: B7 Humidity
+    type: entity
+  - entity: sensor.b7_temperature
+    icon: mdi:thermometer
+    name: B7 Temperature
+    type: entity
+  - entity: sensor.last_illumination_state
+    icon: mdi:information
+    name: Last illumination state
+    type: entity
+  - entity: sensor.occupancy
+    icon: mdi:account
+    name: Occupancy
+    type: entity
+  path: b7
+  theme: default
+  title: B7
+  type: panel
+- cards:
+  - entity: sensor.bottles
+    icon: mdi:bottle-tonic
+    name: bottles
+    type: entity
+  - entity: sensor.pfand
+    icon: mdi:currency-eur
+    name: pfand
+    type: entity
+  - entity: sensor.humidity
+    icon: mdi:water-percent
+    name: Humidity
+    type: entity
+  - entity: sensor.temperature
+    icon: mdi:thermometer
+    name: Temperature
+    type: entity
+  path: kitchen
+  theme: default
+  title: Kitchen
+  type: panel
+- cards:
+  - entity: sensor.smart_plug
+    icon: mdi:power-plug
+    name: Smart Plug
+    type: entity
+  path: library_alexandria
+  theme: default
+  title: Library Alexandria
+  type: panel

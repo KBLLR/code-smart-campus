@@ -1,0 +1,358 @@
+{
+  "Sensor": {
+    "Low Battery Devices": {
+      "data_type": "string"
+    },
+    "Pfand HX71 Value": {
+      "data_type": "string"
+    },
+    "Unoccupied rooms": {
+      "data_type": "string"
+    }
+  },
+  "Generic Zigbee Coordinator": {
+    "Makerspace lights (battery)": {
+      "data_type": "boolean"
+    },
+    "Makerspace lights (lightbulb)": {
+      "data_type": "boolean"
+    }
+  },
+  "Weather (Karl-Marx-Straße, Berlin, Germa...)": {
+    "Air quality index": {
+      "data_type": "int"
+    },
+    "Dominant pollutant": {
+      "data_type": "string"
+    },
+    "Humidity": {
+      "data_type": "int"
+    },
+    "Nitrogen dioxide": {
+      "data_type": "float"
+    },
+    "PM10": {
+      "data_type": "int"
+    },
+    "PM2.5": {
+      "data_type": "int"
+    },
+    "Pressure": {
+      "data_type": "float"
+    },
+    "Temperature": {
+      "data_type": "int"
+    }
+  },
+  "Makerspace": {
+    "IKEA tradfri driver 1 Light": {
+      "data_type": "boolean"
+    },
+    "IKEA tradfri driver 2 Light": {
+      "data_type": "boolean"
+    },
+    "IKEA tradfri driver 3 Light": {
+      "data_type": "boolean"
+    },
+    "IKEA tradfri driver 4 Light": {
+      "data_type": "boolean"
+    },
+    "IKEA tradfri driver laser cutter Light": {
+      "data_type": "boolean"
+    },
+    "Smart plug LED 1": {
+      "data_type": "boolean"
+    },
+    "Smart plug LED 2": {
+      "data_type": "boolean"
+    },
+    "Smart plug LED 3": {
+      "data_type": "boolean"
+    },
+    "frient A/S AQSZB-110 Humidity": {
+      "data_type": "float"
+    },
+    "frient A/S AQSZB-110 Temperature": {
+      "data_type": "float"
+    },
+    "Humidity": {
+      "data_type": "float"
+    },
+    "Last Illumination state": {
+      "data_type": "string"
+    },
+    "Occupancy": {
+      "data_type": "string"
+    },
+    "OctoPrint actual A temp": {
+      "data_type": "float"
+    },
+    "OctoPrint actual bed temp": {
+      "data_type": "float"
+    },
+    "OctoPrint actual E temp": {
+      "data_type": "float"
+    },
+    "OctoPrint actual P temp": {
+      "data_type": "float"
+    },
+    "OctoPrint actual tool0 temp": {
+      "data_type": "float"
+    },
+    "OctoPrint actual W temp": {
+      "data_type": "float"
+    },
+    "OctoPrint Current State": {
+      "data_type": "string"
+    },
+    "OctoPrint Estimated Finish Time": {
+      "data_type": "string"
+    },
+    "OctoPrint Job Percentage": {
+      "data_type": "int"
+    },
+    "OctoPrint Printing": {
+      "data_type": "string"
+    },
+    "OctoPrint Printing Error": {
+      "data_type": "string"
+    },
+    "OctoPrint Start Time": {
+      "data_type": "string"
+    },
+    "OctoPrint target A temp": {
+      "data_type": "string"
+    },
+    "OctoPrint target bed temp": {
+      "data_type": "float"
+    },
+    "OctoPrint target E temp": {
+      "data_type": "string"
+    },
+    "OctoPrint target P temp": {
+      "data_type": "string"
+    },
+    "OctoPrint target tool0 temp": {
+      "data_type": "float"
+    },
+    "OctoPrint target W temp": {
+      "data_type": "string"
+    },
+    "Temperature": {
+      "data_type": "float"
+    }
+  },
+  "Library": {
+    "Smart Plug": {
+      "data_type": "boolean"
+    }
+  },
+  "Phone Booth 2": {
+    "Occupancy": {
+      "data_type": "string"
+    }
+  },
+  "Phone Booth 4": {
+    "Occupancy": {
+      "data_type": "string"
+    }
+  },
+  "Binary Sensor": {
+    "Unoccupied rooms": {
+      "data_type": "string"
+    }
+  },
+  "Helpers": {
+    "battery threshold": {
+      "data_type": "int"
+    }
+  },
+  "Phone Booth 1": {
+    "Occupancy": {
+      "data_type": "string"
+    }
+  },
+  "Phone Booth 3": {
+    "Occupancy": {
+      "data_type": "string"
+    }
+  },
+  "Team HQ": {
+    "black ink": {
+      "data_type": "string"
+    },
+    "hp envy 4520 series": {
+      "data_type": "string"
+    },
+    "Humidity": {
+      "data_type": "float"
+    },
+    "Local Raw Printer": {
+      "data_type": "string"
+    },
+    "Temperature": {
+      "data_type": "float"
+    },
+    "tri-color ink": {
+      "data_type": "string"
+    }
+  },
+  "Calendar": {
+    "A1": {
+      "data_type": "boolean"
+    },
+    "A11": {
+      "data_type": "boolean"
+    },
+    "A12": {
+      "data_type": "boolean"
+    },
+    "A2": {
+      "data_type": "boolean"
+    },
+    "A24": {
+      "data_type": "boolean"
+    },
+    "B14": {
+      "data_type": "boolean"
+    }
+  },
+  "B10": {
+    "B10": {
+      "data_type": "boolean"
+    },
+    "Last illumination state": {
+      "data_type": "string"
+    },
+    "Occupancy": {
+      "data_type": "string"
+    }
+  },
+  "B12": {
+    "B12": {
+      "data_type": "boolean"
+    },
+    "B12 Humidity": {
+      "data_type": "float"
+    },
+    "B12 Temperature": {
+      "data_type": "float"
+    },
+    "Last illumination state": {
+      "data_type": "string"
+    },
+    "Occupancy": {
+      "data_type": "string"
+    }
+  },
+  "B3": {
+    "B3": {
+      "data_type": "boolean"
+    },
+    "Humidity": {
+      "data_type": "float"
+    },
+    "Last illumination state": {
+      "data_type": "string"
+    },
+    "Occupancy": {
+      "data_type": "string"
+    },
+    "PM2.5": {
+      "data_type": "float"
+    },
+    "Temperature": {
+      "data_type": "float"
+    },
+    "VOC index": {
+      "data_type": "float"
+    }
+  },
+  "B4": {
+    "B4": {
+      "data_type": "boolean"
+    },
+    "B4 Humidity": {
+      "data_type": "float"
+    },
+    "B4 Temperature": {
+      "data_type": "float"
+    },
+    "Last illumination state": {
+      "data_type": "string"
+    },
+    "Occupancy": {
+      "data_type": "string"
+    }
+  },
+  "B5": {
+    "B5": {
+      "data_type": "boolean"
+    },
+    "B5 Humidity": {
+      "data_type": "float"
+    },
+    "B5 Temperature": {
+      "data_type": "float"
+    },
+    "Last illumination state": {
+      "data_type": "string"
+    },
+    "Occupancy": {
+      "data_type": "string"
+    }
+  },
+  "B6": {
+    "B6": {
+      "data_type": "boolean"
+    },
+    "B6 Humidity": {
+      "data_type": "float"
+    },
+    "B6 Temperature": {
+      "data_type": "float"
+    },
+    "Last illumination state": {
+      "data_type": "string"
+    },
+    "Occupancy": {
+      "data_type": "string"
+    }
+  },
+  "B7": {
+    "B7": {
+      "data_type": "boolean"
+    },
+    "B7 Humidity": {
+      "data_type": "float"
+    },
+    "B7 Temperature": {
+      "data_type": "float"
+    },
+    "Last illumination state": {
+      "data_type": "string"
+    },
+    "Occupancy": {
+      "data_type": "string"
+    }
+  },
+  "Kitchen": {
+    "bottles": {
+      "data_type": "string"
+    },
+    "pfand": {
+      "data_type": "string"
+    },
+    "Humidity": {
+      "data_type": "float"
+    },
+    "Temperature": {
+      "data_type": "float"
+    }
+  },
+  "Library Alexandria": {
+    "Smart Plug": {
+      "data_type": "boolean"
+    }
+  }
+}

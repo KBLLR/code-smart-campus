@@ -1,0 +1,793 @@
+@import url("https://fonts.googleapis.com/css2?family=Architects+Daughter&family=Roboto+Mono:wght@400;700&display=swap");
+
+:root {
+    --primary: #2dd4bf;
+    --secondary: #0ea5e9;
+    --accent: #8b5cf6;
+    --dark: #0f172a;
+    --light: #f8fafc;
+    --glass: rgba(15, 23, 42, 0.7); /* Kept for panels/buttons */
+    --glow: 0 0 10px rgba(45, 212, 191, 0.5); /* Kept for potential future use */
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", system-ui, sans-serif;
+}
+
+body {
+    background-color: var(--dark);
+    font-family: "Roboto Mono", monospace;
+    color: var(--light);
+    min-height: 100vh;
+    overflow: hidden; /* Prevent scrollbars from body */
+    position: relative; /* Needed if absolute positioning children */
+}
+
+#loader {
+    /* Keep loader styles if Loader.js is used */
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    padding: 8px 12px;
+    background: #000;
+    color: #0f0;
+    font-family: "Courier New", monospace;
+    font-size: 14px;
+    border-radius: 6px;
+    z-index: 1000;
+    transition:
+        opacity 0.5s ease,
+        transform 0.3s ease;
+}
+
+#loader.hide {
+    opacity: 0;
+    transform: translateY(-10px);
+    pointer-events: none;
+}
+
+button {
+    /* Basic button styling */
+    padding: 8px 16px;
+    font-size: 14px;
+    background: #333;
+    color: white;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+}
+
+canvas {
+    /* Ensure canvas fills the screen */
+    display: block; /* Prevent extra space below */
+    width: 100vw;
+    height: 100vh;
+    position: fixed; /* Or absolute, depending on layout needs */
+    top: 0;
+    left: 0;
+    z-index: -1; /* Place behind UI elements */
+}
+
+/* Main content area (to be filled by your 3D content) */
+#content-area {
+    position: fixed;
+    bottom: -350px; /* Initially hidden below viewport */
+    left: 0;
+    width: 100%;
+    height: 350px; /* Adjust height as needed */
+    display: flex;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none; /* Firefox */
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 20;
+}
+
+#content-area::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+}
+
+#content-area.visible {
+    transform: translateY(-350px); /* Adjust based on height */
+}
+
+.hui-panel {
+    background: var(--glass);
+    border-radius: 1rem;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 1.5rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    min-width: 300px; /* Adjust width */
+    max-width: 350px;
+    /* height: 320px; */ /* Adjust height */
+    height: calc(100% - 3rem); /* Fill available height minus padding */
+    overflow: hidden;
+    position: relative;
+    flex: 0 0 auto;
+    scroll-snap-align: center;
+    display: flex; /* Use flexbox for panel content */
+    flex-direction: column;
+}
+
+.hui-panel::after {
+    /* Optional top border gradient */
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(
+        90deg,
+        var(--primary),
+        var(--secondary),
+        var(--accent)
+    );
+    opacity: 0.8;
+    box-shadow: var(--glow);
+}
+
+.panel-title {
+    font-size: 1.1rem; /* Adjusted size */
+    margin-bottom: 0.75rem; /* Adjusted spacing */
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0; /* Prevent shrinking */
+}
+
+.panel-title::before {
+    content: "";
+    display: block;
+    width: 4px; /* Adjusted size */
+    height: 18px;
+    background: var(--primary);
+    border-radius: 2px;
+}
+
+/* Virtual Button (KEEP) */
+.virtual-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.6rem 1.2rem; /* Adjusted padding */
+    background: rgba(14, 165, 233, 0.2);
+    border: 1px solid var(--secondary);
+    border-radius: 0.5rem;
+    color: var(--light);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: auto; /* Push to bottom if panel is flex column */
+    align-self: center; /* Center horizontally */
+    box-shadow: 0 0 10px rgba(14, 165, 233, 0.3);
+}
+
+.virtual-button:hover {
+    background: rgba(14, 165, 233, 0.4);
+    box-shadow: 0 0 15px rgba(14, 165, 233, 0.5);
+    transform: translateY(-2px);
+}
+
+/* Progress Bar (KEEP) */
+.progress-bar {
+    height: 4px; /* Made thinner */
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    margin: 0.75rem 0; /* Adjusted margin */
+    overflow: hidden;
+    position: relative;
+    flex-shrink: 0;
+}
+
+.progress-bar::after {
+    /* Styles for the actual progress fill (needs JS update) */
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 0%; /* Start at 0, update width via JS */
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    border-radius: 2px;
+    transition: width 0.5s ease-out; /* Add transition */
+    /* REMOVED: animation: shimmer 3s infinite; */ /* Removed shimmer */
+}
+
+/* Floating Action Button (KEEP) */
+.floating-btn {
+    position: fixed;
+    bottom: 2rem;
+    left: 2rem;
+    width: 56px; /* Slightly smaller */
+    height: 56px;
+    border-radius: 50%;
+    background: var(--glass);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 15px rgba(45, 212, 191, 0.5);
+    cursor: pointer;
+    z-index: 30;
+    transition: all 0.3s ease;
+}
+
+.floating-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 20px rgba(45, 212, 191, 0.7);
+}
+
+.floating-btn::before {
+    /* Optional inner gradient */
+    content: "";
+    position: absolute;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    opacity: 0.8;
+    z-index: 1;
+}
+
+.floating-btn svg {
+    width: 24px; /* Adjusted size */
+    height: 24px;
+    fill: white;
+    z-index: 2;
+    transition: transform 0.5s ease;
+}
+
+.floating-btn.active svg {
+    transform: rotate(45deg);
+}
+
+/* Panel indicators (KEEP) */
+.panel-indicators {
+    position: fixed;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 0.5rem;
+    z-index: 25;
+    opacity: 0;
+    visibility: hidden; /* Use visibility for transition */
+    transition:
+        opacity 0.3s ease,
+        visibility 0s linear 0.3s;
+}
+
+.panel-indicators.visible {
+    opacity: 1;
+    visibility: visible;
+    transition:
+        opacity 0.3s ease,
+        visibility 0s linear 0s;
+}
+
+.panel-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.panel-indicator.active {
+    background: var(--primary);
+    transform: scale(1.3);
+    box-shadow: 0 0 8px var(--primary);
+}
+
+/* Entity state display (KEEP) */
+.entity-state {
+    font-size: 1.8rem; /* Adjusted size */
+    font-weight: 600;
+    margin: 0.5rem 0 0.75rem 0; /* Adjusted margins */
+    color: var(--primary);
+    display: flex;
+    align-items: baseline;
+    flex-shrink: 0;
+}
+
+.state-value {
+    margin-right: 0.5rem;
+}
+
+.state-unit {
+    font-size: 0.9rem; /* Adjusted size */
+    opacity: 0.7;
+}
+
+.last-updated {
+    font-size: 0.75rem;
+    opacity: 0.7;
+    margin-bottom: 1rem; /* Pushes button down */
+    flex-shrink: 0;
+}
+
+/* Detailed view modal */
+.detail-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.detail-modal.visible {
+    opacity: 1;
+}
+
+.detail-content {
+    width: 90%;
+    max-width: 700px;
+    max-height: 90vh;
+    background: var(--glass);
+    backdrop-filter: blur(16px);
+    border-radius: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    overflow: hidden;
+    transform: translateY(20px);
+    transition: transform 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.detail-modal.visible .detail-content {
+    transform: translateY(0);
+}
+
+.detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    background: linear-gradient(
+        90deg,
+        rgba(45, 212, 191, 0.1),
+        rgba(139, 92, 246, 0.1)
+    );
+}
+
+.detail-header h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--primary);
+    margin: 0;
+}
+
+.close-button {
+    font-size: 1.8rem;
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    transition: all 0.2s ease;
+}
+
+.close-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: rotate(90deg);
+}
+
+.detail-info {
+    padding: 1.5rem;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.detail-section {
+    margin-bottom: 1.5rem;
+}
+
+.detail-section h3 {
+    font-size: 1.2rem;
+    color: var(--secondary);
+    margin-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 0.5rem;
+}
+
+.detail-row {
+    display: flex;
+    margin-bottom: 0.75rem;
+    font-size: 0.9rem;
+}
+
+.detail-row > span:first-child {
+    flex: 0 0 140px;
+    font-weight: 500;
+    color: var(--light);
+    opacity: 0.8;
+}
+
+.detail-row > span:last-child,
+.detail-row > div {
+    flex: 1;
+}
+
+.release-summary {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    font-family: monospace;
+    font-size: 0.8rem;
+    white-space: pre-wrap;
+}
+
+.release-summary h4 {
+    color: var(--primary);
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.release-summary a {
+    color: var(--secondary);
+    text-decoration: none;
+}
+
+.release-summary .mention {
+    color: var(--accent);
+    font-weight: 500;
+}
+
+.detail-actions {
+    display: flex;
+    justify-content: flex-end;
+    padding: 1rem 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    gap: 0.75rem;
+}
+
+.action-button {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    color: var(--light);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.action-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.action-button.clicked {
+    transform: scale(0.95);
+}
+
+.action-button.primary {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    box-shadow: 0 0 10px rgba(45, 212, 191, 0.5);
+}
+
+.action-button.primary:hover {
+    box-shadow: 0 0 15px rgba(45, 212, 191, 0.7);
+}
+
+@media (max-width: 768px) {
+    header {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto;
+        gap: 1rem;
+    }
+
+    h1 {
+        grid-column: 1;
+        grid-row: 1;
+        text-align: center;
+        padding-right: 0;
+    }
+
+    #ha-status-ui {
+        grid-column: 1;
+        grid-row: 2;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .hui-panel {
+        min-width: 280px;
+        height: 280px;
+    }
+
+    .floating-btn {
+        bottom: 1.5rem;
+        left: 1.5rem;
+        width: 50px;
+        height: 50px;
+    }
+}
+/* ======================================== */
+/* Toolbar Styles                         */
+/* ======================================== */
+
+/* Theme specific variables (can be overridden by other themes) */
+.theme-scifi-glass {
+    --toolbar-bg: rgba(20, 20, 20, 0.75);
+    --toolbar-blur: 14px;
+    --toolbar-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    --toolbar-border-radius: 24px;
+    --toolbar-padding: 12px 20px;
+    --toolbar-gap: 16px;
+    --toolbar-top: 60px; /* Position */
+    --toolbar-z-index: 999;
+
+    --toolbar-separator-color: #aaa;
+    --toolbar-separator-padding: 0 8px;
+
+    --toolbar-group-gap: 10px; /* Default gap for groups */
+    --toolbar-utility-group-gap: 12px; /* Specific gap for utility group */
+
+    --toolbar-button-bg: rgba(255, 255, 255, 0.1);
+    --toolbar-button-bg-hover: rgba(255, 255, 255, 0.2);
+    --toolbar-button-border-radius: 50%; /* Default for toggles */
+    --toolbar-button-size: 36px; /* Default for toggles */
+    --toolbar-button-padding: 0; /* Default for icon-only */
+    --toolbar-button-border: 1px solid transparent;
+    --toolbar-button-focus-border: var(
+        --primary,
+        #2dd4bf
+    ); /* Use theme primary color */
+    --toolbar-button-transition:
+        opacity 0.2s, background-color 0.2s, border-color 0.2s,
+        transform 0.1s ease-out;
+
+    --toolbar-toggle-opacity: 1;
+    --toolbar-toggle-opacity-inactive: 0.4;
+}
+
+/* Base container style */
+.toolbar__container {
+    position: fixed;
+    bottom: var(--toolbar-top);
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: var(--toolbar-gap);
+    padding: var(--toolbar-padding);
+    border-radius: var(--toolbar-border-radius);
+    background: var(--toolbar-bg);
+    backdrop-filter: blur(var(--toolbar-blur));
+    box-shadow: var(--toolbar-shadow);
+    z-index: var(--toolbar-z-index);
+    align-items: center;
+    font-family: sans-serif; /* Consider inheriting from body */
+}
+
+/* Separator */
+.toolbar__separator {
+    color: var(--toolbar-separator-color);
+    font-size: 16px; /* Keep fixed or use relative units */
+    padding: var(--toolbar-separator-padding);
+    user-select: none;
+}
+
+/* Groups */
+.toolbar__group {
+    display: flex;
+    align-items: center; /* Align items vertically */
+    gap: var(--toolbar-group-gap);
+}
+
+/* Specific gap for utility group */
+.toolbar__group--utility {
+    gap: var(--toolbar-utility-group-gap);
+}
+
+/* Base button style */
+.toolbar__button {
+    display: inline-flex; /* Use flex for centering content */
+    align-items: center;
+    justify-content: center;
+    padding: var(--toolbar-button-padding);
+    border-radius: var(--toolbar-button-border-radius);
+    background: var(--toolbar-button-bg);
+    border: var(--toolbar-button-border);
+    cursor: pointer;
+    transition: var(--toolbar-button-transition);
+    width: var(--toolbar-button-size); /* Default size */
+    height: var(--toolbar-button-size); /* Default size */
+    flex-shrink: 0; /* Prevent shrinking */
+}
+
+/* Hover effect for all buttons */
+.toolbar__button:hover {
+    background: var(--toolbar-button-bg-hover);
+}
+
+/* Focus effect for accessibility */
+.toolbar__button:focus {
+    outline: none; /* Remove default outline */
+    border-color: var(--toolbar-button-focus-border);
+    box-shadow: 0 0 0 2px rgba(var(--primary, 45, 212, 191), 0.5); /* Optional focus ring */
+}
+
+/* Active state (e.g., for toggles or pressed buttons) */
+.toolbar__button:active {
+    transform: scale(0.95); /* Simple press effect */
+}
+
+/* Icon style within buttons */
+.toolbar__button-icon {
+    /* You might not need specific styles if size is controlled by button padding/size */
+    display: block; /* Prevents extra space below image */
+}
+
+/* Specific styles/overrides for Toggle buttons */
+.toolbar__button--toggle {
+    /* Inherits most base styles */
+    opacity: var(--toolbar-toggle-opacity); /* Controlled by 'active' class */
+}
+
+.toolbar__button--toggle:not(.active) {
+    opacity: var(--toolbar-toggle-opacity-inactive);
+}
+
+/* Specific styles/overrides for Layout buttons (if different) */
+.toolbar__button--layout {
+    /* Example: Maybe they are slightly larger or have different radius */
+    /* width: 40px; */
+    /* height: 40px; */
+    /* border-radius: 8px; */
+}
+
+/* Specific styles/overrides for Utility buttons (if different) */
+.toolbar__button--utility {
+    /* Example: Maybe different background or padding */
+    /* background: rgba(var(--primary, 45, 212, 191), 0.2); */
+}
+
+/* Style for the Toggle component provided by its own JS (if needed) */
+/* Example: If the Toggle component root element needs adjustments */
+.toolbar__toggle {
+    /* Adjustments specific to how the Toggle component renders */
+}
+
+.toolbar__button--view {
+    /* Example: Slightly different background or border? */
+    /* background-color: rgba(var(--secondary-rgb, 14, 165, 233), 0.2); */
+}
+
+/* ======================================== */
+/* Detail History Styles                  */
+/* ======================================== */
+.detail-history-list {
+    list-style: none;
+    padding-left: 0;
+    max-height: 200px; /* Limit height and make scrollable */
+    overflow-y: auto;
+    font-size: 0.85rem; /* Slightly smaller font */
+    margin-top: 0.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1); /* Separator */
+    padding-top: 0.5rem;
+}
+
+.detail-history-list li {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.25rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05); /* Subtle separator */
+}
+
+.detail-history-list li:last-child {
+    border-bottom: none;
+}
+
+.detail-history-list li span:first-child {
+    color: var(--secondary); /* Use theme color for timestamp */
+    opacity: 0.8;
+    margin-right: 1rem;
+}
+
+.detail-history-list li span:last-child {
+    font-weight: 500;
+    color: var(--light); /* Use theme color for value */
+    text-align: right;
+}
+
+/* ======================================== */
+/* Sensor Dashboard Styles                  */
+/* ======================================== */
+.sensor-dashboard__container {
+    position: fixed;
+    top: 1rem; /* Position near top-right */
+    right: 1rem;
+    width: 250px; /* Adjust width */
+    max-height: 40vh; /* Limit height */
+    overflow-y: auto;
+    padding: 0.75rem 1rem;
+    border-radius: 0.75rem; /* Slightly less rounded than toolbar */
+    z-index: 998; /* Below toolbar/debugger */
+
+    /* Apply Sci-Fi Glass Theme Variables */
+    background: var(
+        --glass,
+        rgba(15, 23, 42, 0.7)
+    ); /* Use theme var or fallback */
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+
+    /* Scrollbar styling (optional) */
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary, #2dd4bf) rgba(255, 255, 255, 0.1);
+}
+
+.sensor-dashboard__container::-webkit-scrollbar {
+    width: 6px;
+}
+.sensor-dashboard__container::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 3px;
+}
+.sensor-dashboard__container::-webkit-scrollbar-thumb {
+    background-color: var(--primary, #2dd4bf);
+    border-radius: 3px;
+}
+
+.sensor-dashboard__entry {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 0.3rem 0;
+    font-size: 0.8rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    transition: background-color 0.3s ease; /* For update highlight */
+}
+.sensor-dashboard__entry:last-child {
+    border-bottom: none;
+}
+
+/* Highlight effect on update */
+.sensor-dashboard__entry.updated {
+    background-color: rgba(
+        var(--primary-rgb, 45, 212, 191),
+        0.1
+    ); /* Use theme color */
+}
+
+.sensor-dashboard__name {
+    color: var(--light, #f8fafc);
+    opacity: 0.8;
+    margin-right: 0.5rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-shrink: 1; /* Allow name to shrink if needed */
+}
+
+.sensor-dashboard__value {
+    color: var(--primary, #2dd4bf); /* Use theme primary color for value */
+    font-weight: 500;
+    white-space: nowrap;
+    flex-shrink: 0; /* Prevent value from shrinking */
+}

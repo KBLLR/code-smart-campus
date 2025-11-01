@@ -1,0 +1,14 @@
+# Node.js
+node_modules/
+dist/
+.env
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+# macOS
+.DS_Store
+# Genkit
+.genkit/
+# IDEs and other
+.vscode/
+*.log

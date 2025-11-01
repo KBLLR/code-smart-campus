@@ -1,0 +1,380 @@
+<svg
+    width="3049"
+    height="2307"
+    viewBox="0 0 3049 2307"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+>
+<g id="rooms">
+<path
+                id="Kitchen"
+                name="Cantina"
+                d="M427.101 328.533H1275.78V526.153H427.101V328.533Z"
+                stroke="black"
+                stroke-width="2.20186"
+                stroke-miterlimit="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            />
+<path
+                id="Library"
+                name="Alexandria"
+                d="M990.053 1160.86H1340.53V1467.95H990.053V1160.86Z"
+                stroke="black"
+                stroke-width="2.97699"
+                stroke-miterlimit="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            />
+<path
+                id="A.1"
+                name="Babylon"
+                d="M2662.56 912.581H3017.41V1157.46H2662.56V912.581Z"
+                stroke="black"
+                stroke-width="2.98428"
+                stroke-miterlimit="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            />
+<path
+                id="A.2"
+                name="Jungle"
+                d="M2662.5 1178.69H3017.46V1613.58H2662.5V1178.69Z"
+                stroke="black"
+                stroke-width="2.87012"
+                stroke-miterlimit="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            />
+<path
+                id="A.3"
+                name="Hive"
+                d="M2665.61 1876.35V1630.48H3017.54V2279.42H2404.48V1877.83H2664.13C2664.95 1877.83 2665.61 1877.16 2665.61 1876.35Z"
+                stroke="black"
+                stroke-width="2.96197"
+                stroke-miterlimit="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            />
+<path
+                id="A.5"
+                name="Maker's space"
+                d="M2174.25 1877.28H2388.42V2279.28H2174.25V1877.28Z"
+                stroke="black"
+                stroke-width="2.55722"
+                stroke-miterlimit="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            />
+<path
+                id="A.6"
+                name="Muted"
+                d="M1894.85 1738.24H2157.44V2279.52H1894.85V1738.24Z"
+                stroke="black"
+                stroke-width="2.47783"
+                stroke-miterlimit="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            />
+<path
+                id="A.11-A.12"
+                name="Tet'Ris"
+                d="M761.5 1877.84H905.782V2279.4H427.498V1876.35V1492.5H760.002V1876.35C760.002 1877.17 760.673 1877.84 761.5 1877.84Z"
+                stroke="black"
+                stroke-width="2.99624"
+                stroke-miterlimit="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            />
+<path
+                id="A.14"
+                name="HQ_Houston"
+                d="M427.5 598.798H748.695V1172.78H427.5V598.798Z"
+                stroke="black"
+                stroke-width="3"
+                stroke-miterlimit="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            />
+<path
+                id="A.26"
+                name=""
+                d="M2662.57 616.913H3017.4V890.146H2662.57V616.913Z"
+                stroke="black"
+                stroke-width="3.0054"
+                stroke-miterlimit="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            />
+<path
+                id="A.25"
+                name=""
+                d="M2662.56 325.25H3017.4V592.26H2662.56V325.25Z"
+                stroke="black"
+                stroke-width="2.99177"
+                stroke-miterlimit="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            />
+<path
+                id="A.24"
+                name="Pandora"
+                d="M2578.7 27.4724H3017.42V291.847H2578.7V27.4724Z"
+                stroke="black"
+                stroke-width="2.94482"
+                stroke-miterlimit="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            />
+<path
+                id="A.23"
+                name="B Square - Balcony"
+                d="M2041.56 27.4316H2563.13V291.887H2041.56V27.4316Z"
+                stroke="black"
+                stroke-width="2.86329"
+                stroke-miterlimit="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            />
+<path
+                id="B.2"
+                name="Aang"
+                d="M2138.37 1364.37H2358.52V1457.47H2138.37V1364.37Z"
+                stroke="black"
+                stroke-width="2.73645"
+                stroke-miterlimit="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            />
+<path
+                id="B.3"
+                name="Peace"
+                d="M2337.69 1479.73H2503.63V1629.04H2337.69V1479.73Z"
+                stroke="black"
+                stroke-width="2.99265"
+                stroke-miterlimit="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            />
+<path
+                id="B.4"
+                name="Before"
+                d="M2141.7 1478.2H2307.65V1629.04H2141.7V1478.2Z"
+                stroke="black"
+                stroke-width="2.98632"
+                stroke-miterlimit="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            />
+<path
+                id="B.5"
+                name="Present"
+                d="M1978.41 1479.2H2117.9V1628.78H1978.41V1479.2Z"
+                stroke="black"
+                stroke-width="2.94432"
+                stroke-miterlimit="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            />
+<path
+                id="B.6"
+                name="After"
+                d="M1873.56 1479.04H1959.59V1630.44H1873.56V1479.04Z"
+                stroke="black"
+                stroke-width="2.61926"
+                stroke-miterlimit="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            />
+<path
+                id="B.7"
+                name="W(room)"
+                d="M1720.54 1479.19H1855.32V1629.23H1720.54V1479.19Z"
+                stroke="black"
+                stroke-width="2.92796"
+                stroke-miterlimit="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            />
+<path
+                id="B.10"
+                name="MF room"
+                d="M1201.48 1479.48H1340.93V1623.45H1201.48V1479.48Z"
+                stroke="black"
+                stroke-width="2.95617"
+                stroke-miterlimit="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            />
+<path
+                id="B.12"
+                name="Han's Zimmer"
+                d="M991 1479.2H1130.45V1623.17H991V1479.2Z"
+                stroke="black"
+                stroke-width="2.95617"
+                stroke-miterlimit="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            />
+<path
+                id="B.14"
+                name="Dark Matter"
+                d="M990.151 778.158H1340.6V1144.7H990.151V778.158Z"
+                stroke="black"
+                stroke-width="3"
+                stroke-miterlimit="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            />
+<path
+                id="B.17"
+                name=""
+                d="M1373.39 621.475H1680.98V810.966H1373.39V621.475Z"
+                stroke="black"
+                stroke-width="2.94923"
+                stroke-miterlimit="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            />
+<path
+                id="B.18"
+                name=""
+                d="M1704.51 621.48H1890.83V813.087H1704.51V621.48Z"
+                stroke="black"
+                stroke-width="2.9605"
+                stroke-miterlimit="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            />
+<path
+                id="B.19"
+                name=""
+                d="M1916.03 621.486H2111.3V810.513H1916.03V621.486Z"
+                stroke="black"
+                stroke-width="2.97103"
+                stroke-miterlimit="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            />
+<path
+                id="B.20"
+                name=""
+                d="M2132.75 621.5H2298.68V754.701H2132.75V621.5Z"
+                stroke="black"
+                stroke-width="3"
+                stroke-miterlimit="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            />
+<path
+                id="B.21"
+                name=""
+                d="M2337.69 621.5H2503.62V754.701H2337.69V621.5Z"
+                stroke="black"
+                stroke-width="3"
+                stroke-miterlimit="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            />
+<path
+                id="Vector"
+                name=""
+                d="M1019.08 1739.5H1306.88V2279.36H1019.08V1739.5Z"
+                stroke="black"
+                stroke-width="2.99484"
+                stroke-miterlimit="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            />
+<path
+                id="Vector_2"
+                name=""
+                d="M989.979 621.5H1155.91V754.701H989.979V621.5Z"
+                stroke="black"
+                stroke-width="3"
+                stroke-miterlimit="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            />
+<path
+                id="Vector_3"
+                name=""
+                d="M1174.75 621.5H1340.69V754.701H1174.75V621.5Z"
+                stroke="black"
+                stroke-width="3"
+                stroke-miterlimit="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            />
+<path
+                id="Vector_4"
+                name=""
+                d="M2139.15 784.591H2305.08V917.792H2139.15V784.591Z"
+                stroke="black"
+                stroke-width="3"
+                stroke-miterlimit="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            />
+<path
+                id="Desk"
+                name="Front Desk"
+                d="M2337.69 784.591H2503.62V917.792H2337.69V784.591Z"
+                stroke="black"
+                stroke-width="3"
+                stroke-miterlimit="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            />
+<path
+                id="Lifts"
+                name="Lifts"
+                d="M2197.26 1021.26H2331.19V1286.38H2197.26V1021.26Z"
+                stroke="black"
+                stroke-width="2.51967"
+                stroke-miterlimit="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            />
+<path
+                id="Bathrooms and Exits"
+                name="Bathrooms and Exits"
+                d="M1319.31 27.4917H1836.4V479.778H1319.31V27.4917Z"
+                stroke="black"
+                stroke-width="2.98331"
+                stroke-miterlimit="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            />
+<path
+                id="Bathrooms and Exits_2"
+                name="Bathrooms and Exits2"
+                d="M1321.35 1738.49H1874.16V2279.27H1321.35V1738.49Z"
+                stroke="black"
+                stroke-width="2.9718"
+                stroke-miterlimit="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            />
+<path
+                id="Balcony_no_smoke"
+                name="Hydrogen"
+                d="M227.5 27.5H1275.5V284.5H227.5V27.5Z"
+                stroke="black"
+                stroke-width="3"
+                stroke-miterlimit="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            />
+<path
+                id="Balcony_smokers"
+                name="Co2"
+                d="M31.2082 1175.21H424.792V1484.79H31.2082V1175.21Z"
+                stroke="black"
+                stroke-width="2.41649"
+                stroke-miterlimit="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            />
+</g>
+</svg>

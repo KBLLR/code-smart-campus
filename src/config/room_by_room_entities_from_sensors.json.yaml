@@ -1,0 +1,127 @@
+entities_by_room:
+  B10:
+  - B10
+  - Last illumination state
+  - Occupancy
+  B12:
+  - B12
+  - B12 Humidity
+  - B12 Temperature
+  - Last illumination state
+  - Occupancy
+  B3:
+  - B3
+  - Humidity
+  - Last illumination state
+  - Occupancy
+  - PM2.5
+  - Temperature
+  - VOC index
+  B4:
+  - B4
+  - B4 Humidity
+  - B4 Temperature
+  - Last illumination state
+  - Occupancy
+  B5:
+  - B5
+  - B5 Humidity
+  - B5 Temperature
+  - Last illumination state
+  - Occupancy
+  B6:
+  - B6
+  - B6 Humidity
+  - B6 Temperature
+  - Last illumination state
+  - Occupancy
+  B7:
+  - B7
+  - B7 Humidity
+  - B7 Temperature
+  - Last illumination state
+  - Occupancy
+  Binary Sensor:
+  - Unoccupied rooms
+  Calendar:
+  - A1
+  - A11
+  - A12
+  - A2
+  - A24
+  - B14
+  Generic Zigbee Coordinator:
+  - Makerspace lights (battery)
+  - Makerspace lights (lightbulb)
+  Helpers:
+  - battery threshold
+  Kitchen:
+  - bottles
+  - pfand
+  - Humidity
+  - Temperature
+  Library:
+  - Smart Plug
+  Library Alexandria:
+  - Smart Plug
+  Makerspace:
+  - IKEA tradfri driver 1 Light
+  - IKEA tradfri driver 2 Light
+  - IKEA tradfri driver 3 Light
+  - IKEA tradfri driver 4 Light
+  - IKEA tradfri driver laser cutter Light
+  - Smart plug LED 1
+  - Smart plug LED 2
+  - Smart plug LED 3
+  - frient A/S AQSZB-110 Humidity
+  - frient A/S AQSZB-110 Temperature
+  - Humidity
+  - Last Illumination state
+  - Occupancy
+  - OctoPrint actual A temp
+  - OctoPrint actual bed temp
+  - OctoPrint actual E temp
+  - OctoPrint actual P temp
+  - OctoPrint actual tool0 temp
+  - OctoPrint actual W temp
+  - OctoPrint Current State
+  - OctoPrint Estimated Finish Time
+  - OctoPrint Job Percentage
+  - OctoPrint Printing
+  - OctoPrint Printing Error
+  - OctoPrint Start Time
+  - OctoPrint target A temp
+  - OctoPrint target bed temp
+  - OctoPrint target E temp
+  - OctoPrint target P temp
+  - OctoPrint target tool0 temp
+  - OctoPrint target W temp
+  - Temperature
+  Phone Booth 1:
+  - Occupancy
+  Phone Booth 2:
+  - Occupancy
+  Phone Booth 3:
+  - Occupancy
+  Phone Booth 4:
+  - Occupancy
+  Sensor:
+  - Low Battery Devices
+  - Pfand HX71 Value
+  - Unoccupied rooms
+  Team HQ:
+  - black ink
+  - hp envy 4520 series
+  - Humidity
+  - Local Raw Printer
+  - Temperature
+  - tri-color ink
+  "Weather (Karl-Marx-Stra\xDFe, Berlin, Germa...)":
+  - Air quality index
+  - Dominant pollutant
+  - Humidity
+  - Nitrogen dioxide
+  - PM10
+  - PM2.5
+  - Pressure
+  - Temperature

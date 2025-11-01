@@ -1,0 +1,874 @@
+homeassistant:
+  customize:
+    person.makerspace:
+      friendly_name: "Person - General - Makerspace"
+    person.smartcampus:
+      friendly_name: "Person - General - Smartcampus"
+    person.code_community:
+      friendly_name: "Person - General - Code Community"
+    person.daniel:
+      friendly_name: "Person - General - Daniel"
+    person.climate_dashboard:
+      friendly_name: "Person - General - Climate Dashboard"
+    person.noahfrank:
+      friendly_name: "Person - General - Noahfrank"
+    update.home_assistant_supervisor_update:
+      friendly_name: "Update - General - Home Assistant Supervisor Update"
+    update.home_assistant_core_update:
+      friendly_name: "Update - General - Home Assistant Core Update"
+    update.piper_update:
+      friendly_name: "Update - General - Piper Update"
+    update.studio_code_server_update:
+      friendly_name: "Update - General - Studio Code Server Update"
+    update.whisper_update:
+      friendly_name: "Update - General - Whisper Update"
+    update.esphome_device_builder_update:
+      friendly_name: "Update - General - Esphome Device Builder Update"
+    update.speech_to_phrase_update:
+      friendly_name: "Update - General - Speech To Phrase Update"
+    update.mosquitto_broker_update:
+      friendly_name: "Update - General - Mosquitto Broker Update"
+    update.home_assistant_operating_system_update:
+      friendly_name: "Update - General - Home Assistant Operating System Update"
+    binary_sensor.remote_ui:
+      friendly_name: "Binary_sensor - General - Remote Ui"
+    stt.home_assistant_cloud:
+      friendly_name: "Stt - General - Home Assistant Cloud"
+    tts.home_assistant_cloud:
+      friendly_name: "Tts - General - Home Assistant Cloud"
+    conversation.home_assistant:
+      friendly_name: "Conversation - General - Home Assistant"
+    zone.home:
+      friendly_name: "Zone - General - Code Makerspace"
+    input_number.battery_threshold:
+      friendly_name: "Input_number - General - Battery Threshold"
+    light.ikea_power_socket_1:
+      friendly_name: "Light - General - Smart Plug Led 1"
+    light.ikea_power_socket_2:
+      friendly_name: "Light - General - Smart Plug Led 2"
+    light.smart_switch_led_2:
+      friendly_name: "Light - General - Smart Plug Led 3"
+    number.bottles:
+      friendly_name: "Number - General - Bottles"
+    number.pfand:
+      friendly_name: "Number - General - Pfand"
+    sensor.low_battery_devices:
+      friendly_name: "Sensor - General - Low Battery Devices"
+    sensor.unoccupied_rooms:
+      friendly_name: "Sensor - General - Unoccupied Rooms"
+    sun.sun:
+      friendly_name: "Sun - General - Sun"
+    sensor.sun_next_dawn:
+      friendly_name: "Sensor - General - Sun Next Dawn"
+    sensor.sun_next_dusk:
+      friendly_name: "Sensor - General - Sun Next Dusk"
+    sensor.sun_next_midnight:
+      friendly_name: "Sensor - General - Sun Next Midnight"
+    sensor.sun_next_noon:
+      friendly_name: "Sensor - General - Sun Next Noon"
+    sensor.sun_next_rising:
+      friendly_name: "Sensor - General - Sun Next Rising"
+    sensor.sun_next_setting:
+      friendly_name: "Sensor - General - Sun Next Setting"
+    tts.google_translate_en_com:
+      friendly_name: "Tts - General - Google Translate En Com"
+    binary_sensor.xxx_xxx_x_x_focus:
+      friendly_name: "Binary_sensor - General - Xxx.Xxx.X.X Focus"
+    device_tracker.xxx_xxx_x_x:
+      friendly_name: "Device_tracker - General - Xxx.Xxx.X.X"
+    sensor.xxx_xxx_x_x_connection_type:
+      friendly_name: "Sensor - General - Xxx.Xxx.X.X Connection Type"
+    sensor.xxx_xxx_x_x_battery_level:
+      friendly_name: "Sensor - General - Xxx.Xxx.X.X Battery Level"
+    sensor.xxx_xxx_x_x_ssid:
+      friendly_name: "Sensor - General - Xxx.Xxx.X.X Ssid"
+    sensor.xxx_xxx_x_x_bssid:
+      friendly_name: "Sensor - General - Xxx.Xxx.X.X Bssid"
+    sensor.xxx_xxx_x_x_battery_state:
+      friendly_name: "Sensor - General - Xxx.Xxx.X.X Battery State"
+    sensor.xxx_xxx_x_x_storage:
+      friendly_name: "Sensor - General - Xxx.Xxx.X.X Storage"
+    sensor.xxx_xxx_x_x_sim_2:
+      friendly_name: "Sensor - General - Xxx.Xxx.X.X Sim 2"
+    sensor.xxx_xxx_x_x_geocoded_location:
+      friendly_name: "Sensor - General - Xxx.Xxx.X.X Geocoded Location"
+    sensor.xxx_xxx_x_x_sim_1:
+      friendly_name: "Sensor - General - Xxx.Xxx.X.X Sim 1"
+    sensor.xxx_xxx_x_x_last_update_trigger:
+      friendly_name: "Sensor - General - Xxx.Xxx.X.X Last Update Trigger"
+    sensor.xxx_xxx_x_x_app_version:
+      friendly_name: "Sensor - General - Xxx.Xxx.X.X App Version"
+    sensor.xxx_xxx_x_x_location_permission:
+      friendly_name: "Sensor - General - Xxx.Xxx.X.X Location Permission"
+    sensor.xxx_xxx_x_x_audio_output:
+      friendly_name: "Sensor - General - Xxx.Xxx.X.X Audio Output"
+    sensor.xxx_xxx_x_x_activity:
+      friendly_name: "Sensor - General - Xxx.Xxx.X.X Activity"
+    sensor.xxx_xxx_x_x_floors_descended:
+      friendly_name: "Sensor - General - Xxx.Xxx.X.X Floors Descended"
+    sensor.xxx_xxx_x_x_steps:
+      friendly_name: "Sensor - General - Xxx.Xxx.X.X Steps"
+    sensor.xxx_xxx_x_x_distance:
+      friendly_name: "Sensor - General - Xxx.Xxx.X.X Distance"
+    sensor.xxx_xxx_x_x_floors_ascended:
+      friendly_name: "Sensor - General - Xxx.Xxx.X.X Floors Ascended"
+    sensor.xxx_xxx_x_x_average_active_pace:
+      friendly_name: "Sensor - General - Xxx.Xxx.X.X Average Active Pace"
+    binary_sensor.macbook_pro_21_camera_in_use:
+      friendly_name: "Binary_sensor - General - Macbook Pro (21) Camera In Use"
+    binary_sensor.macbook_pro_21_audio_input_in_use:
+      friendly_name: "Binary_sensor - General - Macbook Pro (21) Audio Input In Use"
+    binary_sensor.macbook_pro_21_audio_output_in_use:
+      friendly_name: "Binary_sensor - General - Macbook Pro (21) Audio Output In Use"
+    binary_sensor.macbook_pro_21_focus:
+      friendly_name: "Binary_sensor - General - Macbook Pro (21) Focus"
+    binary_sensor.macbook_pro_21_active:
+      friendly_name: "Binary_sensor - General - Macbook Pro (21) Active"
+    device_tracker.macbook_pro_21:
+      friendly_name: "Device_tracker - General - Macbook Pro (21)"
+    sensor.macbook_pro_21_internal_battery_level:
+      friendly_name: "Sensor - General - Macbook Pro (21) Internal Battery Level"
+    sensor.macbook_pro_21_connection_type:
+      friendly_name: "Sensor - General - Macbook Pro (21) Connection Type"
+    sensor.macbook_pro_21_storage:
+      friendly_name: "Sensor - General - Macbook Pro (21) Storage"
+    sensor.macbook_pro_21_bssid:
+      friendly_name: "Sensor - General - Macbook Pro (21) Bssid"
+    sensor.macbook_pro_21_internal_battery_state:
+      friendly_name: "Sensor - General - Macbook Pro (21) Internal Battery State"
+    sensor.macbook_pro_21_ssid:
+      friendly_name: "Sensor - General - Macbook Pro (21) Ssid"
+    sensor.macbook_pro_21_geocoded_location:
+      friendly_name: "Sensor - General - Macbook Pro (21) Geocoded Location"
+    sensor.macbook_pro_21_active_camera:
+      friendly_name: "Sensor - General - Macbook Pro (21) Active Camera"
+    sensor.macbook_pro_21_active_audio_input:
+      friendly_name: "Sensor - General - Macbook Pro (21) Active Audio Input"
+    sensor.macbook_pro_21_active_audio_output:
+      friendly_name: "Sensor - General - Macbook Pro (21) Active Audio Output"
+    sensor.macbook_pro_21_displays:
+      friendly_name: "Sensor - General - Macbook Pro (21) Displays"
+    sensor.macbook_pro_21_primary_display_name:
+      friendly_name: "Sensor - General - Macbook Pro (21) Primary Display Name"
+    sensor.macbook_pro_21_frontmost_app:
+      friendly_name: "Sensor - General - Macbook Pro (21) Frontmost App"
+    sensor.macbook_pro_21_primary_display_id:
+      friendly_name: "Sensor - General - Macbook Pro (21) Primary Display Id"
+    sensor.macbook_pro_21_last_update_trigger:
+      friendly_name: "Sensor - General - Macbook Pro (21) Last Update Trigger"
+    sensor.macbook_pro_21_location_permission:
+      friendly_name: "Sensor - General - Macbook Pro (21) Location Permission"
+    sensor.macbook_pro_21_app_version:
+      friendly_name: "Sensor - General - Macbook Pro (21) App Version"
+    sensor.macbook_pro_21_audio_output:
+      friendly_name: "Sensor - General - Macbook Pro (21) Audio Output"
+    device_tracker.smaller_black_slab:
+      friendly_name: "Device_tracker - General - Smaller Black Slab"
+    sensor.smaller_black_slab_storage:
+      friendly_name: "Sensor - General - Smaller Black Slab Storage"
+    sensor.smaller_black_slab_battery_state:
+      friendly_name: "Sensor - General - Smaller Black Slab Battery State"
+    sensor.smaller_black_slab_battery_level:
+      friendly_name: "Sensor - General - Smaller Black Slab Battery Level"
+    sensor.smaller_black_slab_ssid:
+      friendly_name: "Sensor - General - Smaller Black Slab Ssid"
+    sensor.smaller_black_slab_sim_2:
+      friendly_name: "Sensor - General - Smaller Black Slab Sim 2"
+    sensor.smaller_black_slab_sim_1:
+      friendly_name: "Sensor - General - Smaller Black Slab Sim 1"
+    sensor.smaller_black_slab_geocoded_location:
+      friendly_name: "Sensor - General - Smaller Black Slab Geocoded Location"
+    sensor.smaller_black_slab_bssid:
+      friendly_name: "Sensor - General - Smaller Black Slab Bssid"
+    sensor.smaller_black_slab_connection_type:
+      friendly_name: "Sensor - General - Smaller Black Slab Connection Type"
+    sensor.smaller_black_slab_last_update_trigger:
+      friendly_name: "Sensor - General - Smaller Black Slab Last Update Trigger"
+    sensor.smaller_black_slab_app_version:
+      friendly_name: "Sensor - General - Smaller Black Slab App Version"
+    sensor.smaller_black_slab_location_permission:
+      friendly_name: "Sensor - General - Smaller Black Slab Location Permission"
+    sensor.smaller_black_slab_audio_output:
+      friendly_name: "Sensor - General - Smaller Black Slab Audio Output"
+    binary_sensor.macbook_pro_21_camera_in_use_2:
+      friendly_name: "Binary_sensor - General - Macbook Pro (21) Camera In Use"
+    binary_sensor.macbook_pro_21_audio_input_in_use_2:
+      friendly_name: "Binary_sensor - General - Macbook Pro (21) Audio Input In Use"
+    binary_sensor.macbook_pro_21_audio_output_in_use_2:
+      friendly_name: "Binary_sensor - General - Macbook Pro (21) Audio Output In Use"
+    binary_sensor.macbook_pro_21_active_2:
+      friendly_name: "Binary_sensor - General - Macbook Pro (21) Active"
+    binary_sensor.macbook_pro_21_focus_2:
+      friendly_name: "Binary_sensor - General - Macbook Pro (21) Focus"
+    device_tracker.macbook_pro_db:
+      friendly_name: "Device_tracker - General - Macbook Pro (21)"
+    sensor.macbook_pro_21_internal_battery_level_2:
+      friendly_name: "Sensor - General - Macbook Pro (21) Internal Battery Level"
+    sensor.macbook_pro_21_storage_2:
+      friendly_name: "Sensor - General - Macbook Pro (21) Storage"
+    sensor.macbook_pro_21_internal_battery_state_2:
+      friendly_name: "Sensor - General - Macbook Pro (21) Internal Battery State"
+    sensor.macbook_pro_21_bssid_2:
+      friendly_name: "Sensor - General - Macbook Pro (21) Bssid"
+    sensor.macbook_pro_21_ssid_2:
+      friendly_name: "Sensor - General - Macbook Pro (21) Ssid"
+    sensor.macbook_pro_21_connection_type_2:
+      friendly_name: "Sensor - General - Macbook Pro (21) Connection Type"
+    sensor.macbook_pro_21_geocoded_location_2:
+      friendly_name: "Sensor - General - Macbook Pro (21) Geocoded Location"
+    sensor.macbook_pro_21_active_camera_2:
+      friendly_name: "Sensor - General - Macbook Pro (21) Active Camera"
+    sensor.macbook_pro_21_active_audio_input_2:
+      friendly_name: "Sensor - General - Macbook Pro (21) Active Audio Input"
+    sensor.macbook_pro_21_active_audio_output_2:
+      friendly_name: "Sensor - General - Macbook Pro (21) Active Audio Output"
+    sensor.macbook_pro_21_displays_2:
+      friendly_name: "Sensor - General - Macbook Pro (21) Displays"
+    sensor.macbook_pro_21_primary_display_name_2:
+      friendly_name: "Sensor - General - Macbook Pro (21) Primary Display Name"
+    sensor.macbook_pro_21_primary_display_id_2:
+      friendly_name: "Sensor - General - Macbook Pro (21) Primary Display Id"
+    sensor.macbook_pro_21_frontmost_app_2:
+      friendly_name: "Sensor - General - Macbook Pro (21) Frontmost App"
+    sensor.macbook_pro_21_last_update_trigger_2:
+      friendly_name: "Sensor - General - Macbook Pro (21) Last Update Trigger"
+    sensor.macbook_pro_21_app_version_2:
+      friendly_name: "Sensor - General - Macbook Pro (21) App Version"
+    sensor.macbook_pro_21_location_permission_2:
+      friendly_name: "Sensor - General - Macbook Pro (21) Location Permission"
+    sensor.macbook_pro_21_audio_output_2:
+      friendly_name: "Sensor - General - Macbook Pro (21) Audio Output"
+    device_tracker.daniels_ipad:
+      friendly_name: "Device_tracker - General - Daniel’S Ipad"
+    sensor.daniels_ipad_battery_level:
+      friendly_name: "Sensor - General - Daniel’S Ipad Battery Level"
+    sensor.daniels_ipad_bssid:
+      friendly_name: "Sensor - General - Daniel’S Ipad Bssid"
+    sensor.daniels_ipad_connection_type:
+      friendly_name: "Sensor - General - Daniel’S Ipad Connection Type"
+    sensor.daniels_ipad_geocoded_location:
+      friendly_name: "Sensor - General - Daniel’S Ipad Geocoded Location"
+    sensor.daniels_ipad_last_update_trigger:
+      friendly_name: "Sensor - General - Daniel’S Ipad Last Update Trigger"
+    sensor.daniels_ipad_battery_state:
+      friendly_name: "Sensor - General - Daniel’S Ipad Battery State"
+    sensor.daniels_ipad_storage:
+      friendly_name: "Sensor - General - Daniel’S Ipad Storage"
+    sensor.daniels_ipad_ssid:
+      friendly_name: "Sensor - General - Daniel’S Ipad Ssid"
+    binary_sensor.octoprint_printing:
+      friendly_name: "Binary_sensor - General - Octoprint Printing"
+    binary_sensor.octoprint_printing_error:
+      friendly_name: "Binary_sensor - General - Octoprint Printing Error"
+    button.octoprint_resume_job:
+      friendly_name: "Button - General - Octoprint Resume Job"
+    button.octoprint_pause_job:
+      friendly_name: "Button - General - Octoprint Pause Job"
+    button.octoprint_stop_job:
+      friendly_name: "Button - General - Octoprint Stop Job"
+    button.octoprint_shutdown_system:
+      friendly_name: "Button - General - Octoprint Shutdown System"
+    button.octoprint_reboot_system:
+      friendly_name: "Button - General - Octoprint Reboot System"
+    button.octoprint_restart_octoprint:
+      friendly_name: "Button - General - Octoprint Restart Octoprint"
+    sensor.octoprint_actual_a_temp:
+      friendly_name: "Sensor - General - Octoprint Actual A Temp"
+    sensor.octoprint_target_a_temp:
+      friendly_name: "Sensor - General - Octoprint Target A Temp"
+    sensor.octoprint_actual_e_temp:
+      friendly_name: "Sensor - General - Octoprint Actual E Temp"
+    sensor.octoprint_target_e_temp:
+      friendly_name: "Sensor - General - Octoprint Target E Temp"
+    sensor.octoprint_actual_p_temp:
+      friendly_name: "Sensor - General - Octoprint Actual P Temp"
+    sensor.octoprint_target_p_temp:
+      friendly_name: "Sensor - General - Octoprint Target P Temp"
+    sensor.octoprint_actual_w_temp:
+      friendly_name: "Sensor - General - Octoprint Actual W Temp"
+    sensor.octoprint_target_w_temp:
+      friendly_name: "Sensor - General - Octoprint Target W Temp"
+    sensor.octoprint_actual_bed_temp:
+      friendly_name: "Sensor - General - Octoprint Actual Bed Temp"
+    sensor.octoprint_target_bed_temp:
+      friendly_name: "Sensor - General - Octoprint Target Bed Temp"
+    sensor.octoprint_actual_tool0_temp:
+      friendly_name: "Sensor - General - Octoprint Actual Tool0 Temp"
+    sensor.octoprint_target_tool0_temp:
+      friendly_name: "Sensor - General - Octoprint Target Tool0 Temp"
+    sensor.octoprint_current_state:
+      friendly_name: "Sensor - General - Octoprint Current State"
+    sensor.octoprint_job_percentage:
+      friendly_name: "Sensor - General - Octoprint Job Percentage"
+    sensor.octoprint_estimated_finish_time:
+      friendly_name: "Sensor - General - Octoprint Estimated Finish Time"
+    sensor.octoprint_start_time:
+      friendly_name: "Sensor - General - Octoprint Start Time"
+    camera.octoprint_camera:
+      friendly_name: "Camera - General - Octoprint Camera"
+    update.ha_floorplan_your_imagination_just_became_the_new_limit_update:
+      friendly_name: "Update - General - Ha Floorplan 🖌🎨 | Your Imagination Just Became The New Limit Update"
+    update.hacs_update:
+      friendly_name: "Update - General - Hacs Update"
+    update.template_entity_row_update:
+      friendly_name: "Update - General - Template Entity Row Update"
+    binary_sensor.rpi_power_status:
+      friendly_name: "Binary_sensor - General - Rpi Power Status"
+    sensor.backup_backup_manager_state:
+      friendly_name: "Sensor - General - Backup Backup Manager State"
+    sensor.backup_next_scheduled_automatic_backup:
+      friendly_name: "Sensor - General - Backup Next Scheduled Automatic Backup"
+    sensor.backup_last_successful_automatic_backup:
+      friendly_name: "Sensor - General - Backup Last Successful Automatic Backup"
+    stt.faster_whisper:
+      friendly_name: "Stt - General - Faster Whisper"
+    stt.speech_to_phrase:
+      friendly_name: "Stt - General - Speech To Phrase"
+    tts.piper:
+      friendly_name: "Tts - General - Piper"
+    weather.forecast_home:
+      friendly_name: "Weather - General - Forecast Code Makerspace"
+    sensor.karl_marx_strasse_berlin_germany_air_quality_index:
+      friendly_name: "Sensor - General - Karl Marx Straße, Berlin, Germany Air Quality Index"
+    sensor.karl_marx_strasse_berlin_germany_humidity:
+      friendly_name: "Sensor - General - Karl Marx Straße, Berlin, Germany Humidity"
+    sensor.karl_marx_strasse_berlin_germany_pressure:
+      friendly_name: "Sensor - General - Karl Marx Straße, Berlin, Germany Pressure"
+    sensor.karl_marx_strasse_berlin_germany_temperature:
+      friendly_name: "Sensor - General - Karl Marx Straße, Berlin, Germany Temperature"
+    sensor.karl_marx_strasse_berlin_germany_nitrogen_dioxide:
+      friendly_name: "Sensor - General - Karl Marx Straße, Berlin, Germany Nitrogen Dioxide"
+    sensor.karl_marx_strasse_berlin_germany_pm10:
+      friendly_name: "Sensor - General - Karl Marx Straße, Berlin, Germany Pm10"
+    sensor.karl_marx_strasse_berlin_germany_pm2_5:
+      friendly_name: "Sensor - General - Karl Marx Straße, Berlin, Germany Pm2.5"
+    sensor.karl_marx_strasse_berlin_germany_dominant_pollutant:
+      friendly_name: "Sensor - General - Karl Marx Straße, Berlin, Germany Dominant Pollutant"
+    sensor.pfand_hx711_value:
+      friendly_name: "Sensor - General - Pfand Hx711 Value"
+    select.home_assistant_voice_093f20_assistant:
+      friendly_name: "Select - General - Home Assistant Voice 093F20 Assistant"
+    select.home_assistant_voice_093f20_finished_speaking_detection:
+      friendly_name: "Select - General - Home Assistant Voice 093F20 Finished Speaking Detection"
+    select.home_assistant_voice_093f20_wake_word:
+      friendly_name: "Select - General - Home Assistant Voice 093F20 Wake Word"
+    media_player.home_assistant_voice_093f20_media_player:
+      friendly_name: "Media_player - General - Home Assistant Voice 093F20 Media Player"
+    switch.home_assistant_voice_093f20_mute:
+      friendly_name: "Switch - General - Home Assistant Voice 093F20 Mute"
+    switch.home_assistant_voice_093f20_wake_sound:
+      friendly_name: "Switch - General - Home Assistant Voice 093F20 Wake Sound"
+    light.home_assistant_voice_093f20_led_ring:
+      friendly_name: "Light - General - Home Assistant Voice 093F20 Led Ring"
+    event.home_assistant_voice_093f20_button_press:
+      friendly_name: "Event - General - Home Assistant Voice 093F20 Button Press"
+    update.home_assistant_voice_093f20_home_assistant_voice_093f20:
+      friendly_name: "Update - General - Home Assistant Voice 093F20"
+    calendar.code_1_w_room_b_7_4:
+      friendly_name: "Calendar - General - B7"
+    calendar.code_1_b_4_4:
+      friendly_name: "Calendar - General - B4"
+    calendar.code_1_b_present_b_5_4:
+      friendly_name: "Calendar - General - B5"
+    calendar.code_1_peace_b_3_6:
+      friendly_name: "Calendar - General - B3"
+    calendar.code_1_babylon_a_1_12_conferencing_system:
+      friendly_name: "Calendar - General - A1"
+    calendar.code_1_muted_a_6_40:
+      friendly_name: "Calendar - General - A6"
+    calendar.code_1_pandora_a_24_36:
+      friendly_name: "Calendar - General - A24"
+    calendar.code_1_ris_a_12_32:
+      friendly_name: "Calendar - General - A12"
+    calendar.code_1_tet_a_11_68:
+      friendly_name: "Calendar - General - A11"
+    calendar.code_1_mf_room_b_10_1:
+      friendly_name: "Calendar - General - B10"
+    calendar.code_1_jungle_a_2_36:
+      friendly_name: "Calendar - General - A2"
+    calendar.code_1_b_after_b_6_4:
+      friendly_name: "Calendar - General - B6"
+    calendar.code_1_han_s_zimmer_b_12_1:
+      friendly_name: "Calendar - General - B12"
+    calendar.birthdays:
+      friendly_name: "Calendar - General - Birthdays"
+    calendar.code_1_dark_matter_b_14_36:
+      friendly_name: "Calendar - General - B14"
+    assist_satellite.home_assistant_voice_093f20_assist_satellite:
+      friendly_name: "Assist_satellite - General - Home Assistant Voice 093F20 Assist Satellite"
+    binary_sensor.makerspace_occupancy_occupancy:
+      friendly_name: "Binary_sensor - General - Makerspace Occupancy"
+    binary_sensor.b3_occupancy_occupancy:
+      friendly_name: "Binary_sensor - General - B3 Occupancy"
+    binary_sensor.b4_occupancy_occupancy:
+      friendly_name: "Binary_sensor - General - B4 Occupancy"
+    binary_sensor.b5_occupancy:
+      friendly_name: "Binary_sensor - General - B5 Occupancy"
+    binary_sensor.b6_occupancy_occupancy_2:
+      friendly_name: "Binary_sensor - General - B6 Occupancy"
+    binary_sensor.b7_occupancy_occupancy_2:
+      friendly_name: "Binary_sensor - General - B7 Occupancy"
+    binary_sensor.unknown_occupancy_3:
+      friendly_name: "Binary_sensor - General - B10 Occupancy"
+    binary_sensor.b12_occupancy_occupancy_3:
+      friendly_name: "Binary_sensor - General - B12 Occupancy"
+    binary_sensor.a6_occupancy_occupancy_4:
+      friendly_name: "Binary_sensor - General - A6 Occupancy"
+    binary_sensor.ewelink_ms01:
+      friendly_name: "Binary_sensor - General - Phone Booth 1 Occupancy"
+    binary_sensor.ewelink_ms01_2:
+      friendly_name: "Binary_sensor - General - Phone Booth 3 Occupancy"
+    binary_sensor.unk_manufacturer_unk_model:
+      friendly_name: "Binary_sensor - General - Phone Booth 2 Occupancy"
+    binary_sensor.ewelink_ms01_3:
+      friendly_name: "Binary_sensor - General - Phone Booth 4 Occupancy"
+    button.ikea_power_socket_1_identify:
+      friendly_name: "Button - General - Ikea Power Socket 1 Identify"
+    button.makerspace_occupancy_identify:
+      friendly_name: "Button - General - Makerspace Occupancy Identify"
+    button.ikea_aq_sensor_identify:
+      friendly_name: "Button - General - Ikea Aq Sensor Identify"
+    button.ikea_tradfri_driver_1_identify:
+      friendly_name: "Button - General - Ikea Tradfri Driver 1 Identify"
+    button.ikea_tradfri_driver_2_identify_2:
+      friendly_name: "Button - General - Ikea Tradfri Driver 2 Identify"
+    button.ikea_of_sweden_remote_control_n2_identify:
+      friendly_name: "Button - General - Ikea Of Sweden Remote Control N2 Identify"
+    button.ikea_power_socket_2_identify:
+      friendly_name: "Button - General - Ikea Power Socket 2 Identify"
+    button.sonoff_snzb_02d_temp_humidity_identify:
+      friendly_name: "Button - General - Sonoff Snzb 02D Temp Humidity Identify"
+    button.sonoff_snzb_02d_humid_temp_identify:
+      friendly_name: "Button - General - Sonoff Snzb 02D Humid Temp Identify"
+    button.sonoff_snzb_02d_temp_humid_identify:
+      friendly_name: "Button - General - Sonoff Snzb 02D Temp Humid Identify"
+    button.sonoff_snzb_02d_identify:
+      friendly_name: "Button - General - Sonoff Snzb 02D Humid Temp Identify"
+    button.ikea_power_socket_identify:
+      friendly_name: "Button - General - Ikea Power Socket Identify"
+    button.sonoff_snzb_02d_humid_temp_identify_2:
+      friendly_name: "Button - General - Sonoff Snzb 02D Humid Temp Identify"
+    button.sonoff_snzb_02d_identify_2:
+      friendly_name: "Button - General - Sonoff Snzb 02D Humid Temp Identify"
+    button.ikea_of_sweden_tretakt_smart_plug_identify:
+      friendly_name: "Button - General - Ikea Of Sweden Tretakt Smart Plug Identify"
+    button.al001_wg001_z01_wifi_extender_identify:
+      friendly_name: "Button - General - Al001 Wg001 Z01 Wifi Extender Identify"
+    button.sonoff_snzb_02d_humid_temp_identify_3:
+      friendly_name: "Button - General - Sonoff Snzb 02D Humid Temp Identify"
+    button.sonoff_snzb_02d_identify_3:
+      friendly_name: "Button - General - Sonoff Snzb 02D Humid Temp Identify"
+    button.ikea_of_sweden_tradfri_driver_30w_3_identify:
+      friendly_name: "Button - General - Ikea Of Sweden Tradfri Driver 30W 3 Identify"
+    button.ikea_tradfri_driver_4_laser_cutter_identify:
+      friendly_name: "Button - General - Ikea Tradfri Driver 4 Laser Cutter Identify"
+    button.ikea_tradfri_driver_4_identify:
+      friendly_name: "Button - General - Ikea Tradfri Driver 4 Identify"
+    button.b3_occupancy_identify:
+      friendly_name: "Button - General - B3 Occupancy Identify"
+    button.sonoff_snzb_02d_identify_4:
+      friendly_name: "Button - General - Sonoff Snzb 02D Identify"
+    button.b4_occupancy_identify:
+      friendly_name: "Button - General - B4 Occupancy Identify"
+    button.sonoff_snzb_06p_identify:
+      friendly_name: "Button - General - B5 Occupancy Identify"
+    button.b6_occupancy_identify_2:
+      friendly_name: "Button - General - B6 Occupancy Identify"
+    button.b7_occupancy_identify_2:
+      friendly_name: "Button - General - B7 Occupancy Identify"
+    button.unknown_identify_3:
+      friendly_name: "Button - General - § Identify"
+    button.b12_occupancy_identify_3:
+      friendly_name: "Button - General - B12 Occupancy Identify"
+    button.a6_occupancy_identify_4:
+      friendly_name: "Button - General - A6 Occupancy Identify"
+    button.smart_switch_led_2_identify_2:
+      friendly_name: "Button - General - Smart Switch Led 2 Identify"
+    button.ewelink_ms01_identify:
+      friendly_name: "Button - General - Ewelink Ms01 Identify"
+    button.frient_a_s_aqszb_110_identify:
+      friendly_name: "Button - General - Frient A/S Aqszb 110 Identify"
+    button.ewelink_ms01_identify_2:
+      friendly_name: "Button - General - Ewelink Ms01 Identify"
+    button.unk_manufacturer_unk_model_identify:
+      friendly_name: "Button - General - Unk Manufacturer Unk Model Identify"
+    button.ewelink_ms01_identify_3:
+      friendly_name: "Button - General - Ewelink Ms01 Identify"
+    light.ikea_tradfri_driver_1_light:
+      friendly_name: "Light - General - Ikea Tradfri Driver 1 Light"
+    light.ikea_tradfri_driver_2_light_2:
+      friendly_name: "Light - General - Ikea Tradfri Driver 2 Light"
+    light.ikea_of_sweden_tradfri_driver_30w_3_light:
+      friendly_name: "Light - General - Ikea Tradfri Driver 3 Light"
+    light.ikea_tradfri_driver_4_laser_cutter_light:
+      friendly_name: "Light - General - Ikea Tradfri Driver Laser Cutter Light"
+    light.ikea_tradfri_driver_4_light:
+      friendly_name: "Light - General - Ikea Tradfri Driver 4 Light"
+    light.generic_zigbee_coordinator_ezsp_makerspace_lights:
+      friendly_name: "Light - General - Generic Zigbee Coordinator (Ezsp) Makerspace Lights"
+    number.makerspace_occupancy_presence_detection_timeout:
+      friendly_name: "Number - General - Makerspace Occupancy Presence Detection Timeout"
+    number.ikea_tradfri_driver_1_on_off_transition_time:
+      friendly_name: "Number - General - Ikea Tradfri Driver 1 On/Off Transition Time"
+    number.ikea_tradfri_driver_1_on_level:
+      friendly_name: "Number - General - Ikea Tradfri Driver 1 On Level"
+    number.ikea_tradfri_driver_1_start_up_current_level:
+      friendly_name: "Number - General - Ikea Tradfri Driver 1 Start Up Current Level"
+    number.ikea_tradfri_driver_2_on_off_transition_time_2:
+      friendly_name: "Number - General - Ikea Tradfri Driver 2 On/Off Transition Time"
+    number.ikea_tradfri_driver_2_on_level_2:
+      friendly_name: "Number - General - Ikea Tradfri Driver 2 On Level"
+    number.ikea_tradfri_driver_2_start_up_current_level_2:
+      friendly_name: "Number - General - Ikea Tradfri Driver 2 Start Up Current Level"
+    number.sonoff_snzb_02d_temp_humidity_comfort_temperature_min:
+      friendly_name: "Number - General - Sonoff Snzb 02D Temp Humidity Comfort Temperature Min"
+    number.sonoff_snzb_02d_temp_humidity_comfort_temperature_max:
+      friendly_name: "Number - General - Sonoff Snzb 02D Temp Humidity Comfort Temperature Max"
+    number.sonoff_snzb_02d_temp_humidity_comfort_humidity_min:
+      friendly_name: "Number - General - Sonoff Snzb 02D Temp Humidity Comfort Humidity Min"
+    number.sonoff_snzb_02d_temp_humidity_comfort_humidity_max:
+      friendly_name: "Number - General - Sonoff Snzb 02D Temp Humidity Comfort Humidity Max"
+    number.sonoff_snzb_02d_humid_temp_comfort_temperature_min:
+      friendly_name: "Number - General - Sonoff Snzb 02D Humid Temp Comfort Temperature Min"
+    number.sonoff_snzb_02d_humid_temp_comfort_temperature_max:
+      friendly_name: "Number - General - Sonoff Snzb 02D Humid Temp Comfort Temperature Max"
+    number.sonoff_snzb_02d_humid_temp_comfort_humidity_min:
+      friendly_name: "Number - General - Sonoff Snzb 02D Humid Temp Comfort Humidity Min"
+    number.sonoff_snzb_02d_humid_temp_comfort_humidity_max:
+      friendly_name: "Number - General - Sonoff Snzb 02D Humid Temp Comfort Humidity Max"
+    number.sonoff_snzb_02d_temp_humid_comfort_temperature_min:
+      friendly_name: "Number - General - Sonoff Snzb 02D Temp Humid Comfort Temperature Min"
+    number.sonoff_snzb_02d_temp_humid_comfort_temperature_max:
+      friendly_name: "Number - General - Sonoff Snzb 02D Temp Humid Comfort Temperature Max"
+    number.sonoff_snzb_02d_temp_humid_comfort_humidity_min:
+      friendly_name: "Number - General - Sonoff Snzb 02D Temp Humid Comfort Humidity Min"
+    number.sonoff_snzb_02d_temp_humid_comfort_humidity_max:
+      friendly_name: "Number - General - Sonoff Snzb 02D Temp Humid Comfort Humidity Max"
+    number.sonoff_snzb_02d_humid_temp_comfort_temperature_min_2:
+      friendly_name: "Number - General - Sonoff Snzb 02D Humid Temp Comfort Temperature Min"
+    number.sonoff_snzb_02d_humid_temp_comfort_temperature_max_2:
+      friendly_name: "Number - General - Sonoff Snzb 02D Humid Temp Comfort Temperature Max"
+    number.sonoff_snzb_02d_humid_temp_comfort_humidity_min_2:
+      friendly_name: "Number - General - Sonoff Snzb 02D Humid Temp Comfort Humidity Min"
+    number.sonoff_snzb_02d_humid_temp_comfort_humidity_max_2:
+      friendly_name: "Number - General - Sonoff Snzb 02D Humid Temp Comfort Humidity Max"
+    number.sonoff_snzb_02d_humid_temp_comfort_temperature_min_3:
+      friendly_name: "Number - General - Sonoff Snzb 02D Humid Temp Comfort Temperature Min"
+    number.sonoff_snzb_02d_humid_temp_comfort_temperature_max_3:
+      friendly_name: "Number - General - Sonoff Snzb 02D Humid Temp Comfort Temperature Max"
+    number.sonoff_snzb_02d_humid_temp_comfort_humidity_min_3:
+      friendly_name: "Number - General - Sonoff Snzb 02D Humid Temp Comfort Humidity Min"
+    number.sonoff_snzb_02d_humid_temp_comfort_humidity_max_3:
+      friendly_name: "Number - General - Sonoff Snzb 02D Humid Temp Comfort Humidity Max"
+    number.sonoff_snzb_02d_humid_temp_comfort_temperature_min_4:
+      friendly_name: "Number - General - Sonoff Snzb 02D Humid Temp Comfort Temperature Min"
+    number.sonoff_snzb_02d_humid_temp_comfort_temperature_max_4:
+      friendly_name: "Number - General - Sonoff Snzb 02D Humid Temp Comfort Temperature Max"
+    number.sonoff_snzb_02d_humid_temp_comfort_humidity_min_4:
+      friendly_name: "Number - General - Sonoff Snzb 02D Humid Temp Comfort Humidity Min"
+    number.sonoff_snzb_02d_humid_temp_comfort_humidity_max_4:
+      friendly_name: "Number - General - Sonoff Snzb 02D Humid Temp Comfort Humidity Max"
+    number.sonoff_snzb_02d_humid_temp_comfort_temperature_min_5:
+      friendly_name: "Number - General - Sonoff Snzb 02D Humid Temp Comfort Temperature Min"
+    number.sonoff_snzb_02d_humid_temp_comfort_temperature_max_5:
+      friendly_name: "Number - General - Sonoff Snzb 02D Humid Temp Comfort Temperature Max"
+    number.sonoff_snzb_02d_humid_temp_comfort_humidity_min_5:
+      friendly_name: "Number - General - Sonoff Snzb 02D Humid Temp Comfort Humidity Min"
+    number.sonoff_snzb_02d_humid_temp_comfort_humidity_max_5:
+      friendly_name: "Number - General - Sonoff Snzb 02D Humid Temp Comfort Humidity Max"
+    number.sonoff_snzb_02d_humid_temp_comfort_temperature_min_6:
+      friendly_name: "Number - General - Sonoff Snzb 02D Humid Temp Comfort Temperature Min"
+    number.sonoff_snzb_02d_humid_temp_comfort_temperature_max_6:
+      friendly_name: "Number - General - Sonoff Snzb 02D Humid Temp Comfort Temperature Max"
+    number.sonoff_snzb_02d_humid_temp_comfort_humidity_min_6:
+      friendly_name: "Number - General - Sonoff Snzb 02D Humid Temp Comfort Humidity Min"
+    number.sonoff_snzb_02d_humid_temp_comfort_humidity_max_6:
+      friendly_name: "Number - General - Sonoff Snzb 02D Humid Temp Comfort Humidity Max"
+    number.ikea_of_sweden_tradfri_driver_30w_3_on_off_transition_time:
+      friendly_name: "Number - General - Ikea Of Sweden Tradfri Driver 30W 3 On/Off Transition Time"
+    number.ikea_of_sweden_tradfri_driver_30w_3_on_level:
+      friendly_name: "Number - General - Ikea Of Sweden Tradfri Driver 30W 3 On Level"
+    number.ikea_of_sweden_tradfri_driver_30w_3_start_up_current_level:
+      friendly_name: "Number - General - Ikea Of Sweden Tradfri Driver 30W 3 Start Up Current Level"
+    number.ikea_tradfri_driver_4_laser_cutter_on_off_transition_time:
+      friendly_name: "Number - General - Ikea Tradfri Driver 4 Laser Cutter On/Off Transition Time"
+    number.ikea_tradfri_driver_4_laser_cutter_on_level:
+      friendly_name: "Number - General - Ikea Tradfri Driver 4 Laser Cutter On Level"
+    number.ikea_tradfri_driver_4_laser_cutter_start_up_current_level:
+      friendly_name: "Number - General - Ikea Tradfri Driver 4 Laser Cutter Start Up Current Level"
+    number.ikea_tradfri_driver_4_on_off_transition_time:
+      friendly_name: "Number - General - Ikea Tradfri Driver 4 On/Off Transition Time"
+    number.ikea_tradfri_driver_4_on_level:
+      friendly_name: "Number - General - Ikea Tradfri Driver 4 On Level"
+    number.ikea_tradfri_driver_4_start_up_current_level:
+      friendly_name: "Number - General - Ikea Tradfri Driver 4 Start Up Current Level"
+    number.b3_occupancy_presence_detection_timeout:
+      friendly_name: "Number - General - B3 Occupancy Presence Detection Timeout"
+    number.sonoff_snzb_02d_comfort_temperature_min:
+      friendly_name: "Number - General - Sonoff Snzb 02D Comfort Temperature Min"
+    number.sonoff_snzb_02d_comfort_temperature_max:
+      friendly_name: "Number - General - Sonoff Snzb 02D Comfort Temperature Max"
+    number.sonoff_snzb_02d_comfort_humidity_min:
+      friendly_name: "Number - General - Sonoff Snzb 02D Comfort Humidity Min"
+    number.sonoff_snzb_02d_comfort_humidity_max:
+      friendly_name: "Number - General - Sonoff Snzb 02D Comfort Humidity Max"
+    number.b4_occupancy_presence_detection_timeout:
+      friendly_name: "Number - General - B4 Occupancy Presence Detection Timeout"
+    number.sonoff_snzb_06p_presence_detection_timeout:
+      friendly_name: "Number - General - B5 Occupancy Presence Detection Timeout"
+    number.b6_occupancy_presence_detection_timeout_2:
+      friendly_name: "Number - General - B6 Occupancy Presence Detection Timeout"
+    number.b7_occupancy_presence_detection_timeout_2:
+      friendly_name: "Number - General - B7 Occupancy Presence Detection Timeout"
+    number.unknown_presence_detection_timeout_3:
+      friendly_name: "Number - General - § Presence Detection Timeout"
+    number.b12_occupancy_presence_detection_timeout_3:
+      friendly_name: "Number - General - B12 Occupancy Presence Detection Timeout"
+    number.a6_occupancy_presence_detection_timeout_4:
+      friendly_name: "Number - General - A6 Occupancy Presence Detection Timeout"
+    select.ikea_power_socket_1_start_up_behavior:
+      friendly_name: "Select - General - Ikea Power Socket 1 Start Up Behavior"
+    select.makerspace_occupancy_detection_sensitivity:
+      friendly_name: "Select - General - Makerspace Occupancy Detection Sensitivity"
+    select.ikea_tradfri_driver_1_start_up_behavior:
+      friendly_name: "Select - General - Ikea Tradfri Driver 1 Start Up Behavior"
+    select.ikea_tradfri_driver_2_start_up_behavior_2:
+      friendly_name: "Select - General - Ikea Tradfri Driver 2 Start Up Behavior"
+    select.ikea_power_socket_2_start_up_behavior:
+      friendly_name: "Select - General - Ikea Power Socket 2 Start Up Behavior"
+    select.sonoff_snzb_02d_temp_humidity_display_unit:
+      friendly_name: "Select - General - Sonoff Snzb 02D Temp Humidity Display Unit"
+    select.sonoff_snzb_02d_humid_temp_display_unit:
+      friendly_name: "Select - General - Sonoff Snzb 02D Humid Temp Display Unit"
+    select.sonoff_snzb_02d_temp_humid_display_unit:
+      friendly_name: "Select - General - Sonoff Snzb 02D Temp Humid Display Unit"
+    select.sonoff_snzb_02d_humid_temp_display_unit_2:
+      friendly_name: "Select - General - Sonoff Snzb 02D Humid Temp Display Unit"
+    select.ikea_power_socket_start_up_behavior:
+      friendly_name: "Select - General - Ikea Power Socket Start Up Behavior"
+    select.sonoff_snzb_02d_humid_temp_display_unit_3:
+      friendly_name: "Select - General - Sonoff Snzb 02D Humid Temp Display Unit"
+    select.sonoff_snzb_02d_humid_temp_display_unit_4:
+      friendly_name: "Select - General - Sonoff Snzb 02D Humid Temp Display Unit"
+    select.ikea_of_sweden_tretakt_smart_plug_start_up_behavior:
+      friendly_name: "Select - General - Ikea Of Sweden Tretakt Smart Plug Start Up Behaviour"
+    select.sonoff_snzb_02d_humid_temp_display_unit_5:
+      friendly_name: "Select - General - Sonoff Snzb 02D Humid Temp Display Unit"
+    select.sonoff_snzb_02d_humid_temp_display_unit_6:
+      friendly_name: "Select - General - Sonoff Snzb 02D Humid Temp Display Unit"
+    select.ikea_of_sweden_tradfri_driver_30w_3_start_up_behavior:
+      friendly_name: "Select - General - Ikea Of Sweden Tradfri Driver 30W 3 Start Up Behavior"
+    select.ikea_tradfri_driver_4_laser_cutter_start_up_behavior:
+      friendly_name: "Select - General - Ikea Tradfri Driver 4 Laser Cutter Start Up Behavior"
+    select.ikea_tradfri_driver_4_start_up_behavior:
+      friendly_name: "Select - General - Ikea Tradfri Driver 4 Start Up Behavior"
+    select.b3_occupancy_detection_sensitivity:
+      friendly_name: "Select - General - B3 Occupancy Detection Sensitivity"
+    select.sonoff_snzb_02d_display_unit:
+      friendly_name: "Select - General - Sonoff Snzb 02D Display Unit"
+    select.b4_occupancy_detection_sensitivity:
+      friendly_name: "Select - General - B4 Occupancy Detection Sensitivity"
+    select.sonoff_snzb_06p_detection_sensitivity:
+      friendly_name: "Select - General - B5 Occupancy Detection Sensitivity"
+    select.b6_occupancy_detection_sensitivity_2:
+      friendly_name: "Select - General - B6 Occupancy Detection Sensitivity"
+    select.b7_occupancy_detection_sensitivity_2:
+      friendly_name: "Select - General - B7 Occupancy Detection Sensitivity"
+    select.unknown_detection_sensitivity_3:
+      friendly_name: "Select - General - § Detection Sensitivity"
+    select.b12_occupancy_detection_sensitivity_3:
+      friendly_name: "Select - General - B12 Occupancy Detection Sensitivity"
+    select.a6_occupancy_detection_sensitivity_4:
+      friendly_name: "Select - General - A6 Occupancy Detection Sensitivity"
+    select.smart_switch_led_2_start_up_behaviour:
+      friendly_name: "Select - General - Smart Switch Led 2 Start Up Behaviour"
+    sensor.makerspace_occupancy_last_illumination_state:
+      friendly_name: "Sensor - General - Makerspace Last Illumination State"
+    sensor.ikea_aq_sensor_temperature:
+      friendly_name: "Sensor - General - B3 Temperature"
+    sensor.ikea_aq_sensor_pm2_5:
+      friendly_name: "Sensor - General - B3 Pm2.5"
+    sensor.ikea_aq_sensor_humidity:
+      friendly_name: "Sensor - General - B3 Humidity"
+    sensor.ikea_aq_sensor_voc_index:
+      friendly_name: "Sensor - General - B3 Voc Index"
+    sensor.ikea_of_sweden_remote_control_n2_battery:
+      friendly_name: "Sensor - General - Makerspace Light Switch"
+    sensor.sonoff_snzb_02d_temp_humidity_battery:
+      friendly_name: "Sensor - General - B.3 Sensor Battery"
+    sensor.sonoff_snzb_02d_temp_humidity_temperature:
+      friendly_name: "Sensor - General - Makerspace Temperature"
+    sensor.sonoff_snzb_02d_temp_humidity_humidity:
+      friendly_name: "Sensor - General - Makerspace Humidity"
+    sensor.sonoff_snzb_02d_humid_temp_battery:
+      friendly_name: "Sensor - General - B.4 Sensor Battery"
+    sensor.sonoff_snzb_02d_humid_temp_temperature:
+      friendly_name: "Sensor - General - B.4 Temperature"
+    sensor.sonoff_snzb_02d_humid_temp_humidity:
+      friendly_name: "Sensor - General - B.4 Humidity"
+    sensor.sonoff_snzb_02d_temp_humid_battery:
+      friendly_name: "Sensor - General - B.5 Sensor Battery"
+    sensor.sonoff_snzb_02d_temp_humid_temperature:
+      friendly_name: "Sensor - General - B.5 Temperature"
+    sensor.sonoff_snzb_02d_temp_humid_humidity:
+      friendly_name: "Sensor - General - B.5 Humidity"
+    sensor.sonoff_snzb_02d_battery:
+      friendly_name: "Sensor - General - B.6 Sensor Battery"
+    sensor.sonoff_snzb_02d_temperature:
+      friendly_name: "Sensor - General - B.6 Temperature"
+    sensor.sonoff_snzb_02d_humidity:
+      friendly_name: "Sensor - General - B.6 Humidity"
+    sensor.sonoff_snzb_02d_humid_temp_battery_2:
+      friendly_name: "Sensor - General - B.7 Sensor Battery"
+    sensor.sonoff_snzb_02d_humid_temp_temperature_2:
+      friendly_name: "Sensor - General - B.7 Temperature"
+    sensor.sonoff_snzb_02d_humid_temp_humidity_2:
+      friendly_name: "Sensor - General - B.7 Humidity"
+    sensor.sonoff_snzb_02d_battery_2:
+      friendly_name: "Sensor - General - A.6 Sensor Battery"
+    sensor.sonoff_snzb_02d_temperature_2:
+      friendly_name: "Sensor - General - A.6 Temperature"
+    sensor.sonoff_snzb_02d_humidity_2:
+      friendly_name: "Sensor - General - A.6 Humidity"
+    sensor.sonoff_snzb_02d_humid_temp_battery_3:
+      friendly_name: "Sensor - General - B.12 Sensor Battery"
+    sensor.sonoff_snzb_02d_humid_temp_temperature_3:
+      friendly_name: "Sensor - General - B.12 Temperature"
+    sensor.sonoff_snzb_02d_humid_temp_humidity_3:
+      friendly_name: "Sensor - General - B.12 Humidity"
+    sensor.sonoff_snzb_02d_battery_3:
+      friendly_name: "Sensor - General - Kitchen Sensor Battery"
+    sensor.sonoff_snzb_02d_temperature_3:
+      friendly_name: "Sensor - General - Kitchen Temperature"
+    sensor.sonoff_snzb_02d_humidity_3:
+      friendly_name: "Sensor - General - Kitchen Humidity"
+    sensor.b3_occupancy_last_illumination_state:
+      friendly_name: "Sensor - General - B3 Last Illumination State"
+    sensor.sonoff_snzb_02d_battery_4:
+      friendly_name: "Sensor - General - Team Hq Sensor Battery"
+    sensor.sonoff_snzb_02d_temperature_4:
+      friendly_name: "Sensor - General - Team Hq Temperature"
+    sensor.sonoff_snzb_02d_humidity_4:
+      friendly_name: "Sensor - General - Team Hq Humidity"
+    sensor.b4_occupancy_last_illumination_state:
+      friendly_name: "Sensor - General - B4 Last Illumination State"
+    sensor.sonoff_snzb_06p_last_illumination_state:
+      friendly_name: "Sensor - General - B5 Last Illumination State"
+    sensor.b6_occupancy_last_illumination_state_2:
+      friendly_name: "Sensor - General - B6 Last Illumination State"
+    sensor.b7_occupancy_last_illumination_state_2:
+      friendly_name: "Sensor - General - B7 Last Illumination State"
+    sensor.unknown_last_illumination_state_3:
+      friendly_name: "Sensor - General - B10 Last Illumination State"
+    sensor.b12_occupancy_last_illumination_state_3:
+      friendly_name: "Sensor - General - B12 Last Illumination State"
+    sensor.a6_occupancy_last_illumination_state_4:
+      friendly_name: "Sensor - General - A6 Occupancy Last Illumination State"
+    sensor.ewelink_ms01_battery:
+      friendly_name: "Sensor - General - Ewelink Ms01 Battery"
+    sensor.frient_a_s_aqszb_110_battery:
+      friendly_name: "Sensor - General - Frient A/S Aqszb 110 Battery"
+    sensor.frient_a_s_aqszb_110_temperature:
+      friendly_name: "Sensor - General - Frient A/S Aqszb 110 Temperature"
+    sensor.frient_a_s_aqszb_110_humidity:
+      friendly_name: "Sensor - General - Frient A/S Aqszb 110 Humidity"
+    sensor.ewelink_ms01_battery_2:
+      friendly_name: "Sensor - General - Ewelink Ms01 Battery"
+    sensor.unk_manufacturer_unk_model_battery:
+      friendly_name: "Sensor - General - Unk Manufacturer Unk Model Battery"
+    sensor.ewelink_ms01_battery_3:
+      friendly_name: "Sensor - General - Ewelink Ms01 Battery"
+    switch.ikea_power_socket_1_switch:
+      friendly_name: "Switch - General - Smart Plug 1 Led"
+    switch.ikea_power_socket_2_switch:
+      friendly_name: "Switch - General - Smart Plug Led 2"
+    switch.ikea_of_sweden_tretakt_smart_plug_switch:
+      friendly_name: "Switch - General - Library Smart Plug"
+    switch.smart_switch_led_2:
+      friendly_name: "Switch - General - Smart Plug Led 3"
+    switch.generic_zigbee_coordinator_ezsp_makerspace_lights:
+      friendly_name: "Switch - General - Generic Zigbee Coordinator (Ezsp) Makerspace Lights"
+    update.ikea_power_socket_1_firmware:
+      friendly_name: "Update - General - Ikea Power Socket 1 Firmware"
+    update.makerspace_occupancy_firmware:
+      friendly_name: "Update - General - Makerspace Occupancy Firmware"
+    update.ikea_aq_sensor_firmware:
+      friendly_name: "Update - General - Ikea Aq Sensor Firmware"
+    update.ikea_tradfri_driver_1_firmware:
+      friendly_name: "Update - General - Ikea Tradfri Driver 1 Firmware"
+    update.ikea_tradfri_driver_2_firmware_2:
+      friendly_name: "Update - General - Ikea Tradfri Driver 2 Firmware"
+    update.ikea_of_sweden_remote_control_n2_firmware:
+      friendly_name: "Update - General - Ikea Of Sweden Remote Control N2 Firmware"
+    update.ikea_power_socket_2_firmware:
+      friendly_name: "Update - General - Ikea Power Socket 2 Firmware"
+    update.sonoff_snzb_02d_temp_humidity_firmware:
+      friendly_name: "Update - General - Sonoff Snzb 02D Temp Humidity Firmware"
+    update.sonoff_snzb_02d_humid_temp_firmware:
+      friendly_name: "Update - General - Sonoff Snzb 02D Humid Temp Firmware"
+    update.sonoff_snzb_02d_temp_humid_firmware:
+      friendly_name: "Update - General - Sonoff Snzb 02D Temp Humid Firmware"
+    update.sonoff_snzb_02d_firmware:
+      friendly_name: "Update - General - Sonoff Snzb 02D Humid Temp Firmware"
+    update.ikea_power_socket_firmware:
+      friendly_name: "Update - General - Ikea Power Socket Firmware"
+    update.sonoff_snzb_02d_humid_temp_firmware_2:
+      friendly_name: "Update - General - Sonoff Snzb 02D Humid Temp Firmware"
+    update.sonoff_snzb_02d_firmware_2:
+      friendly_name: "Update - General - Sonoff Snzb 02D Humid Temp Firmware"
+    update.ikea_of_sweden_tretakt_smart_plug_firmware:
+      friendly_name: "Update - General - Ikea Of Sweden Tretakt Smart Plug Firmware"
+    update.al001_wg001_z01_wifi_extender_firmware:
+      friendly_name: "Update - General - Al001 Wg001 Z01 Wifi Extender Firmware"
+    update.sonoff_snzb_02d_humid_temp_firmware_3:
+      friendly_name: "Update - General - Sonoff Snzb 02D Humid Temp Firmware"
+    update.sonoff_snzb_02d_firmware_3:
+      friendly_name: "Update - General - Sonoff Snzb 02D Humid Temp Firmware"
+    update.ikea_of_sweden_tradfri_driver_30w_3_firmware:
+      friendly_name: "Update - General - Ikea Of Sweden Tradfri Driver 30W 3 Firmware"
+    update.ikea_tradfri_driver_4_laser_cutter_firmware:
+      friendly_name: "Update - General - Ikea Tradfri Driver 4 Laser Cutter Firmware"
+    update.ikea_tradfri_driver_4_firmware:
+      friendly_name: "Update - General - Ikea Tradfri Driver 4 Firmware"
+    update.b3_occupancy_firmware:
+      friendly_name: "Update - General - B3 Occupancy Firmware"
+    update.sonoff_snzb_02d_firmware_4:
+      friendly_name: "Update - General - Sonoff Snzb 02D Firmware"
+    update.b4_occupancy_firmware:
+      friendly_name: "Update - General - B4 Occupancy Firmware"
+    update.sonoff_snzb_06p_firmware:
+      friendly_name: "Update - General - B5 Occupancy Firmware"
+    update.b6_occupancy_firmware_2:
+      friendly_name: "Update - General - B6 Occupancy Firmware"
+    update.b7_occupancy_firmware_2:
+      friendly_name: "Update - General - B7 Occupancy Firmware"
+    update.unknown_firmware_3:
+      friendly_name: "Update - General - § Firmware"
+    update.b12_occupancy_firmware_3:
+      friendly_name: "Update - General - B12 Occupancy Firmware"
+    update.a6_occupancy_firmware_4:
+      friendly_name: "Update - General - A6 Occupancy Firmware"
+    update.smart_switch_led_2_firmware_2:
+      friendly_name: "Update - General - Smart Switch Led 2 Firmware"
+    update.frient_a_s_aqszb_110_firmware:
+      friendly_name: "Update - General - Frient A/S Aqszb 110 Firmware"
+    automation.ikea_switch_maker_space_lights_on:
+      friendly_name: "Automation - Space - Ikea Switch Maker Space Lights On"
+    automation.ikea_switch_makerspace_lights_off:
+      friendly_name: "Automation - General - Ikea Switch Makerspace Lights Off"
+    automation.makerspace_presence_lights_on:
+      friendly_name: "Automation - General - Makerspace Presence Lights On"
+    automation.makerspace_presence_lights_off:
+      friendly_name: "Automation - General - Makerspace Presence Lights Off"
+    automation.new_bottle:
+      friendly_name: "Automation - General - New Bottle"
+    sensor.hp_envy_4520_series_black_ink:
+      friendly_name: "Sensor - General - Black Ink"
+    sensor.hp_envy_4520_series_tri_color_ink:
+      friendly_name: "Sensor - General - Tri Color Ink"
+    sensor.local_raw_printer:
+      friendly_name: "Sensor - General - Local Raw Printer"
+    update.kiosk_mode_update:
+      friendly_name: "Update - General - Kiosk Mode Update"
+    binary_sensor.unoccupied_rooms:
+      friendly_name: "Binary_sensor - General - Unoccupied Rooms"

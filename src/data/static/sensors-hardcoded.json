@@ -1,0 +1,61 @@
+{
+  "B.3": {
+    "temperature": "23.1 °C",
+    "humidity": "23.8 %"
+  },
+  "B.4": {
+    "temperature": "23.0 °C",
+    "humidity": "21.7 %"
+  },
+  "B.5": {
+    "temperature": "22.1 °C",
+    "humidity": "23.5 %"
+  },
+  "B.6": {
+    "temperature": "22.3 °C",
+    "humidity": "25.1 %",
+    "IKEA power socket Switch": "unavailable"
+  },
+  "B.7": {
+    "temperature": "21.6 °C",
+    "humidity": "26.5 %"
+  },
+  "A.6": {
+    "temperature": "22.5 °C",
+    "humidity": "21.6 %"
+  },
+  "B.12": {
+    "temperature": "22.7 °C",
+    "humidity": "21.2 %"
+  },
+  "Kitchen": {
+    "temperature": "21.5 °C",
+    "humidity": "26.1 %"
+  },
+  "Team HQ": {
+    "temperature": "22.5 °C",
+    "humidity": "26.2 %"
+  },
+  "MakerSpace": {
+    "OctoPrint Printing": "on",
+    "OctoPrint Current State": "Printing",
+    "OctoPrint Job Percentage": "30.33 %",
+    "OctoPrint Estimated Finish Time": "2025-03-19T00:36:00+00:00",
+    "Home Assistant Voice 093f20 Media Player": "idle",
+    "MakerSpace Occupancy": "on",
+    "IKEA tradfri driver 1 Light": "on",
+    "IKEA tradfri driver 2 Light": "on",
+    "IKEA tradfri driver 3 light": "on",
+    "IKEA tradfri driver laser cutter Light": "on",
+    "IKEA tradfri driver 4 Light": "on",
+    "MakerSpace Temperature": "24.0 °C",
+    "MakerSpace PM2.5": "1 µg/m³",
+    "MakerSpace Humidity": "20.0 %",
+    "IKEA AQ sensor VOC index": "89.0 aqi",
+    "Smart plug 1": "on",
+    "Smart plug 2": "on"
+  },
+  "Library": {
+    "Library Smart Plug": "on"
+  }
+}

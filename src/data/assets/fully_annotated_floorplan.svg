@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg height="1627" viewBox="0 0 2025 1627" width="2025" xmlns="http://www.w3.org/2000/svg">
+<g id="Alexandria-Library_annotated">
+<text fill="black" font-size="14" x="10" y="100">Library: Smart Plug</text>
+</g>
+<g id="B10-MF_Room_annotated">
+<text fill="black" font-size="14" x="10" y="160">B10: B10, Last illumination state, Occupancy</text>
+</g>
+<g id="B12-Hans_Zimmer_annotated">
+<text fill="black" font-size="14" x="10" y="220">B12: B12, B12 Humidity, B12 Temperature, Last illumination state, Occupancy</text>
+</g>
+<g id="B3-Peace_annotated">
+<text fill="black" font-size="14" x="10" y="280">B3: B3, Humidity, Last illumination state, Occupancy, PM2.5, Temperature, VOC index</text>
+</g>
+<g id="B4_annotated">
+<text fill="black" font-size="14" x="10" y="340">B4: B4, B4 Humidity, B4 Temperature, Last illumination state, Occupancy</text>
+</g>
+<g id="B5-Present_annotated">
+<text fill="black" font-size="14" x="10" y="400">B5: B5, B5 Humidity, B5 Temperature, Last illumination state, Occupancy</text>
+</g>
+<g id="B6-After_annotated">
+<text fill="black" font-size="14" x="10" y="460">B6: B6, B6 Humidity, B6 Temperature, Last illumination state, Occupancy</text>
+</g>
+<g id="B7-W(room)_annotated">
+<text fill="black" font-size="14" x="10" y="520">B7: B7, B7 Humidity, B7 Temperature, Last illumination state, Occupancy</text>
+</g>
+<g id="Cantina-Kitchen_annotated">
+<text fill="black" font-size="14" x="10" y="580">Kitchen: bottles, pfand, Humidity, Temperature</text>
+</g>
+</svg>

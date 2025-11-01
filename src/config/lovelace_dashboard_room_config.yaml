@@ -1,0 +1,380 @@
+title: Room-Based Dashboard
+views:
+- cards:
+  - entity: sensor.low_battery_devices
+    name: Low Battery Devices
+    type: entity
+  - entity: sensor.pfand_hx71_value
+    name: Pfand HX71 Value
+    type: entity
+  - entity: sensor.unoccupied_rooms
+    name: Unoccupied rooms
+    type: entity
+  path: sensor
+  title: Sensor
+- cards:
+  - entity: sensor.makerspace_lights_(battery)
+    name: Makerspace lights (battery)
+    type: entity
+  - entity: sensor.makerspace_lights_(lightbulb)
+    name: Makerspace lights (lightbulb)
+    type: entity
+  path: generic_zigbee_coordinator
+  title: Generic Zigbee Coordinator
+- cards:
+  - entity: sensor.air_quality_index
+    name: Air quality index
+    type: entity
+  - entity: sensor.dominant_pollutant
+    name: Dominant pollutant
+    type: entity
+  - entity: sensor.humidity
+    name: Humidity
+    type: entity
+  - entity: sensor.nitrogen_dioxide
+    name: Nitrogen dioxide
+    type: entity
+  - entity: sensor.pm10
+    name: PM10
+    type: entity
+  - entity: sensor.pm2.5
+    name: PM2.5
+    type: entity
+  - entity: sensor.pressure
+    name: Pressure
+    type: entity
+  - entity: sensor.temperature
+    name: Temperature
+    type: entity
+  path: "weather_(karl-marx-stra\xDFe,_berlin,_germa...)"
+  title: "Weather (Karl-Marx-Stra\xDFe, Berlin, Germa...)"
+- cards:
+  - entity: sensor.ikea_tradfri_driver_1_light
+    name: IKEA tradfri driver 1 Light
+    type: entity
+  - entity: sensor.ikea_tradfri_driver_2_light
+    name: IKEA tradfri driver 2 Light
+    type: entity
+  - entity: sensor.ikea_tradfri_driver_3_light
+    name: IKEA tradfri driver 3 Light
+    type: entity
+  - entity: sensor.ikea_tradfri_driver_4_light
+    name: IKEA tradfri driver 4 Light
+    type: entity
+  - entity: sensor.ikea_tradfri_driver_laser_cutter_light
+    name: IKEA tradfri driver laser cutter Light
+    type: entity
+  - entity: sensor.smart_plug_led_1
+    name: Smart plug LED 1
+    type: entity
+  - entity: sensor.smart_plug_led_2
+    name: Smart plug LED 2
+    type: entity
+  - entity: sensor.smart_plug_led_3
+    name: Smart plug LED 3
+    type: entity
+  - entity: sensor.frient_a/s_aqszb-110_humidity
+    name: frient A/S AQSZB-110 Humidity
+    type: entity
+  - entity: sensor.frient_a/s_aqszb-110_temperature
+    name: frient A/S AQSZB-110 Temperature
+    type: entity
+  - entity: sensor.humidity
+    name: Humidity
+    type: entity
+  - entity: sensor.last_illumination_state
+    name: Last Illumination state
+    type: entity
+  - entity: sensor.occupancy
+    name: Occupancy
+    type: entity
+  - entity: sensor.octoprint_actual_a_temp
+    name: OctoPrint actual A temp
+    type: entity
+  - entity: sensor.octoprint_actual_bed_temp
+    name: OctoPrint actual bed temp
+    type: entity
+  - entity: sensor.octoprint_actual_e_temp
+    name: OctoPrint actual E temp
+    type: entity
+  - entity: sensor.octoprint_actual_p_temp
+    name: OctoPrint actual P temp
+    type: entity
+  - entity: sensor.octoprint_actual_tool0_temp
+    name: OctoPrint actual tool0 temp
+    type: entity
+  - entity: sensor.octoprint_actual_w_temp
+    name: OctoPrint actual W temp
+    type: entity
+  - entity: sensor.octoprint_current_state
+    name: OctoPrint Current State
+    type: entity
+  - entity: sensor.octoprint_estimated_finish_time
+    name: OctoPrint Estimated Finish Time
+    type: entity
+  - entity: sensor.octoprint_job_percentage
+    name: OctoPrint Job Percentage
+    type: entity
+  - entity: sensor.octoprint_printing
+    name: OctoPrint Printing
+    type: entity
+  - entity: sensor.octoprint_printing_error
+    name: OctoPrint Printing Error
+    type: entity
+  - entity: sensor.octoprint_start_time
+    name: OctoPrint Start Time
+    type: entity
+  - entity: sensor.octoprint_target_a_temp
+    name: OctoPrint target A temp
+    type: entity
+  - entity: sensor.octoprint_target_bed_temp
+    name: OctoPrint target bed temp
+    type: entity
+  - entity: sensor.octoprint_target_e_temp
+    name: OctoPrint target E temp
+    type: entity
+  - entity: sensor.octoprint_target_p_temp
+    name: OctoPrint target P temp
+    type: entity
+  - entity: sensor.octoprint_target_tool0_temp
+    name: OctoPrint target tool0 temp
+    type: entity
+  - entity: sensor.octoprint_target_w_temp
+    name: OctoPrint target W temp
+    type: entity
+  - entity: sensor.temperature
+    name: Temperature
+    type: entity
+  path: makerspace
+  title: Makerspace
+- cards:
+  - entity: sensor.smart_plug
+    name: Smart Plug
+    type: entity
+  path: library
+  title: Library
+- cards:
+  - entity: sensor.occupancy
+    name: Occupancy
+    type: entity
+  path: phone_booth_2
+  title: Phone Booth 2
+- cards:
+  - entity: sensor.occupancy
+    name: Occupancy
+    type: entity
+  path: phone_booth_4
+  title: Phone Booth 4
+- cards:
+  - entity: sensor.unoccupied_rooms
+    name: Unoccupied rooms
+    type: entity
+  path: binary_sensor
+  title: Binary Sensor
+- cards:
+  - entity: sensor.battery_threshold
+    name: battery threshold
+    type: entity
+  path: helpers
+  title: Helpers
+- cards:
+  - entity: sensor.occupancy
+    name: Occupancy
+    type: entity
+  path: phone_booth_1
+  title: Phone Booth 1
+- cards:
+  - entity: sensor.occupancy
+    name: Occupancy
+    type: entity
+  path: phone_booth_3
+  title: Phone Booth 3
+- cards:
+  - entity: sensor.black_ink
+    name: black ink
+    type: entity
+  - entity: sensor.hp_envy_4520_series
+    name: hp envy 4520 series
+    type: entity
+  - entity: sensor.humidity
+    name: Humidity
+    type: entity
+  - entity: sensor.local_raw_printer
+    name: Local Raw Printer
+    type: entity
+  - entity: sensor.temperature
+    name: Temperature
+    type: entity
+  - entity: sensor.tri-color_ink
+    name: tri-color ink
+    type: entity
+  path: team_hq
+  title: Team HQ
+- cards:
+  - entity: sensor.a1
+    name: A1
+    type: entity
+  - entity: sensor.a11
+    name: A11
+    type: entity
+  - entity: sensor.a12
+    name: A12
+    type: entity
+  - entity: sensor.a2
+    name: A2
+    type: entity
+  - entity: sensor.a24
+    name: A24
+    type: entity
+  - entity: sensor.b14
+    name: B14
+    type: entity
+  path: calendar
+  title: Calendar
+- cards:
+  - entity: sensor.b10
+    name: B10
+    type: entity
+  - entity: sensor.last_illumination_state
+    name: Last illumination state
+    type: entity
+  - entity: sensor.occupancy
+    name: Occupancy
+    type: entity
+  path: b10
+  title: B10
+- cards:
+  - entity: sensor.b12
+    name: B12
+    type: entity
+  - entity: sensor.b12_humidity
+    name: B12 Humidity
+    type: entity
+  - entity: sensor.b12_temperature
+    name: B12 Temperature
+    type: entity
+  - entity: sensor.last_illumination_state
+    name: Last illumination state
+    type: entity
+  - entity: sensor.occupancy
+    name: Occupancy
+    type: entity
+  path: b12
+  title: B12
+- cards:
+  - entity: sensor.b3
+    name: B3
+    type: entity
+  - entity: sensor.humidity
+    name: Humidity
+    type: entity
+  - entity: sensor.last_illumination_state
+    name: Last illumination state
+    type: entity
+  - entity: sensor.occupancy
+    name: Occupancy
+    type: entity
+  - entity: sensor.pm2.5
+    name: PM2.5
+    type: entity
+  - entity: sensor.temperature
+    name: Temperature
+    type: entity
+  - entity: sensor.voc_index
+    name: VOC index
+    type: entity
+  path: b3
+  title: B3
+- cards:
+  - entity: sensor.b4
+    name: B4
+    type: entity
+  - entity: sensor.b4_humidity
+    name: B4 Humidity
+    type: entity
+  - entity: sensor.b4_temperature
+    name: B4 Temperature
+    type: entity
+  - entity: sensor.last_illumination_state
+    name: Last illumination state
+    type: entity
+  - entity: sensor.occupancy
+    name: Occupancy
+    type: entity
+  path: b4
+  title: B4
+- cards:
+  - entity: sensor.b5
+    name: B5
+    type: entity
+  - entity: sensor.b5_humidity
+    name: B5 Humidity
+    type: entity
+  - entity: sensor.b5_temperature
+    name: B5 Temperature
+    type: entity
+  - entity: sensor.last_illumination_state
+    name: Last illumination state
+    type: entity
+  - entity: sensor.occupancy
+    name: Occupancy
+    type: entity
+  path: b5
+  title: B5
+- cards:
+  - entity: sensor.b6
+    name: B6
+    type: entity
+  - entity: sensor.b6_humidity
+    name: B6 Humidity
+    type: entity
+  - entity: sensor.b6_temperature
+    name: B6 Temperature
+    type: entity
+  - entity: sensor.last_illumination_state
+    name: Last illumination state
+    type: entity
+  - entity: sensor.occupancy
+    name: Occupancy
+    type: entity
+  path: b6
+  title: B6
+- cards:
+  - entity: sensor.b7
+    name: B7
+    type: entity
+  - entity: sensor.b7_humidity
+    name: B7 Humidity
+    type: entity
+  - entity: sensor.b7_temperature
+    name: B7 Temperature
+    type: entity
+  - entity: sensor.last_illumination_state
+    name: Last illumination state
+    type: entity
+  - entity: sensor.occupancy
+    name: Occupancy
+    type: entity
+  path: b7
+  title: B7
+- cards:
+  - entity: sensor.bottles
+    name: bottles
+    type: entity
+  - entity: sensor.pfand
+    name: pfand
+    type: entity
+  - entity: sensor.humidity
+    name: Humidity
+    type: entity
+  - entity: sensor.temperature
+    name: Temperature
+    type: entity
+  path: kitchen
+  title: Kitchen
+- cards:
+  - entity: sensor.smart_plug
+    name: Smart Plug
+    type: entity
+  path: library_alexandria
+  title: Library Alexandria

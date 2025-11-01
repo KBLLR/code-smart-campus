@@ -1,0 +1,2162 @@
+[
+  {
+    "entity_id": "person.makerspace",
+    "id": "makerspace",
+    "friendly_name": "MakerSpace"
+  },
+  {
+    "entity_id": "person.smartcampus",
+    "id": "smartcampus",
+    "friendly_name": "smartcampus"
+  },
+  {
+    "entity_id": "person.code_community",
+    "id": "code_community",
+    "friendly_name": "CODE Community"
+  },
+  {
+    "entity_id": "person.daniel",
+    "id": "daniel",
+    "friendly_name": "Daniel"
+  },
+  {
+    "entity_id": "person.climate_dashboard",
+    "id": "climate_dashboard",
+    "friendly_name": "Climate Dashboard"
+  },
+  {
+    "entity_id": "person.noahfrank",
+    "id": "noahfrank",
+    "friendly_name": "NoahFrank"
+  },
+  {
+    "entity_id": "update.home_assistant_supervisor_update",
+    "id": null,
+    "friendly_name": "Home Assistant Supervisor Update"
+  },
+  {
+    "entity_id": "update.home_assistant_core_update",
+    "id": null,
+    "friendly_name": "Home Assistant Core Update"
+  },
+  {
+    "entity_id": "update.piper_update",
+    "id": null,
+    "friendly_name": "Piper Update"
+  },
+  {
+    "entity_id": "update.studio_code_server_update",
+    "id": null,
+    "friendly_name": "Studio Code Server Update"
+  },
+  {
+    "entity_id": "update.whisper_update",
+    "id": null,
+    "friendly_name": "Whisper Update"
+  },
+  {
+    "entity_id": "update.esphome_device_builder_update",
+    "id": null,
+    "friendly_name": "ESPHome Device Builder Update"
+  },
+  {
+    "entity_id": "update.speech_to_phrase_update",
+    "id": null,
+    "friendly_name": "Speech-to-Phrase Update"
+  },
+  {
+    "entity_id": "update.mosquitto_broker_update",
+    "id": null,
+    "friendly_name": "Mosquitto broker Update"
+  },
+  {
+    "entity_id": "update.home_assistant_operating_system_update",
+    "id": null,
+    "friendly_name": "Home Assistant Operating System Update"
+  },
+  {
+    "entity_id": "binary_sensor.remote_ui",
+    "id": null,
+    "friendly_name": "Remote UI"
+  },
+  {
+    "entity_id": "stt.home_assistant_cloud",
+    "id": null,
+    "friendly_name": "Home Assistant Cloud"
+  },
+  {
+    "entity_id": "tts.home_assistant_cloud",
+    "id": null,
+    "friendly_name": "Home Assistant Cloud"
+  },
+  {
+    "entity_id": "conversation.home_assistant",
+    "id": null,
+    "friendly_name": "Home Assistant"
+  },
+  {
+    "entity_id": "zone.home",
+    "id": null,
+    "friendly_name": "CODE MakerSpace"
+  },
+  {
+    "entity_id": "input_number.battery_threshold",
+    "id": null,
+    "friendly_name": "battery threshold"
+  },
+  {
+    "entity_id": "light.ikea_power_socket_1",
+    "id": null,
+    "friendly_name": "Smart plug LED 1"
+  },
+  {
+    "entity_id": "light.ikea_power_socket_2",
+    "id": null,
+    "friendly_name": "Smart plug LED 2"
+  },
+  {
+    "entity_id": "light.smart_switch_led_2",
+    "id": null,
+    "friendly_name": "smart plug LED 3"
+  },
+  {
+    "entity_id": "number.bottles",
+    "id": null,
+    "friendly_name": "bottles"
+  },
+  {
+    "entity_id": "number.pfand",
+    "id": null,
+    "friendly_name": "pfand"
+  },
+  {
+    "entity_id": "sensor.low_battery_devices",
+    "id": null,
+    "friendly_name": "Low Battery Devices"
+  },
+  {
+    "entity_id": "sensor.unoccupied_rooms",
+    "id": null,
+    "friendly_name": "Unoccupied rooms"
+  },
+  {
+    "entity_id": "sun.sun",
+    "id": null,
+    "friendly_name": "Sun"
+  },
+  {
+    "entity_id": "sensor.sun_next_dawn",
+    "id": null,
+    "friendly_name": "Sun Next dawn"
+  },
+  {
+    "entity_id": "sensor.sun_next_dusk",
+    "id": null,
+    "friendly_name": "Sun Next dusk"
+  },
+  {
+    "entity_id": "sensor.sun_next_midnight",
+    "id": null,
+    "friendly_name": "Sun Next midnight"
+  },
+  {
+    "entity_id": "sensor.sun_next_noon",
+    "id": null,
+    "friendly_name": "Sun Next noon"
+  },
+  {
+    "entity_id": "sensor.sun_next_rising",
+    "id": null,
+    "friendly_name": "Sun Next rising"
+  },
+  {
+    "entity_id": "sensor.sun_next_setting",
+    "id": null,
+    "friendly_name": "Sun Next setting"
+  },
+  {
+    "entity_id": "tts.google_translate_en_com",
+    "id": null,
+    "friendly_name": "Google Translate en com"
+  },
+  {
+    "entity_id": "binary_sensor.xxx_xxx_x_x_focus",
+    "id": null,
+    "friendly_name": "xxx.xxx.x.x Focus"
+  },
+  {
+    "entity_id": "device_tracker.xxx_xxx_x_x",
+    "id": null,
+    "friendly_name": "xxx.xxx.x.x"
+  },
+  {
+    "entity_id": "sensor.xxx_xxx_x_x_connection_type",
+    "id": null,
+    "friendly_name": "xxx.xxx.x.x Connection Type"
+  },
+  {
+    "entity_id": "sensor.xxx_xxx_x_x_battery_level",
+    "id": null,
+    "friendly_name": "xxx.xxx.x.x Battery Level"
+  },
+  {
+    "entity_id": "sensor.xxx_xxx_x_x_ssid",
+    "id": null,
+    "friendly_name": "xxx.xxx.x.x SSID"
+  },
+  {
+    "entity_id": "sensor.xxx_xxx_x_x_bssid",
+    "id": null,
+    "friendly_name": "xxx.xxx.x.x BSSID"
+  },
+  {
+    "entity_id": "sensor.xxx_xxx_x_x_battery_state",
+    "id": null,
+    "friendly_name": "xxx.xxx.x.x Battery State"
+  },
+  {
+    "entity_id": "sensor.xxx_xxx_x_x_storage",
+    "id": null,
+    "friendly_name": "xxx.xxx.x.x Storage"
+  },
+  {
+    "entity_id": "sensor.xxx_xxx_x_x_sim_2",
+    "id": null,
+    "friendly_name": "xxx.xxx.x.x SIM 2"
+  },
+  {
+    "entity_id": "sensor.xxx_xxx_x_x_geocoded_location",
+    "id": null,
+    "friendly_name": "xxx.xxx.x.x Geocoded Location"
+  },
+  {
+    "entity_id": "sensor.xxx_xxx_x_x_sim_1",
+    "id": null,
+    "friendly_name": "xxx.xxx.x.x SIM 1"
+  },
+  {
+    "entity_id": "sensor.xxx_xxx_x_x_last_update_trigger",
+    "id": null,
+    "friendly_name": "xxx.xxx.x.x Last Update Trigger"
+  },
+  {
+    "entity_id": "sensor.xxx_xxx_x_x_app_version",
+    "id": null,
+    "friendly_name": "xxx.xxx.x.x App Version"
+  },
+  {
+    "entity_id": "sensor.xxx_xxx_x_x_location_permission",
+    "id": null,
+    "friendly_name": "xxx.xxx.x.x Location permission"
+  },
+  {
+    "entity_id": "sensor.xxx_xxx_x_x_audio_output",
+    "id": null,
+    "friendly_name": "xxx.xxx.x.x Audio Output"
+  },
+  {
+    "entity_id": "sensor.xxx_xxx_x_x_activity",
+    "id": null,
+    "friendly_name": "xxx.xxx.x.x Activity"
+  },
+  {
+    "entity_id": "sensor.xxx_xxx_x_x_floors_descended",
+    "id": null,
+    "friendly_name": "xxx.xxx.x.x Floors Descended"
+  },
+  {
+    "entity_id": "sensor.xxx_xxx_x_x_steps",
+    "id": null,
+    "friendly_name": "xxx.xxx.x.x Steps"
+  },
+  {
+    "entity_id": "sensor.xxx_xxx_x_x_distance",
+    "id": null,
+    "friendly_name": "xxx.xxx.x.x Distance"
+  },
+  {
+    "entity_id": "sensor.xxx_xxx_x_x_floors_ascended",
+    "id": null,
+    "friendly_name": "xxx.xxx.x.x Floors Ascended"
+  },
+  {
+    "entity_id": "sensor.xxx_xxx_x_x_average_active_pace",
+    "id": null,
+    "friendly_name": "xxx.xxx.x.x Average Active Pace"
+  },
+  {
+    "entity_id": "binary_sensor.macbook_pro_21_camera_in_use",
+    "id": null,
+    "friendly_name": "MacBook Pro (21) Camera In Use"
+  },
+  {
+    "entity_id": "binary_sensor.macbook_pro_21_audio_input_in_use",
+    "id": null,
+    "friendly_name": "MacBook Pro (21) Audio Input In Use"
+  },
+  {
+    "entity_id": "binary_sensor.macbook_pro_21_audio_output_in_use",
+    "id": null,
+    "friendly_name": "MacBook Pro (21) Audio Output In Use"
+  },
+  {
+    "entity_id": "binary_sensor.macbook_pro_21_focus",
+    "id": null,
+    "friendly_name": "MacBook Pro (21) Focus"
+  },
+  {
+    "entity_id": "binary_sensor.macbook_pro_21_active",
+    "id": null,
+    "friendly_name": "MacBook Pro (21) Active"
+  },
+  {
+    "entity_id": "device_tracker.macbook_pro_21",
+    "id": null,
+    "friendly_name": "MacBook Pro (21)"
+  },
+  {
+    "entity_id": "sensor.macbook_pro_21_internal_battery_level",
+    "id": null,
+    "friendly_name": "MacBook Pro (21) Internal Battery Level"
+  },
+  {
+    "entity_id": "sensor.macbook_pro_21_connection_type",
+    "id": null,
+    "friendly_name": "MacBook Pro (21) Connection Type"
+  },
+  {
+    "entity_id": "sensor.macbook_pro_21_storage",
+    "id": null,
+    "friendly_name": "MacBook Pro (21) Storage"
+  },
+  {
+    "entity_id": "sensor.macbook_pro_21_bssid",
+    "id": null,
+    "friendly_name": "MacBook Pro (21) BSSID"
+  },
+  {
+    "entity_id": "sensor.macbook_pro_21_internal_battery_state",
+    "id": null,
+    "friendly_name": "MacBook Pro (21) Internal Battery State"
+  },
+  {
+    "entity_id": "sensor.macbook_pro_21_ssid",
+    "id": null,
+    "friendly_name": "MacBook Pro (21) SSID"
+  },
+  {
+    "entity_id": "sensor.macbook_pro_21_geocoded_location",
+    "id": null,
+    "friendly_name": "MacBook Pro (21) Geocoded Location"
+  },
+  {
+    "entity_id": "sensor.macbook_pro_21_active_camera",
+    "id": null,
+    "friendly_name": "MacBook Pro (21) Active Camera"
+  },
+  {
+    "entity_id": "sensor.macbook_pro_21_active_audio_input",
+    "id": null,
+    "friendly_name": "MacBook Pro (21) Active Audio Input"
+  },
+  {
+    "entity_id": "sensor.macbook_pro_21_active_audio_output",
+    "id": null,
+    "friendly_name": "MacBook Pro (21) Active Audio Output"
+  },
+  {
+    "entity_id": "sensor.macbook_pro_21_displays",
+    "id": null,
+    "friendly_name": "MacBook Pro (21) Displays"
+  },
+  {
+    "entity_id": "sensor.macbook_pro_21_primary_display_name",
+    "id": null,
+    "friendly_name": "MacBook Pro (21) Primary Display Name"
+  },
+  {
+    "entity_id": "sensor.macbook_pro_21_frontmost_app",
+    "id": null,
+    "friendly_name": "MacBook Pro (21) Frontmost App"
+  },
+  {
+    "entity_id": "sensor.macbook_pro_21_primary_display_id",
+    "id": null,
+    "friendly_name": "MacBook Pro (21) Primary Display ID"
+  },
+  {
+    "entity_id": "sensor.macbook_pro_21_last_update_trigger",
+    "id": null,
+    "friendly_name": "MacBook Pro (21) Last Update Trigger"
+  },
+  {
+    "entity_id": "sensor.macbook_pro_21_location_permission",
+    "id": null,
+    "friendly_name": "MacBook Pro (21) Location permission"
+  },
+  {
+    "entity_id": "sensor.macbook_pro_21_app_version",
+    "id": null,
+    "friendly_name": "MacBook Pro (21) App Version"
+  },
+  {
+    "entity_id": "sensor.macbook_pro_21_audio_output",
+    "id": null,
+    "friendly_name": "MacBook Pro (21) Audio Output"
+  },
+  {
+    "entity_id": "device_tracker.smaller_black_slab",
+    "id": null,
+    "friendly_name": "Smaller black slab"
+  },
+  {
+    "entity_id": "sensor.smaller_black_slab_storage",
+    "id": null,
+    "friendly_name": "Smaller black slab Storage"
+  },
+  {
+    "entity_id": "sensor.smaller_black_slab_battery_state",
+    "id": null,
+    "friendly_name": "Smaller black slab Battery State"
+  },
+  {
+    "entity_id": "sensor.smaller_black_slab_battery_level",
+    "id": null,
+    "friendly_name": "Smaller black slab Battery Level"
+  },
+  {
+    "entity_id": "sensor.smaller_black_slab_ssid",
+    "id": null,
+    "friendly_name": "Smaller black slab SSID"
+  },
+  {
+    "entity_id": "sensor.smaller_black_slab_sim_2",
+    "id": null,
+    "friendly_name": "Smaller black slab SIM 2"
+  },
+  {
+    "entity_id": "sensor.smaller_black_slab_sim_1",
+    "id": null,
+    "friendly_name": "Smaller black slab SIM 1"
+  },
+  {
+    "entity_id": "sensor.smaller_black_slab_geocoded_location",
+    "id": null,
+    "friendly_name": "Smaller black slab Geocoded Location"
+  },
+  {
+    "entity_id": "sensor.smaller_black_slab_bssid",
+    "id": null,
+    "friendly_name": "Smaller black slab BSSID"
+  },
+  {
+    "entity_id": "sensor.smaller_black_slab_connection_type",
+    "id": null,
+    "friendly_name": "Smaller black slab Connection Type"
+  },
+  {
+    "entity_id": "sensor.smaller_black_slab_last_update_trigger",
+    "id": null,
+    "friendly_name": "Smaller black slab Last Update Trigger"
+  },
+  {
+    "entity_id": "sensor.smaller_black_slab_app_version",
+    "id": null,
+    "friendly_name": "Smaller black slab App Version"
+  },
+  {
+    "entity_id": "sensor.smaller_black_slab_location_permission",
+    "id": null,
+    "friendly_name": "Smaller black slab Location permission"
+  },
+  {
+    "entity_id": "sensor.smaller_black_slab_audio_output",
+    "id": null,
+    "friendly_name": "Smaller black slab Audio Output"
+  },
+  {
+    "entity_id": "binary_sensor.macbook_pro_21_camera_in_use_2",
+    "id": null,
+    "friendly_name": "MacBook Pro (21) Camera In Use"
+  },
+  {
+    "entity_id": "binary_sensor.macbook_pro_21_audio_input_in_use_2",
+    "id": null,
+    "friendly_name": "MacBook Pro (21) Audio Input In Use"
+  },
+  {
+    "entity_id": "binary_sensor.macbook_pro_21_audio_output_in_use_2",
+    "id": null,
+    "friendly_name": "MacBook Pro (21) Audio Output In Use"
+  },
+  {
+    "entity_id": "binary_sensor.macbook_pro_21_active_2",
+    "id": null,
+    "friendly_name": "MacBook Pro (21) Active"
+  },
+  {
+    "entity_id": "binary_sensor.macbook_pro_21_focus_2",
+    "id": null,
+    "friendly_name": "MacBook Pro (21) Focus"
+  },
+  {
+    "entity_id": "device_tracker.macbook_pro_db",
+    "id": null,
+    "friendly_name": "MacBook Pro (21)"
+  },
+  {
+    "entity_id": "sensor.macbook_pro_21_internal_battery_level_2",
+    "id": null,
+    "friendly_name": "MacBook Pro (21) Internal Battery Level"
+  },
+  {
+    "entity_id": "sensor.macbook_pro_21_storage_2",
+    "id": null,
+    "friendly_name": "MacBook Pro (21) Storage"
+  },
+  {
+    "entity_id": "sensor.macbook_pro_21_internal_battery_state_2",
+    "id": null,
+    "friendly_name": "MacBook Pro (21) Internal Battery State"
+  },
+  {
+    "entity_id": "sensor.macbook_pro_21_bssid_2",
+    "id": null,
+    "friendly_name": "MacBook Pro (21) BSSID"
+  },
+  {
+    "entity_id": "sensor.macbook_pro_21_ssid_2",
+    "id": null,
+    "friendly_name": "MacBook Pro (21) SSID"
+  },
+  {
+    "entity_id": "sensor.macbook_pro_21_connection_type_2",
+    "id": null,
+    "friendly_name": "MacBook Pro (21) Connection Type"
+  },
+  {
+    "entity_id": "sensor.macbook_pro_21_geocoded_location_2",
+    "id": null,
+    "friendly_name": "MacBook Pro (21) Geocoded Location"
+  },
+  {
+    "entity_id": "sensor.macbook_pro_21_active_camera_2",
+    "id": null,
+    "friendly_name": "MacBook Pro (21) Active Camera"
+  },
+  {
+    "entity_id": "sensor.macbook_pro_21_active_audio_input_2",
+    "id": null,
+    "friendly_name": "MacBook Pro (21) Active Audio Input"
+  },
+  {
+    "entity_id": "sensor.macbook_pro_21_active_audio_output_2",
+    "id": null,
+    "friendly_name": "MacBook Pro (21) Active Audio Output"
+  },
+  {
+    "entity_id": "sensor.macbook_pro_21_displays_2",
+    "id": null,
+    "friendly_name": "MacBook Pro (21) Displays"
+  },
+  {
+    "entity_id": "sensor.macbook_pro_21_primary_display_name_2",
+    "id": null,
+    "friendly_name": "MacBook Pro (21) Primary Display Name"
+  },
+  {
+    "entity_id": "sensor.macbook_pro_21_primary_display_id_2",
+    "id": null,
+    "friendly_name": "MacBook Pro (21) Primary Display ID"
+  },
+  {
+    "entity_id": "sensor.macbook_pro_21_frontmost_app_2",
+    "id": null,
+    "friendly_name": "MacBook Pro (21) Frontmost App"
+  },
+  {
+    "entity_id": "sensor.macbook_pro_21_last_update_trigger_2",
+    "id": null,
+    "friendly_name": "MacBook Pro (21) Last Update Trigger"
+  },
+  {
+    "entity_id": "sensor.macbook_pro_21_app_version_2",
+    "id": null,
+    "friendly_name": "MacBook Pro (21) App Version"
+  },
+  {
+    "entity_id": "sensor.macbook_pro_21_location_permission_2",
+    "id": null,
+    "friendly_name": "MacBook Pro (21) Location permission"
+  },
+  {
+    "entity_id": "sensor.macbook_pro_21_audio_output_2",
+    "id": null,
+    "friendly_name": "MacBook Pro (21) Audio Output"
+  },
+  {
+    "entity_id": "device_tracker.daniels_ipad",
+    "id": null,
+    "friendly_name": "Daniel’s iPad"
+  },
+  {
+    "entity_id": "sensor.daniels_ipad_battery_level",
+    "id": null,
+    "friendly_name": "Daniel’s iPad Battery Level"
+  },
+  {
+    "entity_id": "sensor.daniels_ipad_bssid",
+    "id": null,
+    "friendly_name": "Daniel’s iPad BSSID"
+  },
+  {
+    "entity_id": "sensor.daniels_ipad_connection_type",
+    "id": null,
+    "friendly_name": "Daniel’s iPad Connection Type"
+  },
+  {
+    "entity_id": "sensor.daniels_ipad_geocoded_location",
+    "id": null,
+    "friendly_name": "Daniel’s iPad Geocoded Location"
+  },
+  {
+    "entity_id": "sensor.daniels_ipad_last_update_trigger",
+    "id": null,
+    "friendly_name": "Daniel’s iPad Last Update Trigger"
+  },
+  {
+    "entity_id": "sensor.daniels_ipad_battery_state",
+    "id": null,
+    "friendly_name": "Daniel’s iPad Battery State"
+  },
+  {
+    "entity_id": "sensor.daniels_ipad_storage",
+    "id": null,
+    "friendly_name": "Daniel’s iPad Storage"
+  },
+  {
+    "entity_id": "sensor.daniels_ipad_ssid",
+    "id": null,
+    "friendly_name": "Daniel’s iPad SSID"
+  },
+  {
+    "entity_id": "binary_sensor.octoprint_printing",
+    "id": null,
+    "friendly_name": "OctoPrint Printing"
+  },
+  {
+    "entity_id": "binary_sensor.octoprint_printing_error",
+    "id": null,
+    "friendly_name": "OctoPrint Printing Error"
+  },
+  {
+    "entity_id": "button.octoprint_resume_job",
+    "id": null,
+    "friendly_name": "OctoPrint Resume Job"
+  },
+  {
+    "entity_id": "button.octoprint_pause_job",
+    "id": null,
+    "friendly_name": "OctoPrint Pause Job"
+  },
+  {
+    "entity_id": "button.octoprint_stop_job",
+    "id": null,
+    "friendly_name": "OctoPrint Stop Job"
+  },
+  {
+    "entity_id": "button.octoprint_shutdown_system",
+    "id": null,
+    "friendly_name": "OctoPrint Shutdown System"
+  },
+  {
+    "entity_id": "button.octoprint_reboot_system",
+    "id": null,
+    "friendly_name": "OctoPrint Reboot System"
+  },
+  {
+    "entity_id": "button.octoprint_restart_octoprint",
+    "id": null,
+    "friendly_name": "OctoPrint Restart Octoprint"
+  },
+  {
+    "entity_id": "sensor.octoprint_actual_a_temp",
+    "id": null,
+    "friendly_name": "OctoPrint actual A temp"
+  },
+  {
+    "entity_id": "sensor.octoprint_target_a_temp",
+    "id": null,
+    "friendly_name": "OctoPrint target A temp"
+  },
+  {
+    "entity_id": "sensor.octoprint_actual_e_temp",
+    "id": null,
+    "friendly_name": "OctoPrint actual E temp"
+  },
+  {
+    "entity_id": "sensor.octoprint_target_e_temp",
+    "id": null,
+    "friendly_name": "OctoPrint target E temp"
+  },
+  {
+    "entity_id": "sensor.octoprint_actual_p_temp",
+    "id": null,
+    "friendly_name": "OctoPrint actual P temp"
+  },
+  {
+    "entity_id": "sensor.octoprint_target_p_temp",
+    "id": null,
+    "friendly_name": "OctoPrint target P temp"
+  },
+  {
+    "entity_id": "sensor.octoprint_actual_w_temp",
+    "id": null,
+    "friendly_name": "OctoPrint actual W temp"
+  },
+  {
+    "entity_id": "sensor.octoprint_target_w_temp",
+    "id": null,
+    "friendly_name": "OctoPrint target W temp"
+  },
+  {
+    "entity_id": "sensor.octoprint_actual_bed_temp",
+    "id": null,
+    "friendly_name": "OctoPrint actual bed temp"
+  },
+  {
+    "entity_id": "sensor.octoprint_target_bed_temp",
+    "id": null,
+    "friendly_name": "OctoPrint target bed temp"
+  },
+  {
+    "entity_id": "sensor.octoprint_actual_tool0_temp",
+    "id": null,
+    "friendly_name": "OctoPrint actual tool0 temp"
+  },
+  {
+    "entity_id": "sensor.octoprint_target_tool0_temp",
+    "id": null,
+    "friendly_name": "OctoPrint target tool0 temp"
+  },
+  {
+    "entity_id": "sensor.octoprint_current_state",
+    "id": null,
+    "friendly_name": "OctoPrint Current State"
+  },
+  {
+    "entity_id": "sensor.octoprint_job_percentage",
+    "id": null,
+    "friendly_name": "OctoPrint Job Percentage"
+  },
+  {
+    "entity_id": "sensor.octoprint_estimated_finish_time",
+    "id": null,
+    "friendly_name": "OctoPrint Estimated Finish Time"
+  },
+  {
+    "entity_id": "sensor.octoprint_start_time",
+    "id": null,
+    "friendly_name": "OctoPrint Start Time"
+  },
+  {
+    "entity_id": "camera.octoprint_camera",
+    "id": null,
+    "friendly_name": "OctoPrint Camera"
+  },
+  {
+    "entity_id": "update.hacs_update",
+    "id": null,
+    "friendly_name": "HACS update"
+  },
+  {
+    "entity_id": "update.template_entity_row_update",
+    "id": null,
+    "friendly_name": "template-entity-row update"
+  },
+  {
+    "entity_id": "binary_sensor.rpi_power_status",
+    "id": null,
+    "friendly_name": "RPi Power status"
+  },
+  {
+    "entity_id": "sensor.backup_backup_manager_state",
+    "id": null,
+    "friendly_name": "Backup Backup Manager state"
+  },
+  {
+    "entity_id": "sensor.backup_next_scheduled_automatic_backup",
+    "id": null,
+    "friendly_name": "Backup Next scheduled automatic backup"
+  },
+  {
+    "entity_id": "sensor.backup_last_successful_automatic_backup",
+    "id": null,
+    "friendly_name": "Backup Last successful automatic backup"
+  },
+  {
+    "entity_id": "stt.faster_whisper",
+    "id": null,
+    "friendly_name": "faster-whisper"
+  },
+  {
+    "entity_id": "stt.speech_to_phrase",
+    "id": null,
+    "friendly_name": "speech-to-phrase"
+  },
+  {
+    "entity_id": "tts.piper",
+    "id": null,
+    "friendly_name": "piper"
+  },
+  {
+    "entity_id": "weather.forecast_home",
+    "id": null,
+    "friendly_name": "Forecast CODE MakerSpace"
+  },
+  {
+    "entity_id": "sensor.karl_marx_strasse_berlin_germany_air_quality_index",
+    "id": null,
+    "friendly_name": "Karl-Marx-Straße, Berlin, Germany Air quality index"
+  },
+  {
+    "entity_id": "sensor.karl_marx_strasse_berlin_germany_humidity",
+    "id": null,
+    "friendly_name": "Karl-Marx-Straße, Berlin, Germany Humidity"
+  },
+  {
+    "entity_id": "sensor.karl_marx_strasse_berlin_germany_pressure",
+    "id": null,
+    "friendly_name": "Karl-Marx-Straße, Berlin, Germany Pressure"
+  },
+  {
+    "entity_id": "sensor.karl_marx_strasse_berlin_germany_temperature",
+    "id": null,
+    "friendly_name": "Karl-Marx-Straße, Berlin, Germany Temperature"
+  },
+  {
+    "entity_id": "sensor.karl_marx_strasse_berlin_germany_nitrogen_dioxide",
+    "id": null,
+    "friendly_name": "Karl-Marx-Straße, Berlin, Germany Nitrogen dioxide"
+  },
+  {
+    "entity_id": "sensor.karl_marx_strasse_berlin_germany_pm10",
+    "id": null,
+    "friendly_name": "Karl-Marx-Straße, Berlin, Germany PM10"
+  },
+  {
+    "entity_id": "sensor.karl_marx_strasse_berlin_germany_pm2_5",
+    "id": null,
+    "friendly_name": "Karl-Marx-Straße, Berlin, Germany PM2.5"
+  },
+  {
+    "entity_id": "sensor.karl_marx_strasse_berlin_germany_dominant_pollutant",
+    "id": null,
+    "friendly_name": "Karl-Marx-Straße, Berlin, Germany Dominant pollutant"
+  },
+  {
+    "entity_id": "sensor.pfand_hx711_value",
+    "id": null,
+    "friendly_name": "Pfand HX711 Value"
+  },
+  {
+    "entity_id": "select.home_assistant_voice_093f20_assistant",
+    "id": null,
+    "friendly_name": "Home Assistant Voice 093f20 Assistant"
+  },
+  {
+    "entity_id": "select.home_assistant_voice_093f20_finished_speaking_detection",
+    "id": null,
+    "friendly_name": "Home Assistant Voice 093f20 Finished speaking detection"
+  },
+  {
+    "entity_id": "select.home_assistant_voice_093f20_wake_word",
+    "id": null,
+    "friendly_name": "Home Assistant Voice 093f20 Wake word"
+  },
+  {
+    "entity_id": "media_player.home_assistant_voice_093f20_media_player",
+    "id": null,
+    "friendly_name": "Home Assistant Voice 093f20 Media Player"
+  },
+  {
+    "entity_id": "switch.home_assistant_voice_093f20_mute",
+    "id": null,
+    "friendly_name": "Home Assistant Voice 093f20 Mute"
+  },
+  {
+    "entity_id": "switch.home_assistant_voice_093f20_wake_sound",
+    "id": null,
+    "friendly_name": "Home Assistant Voice 093f20 Wake sound"
+  },
+  {
+    "entity_id": "light.home_assistant_voice_093f20_led_ring",
+    "id": null,
+    "friendly_name": "Home Assistant Voice 093f20 LED Ring"
+  },
+  {
+    "entity_id": "event.home_assistant_voice_093f20_button_press",
+    "id": null,
+    "friendly_name": "Home Assistant Voice 093f20 Button press"
+  },
+  {
+    "entity_id": "update.home_assistant_voice_093f20_home_assistant_voice_093f20",
+    "id": null,
+    "friendly_name": "Home Assistant Voice 093f20 "
+  },
+  {
+    "entity_id": "calendar.code_1_w_room_b_7_4",
+    "id": null,
+    "friendly_name": "B7"
+  },
+  {
+    "entity_id": "calendar.code_1_b_4_4",
+    "id": null,
+    "friendly_name": "B4"
+  },
+  {
+    "entity_id": "calendar.code_1_b_present_b_5_4",
+    "id": null,
+    "friendly_name": "B5"
+  },
+  {
+    "entity_id": "calendar.code_1_peace_b_3_6",
+    "id": null,
+    "friendly_name": "B3"
+  },
+  {
+    "entity_id": "calendar.code_1_babylon_a_1_12_conferencing_system",
+    "id": null,
+    "friendly_name": "A1"
+  },
+  {
+    "entity_id": "calendar.code_1_muted_a_6_40",
+    "id": null,
+    "friendly_name": "A6"
+  },
+  {
+    "entity_id": "calendar.code_1_pandora_a_24_36",
+    "id": null,
+    "friendly_name": "A24"
+  },
+  {
+    "entity_id": "calendar.code_1_ris_a_12_32",
+    "id": null,
+    "friendly_name": "A12"
+  },
+  {
+    "entity_id": "calendar.code_1_tet_a_11_68",
+    "id": null,
+    "friendly_name": "A11"
+  },
+  {
+    "entity_id": "calendar.code_1_mf_room_b_10_1",
+    "id": null,
+    "friendly_name": "B10"
+  },
+  {
+    "entity_id": "calendar.code_1_jungle_a_2_36",
+    "id": null,
+    "friendly_name": "A2"
+  },
+  {
+    "entity_id": "calendar.code_1_b_after_b_6_4",
+    "id": null,
+    "friendly_name": "B6"
+  },
+  {
+    "entity_id": "calendar.code_1_han_s_zimmer_b_12_1",
+    "id": null,
+    "friendly_name": "B12"
+  },
+  {
+    "entity_id": "calendar.birthdays",
+    "id": null,
+    "friendly_name": "Birthdays"
+  },
+  {
+    "entity_id": "calendar.code_1_dark_matter_b_14_36",
+    "id": null,
+    "friendly_name": "B14"
+  },
+  {
+    "entity_id": "assist_satellite.home_assistant_voice_093f20_assist_satellite",
+    "id": null,
+    "friendly_name": "Home Assistant Voice 093f20 Assist satellite"
+  },
+  {
+    "entity_id": "binary_sensor.makerspace_occupancy_occupancy",
+    "id": null,
+    "friendly_name": "MakerSpace Occupancy"
+  },
+  {
+    "entity_id": "binary_sensor.b3_occupancy_occupancy",
+    "id": null,
+    "friendly_name": "B3 Occupancy"
+  },
+  {
+    "entity_id": "binary_sensor.b4_occupancy_occupancy",
+    "id": null,
+    "friendly_name": "B4 Occupancy"
+  },
+  {
+    "entity_id": "binary_sensor.b5_occupancy",
+    "id": null,
+    "friendly_name": "B5 Occupancy"
+  },
+  {
+    "entity_id": "binary_sensor.b6_occupancy_occupancy_2",
+    "id": null,
+    "friendly_name": "B6 Occupancy"
+  },
+  {
+    "entity_id": "binary_sensor.b7_occupancy_occupancy_2",
+    "id": null,
+    "friendly_name": "B7 Occupancy"
+  },
+  {
+    "entity_id": "binary_sensor.unknown_occupancy_3",
+    "id": null,
+    "friendly_name": "B10 Occupancy"
+  },
+  {
+    "entity_id": "binary_sensor.b12_occupancy_occupancy_3",
+    "id": null,
+    "friendly_name": "B12 Occupancy"
+  },
+  {
+    "entity_id": "binary_sensor.a6_occupancy_occupancy_4",
+    "id": null,
+    "friendly_name": "A6 Occupancy"
+  },
+  {
+    "entity_id": "binary_sensor.ewelink_ms01",
+    "id": null,
+    "friendly_name": "Phone Booth 1 Occupancy"
+  },
+  {
+    "entity_id": "binary_sensor.ewelink_ms01_2",
+    "id": null,
+    "friendly_name": "Phone Booth 3 Occupancy"
+  },
+  {
+    "entity_id": "binary_sensor.unk_manufacturer_unk_model",
+    "id": null,
+    "friendly_name": "Phone Booth 2 Occupancy"
+  },
+  {
+    "entity_id": "binary_sensor.ewelink_ms01_3",
+    "id": null,
+    "friendly_name": "Phone Booth 4 Occupancy"
+  },
+  {
+    "entity_id": "button.ikea_power_socket_1_identify",
+    "id": null,
+    "friendly_name": "Ikea power socket 1 Identify"
+  },
+  {
+    "entity_id": "button.makerspace_occupancy_identify",
+    "id": null,
+    "friendly_name": "Makerspace occupancy Identify"
+  },
+  {
+    "entity_id": "button.ikea_aq_sensor_identify",
+    "id": null,
+    "friendly_name": "IKEA AQ sensor Identify"
+  },
+  {
+    "entity_id": "button.ikea_tradfri_driver_1_identify",
+    "id": null,
+    "friendly_name": "IKEA tradfri driver 1 Identify"
+  },
+  {
+    "entity_id": "button.ikea_tradfri_driver_2_identify_2",
+    "id": null,
+    "friendly_name": "IKEA tradfri driver 2 Identify"
+  },
+  {
+    "entity_id": "button.ikea_of_sweden_remote_control_n2_identify",
+    "id": null,
+    "friendly_name": "IKEA of Sweden Remote Control N2 Identify"
+  },
+  {
+    "entity_id": "button.ikea_power_socket_2_identify",
+    "id": null,
+    "friendly_name": "Ikea power socket 2 Identify"
+  },
+  {
+    "entity_id": "button.sonoff_snzb_02d_temp_humidity_identify",
+    "id": null,
+    "friendly_name": "SONOFF SNZB-02D temp humidity Identify"
+  },
+  {
+    "entity_id": "button.sonoff_snzb_02d_humid_temp_identify",
+    "id": null,
+    "friendly_name": "SONOFF SNZB-02D humid temp Identify"
+  },
+  {
+    "entity_id": "button.sonoff_snzb_02d_temp_humid_identify",
+    "id": null,
+    "friendly_name": "SONOFF SNZB-02D temp humid Identify"
+  },
+  {
+    "entity_id": "button.sonoff_snzb_02d_identify",
+    "id": null,
+    "friendly_name": "SONOFF SNZB-02D humid temp Identify"
+  },
+  {
+    "entity_id": "button.ikea_power_socket_identify",
+    "id": null,
+    "friendly_name": "IKEA power socket Identify"
+  },
+  {
+    "entity_id": "button.sonoff_snzb_02d_humid_temp_identify_2",
+    "id": null,
+    "friendly_name": "SONOFF SNZB-02D humid temp Identify"
+  },
+  {
+    "entity_id": "button.sonoff_snzb_02d_identify_2",
+    "id": null,
+    "friendly_name": "SONOFF SNZB-02D humid temp Identify"
+  },
+  {
+    "entity_id": "button.ikea_of_sweden_tretakt_smart_plug_identify",
+    "id": null,
+    "friendly_name": "IKEA of Sweden TRETAKT Smart plug Identify"
+  },
+  {
+    "entity_id": "button.al001_wg001_z01_wifi_extender_identify",
+    "id": null,
+    "friendly_name": "AL001 WG001-Z01 wifi extender Identify"
+  },
+  {
+    "entity_id": "button.sonoff_snzb_02d_humid_temp_identify_3",
+    "id": null,
+    "friendly_name": "SONOFF SNZB-02D humid temp Identify"
+  },
+  {
+    "entity_id": "button.sonoff_snzb_02d_identify_3",
+    "id": null,
+    "friendly_name": "SONOFF SNZB-02D humid temp  Identify"
+  },
+  {
+    "entity_id": "button.ikea_of_sweden_tradfri_driver_30w_3_identify",
+    "id": null,
+    "friendly_name": "IKEA of Sweden TRADFRI Driver 30W 3 Identify"
+  },
+  {
+    "entity_id": "button.ikea_tradfri_driver_4_laser_cutter_identify",
+    "id": null,
+    "friendly_name": "IKEA tradfri driver 4 laser cutter Identify"
+  },
+  {
+    "entity_id": "button.ikea_tradfri_driver_4_identify",
+    "id": null,
+    "friendly_name": "IKEA tradfri Driver 4 Identify"
+  },
+  {
+    "entity_id": "button.b3_occupancy_identify",
+    "id": null,
+    "friendly_name": "B3 occupancy Identify"
+  },
+  {
+    "entity_id": "button.sonoff_snzb_02d_identify_4",
+    "id": null,
+    "friendly_name": "SONOFF SNZB-02D Identify"
+  },
+  {
+    "entity_id": "button.b4_occupancy_identify",
+    "id": null,
+    "friendly_name": "B4 Occupancy Identify"
+  },
+  {
+    "entity_id": "button.sonoff_snzb_06p_identify",
+    "id": null,
+    "friendly_name": "B5 Occupancy Identify"
+  },
+  {
+    "entity_id": "button.b6_occupancy_identify_2",
+    "id": null,
+    "friendly_name": "B6 Occupancy Identify"
+  },
+  {
+    "entity_id": "button.b7_occupancy_identify_2",
+    "id": null,
+    "friendly_name": "B7 occupancy Identify"
+  },
+  {
+    "entity_id": "button.unknown_identify_3",
+    "id": null,
+    "friendly_name": "§ Identify"
+  },
+  {
+    "entity_id": "button.b12_occupancy_identify_3",
+    "id": null,
+    "friendly_name": "B12 occupancy Identify"
+  },
+  {
+    "entity_id": "button.a6_occupancy_identify_4",
+    "id": null,
+    "friendly_name": "A6 occupancy Identify"
+  },
+  {
+    "entity_id": "button.smart_switch_led_2_identify_2",
+    "id": null,
+    "friendly_name": "smart switch LED 2 Identify"
+  },
+  {
+    "entity_id": "button.ewelink_ms01_identify",
+    "id": null,
+    "friendly_name": "eWeLink MS01 Identify"
+  },
+  {
+    "entity_id": "button.frient_a_s_aqszb_110_identify",
+    "id": null,
+    "friendly_name": "frient A/S AQSZB-110 Identify"
+  },
+  {
+    "entity_id": "button.ewelink_ms01_identify_2",
+    "id": null,
+    "friendly_name": "eWeLink MS01 Identify"
+  },
+  {
+    "entity_id": "button.unk_manufacturer_unk_model_identify",
+    "id": null,
+    "friendly_name": "unk_manufacturer unk_model Identify"
+  },
+  {
+    "entity_id": "button.ewelink_ms01_identify_3",
+    "id": null,
+    "friendly_name": "eWeLink MS01 Identify"
+  },
+  {
+    "entity_id": "light.ikea_tradfri_driver_1_light",
+    "id": null,
+    "friendly_name": "IKEA tradfri driver 1 Light"
+  },
+  {
+    "entity_id": "light.ikea_tradfri_driver_2_light_2",
+    "id": null,
+    "friendly_name": "IKEA tradfri driver 2 Light"
+  },
+  {
+    "entity_id": "light.ikea_of_sweden_tradfri_driver_30w_3_light",
+    "id": null,
+    "friendly_name": "IKEA tradfri driver 3 light"
+  },
+  {
+    "entity_id": "light.ikea_tradfri_driver_4_laser_cutter_light",
+    "id": null,
+    "friendly_name": "IKEA tradfri driver laser cutter Light"
+  },
+  {
+    "entity_id": "light.ikea_tradfri_driver_4_light",
+    "id": null,
+    "friendly_name": "IKEA tradfri driver 4 Light"
+  },
+  {
+    "entity_id": "light.generic_zigbee_coordinator_ezsp_makerspace_lights",
+    "id": null,
+    "friendly_name": " Generic Zigbee Coordinator (EZSP) makerspace lights"
+  },
+  {
+    "entity_id": "number.makerspace_occupancy_presence_detection_timeout",
+    "id": null,
+    "friendly_name": "Makerspace occupancy Presence detection timeout"
+  },
+  {
+    "entity_id": "number.ikea_tradfri_driver_1_on_off_transition_time",
+    "id": null,
+    "friendly_name": "IKEA tradfri driver 1 On/Off transition time"
+  },
+  {
+    "entity_id": "number.ikea_tradfri_driver_1_on_level",
+    "id": null,
+    "friendly_name": "IKEA tradfri driver 1 On level"
+  },
+  {
+    "entity_id": "number.ikea_tradfri_driver_1_start_up_current_level",
+    "id": null,
+    "friendly_name": "IKEA tradfri driver 1 Start-up current level"
+  },
+  {
+    "entity_id": "number.ikea_tradfri_driver_2_on_off_transition_time_2",
+    "id": null,
+    "friendly_name": "IKEA tradfri driver 2 On/Off transition time"
+  },
+  {
+    "entity_id": "number.ikea_tradfri_driver_2_on_level_2",
+    "id": null,
+    "friendly_name": "IKEA tradfri driver 2 On level"
+  },
+  {
+    "entity_id": "number.ikea_tradfri_driver_2_start_up_current_level_2",
+    "id": null,
+    "friendly_name": "IKEA tradfri driver 2 Start-up current level"
+  },
+  {
+    "entity_id": "number.sonoff_snzb_02d_temp_humidity_comfort_temperature_min",
+    "id": null,
+    "friendly_name": "SONOFF SNZB-02D temp humidity Comfort temperature min"
+  },
+  {
+    "entity_id": "number.sonoff_snzb_02d_temp_humidity_comfort_temperature_max",
+    "id": null,
+    "friendly_name": "SONOFF SNZB-02D temp humidity Comfort temperature max"
+  },
+  {
+    "entity_id": "number.sonoff_snzb_02d_temp_humidity_comfort_humidity_min",
+    "id": null,
+    "friendly_name": "SONOFF SNZB-02D temp humidity Comfort humidity min"
+  },
+  {
+    "entity_id": "number.sonoff_snzb_02d_temp_humidity_comfort_humidity_max",
+    "id": null,
+    "friendly_name": "SONOFF SNZB-02D temp humidity Comfort humidity max"
+  },
+  {
+    "entity_id": "number.sonoff_snzb_02d_humid_temp_comfort_temperature_min",
+    "id": null,
+    "friendly_name": "SONOFF SNZB-02D humid temp Comfort temperature min"
+  },
+  {
+    "entity_id": "number.sonoff_snzb_02d_humid_temp_comfort_temperature_max",
+    "id": null,
+    "friendly_name": "SONOFF SNZB-02D humid temp Comfort temperature max"
+  },
+  {
+    "entity_id": "number.sonoff_snzb_02d_humid_temp_comfort_humidity_min",
+    "id": null,
+    "friendly_name": "SONOFF SNZB-02D humid temp Comfort humidity min"
+  },
+  {
+    "entity_id": "number.sonoff_snzb_02d_humid_temp_comfort_humidity_max",
+    "id": null,
+    "friendly_name": "SONOFF SNZB-02D humid temp Comfort humidity max"
+  },
+  {
+    "entity_id": "number.sonoff_snzb_02d_temp_humid_comfort_temperature_min",
+    "id": null,
+    "friendly_name": "SONOFF SNZB-02D temp humid Comfort temperature min"
+  },
+  {
+    "entity_id": "number.sonoff_snzb_02d_temp_humid_comfort_temperature_max",
+    "id": null,
+    "friendly_name": "SONOFF SNZB-02D temp humid Comfort temperature max"
+  },
+  {
+    "entity_id": "number.sonoff_snzb_02d_temp_humid_comfort_humidity_min",
+    "id": null,
+    "friendly_name": "SONOFF SNZB-02D temp humid Comfort humidity min"
+  },
+  {
+    "entity_id": "number.sonoff_snzb_02d_temp_humid_comfort_humidity_max",
+    "id": null,
+    "friendly_name": "SONOFF SNZB-02D temp humid Comfort humidity max"
+  },
+  {
+    "entity_id": "number.sonoff_snzb_02d_humid_temp_comfort_temperature_min_2",
+    "id": null,
+    "friendly_name": "SONOFF SNZB-02D humid temp Comfort temperature min"
+  },
+  {
+    "entity_id": "number.sonoff_snzb_02d_humid_temp_comfort_temperature_max_2",
+    "id": null,
+    "friendly_name": "SONOFF SNZB-02D humid temp Comfort temperature max"
+  },
+  {
+    "entity_id": "number.sonoff_snzb_02d_humid_temp_comfort_humidity_min_2",
+    "id": null,
+    "friendly_name": "SONOFF SNZB-02D humid temp Comfort humidity min"
+  },
+  {
+    "entity_id": "number.sonoff_snzb_02d_humid_temp_comfort_humidity_max_2",
+    "id": null,
+    "friendly_name": "SONOFF SNZB-02D humid temp Comfort humidity max"
+  },
+  {
+    "entity_id": "number.sonoff_snzb_02d_humid_temp_comfort_temperature_min_3",
+    "id": null,
+    "friendly_name": "SONOFF SNZB-02D humid temp Comfort temperature min"
+  },
+  {
+    "entity_id": "number.sonoff_snzb_02d_humid_temp_comfort_temperature_max_3",
+    "id": null,
+    "friendly_name": "SONOFF SNZB-02D humid temp Comfort temperature max"
+  },
+  {
+    "entity_id": "number.sonoff_snzb_02d_humid_temp_comfort_humidity_min_3",
+    "id": null,
+    "friendly_name": "SONOFF SNZB-02D humid temp Comfort humidity min"
+  },
+  {
+    "entity_id": "number.sonoff_snzb_02d_humid_temp_comfort_humidity_max_3",
+    "id": null,
+    "friendly_name": "SONOFF SNZB-02D humid temp Comfort humidity max"
+  },
+  {
+    "entity_id": "number.sonoff_snzb_02d_humid_temp_comfort_temperature_min_4",
+    "id": null,
+    "friendly_name": "SONOFF SNZB-02D humid temp Comfort temperature min"
+  },
+  {
+    "entity_id": "number.sonoff_snzb_02d_humid_temp_comfort_temperature_max_4",
+    "id": null,
+    "friendly_name": "SONOFF SNZB-02D humid temp Comfort temperature max"
+  },
+  {
+    "entity_id": "number.sonoff_snzb_02d_humid_temp_comfort_humidity_min_4",
+    "id": null,
+    "friendly_name": "SONOFF SNZB-02D humid temp Comfort humidity min"
+  },
+  {
+    "entity_id": "number.sonoff_snzb_02d_humid_temp_comfort_humidity_max_4",
+    "id": null,
+    "friendly_name": "SONOFF SNZB-02D humid temp Comfort humidity max"
+  },
+  {
+    "entity_id": "number.sonoff_snzb_02d_humid_temp_comfort_temperature_min_5",
+    "id": null,
+    "friendly_name": "SONOFF SNZB-02D humid temp Comfort temperature min"
+  },
+  {
+    "entity_id": "number.sonoff_snzb_02d_humid_temp_comfort_temperature_max_5",
+    "id": null,
+    "friendly_name": "SONOFF SNZB-02D humid temp Comfort temperature max"
+  },
+  {
+    "entity_id": "number.sonoff_snzb_02d_humid_temp_comfort_humidity_min_5",
+    "id": null,
+    "friendly_name": "SONOFF SNZB-02D humid temp Comfort humidity min"
+  },
+  {
+    "entity_id": "number.sonoff_snzb_02d_humid_temp_comfort_humidity_max_5",
+    "id": null,
+    "friendly_name": "SONOFF SNZB-02D humid temp Comfort humidity max"
+  },
+  {
+    "entity_id": "number.sonoff_snzb_02d_humid_temp_comfort_temperature_min_6",
+    "id": null,
+    "friendly_name": "SONOFF SNZB-02D humid temp  Comfort temperature min"
+  },
+  {
+    "entity_id": "number.sonoff_snzb_02d_humid_temp_comfort_temperature_max_6",
+    "id": null,
+    "friendly_name": "SONOFF SNZB-02D humid temp  Comfort temperature max"
+  },
+  {
+    "entity_id": "number.sonoff_snzb_02d_humid_temp_comfort_humidity_min_6",
+    "id": null,
+    "friendly_name": "SONOFF SNZB-02D humid temp  Comfort humidity min"
+  },
+  {
+    "entity_id": "number.sonoff_snzb_02d_humid_temp_comfort_humidity_max_6",
+    "id": null,
+    "friendly_name": "SONOFF SNZB-02D humid temp  Comfort humidity max"
+  },
+  {
+    "entity_id": "number.ikea_of_sweden_tradfri_driver_30w_3_on_level",
+    "id": null,
+    "friendly_name": "IKEA of Sweden TRADFRI Driver 30W 3 On level"
+  },
+  {
+    "entity_id": "number.ikea_tradfri_driver_4_laser_cutter_on_level",
+    "id": null,
+    "friendly_name": "IKEA tradfri driver 4 laser cutter On level"
+  },
+  {
+    "entity_id": "number.ikea_tradfri_driver_4_on_off_transition_time",
+    "id": null,
+    "friendly_name": "IKEA tradfri Driver 4 On/Off transition time"
+  },
+  {
+    "entity_id": "number.ikea_tradfri_driver_4_on_level",
+    "id": null,
+    "friendly_name": "IKEA tradfri Driver 4 On level"
+  },
+  {
+    "entity_id": "number.ikea_tradfri_driver_4_start_up_current_level",
+    "id": null,
+    "friendly_name": "IKEA tradfri Driver 4 Start-up current level"
+  },
+  {
+    "entity_id": "number.b3_occupancy_presence_detection_timeout",
+    "id": null,
+    "friendly_name": "B3 occupancy Presence detection timeout"
+  },
+  {
+    "entity_id": "number.sonoff_snzb_02d_comfort_temperature_min",
+    "id": null,
+    "friendly_name": "SONOFF SNZB-02D Comfort temperature min"
+  },
+  {
+    "entity_id": "number.sonoff_snzb_02d_comfort_temperature_max",
+    "id": null,
+    "friendly_name": "SONOFF SNZB-02D Comfort temperature max"
+  },
+  {
+    "entity_id": "number.sonoff_snzb_02d_comfort_humidity_min",
+    "id": null,
+    "friendly_name": "SONOFF SNZB-02D Comfort humidity min"
+  },
+  {
+    "entity_id": "number.sonoff_snzb_02d_comfort_humidity_max",
+    "id": null,
+    "friendly_name": "SONOFF SNZB-02D Comfort humidity max"
+  },
+  {
+    "entity_id": "number.b4_occupancy_presence_detection_timeout",
+    "id": null,
+    "friendly_name": "B4 Occupancy Presence detection timeout"
+  },
+  {
+    "entity_id": "number.sonoff_snzb_06p_presence_detection_timeout",
+    "id": null,
+    "friendly_name": "B5 Occupancy Presence detection timeout"
+  },
+  {
+    "entity_id": "number.b6_occupancy_presence_detection_timeout_2",
+    "id": null,
+    "friendly_name": "B6 Occupancy Presence detection timeout"
+  },
+  {
+    "entity_id": "number.b7_occupancy_presence_detection_timeout_2",
+    "id": null,
+    "friendly_name": "B7 occupancy Presence detection timeout"
+  },
+  {
+    "entity_id": "number.unknown_presence_detection_timeout_3",
+    "id": null,
+    "friendly_name": "§ Presence detection timeout"
+  },
+  {
+    "entity_id": "number.b12_occupancy_presence_detection_timeout_3",
+    "id": null,
+    "friendly_name": "B12 occupancy Presence detection timeout"
+  },
+  {
+    "entity_id": "number.a6_occupancy_presence_detection_timeout_4",
+    "id": null,
+    "friendly_name": "A6 occupancy Presence detection timeout"
+  },
+  {
+    "entity_id": "select.ikea_power_socket_1_start_up_behavior",
+    "id": null,
+    "friendly_name": "Ikea power socket 1 Start-up behavior"
+  },
+  {
+    "entity_id": "select.makerspace_occupancy_detection_sensitivity",
+    "id": null,
+    "friendly_name": "Makerspace occupancy Detection Sensitivity"
+  },
+  {
+    "entity_id": "select.ikea_tradfri_driver_1_start_up_behavior",
+    "id": null,
+    "friendly_name": "IKEA tradfri driver 1 Start-up behavior"
+  },
+  {
+    "entity_id": "select.ikea_tradfri_driver_2_start_up_behavior_2",
+    "id": null,
+    "friendly_name": "IKEA tradfri driver 2 Start-up behavior"
+  },
+  {
+    "entity_id": "select.ikea_power_socket_2_start_up_behavior",
+    "id": null,
+    "friendly_name": "Ikea power socket 2 Start-up behavior"
+  },
+  {
+    "entity_id": "select.sonoff_snzb_02d_temp_humidity_display_unit",
+    "id": null,
+    "friendly_name": "SONOFF SNZB-02D temp humidity Display unit"
+  },
+  {
+    "entity_id": "select.sonoff_snzb_02d_humid_temp_display_unit",
+    "id": null,
+    "friendly_name": "SONOFF SNZB-02D humid temp Display unit"
+  },
+  {
+    "entity_id": "select.sonoff_snzb_02d_temp_humid_display_unit",
+    "id": null,
+    "friendly_name": "SONOFF SNZB-02D temp humid Display unit"
+  },
+  {
+    "entity_id": "select.sonoff_snzb_02d_humid_temp_display_unit_2",
+    "id": null,
+    "friendly_name": "SONOFF SNZB-02D humid temp Display unit"
+  },
+  {
+    "entity_id": "select.ikea_power_socket_start_up_behavior",
+    "id": null,
+    "friendly_name": "IKEA power socket Start-up behavior"
+  },
+  {
+    "entity_id": "select.sonoff_snzb_02d_humid_temp_display_unit_3",
+    "id": null,
+    "friendly_name": "SONOFF SNZB-02D humid temp Display unit"
+  },
+  {
+    "entity_id": "select.sonoff_snzb_02d_humid_temp_display_unit_4",
+    "id": null,
+    "friendly_name": "SONOFF SNZB-02D humid temp Display unit"
+  },
+  {
+    "entity_id": "select.ikea_of_sweden_tretakt_smart_plug_start_up_behavior",
+    "id": null,
+    "friendly_name": "IKEA of Sweden TRETAKT Smart plug Start-up behaviour"
+  },
+  {
+    "entity_id": "select.sonoff_snzb_02d_humid_temp_display_unit_5",
+    "id": null,
+    "friendly_name": "SONOFF SNZB-02D humid temp Display unit"
+  },
+  {
+    "entity_id": "select.sonoff_snzb_02d_humid_temp_display_unit_6",
+    "id": null,
+    "friendly_name": "SONOFF SNZB-02D humid temp  Display unit"
+  },
+  {
+    "entity_id": "select.ikea_of_sweden_tradfri_driver_30w_3_start_up_behavior",
+    "id": null,
+    "friendly_name": "IKEA of Sweden TRADFRI Driver 30W 3 Start-up behavior"
+  },
+  {
+    "entity_id": "select.ikea_tradfri_driver_4_laser_cutter_start_up_behavior",
+    "id": null,
+    "friendly_name": "IKEA tradfri driver 4 laser cutter Start-up behavior"
+  },
+  {
+    "entity_id": "select.ikea_tradfri_driver_4_start_up_behavior",
+    "id": null,
+    "friendly_name": "IKEA tradfri Driver 4 Start-up behavior"
+  },
+  {
+    "entity_id": "select.b3_occupancy_detection_sensitivity",
+    "id": null,
+    "friendly_name": "B3 occupancy Detection Sensitivity"
+  },
+  {
+    "entity_id": "select.sonoff_snzb_02d_display_unit",
+    "id": null,
+    "friendly_name": "SONOFF SNZB-02D Display unit"
+  },
+  {
+    "entity_id": "select.b4_occupancy_detection_sensitivity",
+    "id": null,
+    "friendly_name": "B4 Occupancy Detection Sensitivity"
+  },
+  {
+    "entity_id": "select.sonoff_snzb_06p_detection_sensitivity",
+    "id": null,
+    "friendly_name": "B5 Occupancy Detection Sensitivity"
+  },
+  {
+    "entity_id": "select.b6_occupancy_detection_sensitivity_2",
+    "id": null,
+    "friendly_name": "B6 Occupancy Detection Sensitivity"
+  },
+  {
+    "entity_id": "select.b7_occupancy_detection_sensitivity_2",
+    "id": null,
+    "friendly_name": "B7 occupancy Detection Sensitivity"
+  },
+  {
+    "entity_id": "select.unknown_detection_sensitivity_3",
+    "id": null,
+    "friendly_name": "§ Detection Sensitivity"
+  },
+  {
+    "entity_id": "select.b12_occupancy_detection_sensitivity_3",
+    "id": null,
+    "friendly_name": "B12 occupancy Detection Sensitivity"
+  },
+  {
+    "entity_id": "select.a6_occupancy_detection_sensitivity_4",
+    "id": null,
+    "friendly_name": "A6 occupancy Detection Sensitivity"
+  },
+  {
+    "entity_id": "select.smart_switch_led_2_start_up_behaviour",
+    "id": null,
+    "friendly_name": "smart switch LED 2 Start-up behaviour"
+  },
+  {
+    "entity_id": "sensor.makerspace_occupancy_last_illumination_state",
+    "id": null,
+    "friendly_name": "MakerSpace Last illumination state"
+  },
+  {
+    "entity_id": "sensor.ikea_aq_sensor_temperature",
+    "id": null,
+    "friendly_name": "B3 Temperature"
+  },
+  {
+    "entity_id": "sensor.ikea_aq_sensor_pm2_5",
+    "id": null,
+    "friendly_name": "B3 PM2.5"
+  },
+  {
+    "entity_id": "sensor.ikea_aq_sensor_humidity",
+    "id": null,
+    "friendly_name": "B3 Humidity"
+  },
+  {
+    "entity_id": "sensor.ikea_aq_sensor_voc_index",
+    "id": null,
+    "friendly_name": "B3 VOC index"
+  },
+  {
+    "entity_id": "sensor.ikea_of_sweden_remote_control_n2_battery",
+    "id": null,
+    "friendly_name": "MakerSpace light switch"
+  },
+  {
+    "entity_id": "sensor.sonoff_snzb_02d_temp_humidity_battery",
+    "id": null,
+    "friendly_name": "B.3 Sensor Battery"
+  },
+  {
+    "entity_id": "sensor.sonoff_snzb_02d_temp_humidity_temperature",
+    "id": null,
+    "friendly_name": "MakerSpace Temperature"
+  },
+  {
+    "entity_id": "sensor.sonoff_snzb_02d_temp_humidity_humidity",
+    "id": null,
+    "friendly_name": "MakerSpace Humidity"
+  },
+  {
+    "entity_id": "sensor.sonoff_snzb_02d_humid_temp_battery",
+    "id": null,
+    "friendly_name": "B.4 Sensor Battery"
+  },
+  {
+    "entity_id": "sensor.sonoff_snzb_02d_humid_temp_temperature",
+    "id": null,
+    "friendly_name": "B.4 Temperature"
+  },
+  {
+    "entity_id": "sensor.sonoff_snzb_02d_humid_temp_humidity",
+    "id": null,
+    "friendly_name": "B.4 Humidity"
+  },
+  {
+    "entity_id": "sensor.sonoff_snzb_02d_temp_humid_battery",
+    "id": null,
+    "friendly_name": "B.5 Sensor Battery"
+  },
+  {
+    "entity_id": "sensor.sonoff_snzb_02d_temp_humid_temperature",
+    "id": null,
+    "friendly_name": "B.5 Temperature"
+  },
+  {
+    "entity_id": "sensor.sonoff_snzb_02d_temp_humid_humidity",
+    "id": null,
+    "friendly_name": "B.5 Humidity"
+  },
+  {
+    "entity_id": "sensor.sonoff_snzb_02d_battery",
+    "id": null,
+    "friendly_name": "B.6 Sensor Battery"
+  },
+  {
+    "entity_id": "sensor.sonoff_snzb_02d_temperature",
+    "id": null,
+    "friendly_name": "B.6 Temperature"
+  },
+  {
+    "entity_id": "sensor.sonoff_snzb_02d_humidity",
+    "id": null,
+    "friendly_name": "B.6 Humidity"
+  },
+  {
+    "entity_id": "sensor.sonoff_snzb_02d_humid_temp_battery_2",
+    "id": null,
+    "friendly_name": "B.7 Sensor Battery"
+  },
+  {
+    "entity_id": "sensor.sonoff_snzb_02d_humid_temp_temperature_2",
+    "id": null,
+    "friendly_name": "B.7 Temperature"
+  },
+  {
+    "entity_id": "sensor.sonoff_snzb_02d_humid_temp_humidity_2",
+    "id": null,
+    "friendly_name": "B.7 Humidity"
+  },
+  {
+    "entity_id": "sensor.sonoff_snzb_02d_battery_2",
+    "id": null,
+    "friendly_name": "A.6 Sensor Battery"
+  },
+  {
+    "entity_id": "sensor.sonoff_snzb_02d_temperature_2",
+    "id": null,
+    "friendly_name": "A.6 Temperature"
+  },
+  {
+    "entity_id": "sensor.sonoff_snzb_02d_humidity_2",
+    "id": null,
+    "friendly_name": "A.6 Humidity"
+  },
+  {
+    "entity_id": "sensor.sonoff_snzb_02d_humid_temp_battery_3",
+    "id": null,
+    "friendly_name": "B.12 Sensor Battery"
+  },
+  {
+    "entity_id": "sensor.sonoff_snzb_02d_humid_temp_temperature_3",
+    "id": null,
+    "friendly_name": "B.12 Temperature"
+  },
+  {
+    "entity_id": "sensor.sonoff_snzb_02d_humid_temp_humidity_3",
+    "id": null,
+    "friendly_name": "B.12 Humidity"
+  },
+  {
+    "entity_id": "sensor.sonoff_snzb_02d_battery_3",
+    "id": null,
+    "friendly_name": "Kitchen Sensor Battery"
+  },
+  {
+    "entity_id": "sensor.sonoff_snzb_02d_temperature_3",
+    "id": null,
+    "friendly_name": "Kitchen Temperature"
+  },
+  {
+    "entity_id": "sensor.sonoff_snzb_02d_humidity_3",
+    "id": null,
+    "friendly_name": "Kitchen Humidity"
+  },
+  {
+    "entity_id": "sensor.b3_occupancy_last_illumination_state",
+    "id": null,
+    "friendly_name": "B3 Last illumination state"
+  },
+  {
+    "entity_id": "sensor.sonoff_snzb_02d_battery_4",
+    "id": null,
+    "friendly_name": "Team HQ Sensor Battery"
+  },
+  {
+    "entity_id": "sensor.sonoff_snzb_02d_temperature_4",
+    "id": null,
+    "friendly_name": "Team HQ temperature"
+  },
+  {
+    "entity_id": "sensor.sonoff_snzb_02d_humidity_4",
+    "id": null,
+    "friendly_name": "Team HQ humidity"
+  },
+  {
+    "entity_id": "sensor.b4_occupancy_last_illumination_state",
+    "id": null,
+    "friendly_name": "B4 Last illumination state"
+  },
+  {
+    "entity_id": "sensor.sonoff_snzb_06p_last_illumination_state",
+    "id": null,
+    "friendly_name": "B5 Last Illumination state"
+  },
+  {
+    "entity_id": "sensor.b6_occupancy_last_illumination_state_2",
+    "id": null,
+    "friendly_name": "B6 Last illumination state"
+  },
+  {
+    "entity_id": "sensor.b7_occupancy_last_illumination_state_2",
+    "id": null,
+    "friendly_name": "B7 Last illumination state"
+  },
+  {
+    "entity_id": "sensor.unknown_last_illumination_state_3",
+    "id": null,
+    "friendly_name": "B10 Last illumination state"
+  },
+  {
+    "entity_id": "sensor.b12_occupancy_last_illumination_state_3",
+    "id": null,
+    "friendly_name": "B12 Last illumination state"
+  },
+  {
+    "entity_id": "sensor.a6_occupancy_last_illumination_state_4",
+    "id": null,
+    "friendly_name": "A6 occupancy Last illumination state"
+  },
+  {
+    "entity_id": "sensor.ewelink_ms01_battery",
+    "id": null,
+    "friendly_name": "eWeLink MS01 Battery"
+  },
+  {
+    "entity_id": "sensor.frient_a_s_aqszb_110_battery",
+    "id": null,
+    "friendly_name": "frient A/S AQSZB-110 Battery"
+  },
+  {
+    "entity_id": "sensor.frient_a_s_aqszb_110_temperature",
+    "id": null,
+    "friendly_name": "frient A/S AQSZB-110 Temperature"
+  },
+  {
+    "entity_id": "sensor.frient_a_s_aqszb_110_humidity",
+    "id": null,
+    "friendly_name": "frient A/S AQSZB-110 Humidity"
+  },
+  {
+    "entity_id": "sensor.ewelink_ms01_battery_2",
+    "id": null,
+    "friendly_name": "eWeLink MS01 Battery"
+  },
+  {
+    "entity_id": "sensor.unk_manufacturer_unk_model_battery",
+    "id": null,
+    "friendly_name": "unk_manufacturer unk_model Battery"
+  },
+  {
+    "entity_id": "sensor.ewelink_ms01_battery_3",
+    "id": null,
+    "friendly_name": "eWeLink MS01 Battery"
+  },
+  {
+    "entity_id": "switch.ikea_power_socket_1_switch",
+    "id": null,
+    "friendly_name": "Smart plug 1 LED"
+  },
+  {
+    "entity_id": "switch.ikea_power_socket_2_switch",
+    "id": null,
+    "friendly_name": "Smart plug LED 2"
+  },
+  {
+    "entity_id": "switch.ikea_of_sweden_tretakt_smart_plug_switch",
+    "id": null,
+    "friendly_name": "Library Smart Plug"
+  },
+  {
+    "entity_id": "switch.smart_switch_led_2",
+    "id": null,
+    "friendly_name": "smart plug LED 3"
+  },
+  {
+    "entity_id": "switch.generic_zigbee_coordinator_ezsp_makerspace_lights",
+    "id": null,
+    "friendly_name": " Generic Zigbee Coordinator (EZSP) makerspace lights"
+  },
+  {
+    "entity_id": "update.ikea_power_socket_1_firmware",
+    "id": null,
+    "friendly_name": "Ikea power socket 1 Firmware"
+  },
+  {
+    "entity_id": "update.makerspace_occupancy_firmware",
+    "id": null,
+    "friendly_name": "Makerspace occupancy Firmware"
+  },
+  {
+    "entity_id": "update.ikea_aq_sensor_firmware",
+    "id": null,
+    "friendly_name": "IKEA AQ sensor Firmware"
+  },
+  {
+    "entity_id": "update.ikea_tradfri_driver_1_firmware",
+    "id": null,
+    "friendly_name": "IKEA tradfri driver 1 Firmware"
+  },
+  {
+    "entity_id": "update.ikea_tradfri_driver_2_firmware_2",
+    "id": null,
+    "friendly_name": "IKEA tradfri driver 2 Firmware"
+  },
+  {
+    "entity_id": "update.ikea_of_sweden_remote_control_n2_firmware",
+    "id": null,
+    "friendly_name": "IKEA of Sweden Remote Control N2 Firmware"
+  },
+  {
+    "entity_id": "update.ikea_power_socket_2_firmware",
+    "id": null,
+    "friendly_name": "Ikea power socket 2 Firmware"
+  },
+  {
+    "entity_id": "update.sonoff_snzb_02d_temp_humidity_firmware",
+    "id": null,
+    "friendly_name": "SONOFF SNZB-02D temp humidity Firmware"
+  },
+  {
+    "entity_id": "update.sonoff_snzb_02d_humid_temp_firmware",
+    "id": null,
+    "friendly_name": "SONOFF SNZB-02D humid temp Firmware"
+  },
+  {
+    "entity_id": "update.sonoff_snzb_02d_temp_humid_firmware",
+    "id": null,
+    "friendly_name": "SONOFF SNZB-02D temp humid Firmware"
+  },
+  {
+    "entity_id": "update.sonoff_snzb_02d_firmware",
+    "id": null,
+    "friendly_name": "SONOFF SNZB-02D humid temp Firmware"
+  },
+  {
+    "entity_id": "update.ikea_power_socket_firmware",
+    "id": null,
+    "friendly_name": "IKEA power socket Firmware"
+  },
+  {
+    "entity_id": "update.sonoff_snzb_02d_humid_temp_firmware_2",
+    "id": null,
+    "friendly_name": "SONOFF SNZB-02D humid temp Firmware"
+  },
+  {
+    "entity_id": "update.sonoff_snzb_02d_firmware_2",
+    "id": null,
+    "friendly_name": "SONOFF SNZB-02D humid temp Firmware"
+  },
+  {
+    "entity_id": "update.ikea_of_sweden_tretakt_smart_plug_firmware",
+    "id": null,
+    "friendly_name": "IKEA of Sweden TRETAKT Smart plug Firmware"
+  },
+  {
+    "entity_id": "update.al001_wg001_z01_wifi_extender_firmware",
+    "id": null,
+    "friendly_name": "AL001 WG001-Z01 wifi extender Firmware"
+  },
+  {
+    "entity_id": "update.sonoff_snzb_02d_humid_temp_firmware_3",
+    "id": null,
+    "friendly_name": "SONOFF SNZB-02D humid temp Firmware"
+  },
+  {
+    "entity_id": "update.sonoff_snzb_02d_firmware_3",
+    "id": null,
+    "friendly_name": "SONOFF SNZB-02D humid temp  Firmware"
+  },
+  {
+    "entity_id": "update.ikea_of_sweden_tradfri_driver_30w_3_firmware",
+    "id": null,
+    "friendly_name": "IKEA of Sweden TRADFRI Driver 30W 3 Firmware"
+  },
+  {
+    "entity_id": "update.ikea_tradfri_driver_4_laser_cutter_firmware",
+    "id": null,
+    "friendly_name": "IKEA tradfri driver 4 laser cutter Firmware"
+  },
+  {
+    "entity_id": "update.ikea_tradfri_driver_4_firmware",
+    "id": null,
+    "friendly_name": "IKEA tradfri Driver 4 Firmware"
+  },
+  {
+    "entity_id": "update.b3_occupancy_firmware",
+    "id": null,
+    "friendly_name": "B3 occupancy Firmware"
+  },
+  {
+    "entity_id": "update.sonoff_snzb_02d_firmware_4",
+    "id": null,
+    "friendly_name": "SONOFF SNZB-02D Firmware"
+  },
+  {
+    "entity_id": "update.b4_occupancy_firmware",
+    "id": null,
+    "friendly_name": "B4 Occupancy Firmware"
+  },
+  {
+    "entity_id": "update.sonoff_snzb_06p_firmware",
+    "id": null,
+    "friendly_name": "B5 Occupancy Firmware"
+  },
+  {
+    "entity_id": "update.b6_occupancy_firmware_2",
+    "id": null,
+    "friendly_name": "B6 Occupancy Firmware"
+  },
+  {
+    "entity_id": "update.b7_occupancy_firmware_2",
+    "id": null,
+    "friendly_name": "B7 occupancy Firmware"
+  },
+  {
+    "entity_id": "update.unknown_firmware_3",
+    "id": null,
+    "friendly_name": "§ Firmware"
+  },
+  {
+    "entity_id": "update.b12_occupancy_firmware_3",
+    "id": null,
+    "friendly_name": "B12 occupancy Firmware"
+  },
+  {
+    "entity_id": "update.a6_occupancy_firmware_4",
+    "id": null,
+    "friendly_name": "A6 occupancy Firmware"
+  },
+  {
+    "entity_id": "update.smart_switch_led_2_firmware_2",
+    "id": null,
+    "friendly_name": "smart switch LED 2 Firmware"
+  },
+  {
+    "entity_id": "update.frient_a_s_aqszb_110_firmware",
+    "id": null,
+    "friendly_name": "frient A/S AQSZB-110 Firmware"
+  },
+  {
+    "entity_id": "automation.ikea_switch_maker_space_lights_on",
+    "id": "1734005030591",
+    "friendly_name": "Ikea switch maker space lights on"
+  },
+  {
+    "entity_id": "automation.ikea_switch_makerspace_lights_off",
+    "id": "1734005091374",
+    "friendly_name": "Ikea switch makerspace lights off"
+  },
+  {
+    "entity_id": "automation.makerspace_presence_lights_on",
+    "id": "1734011353311",
+    "friendly_name": "Makerspace presence lights on"
+  },
+  {
+    "entity_id": "automation.makerspace_presence_lights_off",
+    "id": "1734011402531",
+    "friendly_name": "Makerspace presence lights off"
+  },
+  {
+    "entity_id": "automation.new_bottle",
+    "id": "1742486092457",
+    "friendly_name": "New bottle"
+  },
+  {
+    "entity_id": "sensor.hp_envy_4520_series_black_ink",
+    "id": null,
+    "friendly_name": "black ink"
+  },
+  {
+    "entity_id": "sensor.hp_envy_4520_series_tri_color_ink",
+    "id": null,
+    "friendly_name": "tri-color ink"
+  },
+  {
+    "entity_id": "sensor.hp_envy_4520_series",
+    "id": null,
+    "friendly_name": null
+  },
+  {
+    "entity_id": "sensor.local_raw_printer",
+    "id": null,
+    "friendly_name": "Local Raw Printer"
+  },
+  {
+    "entity_id": "update.kiosk_mode_update",
+    "id": null,
+    "friendly_name": "Kiosk Mode update"
+  },
+  {
+    "entity_id": "binary_sensor.unoccupied_rooms",
+    "id": null,
+    "friendly_name": "Unoccupied rooms"
+  }
+]
