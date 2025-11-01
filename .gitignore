@@ -11,4 +11,4 @@ yarn-error.log*
 .genkit/
 # IDEs and other
 .vscode/
-*.log
+*.logpublic/models/protos/*.stl
