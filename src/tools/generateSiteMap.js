@@ -40,7 +40,9 @@ const analyzeDirectory = (
         stats = fs.statSync(fullPath);
       } catch (statError) {
         // Handle potential errors like broken symlinks
-        console.warn(`  Warn: Could not get stats for ${fullPath}, skipping.`);
+        console.warn(
+          `  Warn: Could not get stats for ${fullPath}, skipping. (${statError.message})`,
+        );
         return;
       }
 
@@ -68,7 +70,7 @@ const analyzeDirectory = (
             output += `${"  ".repeat(depth + 1)}│   └── 🔧 Functions: ${functions.join(", ")}\n`;
         } catch (readError) {
           console.warn(
-            `  Warn: Could not read file ${fullPath}, skipping analysis.`,
+            `  Warn: Could not read file ${fullPath}, skipping analysis. (${readError.message})`,
           );
         }
       }

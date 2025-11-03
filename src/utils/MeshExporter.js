@@ -1,5 +1,4 @@
 // src/utils/MeshExporter.js
-import * as THREE from "three";
 import { GLTFExporter } from "three/examples/jsm/exporters/GLTFExporter.js";
 import { STLExporter } from "three/examples/jsm/exporters/STLExporter.js";
 

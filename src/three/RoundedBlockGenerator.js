@@ -3,6 +3,7 @@ import * as THREE from "three";
 import { SVGLoader } from "three/examples/jsm/loaders/SVGLoader.js";
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
 import GenColor from "@utils/GenColor.js";
+import { materialRegistry } from "@/materials/registry.js";
 
 /**
  * Generate rounded boxes from SVG path data and align them to the scene layout.
@@ -43,16 +44,17 @@ export async function generateRoundedBlocksFromSVG(
             const center = new THREE.Vector3();
             bbox.getCenter(center);
 
-            const material = new THREE.MeshStandardMaterial({
-              color: new GenColor(
-                `#${Math.floor(Math.random() * 16777215)
-                  .toString(16)
-                  .padStart(6, "0")}`,
-              ).rgb,
-              roughness: 0.5,
-              metalness: 0.4,
+            const color = new GenColor(
+              `#${Math.floor(Math.random() * 16777215)
+                .toString(16)
+                .padStart(6, "0")}`,
+            ).rgb;
+            const material = materialRegistry.create("roomBase", {
+              color,
               transparent: true,
               opacity: 0.95,
+              roughness: 0.5,
+              metalness: 0.35,
             });
 
             const geo = new RoundedBoxGeometry(size.x, size.y, height, 5, 6);
@@ -60,6 +62,8 @@ export async function generateRoundedBlocksFromSVG(
 
             mesh.position.set(center.x, height / 2, center.y); // y = height
             mesh.rotation.x = -Math.PI / 2; // Align to floor
+            mesh.castShadow = true;
+            mesh.receiveShadow = true;
 
             if (normId) {
               mesh.name = normId;

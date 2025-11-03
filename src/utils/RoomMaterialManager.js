@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { materialRegistry } from "@/materials/registry.js";
 
 export class RoomMaterialManager {
   constructor(settings) {
@@ -26,7 +27,7 @@ export class RoomMaterialManager {
         material = this.loadTexturedMaterial("/textures/brushed-metal.jpg");
         break;
       case "random":
-        material = new THREE.MeshStandardMaterial({
+        material = materialRegistry.create("roomBase", {
           color: this.getRandomColor(roomMeta),
           roughness: 0.6,
           metalness: 0.2,
@@ -34,7 +35,7 @@ export class RoomMaterialManager {
         break;
       case "color":
       default:
-        material = new THREE.MeshStandardMaterial({
+        material = materialRegistry.create("roomBase", {
           color: this.generateColor(roomMeta),
           roughness: 0.7,
           metalness: 0.1,
@@ -58,16 +59,30 @@ export class RoomMaterialManager {
   }
 
   loadTexturedMaterial(texturePath, repeat = false) {
-    const texture = this.textureLoader.load(texturePath);
-    if (repeat) {
-      texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-      texture.repeat.set(4, 4);
-    }
-    return new THREE.MeshStandardMaterial({
-      map: texture,
-      roughness: 0.5,
-      metalness: 0.1,
+    const material = materialRegistry.create("roomBase", {
+      roughness: 0.55,
+      metalness: 0.12,
     });
+    this.textureLoader.load(
+      texturePath,
+      (texture) => {
+        texture.colorSpace = THREE.SRGBColorSpace;
+        if (repeat) {
+          texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+          texture.repeat.set(4, 4);
+        }
+        material.map = texture;
+        material.needsUpdate = true;
+      },
+      undefined,
+      (error) => {
+        console.warn(
+          `[RoomMaterialManager] Failed to load texture '${texturePath}':`,
+          error,
+        );
+      },
+    );
+    return material;
   }
 
   setMaterialForRoom(mesh, roomMeta) {

@@ -281,6 +281,27 @@ export default class Setup {
     this.persistSettings();
   }
 
+  setPanEnabled(enabled = true) {
+    this.orbCtrls.enablePan = Boolean(enabled);
+  }
+
+  setZoomEnabled(enabled = true) {
+    this.orbCtrls.enableZoom = Boolean(enabled);
+  }
+
+  setRotateEnabled(enabled = true) {
+    this.orbCtrls.enableRotate = Boolean(enabled);
+  }
+
+  setDistanceLimits(minDistance = this.orbCtrls.minDistance, maxDistance = this.orbCtrls.maxDistance) {
+    if (typeof minDistance === "number" && !Number.isNaN(minDistance)) {
+      this.orbCtrls.minDistance = Math.max(0.1, minDistance);
+    }
+    if (typeof maxDistance === "number" && !Number.isNaN(maxDistance)) {
+      this.orbCtrls.maxDistance = Math.max(this.orbCtrls.minDistance + 1, maxDistance);
+    }
+  }
+
   setTargetBounds(bounds) {
     if (!bounds) return;
     if (bounds.min) this.targetBounds.min = bounds.min.clone();
@@ -592,9 +613,11 @@ export default class Setup {
       url,
       (texture) => {
         texture.mapping = THREE.EquirectangularReflectionMapping;
-        this.scene.background = texture; // Set background
         this.scene.environment = texture; // Set environment map for reflections
-        // this.texture = texture; // Storing separately might be redundant
+        // Keep sky dome visible by letting background stay managed elsewhere
+        if (this.scene.background === texture) {
+          this.scene.background = null;
+        }
         console.log(`[Setup] Environment map loaded from ${url}`);
         texture.needsUpdate = true; // Ensure update
       },
@@ -636,7 +659,7 @@ export default class Setup {
 
     switch (viewName.toLowerCase()) {
       case "top":
-        targetPosition.set(0, 150, 0); // Directly above
+        targetPosition.set(0.01, 150, 0.01); // Slight offset to avoid polar clamp jitter
         targetLookAt.set(0, 0, 0);
         break;
       case "front":

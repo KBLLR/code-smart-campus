@@ -1,6 +1,6 @@
 // --- START OF FILE main.js (Improved Loader, Panel Debugging) ---
 
-import "@/style.css";
+import "@/styles/main.css";
 import * as THREE from "three";
 import Setup from "@/Setup.js";
 import { markReady, whenReady, createSignal } from "@utils/initCoordinator.js"; // Assuming createSignal exists in initCoordinator
@@ -23,6 +23,8 @@ import { Debugger } from "@debug/Debugger.js";
 import { createPanelsFromData } from "@lib/PanelBuilder.js";
 import { WebSocketStatus } from "@network/WebSocketStatus.js";
 import { setHaStates, updateEntityState } from "@home_assistant/haState.js";
+import { PostProcessor } from "@/postprocessing/PostProcessor.js";
+import { CSSHudManager } from "@hud/CSSHudManager.js";
 
 // --- Global Variables / State ---
 
@@ -38,6 +40,8 @@ const debugSettings = {
 let debuggerInstance = null; // Hold the debugger instance
 let sensorDashboardInstance = null;
 let toolbarInstance = null;
+let postProcessor = null;
+let hudManager = null;
 
 // --- End Debug State ---
 
@@ -57,11 +61,88 @@ const floatingBtn = document.querySelector(".floating-btn");
 
 // --- Setup 3D Environment ---
 const setup = new Setup(canvas, () => {
-  /* Resize handler */
+  if (postProcessor) {
+    postProcessor.setSize(canvas.clientWidth, canvas.clientHeight);
+  }
 });
 
 setup.setEnvMap("/hdri/night.hdr");
 attachSetup(setup);
+
+postProcessor = new PostProcessor({
+  renderer: setup.re,
+  scene,
+  camera: setup.cam,
+});
+scene.userData.postFX = {
+  config: postProcessor.getConfig(),
+  setEnabled: (value) => {
+    postProcessor.setEnabled(value);
+    return postProcessor.isEnabled();
+  },
+  setBloomSettings: (settings) => postProcessor.setBloomSettings(settings),
+  captureSnapshot: ({
+    bloomEnabled,
+    size,
+    download = false,
+    filename = "scene-snapshot.png",
+  } = {}) => {
+    const renderer = setup.re;
+    if (!renderer) {
+      console.warn("[PostFX] Renderer unavailable; snapshot skipped.");
+      return null;
+    }
+
+    const prevEnabled = postProcessor.isEnabled();
+    if (typeof bloomEnabled === "boolean") {
+      postProcessor.setEnabled(bloomEnabled);
+    }
+
+    const previousSize = new THREE.Vector2();
+    renderer.getSize(previousSize);
+    const prevPixelRatio = renderer.getPixelRatio();
+
+    if (size?.width && size?.height) {
+      renderer.setPixelRatio(1);
+      renderer.setSize(size.width, size.height, false);
+      postProcessor.setSize(size.width, size.height);
+    }
+
+    postProcessor.updateCamera(setup.cam);
+    postProcessor.updateScene(scene);
+    postProcessor.render();
+
+    const dataUrl = renderer.domElement.toDataURL("image/png");
+
+    if (download && typeof window !== "undefined") {
+      const link = document.createElement("a");
+      link.href = dataUrl;
+      link.download = filename;
+      link.click();
+    }
+
+    if (size?.width && size?.height) {
+      renderer.setPixelRatio(prevPixelRatio);
+      renderer.setSize(previousSize.x, previousSize.y, false);
+      postProcessor.setSize(previousSize.x, previousSize.y);
+    }
+
+    postProcessor.setEnabled(prevEnabled);
+    return dataUrl;
+  },
+  instance: postProcessor,
+};
+postProcessor.setSize(canvas.clientWidth, canvas.clientHeight);
+
+hudManager = new CSSHudManager({
+  scene,
+  camera: setup.cam,
+  renderer: setup.re,
+});
+scene.userData.hud = {
+  manager: hudManager,
+};
+hudManager.sync(labelManager.getLabels());
 
 scene.userData.cameraDebug = {
   saveBookmark: (name) => setup.saveCameraBookmark(name),
@@ -73,11 +154,22 @@ scene.userData.cameraDebug = {
   setAutoRotate: (enabled, sticky = false) => setup.setAutoRotate(enabled, sticky),
   toggleAutoRotate: () => setup.toggleAutoRotate(),
   setAutoRotateSpeed: (degPerSecond) => setup.setAutoRotateSpeed(degPerSecond),
+  setPanEnabled: (enabled) => setup.setPanEnabled(enabled),
+  setZoomEnabled: (enabled) => setup.setZoomEnabled(enabled),
+  setRotateEnabled: (enabled) => setup.setRotateEnabled(enabled),
+  setDistanceLimits: ({ min, max } = {}) => setup.setDistanceLimits(min, max),
   getState: () => ({
     bookmarks: setup.listCameraBookmarks(),
     autoRotate: {
       enabled: setup.autoRotate.enabled,
       speedDeg: THREE.MathUtils.radToDeg(setup.autoRotate.speed),
+    },
+    controls: {
+      pan: setup.orbCtrls.enablePan,
+      zoom: setup.orbCtrls.enableZoom,
+      rotate: setup.orbCtrls.enableRotate,
+      minDistance: setup.orbCtrls.minDistance,
+      maxDistance: setup.orbCtrls.maxDistance,
     },
   }),
 };
@@ -119,6 +211,10 @@ function handleEntityUpdate(entityId, entity) {
   const unit = entity.attributes?.unit_of_measurement || "";
   const formattedValue = `${entity.state} ${unit}`.trim();
   updateLabelInScene(entityId, formattedValue); // Update label text/color in the 3D scene
+  hudManager?.updateLabel(entityId, {
+    value: formattedValue,
+    title: labelManager.getLabels()?.[entityId]?.userData?.registry?.label,
+  });
 
   if (entityId === "sun.sun") {
     updateSunFromEntity(entity);
@@ -283,9 +379,9 @@ function handleInitialStates(states) {
       const initialSensors = states.filter((e) =>
         e.entity_id?.startsWith("sensor."),
       );
-      initialSensors.forEach((sensor) =>
-        sensorDashboardInstance.update(sensor),
-      );
+      initialSensors.forEach((sensor) => {
+        sensorDashboardInstance.update(sensor);
+      });
     }
   }
   // Signal that processing is done
@@ -296,7 +392,7 @@ function handleInitialStates(states) {
 /** Formats basic markdown-like text for display in HTML */
 function formatReleaseNotes(markdown) {
   if (!markdown) return "";
-  let formatted = markdown
+  const formatted = markdown
     // Basic HTML escaping first
     .replace(/&/g, "&")
     .replace(/</g, "<")
@@ -464,7 +560,7 @@ window.showDetailedView = showDetailedView;
 // ========== UI Interactions ==========
 
 // Virtual button visual feedback (using event delegation)
-document.body.addEventListener("click", function (event) {
+document.body.addEventListener("click", (event) => {
   const button = event.target.closest(".virtual-button");
   // Apply effect only if it's a virtual button AND doesn't have a JS onclick handler
   // (like the 'View Details' button which handles its own logic/navigation)
@@ -560,7 +656,7 @@ contentArea?.addEventListener(
   { passive: true },
 ); // Use passive listener for scroll performance
 
-// --- Keystroke Listener for Debug Toggle (Using 'D' key) ---
+// --- Keystroke Listener for Debug Toggle (Using 'R' key) ---
 window.addEventListener("keydown", (event) => {
   // Ignore keydown events if user is typing in an input field
   if (
@@ -571,13 +667,13 @@ window.addEventListener("keydown", (event) => {
     return;
   }
 
-  // Use 'KeyD' for the "D" key (case-insensitive check just in case)
-  if (event.code === "KeyD" || event.key.toLowerCase() === "d") {
+  // Use 'KeyR' for the "R" key (case-insensitive check just in case)
+  if (event.code === "KeyR" || event.key.toLowerCase() === "r") {
     // Don't prevent default unless it interferes with something else
     // event.preventDefault();
     isDebugModeActive = !isDebugModeActive;
     console.log(
-      `Debug Mode ${isDebugModeActive ? "Activated" : "Deactivated"} (Key D)`,
+      `Debug Mode ${isDebugModeActive ? "Activated" : "Deactivated"} (Key R)`,
     );
     toggleDebugUI(isDebugModeActive); // Assumes toggleDebugUI is defined elsewhere
   }
@@ -585,8 +681,6 @@ window.addEventListener("keydown", (event) => {
 
 // --- Function to Toggle Debug UI Visibility ---
 function toggleDebugUI(show) {
-  const displayStyle = show ? "block" : "none"; // Or use CSS classes for transitions
-
   // Toggle Stats.js panel
   if (setup.stats) {
     // Check if stats instance exists
@@ -596,11 +690,20 @@ function toggleDebugUI(show) {
 
   // Toggle Tweakpane panel
   if (debuggerInstance?.domElement) {
-    debuggerInstance.domElement.style.display = show ? "block" : "none";
-  } else if (show && debuggerInstance) {
-    // Fallback check
+    debuggerInstance.domElement.style.visibility = show ? "visible" : "hidden";
+    debuggerInstance.domElement.style.pointerEvents = show ? "auto" : "none";
+    if (show && typeof debuggerInstance.pane?.refresh === "function") {
+      debuggerInstance.pane.refresh();
+    }
+  } else if (debuggerInstance) {
     const tpPane = document.querySelector(".tp-dfwv");
-    if (tpPane) tpPane.style.display = displayStyle;
+    if (tpPane) {
+      tpPane.style.visibility = show ? "visible" : "hidden";
+      tpPane.style.pointerEvents = show ? "auto" : "none";
+      if (show && typeof debuggerInstance.pane?.refresh === "function") {
+        debuggerInstance.pane.refresh();
+      }
+    }
   }
 }
 
@@ -613,100 +716,6 @@ function toggleDebugUI(show) {
 //
 //
 // Wait until the main 3D group for rooms is ready before initializing the debugger
-whenReady("roundedRoomsGroup", (group) => {
-  console.log("[Debugger Init] 'roundedRoomsGroup' is ready.");
-
-  // --- Basic Validation ---
-  // Ensure we have valid Scene and Camera objects from the Setup module
-  if (!(scene instanceof THREE.Scene)) {
-    console.error(
-      "❌ Debugger Setup Aborted: Invalid 'scene' object provided. Expected THREE.Scene.",
-      scene,
-    );
-    return; // Stop initialization if scene is invalid
-  }
-  // Be specific about camera type if possible (assuming PerspectiveCamera)
-  if (!(setup.cam instanceof THREE.PerspectiveCamera)) {
-    console.error(
-      "❌ Debugger Setup Aborted: Invalid 'setup.cam' object provided. Expected THREE.PerspectiveCamera.",
-      setup.cam,
-    );
-    return; // Stop initialization if camera is invalid
-  }
-  if (!group) {
-    console.warn(
-      "❌ Debugger Setup: 'group' object from roundedRoomsGroup is unexpectedly null/undefined.",
-    );
-    // Decide if debugger should still initialize without the group reference
-    // return; // Or maybe continue without full functionality
-  }
-
-  // --- Initialize Debugger ---
-  try {
-    // Create the debugger instance, passing essential references
-    const debug = new Debugger(scene, setup.cam); // Assumes Debugger constructor needs scene and camera
-
-    // --- (Optional) Make globally accessible for console debugging ---
-    // Consider removing or wrapping in process.env.NODE_ENV !== 'production' for builds
-    window.debugger = debug;
-    // --- End Optional ---
-
-    console.log("🐛 Debugger initialized successfully.");
-
-    // --- Update Debugger Object Picker ---
-    // Wait until the specific room meshes registry is ready
-    whenReady("roomMeshes", (meshesMap) => {
-      console.log("[Debugger Update] 'roomMeshes' is ready.");
-
-      // Check if the debugger instance has the expected update method
-      if (typeof debug.updateObjectPickerOptions !== "function") {
-        console.warn(
-          "Debugger instance does not have an 'updateObjectPickerOptions' method. Skipping picker update.",
-        );
-        return;
-      }
-      // Check if meshesMap data is available and is an object
-      if (!meshesMap || typeof meshesMap !== "object") {
-        console.warn(
-          "Debugger: Invalid or empty 'meshesMap' received. Skipping object picker update.",
-          meshesMap,
-        );
-        return;
-      }
-
-      // Prepare options for the object picker { 'Display Name': uuid }
-      const formattedMeshes = {};
-      let validMeshCount = 0;
-      Object.entries(meshesMap).forEach(([id, mesh]) => {
-        // Ensure the entry is a valid THREE.Object3D before adding
-        if (mesh instanceof THREE.Object3D) {
-          formattedMeshes[mesh.name || id] = mesh.uuid; // Use mesh name or fallback to id
-          validMeshCount++;
-        } else {
-          console.warn(
-            `Debugger: Invalid mesh object found in meshesMap for id '${id}'.`,
-            mesh,
-          );
-        }
-      });
-
-      if (validMeshCount > 0) {
-        debug.updateObjectPickerOptions(formattedMeshes);
-        console.log(
-          `🐛 Debugger object picker updated with ${validMeshCount} room meshes.`,
-        );
-      } else {
-        console.warn(
-          "Debugger: No valid meshes found in meshesMap to update object picker.",
-        );
-      }
-    }); // End whenReady for roomMeshes
-  } catch (error) {
-    console.error("❌ Error initializing Debugger:", error);
-    // Handle initialization error, maybe show a message to the user?
-  }
-});
-
 // --- START of Initial Setup Calls section in main.js ---
 
 // ========== Initial Setup Calls ==========
@@ -932,6 +941,9 @@ whenReady("roundedRoomsGroup", (group) => {
 
     console.log("🐛 Debugger initialized successfully.");
 
+    isDebugModeActive = true;
+    toggleDebugUI(true);
+
     // --- Hide Debug UI Panels Initially (if needed) ---
     // Call the function defined elsewhere in main.js to set initial visibility
     // based on the isDebugModeActive flag.
@@ -1028,14 +1040,21 @@ function loop() {
     // Pass the camera from the setup instance.
     labelManager.updateLabelPositions(setup.cam);
   }
+  hudManager?.update(setup.cam);
   // Add other per-frame updates here if needed (e.g., animations).
 
   // --- Render the Scene ---
-  // Check if the renderer, scene, and camera are all valid before rendering.
-  if (setup.re && scene && setup.cam) {
+  if (postProcessor) {
+    postProcessor.updateCamera(setup.cam);
+    postProcessor.updateScene(scene);
+    if (postProcessor.isEnabled()) {
+      postProcessor.render();
+    } else if (setup.re && scene && setup.cam) {
+      setup.re.render(scene, setup.cam);
+    }
+  } else if (setup.re && scene && setup.cam) {
     setup.re.render(scene, setup.cam);
   } else {
-    // This shouldn't normally happen after initialization, but good to know if it does.
     console.warn("Render loop: Renderer, scene, or camera not ready.");
   }
 }

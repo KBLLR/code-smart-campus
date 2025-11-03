@@ -2,7 +2,7 @@
 import * as THREE from "three";
 import { makeTextTexture } from "@ui/makeTextTexture.js";
 
-export function createLabel(text = "Label", dynamic = false, entityId = "") {
+export function createLabel(text = "Label", entityId = "") {
   const texture = makeTextTexture(text, entityId);
 
   const material = new THREE.SpriteMaterial({

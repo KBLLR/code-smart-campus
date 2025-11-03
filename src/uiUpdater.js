@@ -1,10 +1,5 @@
 // src/uiUpdater.js
-import {
-  getAreas,
-  getEntities,
-  getEntityState,
-  getFormattedEntityState,
-} from "./homeAssistant.js";
+import { getEntities, getEntityState, getFormattedEntityState } from "./homeAssistant.js";
 
 function findRoomCardElement(roomName) {
   const dashboardPanel = document.getElementById("dashboardPanel");
@@ -80,8 +75,12 @@ function updateDeviceStatus(
     return;
   }
 
-  let displayStatusText =
-    value ?? state?.charAt(0).toUpperCase() + state?.slice(1) ?? "N/A";
+  let displayStatusText = value;
+  if (displayStatusText === null || displayStatusText === undefined) {
+    displayStatusText = state
+      ? `${state.charAt(0).toUpperCase()}${state.slice(1)}`
+      : "N/A";
+  }
   if (state === "unavailable") displayStatusText = "Unavailable";
   if (state === "on") displayStatusText = "On";
   if (state === "off") displayStatusText = "Off";

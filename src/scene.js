@@ -12,6 +12,7 @@ import { SunSkyDome, DEFAULT_SUN_SKY_PALETTE } from "@lib/SunSkyDome.js";
 import { SunPathArc } from "@lib/SunPathArc.js";
 import { MoonController } from "@lib/MoonController.js";
 import { SITE_COORDINATES } from "@utils/location.js";
+import { materialRegistry } from "@/materials/registry.js";
 
 // 🔌 Env
 const WS_URL =
@@ -27,11 +28,18 @@ const scene = new THREE.Scene();
 scene.camera = null;
 scene.renderer = null;
 scene.controls = null;
+scene.userData.postFX = null;
+scene.fog = new THREE.FogExp2(
+  new THREE.Color(DEFAULT_SUN_SKY_PALETTE.night.horizon),
+  0.0012,
+);
+const fogScratchColor = new THREE.Color();
 const layoutManager = new LabelLayoutManager(scene, {}, roomRegistry);
 const labelManager = new LabelManager(
   scene,
   cleanedLabelRegistry,
   roomRegistry,
+  { useSprites: false },
 );
 const sunController = new SunController();
 const sunTelemetry = new SunTelemetry();
@@ -39,34 +47,37 @@ const sunSkyDome = new SunSkyDome();
 const sunPathArc = new SunPathArc();
 const moonController = new MoonController({ siteCoords: SITE_COORDINATES });
 
+const clonePaletteSlots = (source) => ({
+  dawn: { ...source.dawn },
+  day: { ...source.day },
+  dusk: { ...source.dusk },
+  night: { ...source.night },
+});
+
 const DEFAULT_SUN_VISUAL_CONFIG = Object.freeze({
-  palette: {
-    dayTop: DEFAULT_SUN_SKY_PALETTE.dayTop,
-    dayHorizon: DEFAULT_SUN_SKY_PALETTE.dayHorizon,
-    nightTop: DEFAULT_SUN_SKY_PALETTE.nightTop,
-    nightHorizon: DEFAULT_SUN_SKY_PALETTE.nightHorizon,
-    glow: DEFAULT_SUN_SKY_PALETTE.glow,
-    arc: "#ffd48a",
-  },
+  palette: clonePaletteSlots(DEFAULT_SUN_SKY_PALETTE),
+  arcColor: "#ffd48a",
   arcOpacity: 0.4,
 });
 
 const sunVisualConfig = {
-  palette: { ...DEFAULT_SUN_VISUAL_CONFIG.palette },
+  palette: clonePaletteSlots(DEFAULT_SUN_VISUAL_CONFIG.palette),
+  arcColor: DEFAULT_SUN_VISUAL_CONFIG.arcColor,
   arcOpacity: DEFAULT_SUN_VISUAL_CONFIG.arcOpacity,
 };
 
 let moonPhaseName = null;
 
 function applySunVisualConfig() {
-  sunSkyDome.setPalette({
-    dayTop: sunVisualConfig.palette.dayTop,
-    dayHorizon: sunVisualConfig.palette.dayHorizon,
-    nightTop: sunVisualConfig.palette.nightTop,
-    nightHorizon: sunVisualConfig.palette.nightHorizon,
-    glow: sunVisualConfig.palette.glow,
-  });
-  sunPathArc.setColor(sunVisualConfig.palette.arc);
+  sunSkyDome.setPalette(sunVisualConfig.palette);
+  sunPathArc.setColor(sunVisualConfig.arcColor);
+  if (scene.fog) {
+    const dayFog = fogScratchColor.set(sunVisualConfig.palette.day.horizon);
+    scene.fog.color
+      .set(sunVisualConfig.palette.night.horizon)
+      .lerp(dayFog, 0.25);
+    scene.fog.density = 0.0012;
+  }
   const latest = sunTelemetry.getLatest();
   if (latest) {
     const opacity =
@@ -79,7 +90,10 @@ function applySunVisualConfig() {
 }
 
 function resetSunVisualConfig() {
-  Object.assign(sunVisualConfig.palette, DEFAULT_SUN_VISUAL_CONFIG.palette);
+  Object.entries(DEFAULT_SUN_VISUAL_CONFIG.palette).forEach(([slot, values]) => {
+    Object.assign(sunVisualConfig.palette[slot], values);
+  });
+  sunVisualConfig.arcColor = DEFAULT_SUN_VISUAL_CONFIG.arcColor;
   sunVisualConfig.arcOpacity = DEFAULT_SUN_VISUAL_CONFIG.arcOpacity;
 }
 
@@ -96,7 +110,7 @@ try {
 } catch (error) {
   console.error("❌ Error injecting labels:", error);
 }
-layoutManager.labels = labelManager.getLabels();
+layoutManager.labels = labelManager.getAnchors();
 
 const floor = new Floor(); // Add floor
 scene.add(floor.mesh);
@@ -136,6 +150,21 @@ function attachSetup({ cam, re, orbCtrls }) {
   scene.renderer = re;
   scene.controls = orbCtrls;
   scene.add(new THREE.AmbientLight(0xffffff, 0.25));
+  materialRegistry
+    .init({ renderer: re })
+    .then((envMap) => {
+      if (envMap) {
+        scene.environment = envMap;
+        // Keep background null so the sky dome remains visible
+        if (!scene.background) {
+          scene.background = null;
+        }
+      }
+      materialRegistry.refresh();
+    })
+    .catch((error) => {
+      console.warn("[Scene] Material registry initialisation failed:", error);
+    });
 }
 
 // ✅ Handle updates via WebSocket

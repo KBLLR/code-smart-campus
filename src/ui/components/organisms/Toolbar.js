@@ -198,13 +198,15 @@ export class Toolbar {
     button.title = label;
     button.setAttribute("aria-label", label);
 
-    const iconEl = document.createElement("img");
-    iconEl.src = icon.startsWith("/") ? icon : `/icons/${icon}`;
-    iconEl.alt = "";
-    iconEl.width = 20;
-    iconEl.height = 20;
-    iconEl.className = "toolbar__button-icon";
-    button.appendChild(iconEl);
+    if (icon) {
+      const iconEl = document.createElement("img");
+      iconEl.src = icon.startsWith("/") ? icon : `/icons/${icon}`;
+      iconEl.alt = "";
+      iconEl.width = 20;
+      iconEl.height = 20;
+      iconEl.className = "toolbar__button-icon";
+      button.appendChild(iconEl);
+    }
 
     const textEl = document.createElement("span");
     textEl.className = "toolbar__button-text";

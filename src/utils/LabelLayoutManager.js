@@ -45,7 +45,7 @@ export class LabelLayoutManager {
   }
 
   layoutClustered() {
-    for (const [id, label] of Object.entries(this.labels)) {
+    for (const label of Object.values(this.labels)) {
       const roomKey = label.userData?.room;
       const room = this.roomRegistry[roomKey?.toLowerCase()];
       if (room) {
@@ -83,8 +83,8 @@ export class LabelLayoutManager {
 
   layoutRadial() {
     const radius = 300;
-    const entries = Object.entries(this.labels);
-    entries.forEach(([id, label], i) => {
+    const entries = Object.values(this.labels);
+    entries.forEach((label, i) => {
       const angle = (i / entries.length) * Math.PI * 2;
       label.position.set(
         Math.cos(angle) * radius,
@@ -97,7 +97,7 @@ export class LabelLayoutManager {
   layoutSpiral() {
     const spacing = 15;
     const angleStep = 0.3;
-    Object.entries(this.labels).forEach(([id, label], i) => {
+    Object.values(this.labels).forEach((label, i) => {
       const angle = i * angleStep;
       const radius = spacing * angle;
       const x = Math.cos(angle) * radius;
@@ -124,14 +124,14 @@ export class LabelLayoutManager {
   }
 
   layoutManual() {
-    for (const [id, label] of Object.entries(this.labels)) {
+    for (const label of Object.values(this.labels)) {
       const pos = label.userData?.registry?.position;
       if (pos) label.position.set(...pos);
     }
   }
 
   layoutSvgAligned() {
-    for (const [id, label] of Object.entries(this.labels)) {
+    for (const label of Object.values(this.labels)) {
       const pos = label.userData?.originalPosition || [0, 20, 0];
       label.position.set(...pos);
     }
@@ -170,7 +170,7 @@ export class LabelLayoutManager {
         continue;
       }
 
-      const label = createLabel(entry.label, true, entityId);
+      const label = createLabel(entry.label, entityId);
       label.position.set(...room.center);
       label.userData.registry = entry;
       label.userData.room = roomKey;

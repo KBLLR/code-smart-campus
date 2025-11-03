@@ -10,10 +10,6 @@ function toJulian(date) {
   return date.valueOf() / DAY_MS - 0.5 + 2440588;
 }
 
-function fromJulian(j) {
-  return new Date((j + 0.5 - 2440588) * DAY_MS);
-}
-
 function toDays(date) {
   return toJulian(date) - J2000;
 }
@@ -122,4 +118,3 @@ export function normalizeAzimuthDegrees(radAzimuth) {
 export function toDegrees(rad) {
   return (rad * 180) / Math.PI;
 }
-

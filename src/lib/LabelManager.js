@@ -3,7 +3,7 @@ import * as THREE from "three";
 import { createLabel } from "@ui/createLabel.js";
 
 export class LabelManager {
-  constructor(scene, registry, roomRegistry) {
+  constructor(scene, registry, roomRegistry, options = {}) {
     if (!(scene instanceof THREE.Scene)) {
       console.error("LabelManager: Invalid scene object provided.");
       this.scene = new THREE.Scene(); // Fallback to avoid errors, but indicates a problem
@@ -12,7 +12,9 @@ export class LabelManager {
     }
     this.registry = registry || {}; // Use defaults if registries are missing
     this.roomRegistry = roomRegistry || {};
-    this.labels = {}; // Initialize labels object
+    this.useSprites = options.useSprites ?? false;
+    this.labels = {}; // Sprite-based labels retained for legacy layout flows (optional)
+    this.anchors = {}; // Lightweight objects for CSS HUD
 
     // Simple check if registries seem valid
     if (Object.keys(this.registry).length === 0) {
@@ -55,20 +57,30 @@ export class LabelManager {
       }
 
       try {
-        const label = createLabel(data.label, true, entityId); // Assuming createLabel works
-        label.position.set(...roomData.center); // Use spread operator for coordinates
-
-        // Ensure userData exists and store relevant info
-        label.userData = {
-          ...label.userData, // Preserve existing userData if any
+        const anchor = new THREE.Object3D();
+        anchor.position.set(...roomData.center);
+        anchor.userData = {
           registry: data,
           room: roomId,
-          entityId: entityId, // Store original entityId for reference
-          intensity: 0, // Default intensity
+          entityId,
+          hudOffset: data?.hudOffset ?? 12,
         };
 
-        this.scene.add(label);
-        this.labels[entityId] = label; // Store label keyed by entityId
+        if (this.useSprites) {
+          const label = createLabel(data.label, entityId);
+          label.position.set(...roomData.center);
+          label.userData = {
+            ...label.userData,
+            registry: data,
+            room: roomId,
+            entityId,
+            intensity: 0,
+          };
+          this.scene.add(label);
+          this.labels[entityId] = label;
+        }
+        this.scene.add(anchor);
+        this.anchors[entityId] = anchor;
         injectedCount++;
       } catch (error) {
         console.error(
@@ -83,36 +95,40 @@ export class LabelManager {
 
   updateLabel(entityId, value) {
     const label = this.labels[entityId];
-    if (!label) {
-      // console.warn(`[LabelManager] Attempted to update non-existent label: ${entityId}`);
-      return; // Exit if label doesn't exist
+    const anchor = this.anchors[entityId];
+
+    if (this.useSprites && label) {
+      if (!label.userData) label.userData = {};
+      if (!label.userData.registry) label.userData.registry = {};
+      label.userData.registry.value = value;
+      if (typeof label.updateText === "function") {
+        const displayText = `${label.userData.registry.label || entityId}: ${value}`;
+        label.updateText(displayText);
+      }
     }
 
-    // Ensure userData and registry sub-object exist
-    if (!label.userData) label.userData = {};
-    if (!label.userData.registry) label.userData.registry = {};
-
-    // Store the latest value
-    label.userData.registry.value = value;
-
-    // Check if the label object has an 'updateText' method (duck typing)
-    if (typeof label.updateText === "function") {
-      // Construct the text to display (e.g., "Friendly Name: Value")
-      const displayText = `${label.userData.registry.label || entityId}: ${value}`;
-      label.updateText(displayText);
-    } else {
-      // console.warn(`[LabelManager] Label for ${entityId} does not have an updateText method.`);
-      // Fallback: try updating textContent if it's a simple text mesh/sprite?
-      // if (label.element) label.element.textContent = displayText; // Example for CSS2DObject
+    if (anchor) {
+      if (!anchor.userData) anchor.userData = {};
+      if (!anchor.userData.registry) anchor.userData.registry = {};
+      anchor.userData.registry.value = value;
     }
   }
 
   getLabels() {
-    return this.labels; // Return the internal labels object
+    return this.useSprites ? this.labels : this.anchors;
+  }
+
+  getAnchors() {
+    return this.anchors;
+  }
+
+  getAnchor(entityId) {
+    return this.anchors[entityId] || null;
   }
 
   // Method to update label positions, e.g., to face camera (if using Sprites)
   updateLabelPositions(camera) {
+    if (!this.useSprites) return;
     Object.values(this.labels).forEach((label) => {
       // Logic depends on label type (Sprite, CSS2DObject, etc.)
       // Example for simple sprites needing scaling:
@@ -122,26 +138,29 @@ export class LabelManager {
   }
 
   dispose() {
-    Object.values(this.labels).forEach((label) => {
-      this.scene.remove(label); // Remove from scene first
-      // Dispose geometries and materials if they exist directly on children
-      label.traverse((child) => {
-        if (child.material) {
-          // Dispose textures if material has them
-          Object.values(child.material).forEach((prop) => {
-            if (prop instanceof THREE.Texture) {
-              prop.dispose();
-            }
-          });
-          child.material.dispose();
-        }
-        if (child.geometry) child.geometry.dispose();
+    if (this.useSprites) {
+      Object.values(this.labels).forEach((label) => {
+        this.scene.remove(label);
+        label.traverse((child) => {
+          if (child.material) {
+            Object.values(child.material).forEach((prop) => {
+              if (prop instanceof THREE.Texture) {
+                prop.dispose();
+              }
+            });
+            child.material.dispose();
+          }
+          if (child.geometry) child.geometry.dispose();
+        });
+        if (label.material) label.material.dispose();
+        if (label.geometry) label.geometry.dispose();
       });
-      // Specific disposal if label itself has geometry/material (e.g., Sprite)
-      if (label.material) label.material.dispose();
-      if (label.geometry) label.geometry.dispose();
+    }
+    Object.values(this.anchors).forEach((anchor) => {
+      this.scene.remove(anchor);
     });
-    this.labels = {}; // Clear the internal registry
+    this.labels = {};
+    this.anchors = {};
     console.log("[LabelManager] Disposed all labels.");
   }
 }

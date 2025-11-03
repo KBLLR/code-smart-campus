@@ -331,6 +331,7 @@ function connectWebSocket() {
     if (event.code !== 1000 && event.code !== 1008) {
       console.log("HA WS: Unexpected close.");
       startConnectionRetry();
+      startPollingFallback();
     } else if (event.code === 1008)
       console.error("HA WS: Auth failed, check token.");
   };

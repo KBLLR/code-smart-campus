@@ -39,6 +39,7 @@ export default defineConfig({
       "@panes": path.resolve(__dirname, "./src/debug/panes"),
       "@tools": path.resolve(__dirname, "./src/tools"),
       "@network": path.resolve(__dirname, "./src/network"),
+      "@hud": path.resolve(__dirname, "./src/hud"),
     },
   },
   optimizeDeps: {

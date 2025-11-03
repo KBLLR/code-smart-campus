@@ -78,9 +78,9 @@ export default class GenColor {
           const tempColor = new THREE.Color(value);
           hexValue = tempColor.getHexString(THREE.SRGBColorSpace); // Get validated hex
           hexValue = `#${hexValue}`; // Ensure '#' prefix
-        } catch (e) {
+        } catch (error) {
           console.warn(
-            `[GenColor] Invalid hex value "${value}". Using default.`,
+            `[GenColor] Invalid hex value "${value}". Using default. (${error.message})`,
           );
           hexValue = GenColor.getRandomColorFromTheme(defaultTheme);
         }

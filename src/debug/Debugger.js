@@ -1,5 +1,6 @@
 // --- START OF FILE src/debug/Debugger.js (Corrected and Complete) ---
 
+import * as THREE from "three";
 import { Pane } from "tweakpane";
 import * as EssentialsPlugin from "@tweakpane/plugin-essentials";
 import historyManager from "@data/modules/HistoryManager.js";
@@ -51,6 +52,7 @@ export class Debugger {
     // --- FIX: Call the methods to add Tweakpane folders ---
     this.addOrbitControlsDebug(); // Call the function to add orbit controls folder
     this.addSunVisualDebug(); // Sun visuals tuning
+    this.addPostFXDebug(); // Post-processing controls
     this.addOtherDebugOptions(); // Call the function to add other options folder
 
     // --- END FIX ---
@@ -417,23 +419,43 @@ export class Debugger {
     const sunDebug = this.scene?.userData?.sunDebug;
     if (!sunDebug) return;
 
-    const folder = this.pane.addFolder({ title: "🌞 Sun Visuals", expanded: false });
+    const folder = this.pane.addFolder({
+      title: "🌞 Sun Visuals",
+      expanded: false,
+    });
     const palette = sunDebug.config.palette;
 
-    const bindings = [
-      { key: "dayTop", label: "Day Zenith" },
-      { key: "dayHorizon", label: "Day Horizon" },
-      { key: "nightTop", label: "Night Zenith" },
-      { key: "nightHorizon", label: "Night Horizon" },
-      { key: "glow", label: "Sun Glow" },
-      { key: "arc", label: "Arc Color" },
+    const slotMeta = [
+      { key: "dawn", label: "🌅 Dawn" },
+      { key: "day", label: "☀️ Day" },
+      { key: "dusk", label: "🌇 Dusk" },
+      { key: "night", label: "🌙 Night" },
     ];
 
-    bindings.forEach(({ key, label }) => {
-      folder
-        .addBinding(palette, key, { label, view: "color" })
+    slotMeta.forEach(({ key, label }) => {
+      const slot = palette?.[key];
+      if (!slot) return;
+      const slotFolder = folder.addFolder({
+        title: label,
+        expanded: key === "day",
+      });
+      slotFolder
+        .addBinding(slot, "top", { label: "Zenith", view: "color" })
+        .on("change", () => sunDebug.apply());
+      slotFolder
+        .addBinding(slot, "horizon", { label: "Horizon", view: "color" })
+        .on("change", () => sunDebug.apply());
+      slotFolder
+        .addBinding(slot, "glow", { label: "Glow", view: "color" })
         .on("change", () => sunDebug.apply());
     });
+
+    folder
+      .addBinding(sunDebug.config, "arcColor", {
+        label: "Arc Color",
+        view: "color",
+      })
+      .on("change", () => sunDebug.apply());
 
     folder
       .addBinding(sunDebug.config, "arcOpacity", {
@@ -449,6 +471,51 @@ export class Debugger {
       sunDebug.apply();
       folder.refresh();
     });
+  }
+
+  addPostFXDebug() {
+    const postFX = this.scene?.userData?.postFX;
+    if (!postFX || !postFX.config) return;
+
+    const folder = this.pane.addFolder({
+      title: "✨ Post FX",
+      expanded: false,
+    });
+
+    folder
+      .addBinding(postFX.config, "enabled", { label: "Enabled" })
+      .on("change", (ev) => postFX.setEnabled(ev.value));
+
+    folder
+      .addBinding(postFX.config, "bloomStrength", {
+        label: "Bloom Strength",
+        min: 0,
+        max: 2,
+        step: 0.01,
+      })
+      .on("change", (ev) =>
+        postFX.setBloomSettings({ strength: ev.value }),
+      );
+
+    folder
+      .addBinding(postFX.config, "bloomRadius", {
+        label: "Bloom Radius",
+        min: 0,
+        max: 1.5,
+        step: 0.01,
+      })
+      .on("change", (ev) => postFX.setBloomSettings({ radius: ev.value }));
+
+    folder
+      .addBinding(postFX.config, "bloomThreshold", {
+        label: "Bloom Threshold",
+        min: 0,
+        max: 1,
+        step: 0.01,
+      })
+      .on("change", (ev) =>
+        postFX.setBloomSettings({ threshold: ev.value }),
+      );
   }
 
   /** Adds other debug options folder */
