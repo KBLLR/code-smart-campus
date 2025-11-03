@@ -1,9 +1,11 @@
 // src/ui/components/molecules/LabelDockUI.js
 import { Toggle } from "@atoms/Toggle.js";
+import { labelCategories } from "@data/labelCollections.js";
 
 export class LabelDockUI {
-  constructor(layoutManager) {
+  constructor(layoutManager, categories = labelCategories) {
     this.layoutManager = layoutManager;
+    this.categories = categories.filter((category) => category.count > 0);
 
     this.container = document.createElement("div");
     this.container.id = "ws-toolbar";
@@ -27,7 +29,7 @@ export class LabelDockUI {
 
   render() {
     const header = document.createElement("div");
-    header.textContent = "🛰 Groups";
+    header.textContent = "🛰 Categories";
     header.style.cssText = `
       font-weight: bold;
       font-size: 14px;
@@ -35,18 +37,17 @@ export class LabelDockUI {
     `;
     this.container.appendChild(header);
 
-    const groups = ["temperature", "occupancy", "calendar", "camera", "sun"];
-
-    groups.forEach((group) => {
+    this.categories.forEach((category) => {
+      const { key, label, icon } = category;
       const toggle = new Toggle({
-        id: `toggle-${group}`,
-        label: group,
-        icon: `${group}.svg`,
+        id: `toggle-${key}`,
+        label,
+        icon: `${icon}.svg`,
         onToggle: (visible) => {
-          this.layoutManager.toggleGroupVisibility?.(group, visible);
+          this.layoutManager.toggleGroupVisibility?.(key, visible);
         },
       });
-      toggle.button.title = `Toggle ${group}`;
+      toggle.button.title = `Toggle ${label} labels`;
       this.container.appendChild(toggle.button);
     });
   }

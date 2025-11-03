@@ -7,7 +7,7 @@ import { ShaderPass } from "three/examples/jsm/Addons.js";
 import { TWEAKS } from "./tweaks";
 
 const cnvs = document.getElementById("c") as HTMLCanvasElement;
-let res = new THREE.Vector2(cnvs.clientWidth, cnvs.clientHeight);
+const res = new THREE.Vector2(cnvs.clientWidth, cnvs.clientHeight);
 
 let effectComposer: EffectComposer;
 let effectComposer2: EffectComposer;

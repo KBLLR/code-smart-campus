@@ -139,8 +139,12 @@ export class LabelLayoutManager {
 
   toggleGroupVisibility(group, visible) {
     Object.values(this.labels).forEach((label) => {
-      const type = label.userData?.registry?.type;
-      if (type === group) label.visible = visible;
+      const registry = label.userData?.registry;
+      const type = registry?.type;
+      const category = registry?.category;
+      if (type === group || category === group) {
+        label.visible = visible;
+      }
     });
   }
 

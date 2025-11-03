@@ -1,49 +1,49 @@
-// --- START OF FILE main.js (Updated Toolbar Init with Promise.all) ---
+// --- START OF FILE main.js (Improved Loader, Panel Debugging) ---
 
 import "@/style.css";
 import * as THREE from "three";
 import Setup from "@/Setup.js";
-import { markReady, whenReady, createSignal } from "@utils/initCoordinator.js";
+import { markReady, whenReady, createSignal } from "@utils/initCoordinator.js"; // Assuming createSignal exists in initCoordinator
 import { generateRoundedBlocksFromSVG } from "@three/RoundedBlockGenerator.js";
 import { LoaderUI } from "@components/Loader.js";
 import { Toolbar } from "@organisms/Toolbar.js";
 import historyManager from "@data/modules/HistoryManager.js";
 import {
   scene,
-  // labels, // labels variable is locally scoped in scene.js, use labelManager.getLabels() if needed externally
   updateLabel as updateLabelInScene,
   connectToHomeAssistantWS,
   attachSetup,
   labelManager,
+  layoutManager,
+  updateSunFromEntity,
+  updateMoonFromEntity,
 } from "@/scene.js";
 import { SensorDashboard } from "@lib/SensorDashboard.js";
 import { Debugger } from "@debug/Debugger.js";
 import { createPanelsFromData } from "@lib/PanelBuilder.js";
 import { WebSocketStatus } from "@network/WebSocketStatus.js";
-import { createHomeAssistantSocket } from "@network/HomeAssistantSocket.js";
 import { setHaStates, updateEntityState } from "@home_assistant/haState.js";
 
-// Home Assistant Controller
-const haController = createHomeAssistantSocket({
-  onStateUpdate: handleEntityUpdate,
-  onInitialStates: handleInitialStates,
-});
-
-haController.connect();
-
-new WebSocketStatus(haController.getSocket());
-
 // --- Global Variables / State ---
+
 let initialStatesReceived = false;
-const initialStatesProcessedSignal = createSignal();
+const initialStatesProcessedSignal = createSignal(); // Signal for when initial states are done
 window.roomMeshes = {};
-let isDebugModeActive = false;
-const debugSettings = { enableLabelUpdates: true };
-let debuggerInstance = null;
+let isDebugModeActive = false; // Start with debug UI hidden
+const debugSettings = {
+  // State object for Tweakpane bindings
+  enableLabelUpdates: true,
+  // Add other debug flags here if needed
+};
+let debuggerInstance = null; // Hold the debugger instance
 let sensorDashboardInstance = null;
+let toolbarInstance = null;
+
+// --- End Debug State ---
 
 // --- UI References ---
-const loader = new LoaderUI();
+
+const loader = new LoaderUI(); // Loader is created here
 const canvas =
   document.querySelector("canvas") ||
   (() => {
@@ -54,21 +54,52 @@ const canvas =
 const contentArea = document.getElementById("content-area");
 const panelIndicators = document.querySelector(".panel-indicators");
 const floatingBtn = document.querySelector(".floating-btn");
-const toolbar = document.querySelector(".toolbar"); // Not needed if Toolbar component finds it
-const sensorDashboardContainer = document.getElementById("sensor-dashboard"); // Not needed directly
 
 // --- Setup 3D Environment ---
 const setup = new Setup(canvas, () => {
-  const w = canvas.clientWidth;
-  const h = canvas.clientHeight;
-  if (h > 0) {
-    setup.cam.aspect = w / h;
-    setup.cam.updateProjectionMatrix();
-  }
-  setup.re.setSize(w, h, false);
+  /* Resize handler */
 });
+
 setup.setEnvMap("/hdri/night.hdr");
 attachSetup(setup);
+
+scene.userData.cameraDebug = {
+  saveBookmark: (name) => setup.saveCameraBookmark(name),
+  goToBookmark: (name, duration) => setup.goToBookmark(name, duration),
+  listBookmarks: () => setup.listCameraBookmarks(),
+  removeBookmark: (name) => setup.removeCameraBookmark(name),
+  focusOnPoint: (point) => setup.focusOnPoint(point),
+  setTargetBounds: (bounds) => setup.setTargetBounds(bounds),
+  setAutoRotate: (enabled, sticky = false) => setup.setAutoRotate(enabled, sticky),
+  toggleAutoRotate: () => setup.toggleAutoRotate(),
+  setAutoRotateSpeed: (degPerSecond) => setup.setAutoRotateSpeed(degPerSecond),
+  getState: () => ({
+    bookmarks: setup.listCameraBookmarks(),
+    autoRotate: {
+      enabled: setup.autoRotate.enabled,
+      speedDeg: THREE.MathUtils.radToDeg(setup.autoRotate.speed),
+    },
+  }),
+};
+
+function initializeToolbar(exportTarget = null) {
+  if (toolbarInstance) return toolbarInstance;
+  try {
+    const target =
+      exportTarget || window.roundedRoomsGroup || window.roomMeshes || null;
+    toolbarInstance = new Toolbar({
+      rootSelector: "#toolbar-root",
+      layoutManager,
+      labelManager,
+      setupInstance: setup,
+      exportTarget: target,
+    });
+    console.log("✅ Toolbar initialized.");
+  } catch (error) {
+    console.error("❌ Failed to initialize Toolbar:", error);
+  }
+  return toolbarInstance;
+}
 
 // ========== Core Logic Functions ==========
 
@@ -88,6 +119,12 @@ function handleEntityUpdate(entityId, entity) {
   const unit = entity.attributes?.unit_of_measurement || "";
   const formattedValue = `${entity.state} ${unit}`.trim();
   updateLabelInScene(entityId, formattedValue); // Update label text/color in the 3D scene
+
+  if (entityId === "sun.sun") {
+    updateSunFromEntity(entity);
+  } else if (entityId === "sensor.moon") {
+    updateMoonFromEntity(entity);
+  }
 
   // 2. Update Central State Store
   updateEntityState(entity); // Update the global state managed by haState.js
@@ -165,6 +202,18 @@ function handleInitialStates(states) {
   // 1. Update central state store
   setHaStates(states);
   console.log("💾 Central HA state store initialized.");
+
+  const sunEntity = states.find((state) => state.entity_id === "sun.sun");
+  if (sunEntity) {
+    updateSunFromEntity(sunEntity);
+  }
+
+  const moonEntity = states.find((state) => state.entity_id === "sensor.moon");
+  if (moonEntity) {
+    updateMoonFromEntity(moonEntity);
+  } else {
+    updateMoonFromEntity({ state: null });
+  }
 
   // 2. Add Initial States to History
   historyManager.addInitialStates(states);
@@ -555,327 +604,443 @@ function toggleDebugUI(show) {
   }
 }
 
-// ========== Initial Setup Calls ==========
-loader.updateText("Initializing...");
-const roomsReadyPromise = whenReady("roundedRoomsGroup");
-const initialStatesReadyPromise = initialStatesProcessedSignal.promise;
+// --- End Debug Toggle ---
+// // --- END of UI Interactions section in main.js ---
 
-// --- Promise Logging (Optional for Debug) ---
-// console.log("[Init] roomsReadyPromise created..."); roomsReadyPromise.then(() => console.log("[Init] roomsReadyPromise RESOLVED."));
-// console.log("[Init] initialStatesReadyPromise created..."); initialStatesReadyPromise.then(() => console.log("[Init] initialStatesReadyPromise RESOLVED."));
+// --- START of Debug section in main.js ---
 
-// --- 1. Load Rounded Blocks ---
-const svgURL = "/floorplan.svg";
-loader.updateText("Loading floorplan...");
-console.log("[Init] Starting floorplan generation...");
-generateRoundedBlocksFromSVG(svgURL, scene, window.roomMeshes)
-  .then((group) => {
-    /* ... (Adds group to scene, marks roomMeshes and roundedRoomsGroup ready) ... */
-    console.log("[Init] generateRoundedBlocksFromSVG finished.");
-    if (group instanceof THREE.Group) {
-      scene.add(group);
-      console.log(
-        `✅ Rounded blocks group added (${group.children.length} meshes).`,
-      );
-      markReady("roomMeshes", window.roomMeshes);
-      markReady("roundedRoomsGroup", group); // Resolve the promise
-      console.log(
-        "[Init] 'roundedRoomsGroup' and 'roomMeshes' marked as ready.",
-      );
-    } else {
-      console.error("❌ generateRoundedBlocksFromSVG failed.");
-      loader.updateText("Error!");
-    }
-  })
-  .catch((error) => {
-    console.error("❌ Failed floorplan generation:", error);
-    loader.updateText("Error!");
-  });
+// 🧪 Debugger setup
+//
+//
+// Wait until the main 3D group for rooms is ready before initializing the debugger
+whenReady("roundedRoomsGroup", (group) => {
+  console.log("[Debugger Init] 'roundedRoomsGroup' is ready.");
 
-// --- 2. Connect Home Assistant & Init Dashboard ---
-let haSocket = null;
-window.addEventListener("DOMContentLoaded", () => {
-  console.log("[Init] DOMContentLoaded fired.");
-  try {
-    sensorDashboardInstance = new SensorDashboard("sensor-dashboard");
-    console.log("📊 SensorDashboard initialized.");
-  } catch (error) {
-    console.error("❌ Failed SensorDashboard init:", error);
+  // --- Basic Validation ---
+  // Ensure we have valid Scene and Camera objects from the Setup module
+  if (!(scene instanceof THREE.Scene)) {
+    console.error(
+      "❌ Debugger Setup Aborted: Invalid 'scene' object provided. Expected THREE.Scene.",
+      scene,
+    );
+    return; // Stop initialization if scene is invalid
+  }
+  // Be specific about camera type if possible (assuming PerspectiveCamera)
+  if (!(setup.cam instanceof THREE.PerspectiveCamera)) {
+    console.error(
+      "❌ Debugger Setup Aborted: Invalid 'setup.cam' object provided. Expected THREE.PerspectiveCamera.",
+      setup.cam,
+    );
+    return; // Stop initialization if camera is invalid
+  }
+  if (!group) {
+    console.warn(
+      "❌ Debugger Setup: 'group' object from roundedRoomsGroup is unexpectedly null/undefined.",
+    );
+    // Decide if debugger should still initialize without the group reference
+    // return; // Or maybe continue without full functionality
   }
 
-  loader.updateText("Connecting to Home Assistant...");
-  haSocket = connectToHomeAssistantWS(handleEntityUpdate, handleInitialStates);
-  if (haSocket) {
-    new WebSocketStatus(haSocket);
-    console.log("🟢 WebSocketStatus UI initialized.");
-  } else {
-    console.error("🔴 WS Connection Failed.");
-    loader.updateText("Error!");
-    initialStatesProcessedSignal.reject("WS Conn Fail");
+  // --- Initialize Debugger ---
+  try {
+    // Create the debugger instance, passing essential references
+    const debug = new Debugger(scene, setup.cam); // Assumes Debugger constructor needs scene and camera
+
+    // --- (Optional) Make globally accessible for console debugging ---
+    // Consider removing or wrapping in process.env.NODE_ENV !== 'production' for builds
+    window.debugger = debug;
+    // --- End Optional ---
+
+    console.log("🐛 Debugger initialized successfully.");
+
+    // --- Update Debugger Object Picker ---
+    // Wait until the specific room meshes registry is ready
+    whenReady("roomMeshes", (meshesMap) => {
+      console.log("[Debugger Update] 'roomMeshes' is ready.");
+
+      // Check if the debugger instance has the expected update method
+      if (typeof debug.updateObjectPickerOptions !== "function") {
+        console.warn(
+          "Debugger instance does not have an 'updateObjectPickerOptions' method. Skipping picker update.",
+        );
+        return;
+      }
+      // Check if meshesMap data is available and is an object
+      if (!meshesMap || typeof meshesMap !== "object") {
+        console.warn(
+          "Debugger: Invalid or empty 'meshesMap' received. Skipping object picker update.",
+          meshesMap,
+        );
+        return;
+      }
+
+      // Prepare options for the object picker { 'Display Name': uuid }
+      const formattedMeshes = {};
+      let validMeshCount = 0;
+      Object.entries(meshesMap).forEach(([id, mesh]) => {
+        // Ensure the entry is a valid THREE.Object3D before adding
+        if (mesh instanceof THREE.Object3D) {
+          formattedMeshes[mesh.name || id] = mesh.uuid; // Use mesh name or fallback to id
+          validMeshCount++;
+        } else {
+          console.warn(
+            `Debugger: Invalid mesh object found in meshesMap for id '${id}'.`,
+            mesh,
+          );
+        }
+      });
+
+      if (validMeshCount > 0) {
+        debug.updateObjectPickerOptions(formattedMeshes);
+        console.log(
+          `🐛 Debugger object picker updated with ${validMeshCount} room meshes.`,
+        );
+      } else {
+        console.warn(
+          "Debugger: No valid meshes found in meshesMap to update object picker.",
+        );
+      }
+    }); // End whenReady for roomMeshes
+  } catch (error) {
+    console.error("❌ Error initializing Debugger:", error);
+    // Handle initialization error, maybe show a message to the user?
   }
 });
 
-// --- 3. Mark Labels Ready (after listener setup below) ---
-// Moved this *after* the whenReady("labels",...) block below
-// if (labelManager && typeof labelManager.getLabels === 'function') { /* ... markReady("labels", ...) ... */ }
+// --- START of Initial Setup Calls section in main.js ---
 
-// **************************************************************************
-// --- MODIFICATION START: Replaced Toolbar Initialization Logic ---
-// **************************************************************************
+// ========== Initial Setup Calls ==========
 
-// ✅ Toolbar UI (Depends on labels AND rooms group being ready)
-// Wait for both dependencies using Promise.all
-Promise.all([
-  whenReady("labels"),
-  whenReady("roundedRoomsGroup"), // Wait for the group needed for export
-])
-  .then(([labelsData, groupData]) => {
-    // Destructure the resolved data
-    const labelCount = Object.keys(labelsData ?? {}).length;
+// --- Loader: Initialize ---
+loader.updateText("Initializing...");
+
+// --- Create promises/signals for async operations ---
+// whenReady creates a promise that waits for markReady(resourceName)
+const roomsReadyPromise = whenReady("roundedRoomsGroup");
+
+// --- Add logging to track promise states (for debugging) ---
+console.log(
+  "[Init] roomsReadyPromise created, waiting for 'roundedRoomsGroup'.",
+);
+roomsReadyPromise.then(
+  (group) =>
     console.log(
-      `[Toolbar Init] Dependencies ready: Labels (${labelCount}), Rooms Group (${groupData ? "OK" : "Missing"}).`,
-    ); // Log readiness
+      "[Init] roomsReadyPromise RESOLVED.",
+      group
+        ? `Group children: ${group.children?.length}`
+        : "Group null/undefined",
+    ),
+  (err) => console.error("[Init] roomsReadyPromise REJECTED.", err), // Should not happen with whenReady unless manually rejected
+);
 
-    // Validate dependencies
-    if (!labelsData || typeof labelsData !== "object") {
+console.log(
+  "[Init] initialStatesProcessedSignal promise created, waiting for resolve/reject.",
+);
+initialStatesProcessedSignal.promise.then(
+  () => console.log("[Init] initialStatesProcessedSignal RESOLVED."),
+  (err) => console.error("[Init] initialStatesProcessedSignal REJECTED.", err),
+);
+// --- End promise logging ---
+
+// --- 1. Load Rounded Blocks (Async Operation) ---
+const svgURL = "/floorplan.svg";
+loader.updateText("Loading floorplan..."); // Update status before starting
+console.log("[Init] Starting floorplan generation...");
+
+generateRoundedBlocksFromSVG(svgURL, scene, window.roomMeshes) // Pass the main scene
+  .then((group) => {
+    console.log("[Init] generateRoundedBlocksFromSVG finished.");
+    if (group instanceof THREE.Group) {
+      scene.add(group); // Add the generated group to the main scene
+      console.log(
+        `✅ Rounded blocks group added to the main scene (${group.children.length} meshes).`,
+      );
+
+      // --- Mark resources as ready ---
+      // Mark the mesh registry ready (for Debugger object picker)
+      markReady("roomMeshes", window.roomMeshes);
+      window.roundedRoomsGroup = group;
+      // ** CRITICAL: Mark the group itself ready to resolve roomsReadyPromise **
+      markReady("roundedRoomsGroup", group);
+      console.log(
+        "[Init] 'roundedRoomsGroup' and 'roomMeshes' marked as ready.",
+      );
+      // --- End mark ready ---
+    } else {
       console.error(
-        "❌ Toolbar Init Aborted: Invalid labelsData received by Promise.all.",
-        labelsData,
+        "❌ generateRoundedBlocksFromSVG did not return a valid Group.",
       );
-      return;
-    }
-    if (!groupData) {
-      // Log a warning but maybe still initialize the toolbar without export functionality?
-      console.warn(
-        "❌ Toolbar Init Warning: Rounded rooms group not available. Export buttons will be disabled or may fail.",
-      );
-      // You could potentially pass null or undefined for exportTarget and handle it in Toolbar.js
-    }
-
-    // Instantiate the Toolbar
-    try {
-      // Ensure the .toolbar div exists in HTML
-      new Toolbar({
-        onToggleGroup: (group, visible) => {
-          // Callback logic for toggling label groups
-          if (!labelsData) return; // Safety check
-          Object.values(labelsData).forEach((label) => {
-            const type =
-              label?.userData?.registry?.type ||
-              label?.userData?.type ||
-              "unknown";
-            if (type === group && label && typeof label.visible === "boolean") {
-              label.visible = visible;
-            }
-          });
-        },
-        initialLabels: labelsData, // Pass label data
-        setupInstance: setup, // Pass setup instance (for camera views)
-        scene: scene, // Pass scene instance (potentially for exporter)
-        exportTarget: groupData, // Pass the resolved rooms group for exporting
-      });
-      console.log("✅ Toolbar initialized successfully.");
-    } catch (error) {
-      console.error("❌ Failed Toolbar instantiation:", error);
+      // How to signal failure to Promise.all? Currently, roomsReadyPromise will just never resolve.
+      // Consider modifying generateRoundedBlocksFromSVG to return a rejecting promise on failure.
+      loader.updateText("Error: Invalid floorplan data!");
     }
   })
   .catch((error) => {
-    // This catch block handles errors if *either* whenReady("labels") or whenReady("roundedRoomsGroup") rejects
-    console.error(
-      "❌ Error waiting for Toolbar dependencies (labels or roundedRoomsGroup):",
-      error,
-    );
-    // Optionally, provide user feedback that the toolbar could not load
+    console.error("❌ Failed to generate rounded blocks:", error);
+    loader.updateText("Error loading floorplan!");
+    // Rejecting the signal here might hide the loader too early if HA connects successfully.
+    // Better to let the roomsReadyPromise hang and potentially handle timeout later if needed.
   });
 
-// **************************************************************************
-// --- END MODIFICATION ---
-// **************************************************************************
-
-// --- Mark Labels Ready (Moved Here - After whenReady listener is set up) ---
-// We still need to signal when labels are actually ready.
-// This should happen after labelManager is definitely available.
-if (labelManager && typeof labelManager.getLabels === "function") {
+// --- 2. Connect Home Assistant (Async Operation Triggered by DOMContentLoaded) ---
+let haSocket = null;
+window.addEventListener("DOMContentLoaded", () => {
+  // This ensures the DOM is ready for UI elements like WebSocketStatus if needed
+  console.log("[Init] DOMContentLoaded event fired.");
   try {
-    const currentLabels = labelManager.getLabels();
-    console.log(
-      `[Init] Attempting to mark labels ready with ${Object.keys(currentLabels ?? {}).length} labels...`,
-    );
-    markReady("labels", currentLabels); // Signal readiness and pass data
-    console.log("[Init] 'labels' marked as ready.");
+    // Assumes the container #sensor-dashboard exists in the HTML now
+    sensorDashboardInstance = new SensorDashboard("sensor-dashboard");
+    console.log("📊 SensorDashboard initialized.");
+    initializeToolbar();
   } catch (error) {
-    console.error("❌ Error getting or marking labels ready:", error);
+    console.error("❌ Failed to initialize SensorDashboard:", error);
+    // Decide how to handle this - maybe show an error message?
   }
-} else {
-  console.error(
-    "❌ Cannot mark labels ready: labelManager or getLabels() not available.",
-  );
-}
+  loader.updateText("Connecting to Home Assistant...");
+  console.log("[Init] Attempting to connect WebSocket...");
 
-// --- Debugger Setup ---
+  // connectToHomeAssistantWS handles its own connection logic.
+  // We pass handleInitialStates, which MUST call initialStatesProcessedSignal.resolve() on success.
+  haSocket = connectToHomeAssistantWS(handleEntityUpdate, handleInitialStates);
+
+  if (haSocket) {
+    // Initialize WebSocket status UI *after* attempting connection
+    try {
+      new WebSocketStatus(haSocket); // Assumes WebSocketStatus handles its own DOM insertion
+      console.log("🟢 WebSocketStatus UI initialized.");
+    } catch (wsError) {
+      console.error("❌ Error initializing WebSocketStatus UI:", wsError);
+    }
+  } else {
+    // Connection failed immediately (e.g., invalid URL)
+    console.error("🔴 Failed to create WebSocket instance. Check WS_URL.");
+    loader.updateText("Error: HA Connection Failed");
+    // Reject the signal promise to indicate HA init failure
+    initialStatesProcessedSignal.reject("WebSocket creation failed");
+  }
+  // Note: Further HA connection errors (auth fail, close) might need to trigger
+  // initialStatesProcessedSignal.reject() from within scene.js or the WS handlers if you
+  // want Promise.all to fail in those cases too. Currently, handleInitialStates only resolves.
+});
+
+// --- 3. Wait for Critical Operations, then Hide Loader ---
+console.log(
+  "[Init] Setting up Promise.all to wait for rooms and initial states processing...",
+);
+Promise.all([roomsReadyPromise, initialStatesProcessedSignal.promise])
+  .then(() => {
+    console.log(">>> Promise.all RESOLVED successfully!");
+    console.log(
+      "✅ Core async initializations complete (Rooms, HA Initial States).",
+    );
+    loader.complete(); // Hide loader smoothly
+  })
+  .catch((error) => {
+    console.error(">>> Promise.all REJECTED!");
+    console.error("❌ Error during core initialization:", error);
+    // Display persistent error message on the loader
+    loader.updateText(`Initialization Error: ${error || "Unknown error"}`);
+    // Consider leaving the loader visible or adding a dedicated error overlay
+  });
+
+// --- END of Initial Setup Calls section in main.js ---
+
+// ✅ Toolbar UI
+// Wait until the label data managed by LabelManager is ready.
+
+whenReady("labels", (labelsData) => {
+  console.log(
+    `[Toolbar Init] Labels ready (${Object.keys(labelsData ?? {}).length})`,
+  );
+  if (labelsData === null || typeof labelsData !== "object") {
+    console.error(
+      "❌ Toolbar Init Aborted: Received invalid labelsData (expected an object).",
+      labelsData,
+    );
+    return; // Stop if data is fundamentally wrong
+  }
+  if (Object.keys(labelsData).length === 0) {
+    console.warn(
+      "[Toolbar Init] labelsData is ready, but it's empty. Toolbar controls might be limited.",
+    );
+  }
+  layoutManager.labels = labelsData;
+  initializeToolbar();
+}); // End whenReady for "labels"
+
+// --- END of Toolbar UI initialization section in main.js ---
+
+// --- START of Complete Debugger Setup section in main.js ---
+
+// 🧪 Debugger setup
 // Wait until the main 3D group for rooms ('roundedRoomsGroup') is ready before initializing the debugger.
+// This ensures the scene has the primary objects the debugger might interact with initially.
 whenReady("roundedRoomsGroup", (group) => {
   console.log("[Debugger Init] Prerequisite 'roundedRoomsGroup' is ready.");
+  initializeToolbar(group);
 
   // --- Step 1: Basic Validation ---
+  // Ensure we have valid Scene and Camera objects from the Setup module.
+  // The debugger relies heavily on these.
   if (!(scene instanceof THREE.Scene)) {
-    console.error("❌ Debugger Setup Aborted: Invalid 'scene' object.");
-    return;
+    console.error(
+      "❌ Debugger Setup Aborted: Invalid 'scene' object provided. Expected THREE.Scene.",
+      scene,
+    );
+    return; // Stop initialization if the scene is invalid
   }
   if (!(setup.cam instanceof THREE.Camera)) {
-    console.error("❌ Debugger Setup Aborted: Invalid 'setup.cam' object.");
-    return;
+    // Check against base Camera class for flexibility
+    console.error(
+      "❌ Debugger Setup Aborted: Invalid 'setup.cam' object provided. Expected THREE.Camera.",
+      setup.cam,
+    );
+    return; // Stop initialization if the camera is invalid
   }
+  // OrbitControls validation (added based on Debugger constructor)
   if (!setup.orbCtrls || typeof setup.orbCtrls.update !== "function") {
     console.error(
-      "❌ Debugger Setup Aborted: Invalid 'setup.orbCtrls' object.",
+      "❌ Debugger Setup Aborted: Invalid 'setup.orbCtrls' object provided.",
+      setup.orbCtrls,
     );
-    return;
+    return; // Stop initialization if OrbitControls are invalid
   }
+  // Check the group object itself, although whenReady should provide it if resolved.
   if (!group) {
-    console.warn("❌ Debugger Setup Warning: 'group' object missing.");
+    console.warn(
+      "❌ Debugger Setup: 'group' object from roundedRoomsGroup is unexpectedly missing.",
+    );
+    // Depending on Debugger's design, you might still proceed or return here.
   }
 
   // --- Step 2: Initialize Debugger Instance ---
   try {
-    // Create the instance, passing scene, camera, controls, and the shared debugSettings state
+    // Create the debugger instance, passing essential references.
+    // Assumes Debugger constructor requires scene, camera, controls, and the debugSettings state object.
     debuggerInstance = new Debugger(
       scene,
       setup.cam,
       setup.orbCtrls,
       debugSettings,
     );
-    window.debugger = debuggerInstance; // Optional global access
+
+    // --- (Optional) Make globally accessible for console debugging ---
+    // Useful during development but consider removing or wrapping for production builds.
+    // Example: if (process.env.NODE_ENV === 'development') { window.debugger = debug; }
+    window.debugger = debuggerInstance; // Assign the instance stored in debuggerInstance
+    // --- End Optional ---
+
     console.log("🐛 Debugger initialized successfully.");
 
-    // Set initial visibility based on the flag
+    // --- Hide Debug UI Panels Initially (if needed) ---
+    // Call the function defined elsewhere in main.js to set initial visibility
+    // based on the isDebugModeActive flag.
     if (!isDebugModeActive) {
       console.log("[Debugger Init] Hiding debug UI panels initially.");
-      toggleDebugUI(false); // Assumes toggleDebugUI is defined above
+      toggleDebugUI(false); // Assumes toggleDebugUI is defined
     }
 
-    // --- Step 3: Update Debugger Object Picker (When roomMeshes are ready) ---
+    // --- Step 3: Update Debugger Object Picker (Asynchronously) ---
+    // The object picker needs the 'roomMeshes' data, which might become ready
+    // at the same time or slightly after 'roundedRoomsGroup'.
+    // We use another whenReady to ensure this data is available before updating the picker.
     whenReady("roomMeshes", (meshesMap) => {
       console.log("[Debugger Update] Dependency 'roomMeshes' is ready.");
 
+      // Check if the debugger instance was created successfully and has the required method.
       if (
         !debuggerInstance ||
         typeof debuggerInstance.updateObjectPickerOptions !== "function"
       ) {
         console.warn(
-          "Debugger instance or update method missing. Skipping picker update.",
+          "Debugger instance is missing or lacks 'updateObjectPickerOptions' method. Skipping picker update.",
         );
         return;
       }
+      // Check if the meshesMap data is valid.
       if (
         !meshesMap ||
         typeof meshesMap !== "object" ||
         Object.keys(meshesMap).length === 0
       ) {
         console.warn(
-          "Debugger: Invalid or empty 'meshesMap'. Skipping picker update.",
+          "Debugger: Invalid or empty 'meshesMap' received. Skipping object picker update.",
+          meshesMap,
         );
-        return;
+        return; // Don't proceed if no valid mesh data
       }
 
-      // Format data for Tweakpane { 'Display Name': uuid }
+      // Prepare options for the object picker in the format { 'Display Name': uuid }
       const formattedMeshes = {};
       let validMeshCount = 0;
       Object.entries(meshesMap).forEach(([id, mesh]) => {
+        // Validate that each entry is a THREE.Object3D before adding.
         if (mesh instanceof THREE.Object3D) {
-          formattedMeshes[mesh.name || id] = mesh.uuid;
+          formattedMeshes[mesh.name || id] = mesh.uuid; // Use mesh name or fallback to id from the registry key
           validMeshCount++;
+        } else {
+          console.warn(
+            `Debugger: Invalid mesh object found in meshesMap for id '${id}'.`,
+            mesh,
+          );
         }
       });
 
-      // Update the picker
+      // Update the picker only if valid meshes were found.
       if (validMeshCount > 0) {
         debuggerInstance.updateObjectPickerOptions(formattedMeshes);
         console.log(
-          `🐛 Debugger object picker updated (${validMeshCount} rooms).`,
+          `🐛 Debugger object picker updated with ${validMeshCount} room meshes.`,
         );
       } else {
-        console.warn("Debugger: No valid meshes found for picker.");
+        console.warn(
+          "Debugger: No valid meshes found in meshesMap to update object picker.",
+        );
       }
-    }); // End whenReady roomMeshes
+    }); // End whenReady for "roomMeshes"
   } catch (error) {
+    // Catch errors specifically during Debugger instantiation.
     console.error("❌ Error initializing Debugger instance:", error);
-    debuggerInstance = null;
+    debuggerInstance = null; // Ensure instance is null if init fails
+    // Provide feedback - maybe disable debug features?
   }
-}); // End whenReady roundedRoomsGroup
+}); // End whenReady for "roundedRoomsGroup"
 
-// --- Wait for Critical Operations, then Hide Loader ---
-// This ensures the main 3D structure is loaded and initial HA data is processed
-// before removing the loading screen.
-console.log(
-  "[Init] Setting up Promise.all to wait for rooms and initial states processing...",
-);
-Promise.all([roomsReadyPromise, initialStatesReadyPromise])
-  .then(() => {
-    // This block executes only if BOTH roomsReadyPromise AND initialStatesReadyPromise resolve.
-    console.log(">>> Promise.all RESOLVED successfully!");
-    console.log(
-      "✅ Core async initializations complete (Rooms Loaded, Initial HA States Processed).",
-    );
-    // Now it's safe to hide the loader.
-    if (loader && typeof loader.complete === "function") {
-      loader.complete();
-    } else {
-      console.error(
-        "Loader not available or 'complete' method missing when trying to hide.",
-      );
-      // Attempt manual removal as fallback
-      const loaderElement = document.getElementById("loader");
-      loaderElement?.remove();
-    }
-  })
-  .catch((error) => {
-    // This block executes if EITHER roomsReadyPromise OR initialStatesReadyPromise rejects.
-    console.error(">>> Promise.all REJECTED!");
-    console.error("❌ Error during core initialization:", error);
-    // Update the loader to show a persistent error message.
-    if (loader && typeof loader.updateText === "function") {
-      loader.updateText(`Initialization Error: ${error || "Unknown error"}`);
-    } else {
-      // Fallback alert if loader is unavailable
-      alert(`Initialization Error: ${error || "Unknown error"}`);
-    }
-    // Consider leaving the loader visible or adding a dedicated error overlay.
-  });
+// --- START of Animation Loop section in main.js ---
 
-// --- Animation Loop ---
-// The main render cycle for the application.
+// 🎥 Animation Loop
+// This function runs continuously to update and render the scene.
 function loop() {
-  // Schedule the next frame. MUST be the first line for smooth animation.
+  // Request the next frame from the browser. This creates the recursive loop.
   requestAnimationFrame(loop);
 
-  // --- Start FPS Measurement --- (if debugger is initialized)
-  debuggerInstance?.updateFpsGraph?.();
+  // --- Update Time-Dependent Controls ---
+  setup.update?.();
 
-  // --- Update Controls & Stats ---
-  // Update camera controls (essential for damping/transitions).
-  setup.orbCtrls?.update();
-  // Update Stats panel (only needed for standard Stats.js, not StatsGLPanel with init).
-  // setup.stats?.update();
+  // --- Update Performance Stats ---
+  // Update the Stats.js panel (FPS, ms, etc.).
+  setup.stats?.update();
 
   // --- Update Dynamic Scene Elements ---
-  // Update label positions based on camera view, but only if enabled via debugger.
-  if (debugSettings.enableLabelUpdates && labelManager?.updateLabelPositions) {
+  // Example: Update label positions/scaling relative to the camera.
+  // Check if labelManager exists and has the update method.
+  if (labelManager && typeof labelManager.updateLabelPositions === "function") {
+    // Pass the camera from the setup instance.
     labelManager.updateLabelPositions(setup.cam);
   }
+  // Add other per-frame updates here if needed (e.g., animations).
 
   // --- Render the Scene ---
-  // Ensure all core components are ready before attempting to render.
+  // Check if the renderer, scene, and camera are all valid before rendering.
   if (setup.re && scene && setup.cam) {
     setup.re.render(scene, setup.cam);
+  } else {
+    // This shouldn't normally happen after initialization, but good to know if it does.
+    console.warn("Render loop: Renderer, scene, or camera not ready.");
   }
-
-  // --- End FPS Measurement --- (if debugger is initialized)
-  debuggerInstance?.endFpsGraph?.();
 }
 
 // --- Start the Animation Loop ---
+// Call the loop function once to begin the animation cycle.
 console.log("🚀 Starting animation loop...");
-loop(); // Kick off the rendering cycle
-
-// --- END OF FILE main.js ---
+loop();

@@ -26,6 +26,11 @@ body {
     position: relative; /* Needed if absolute positioning children */
 }
 
+#ui-shell {
+    position: relative;
+    z-index: 2;
+}
+
 #loader {
     /* Keep loader styles if Loader.js is used */
     position: absolute;
@@ -605,18 +610,22 @@ canvas {
 
 /* Base button style */
 .toolbar__button {
-    display: inline-flex; /* Use flex for centering content */
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: var(--toolbar-button-padding);
-    border-radius: var(--toolbar-button-border-radius);
+    gap: 8px;
+    padding: 8px 14px;
+    border-radius: 18px;
     background: var(--toolbar-button-bg);
     border: var(--toolbar-button-border);
     cursor: pointer;
     transition: var(--toolbar-button-transition);
-    width: var(--toolbar-button-size); /* Default size */
-    height: var(--toolbar-button-size); /* Default size */
-    flex-shrink: 0; /* Prevent shrinking */
+    min-height: 36px;
+    min-width: 36px;
+    flex-shrink: 0;
+    color: inherit;
+    font-size: 12px;
+    line-height: 1;
 }
 
 /* Hover effect for all buttons */
@@ -638,8 +647,28 @@ canvas {
 
 /* Icon style within buttons */
 .toolbar__button-icon {
-    /* You might not need specific styles if size is controlled by button padding/size */
     display: block; /* Prevents extra space below image */
+    width: 18px;
+    height: 18px;
+}
+
+.toolbar__button-text {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    text-transform: none;
+}
+
+.toolbar__button-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    padding: 0 5px;
+    border-radius: 9px;
+    background: rgba(255, 255, 255, 0.18);
+    font-size: 11px;
+    line-height: 1;
 }
 
 /* Specific styles/overrides for Toggle buttons */
@@ -675,6 +704,132 @@ canvas {
 .toolbar__button--view {
     /* Example: Slightly different background or border? */
     /* background-color: rgba(var(--secondary-rgb, 14, 165, 233), 0.2); */
+}
+
+.toolbar__button--chip {
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.12);
+    padding-right: 10px;
+}
+
+.toolbar__button--chip:not(.active) {
+    opacity: 0.6;
+}
+
+.toolbar__group--categories {
+    gap: 10px;
+}
+
+.label-modal__group {
+    margin-bottom: 1rem;
+}
+
+.label-modal__group-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 0.4rem;
+    color: var(--light);
+}
+
+.label-modal__group-header sup {
+    font-size: 0.65rem;
+    opacity: 0.7;
+}
+
+.label-modal__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.label-modal__item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 10px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.label-modal__text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.label-modal__text strong {
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.label-modal__text small {
+    font-size: 0.7rem;
+    opacity: 0.7;
+}
+
+.sensor-dashboard {
+    display: grid;
+    gap: 12px;
+    max-height: 320px;
+    overflow-y: auto;
+    padding: 12px;
+    background: rgba(15, 23, 42, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    backdrop-filter: blur(20px);
+}
+
+.sensor-dashboard__category {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.sensor-dashboard__header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    opacity: 0.75;
+}
+
+.sensor-dashboard__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 4px;
+}
+
+.sensor-dashboard__item {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 6px 10px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    font-size: 0.82rem;
+}
+
+.sensor-dashboard__item.updated {
+    background: rgba(45, 212, 191, 0.18);
+}
+
+.sensor-dashboard__item-label {
+    font-weight: 600;
+}
+
+.sensor-dashboard__item-value {
+    font-variant-numeric: tabular-nums;
+    opacity: 0.85;
 }
 
 /* ======================================== */

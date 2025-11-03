@@ -1,4 +1,3 @@
-import { whenReady } from "@utils/initCoordinator.js";
 
 export class WebSocketStatus {
   constructor(socket) {

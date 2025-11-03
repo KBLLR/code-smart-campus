@@ -1,10 +1,7 @@
 // --- START OF FILE src/debug/Debugger.js (Corrected and Complete) ---
 
-import * as THREE from "three";
-import scene from "@/Setup";
-import { StatsGLPanel } from "@debug/StatsGLPanel";
 import { Pane } from "tweakpane";
-import * as EssentialsPlugin from "@tweakpane/plugin-essentials"; // Import Tweakpane essentials
+import * as EssentialsPlugin from "@tweakpane/plugin-essentials";
 import historyManager from "@data/modules/HistoryManager.js";
 
 export class Debugger {
@@ -53,6 +50,7 @@ export class Debugger {
 
     // --- FIX: Call the methods to add Tweakpane folders ---
     this.addOrbitControlsDebug(); // Call the function to add orbit controls folder
+    this.addSunVisualDebug(); // Sun visuals tuning
     this.addOtherDebugOptions(); // Call the function to add other options folder
 
     // --- END FIX ---
@@ -194,7 +192,7 @@ export class Debugger {
     ) {
       try {
         this.objectPickerBinding.dispose();
-      } catch (e) {} // Dispose safely
+      } catch { /* Ignored error during dispose */ } // Dispose safely
       this.objectPickerBinding = null; // Clear reference
     }
 
@@ -253,7 +251,7 @@ export class Debugger {
     this.highlight.visible = false; // Hide highlight
     if (this.info) this.info.textContent = "ℹ️ Debugger Active (No Selection)"; // Update info overlay
     // Reset the picker value to 'None' if it exists
-    if (this.params.hasOwnProperty("selectedObject")) {
+    if (Object.prototype.hasOwnProperty.call(this.params, "selectedObject")) {
       this.params.selectedObject = null;
     }
     this.pane?.refresh(); // Refresh pane to reflect deselection if needed
@@ -351,7 +349,7 @@ export class Debugger {
     ];
 
     propsToDebug.forEach((item) => {
-      if (this.orbitControls.hasOwnProperty(item.prop)) {
+      if (Object.prototype.hasOwnProperty.call(this.orbitControls, item.prop)) {
         params[item.prop] = this.orbitControls[item.prop]; // Store default
         folder.addBinding(this.orbitControls, item.prop, { ...item }); // Add binding
       } else {
@@ -363,12 +361,93 @@ export class Debugger {
     folder.addButton({ title: "Reset Controls" }).on("click", () => {
       console.log("Resetting OrbitControls to defaults...");
       Object.keys(params).forEach((key) => {
-        if (this.orbitControls.hasOwnProperty(key)) {
+        if (Object.prototype.hasOwnProperty.call(this.orbitControls, key)) {
           this.orbitControls[key] = params[key];
         }
       });
       this.pane.refresh(); // Refresh pane to show reset values
       this.orbitControls.update(); // Needed if damping is on/target changed etc.
+    });
+
+    const cameraDebug = this.scene?.userData?.cameraDebug;
+    if (cameraDebug) {
+      const state = cameraDebug.getState();
+      const orbitParams = {
+        autoRotate: state.autoRotate.enabled,
+        autoRotateSpeed: state.autoRotate.speedDeg,
+        bookmarkName: "",
+      };
+
+      folder
+        .addBinding(orbitParams, "autoRotate", { label: "Auto Rotate" })
+        .on("change", (ev) => cameraDebug.setAutoRotate(ev.value, true));
+
+      folder
+        .addBinding(orbitParams, "autoRotateSpeed", {
+          label: "Rotate °/s",
+          min: 0,
+          max: 60,
+          step: 0.5,
+        })
+        .on("change", (ev) => cameraDebug.setAutoRotateSpeed(ev.value));
+
+      folder.addBinding(orbitParams, "bookmarkName", { label: "Bookmark" });
+
+      folder.addButton({ title: "Save Bookmark" }).on("click", () => {
+        if (orbitParams.bookmarkName) {
+          cameraDebug.saveBookmark(orbitParams.bookmarkName);
+          orbitParams.bookmarkName = "";
+          folder.refresh();
+        }
+      });
+
+      folder.addButton({ title: "Go Bookmark" }).on("click", () => {
+        if (orbitParams.bookmarkName) {
+          cameraDebug.goToBookmark(orbitParams.bookmarkName);
+        }
+      });
+
+      folder.addButton({ title: "List Bookmarks" }).on("click", () => {
+        console.table(cameraDebug.listBookmarks());
+      });
+    }
+  }
+
+  addSunVisualDebug() {
+    const sunDebug = this.scene?.userData?.sunDebug;
+    if (!sunDebug) return;
+
+    const folder = this.pane.addFolder({ title: "🌞 Sun Visuals", expanded: false });
+    const palette = sunDebug.config.palette;
+
+    const bindings = [
+      { key: "dayTop", label: "Day Zenith" },
+      { key: "dayHorizon", label: "Day Horizon" },
+      { key: "nightTop", label: "Night Zenith" },
+      { key: "nightHorizon", label: "Night Horizon" },
+      { key: "glow", label: "Sun Glow" },
+      { key: "arc", label: "Arc Color" },
+    ];
+
+    bindings.forEach(({ key, label }) => {
+      folder
+        .addBinding(palette, key, { label, view: "color" })
+        .on("change", () => sunDebug.apply());
+    });
+
+    folder
+      .addBinding(sunDebug.config, "arcOpacity", {
+        label: "Arc Opacity",
+        min: 0,
+        max: 1,
+        step: 0.01,
+      })
+      .on("change", () => sunDebug.apply());
+
+    folder.addButton({ title: "Reset" }).on("click", () => {
+      sunDebug.reset();
+      sunDebug.apply();
+      folder.refresh();
     });
   }
 
@@ -381,7 +460,7 @@ export class Debugger {
     // Toggle for Label Updates (using the referenced debugSettings object)
     if (
       this.debugSettings &&
-      this.debugSettings.hasOwnProperty("enableLabelUpdates")
+      Object.prototype.hasOwnProperty.call(this.debugSettings, "enableLabelUpdates")
     ) {
       folder.addBinding(this.debugSettings, "enableLabelUpdates", {
         label: "Update Labels",

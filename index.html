@@ -1,150 +1,33 @@
 <!doctype html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Smart Campus 3D</title>
-        <!-- Make sure favicon path is correct -->
-        <link rel="icon" type="image/x-icon" href="/ico.jpg" />
-        <!-- Link to your main CSS file -->
-        <!--<link rel="stylesheet" href="/src/style.css" />-->
-    </head>
-    <body>
-        <!--Canvas -->
-        <canvas id="canvas"></canvas>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Smart Campus 3D</title>
+    <link rel="icon" type="image/x-icon" href="/ico.jpg" />
+  </head>
+  <body>
+    <canvas id="canvas" aria-label="Campus 3D canvas"></canvas>
 
-        <!-- Toolbar  -->
-        <div class="toolbar toolbar__container theme-scifi-glass">
-            <!-- Group 1: Layout Modes -->
-            <div
-                class="toolbar__group toolbar__group--layout"
-                title="Layout Modes"
-            >
-                <button class="toolbar__button" title="Toggle Layout Mode">
-                    <span class="toolbar__icon">Layout</span>
-                </button>
-                <button class="toolbar__button" title="Toggle Layout Mode">
-                    <span class="toolbar__icon">Layout</span>
-                </button>
-                <button class="toolbar__button" title="Toggle Layout Mode">
-                    <span class="toolbar__icon">Layout</span>
-                </button>
-                <button class="toolbar__button" title="Toggle Layout Mode">
-                    <span class="toolbar__icon">Layout</span>
-                </button>
-            </div>
-            <span class="toolbar__separator">|</span>
+    <header id="toolbar-root"></header>
 
-            <!-- Group 2: Data Layer Toggles -->
-            <div
-                class="toolbar__group toolbar__group--data-layers"
-                title="Toggle Data Layers"
-            >
-                <button class="toolbar__button" title="Toggle Data Layer">
-                    <span class="toolbar__icon">Data Layer</span>
-                </button>
-                <button class="toolbar__button" title="Toggle Data Layer">
-                    <span class="toolbar__icon">Data Layer</span>
-                </button>
-                <button class="toolbar__button" title="Toggle Data Layer">
-                    <span class="toolbar__icon">Data Layer</span>
-                </button>
-                <button class="toolbar__button" title="Toggle Data Layer">
-                    <span class="toolbar__icon">Data Layer</span>
-                </button>
-            </div>
-            <span class="toolbar__separator">|</span>
+    <div id="ui-shell">
+      <main class="panel-shell">
+        <section id="content-area" class="panel-strip" role="region" aria-live="polite"></section>
+        <nav class="panel-indicators" aria-label="Sensor panels"></nav>
+      </main>
 
-            <!-- Group 3: View Controls -->
-            <div
-                class="toolbar__group toolbar__group--view-controls"
-                title="Camera Views"
-            >
-                <button class="toolbar__button" title="Toggle Camera View">
-                    <span class="toolbar__icon">Camera View</span>
-                </button>
-                <button class="toolbar__button" title="Toggle Camera View">
-                    <span class="toolbar__icon">Camera View</span>
-                </button>
-                <button class="toolbar__button" title="Toggle Camera View">
-                    <span class="toolbar__icon">Camera View</span>
-                </button>
-                <button class="toolbar__button" title="Toggle Camera View">
-                    <span class="toolbar__icon">Camera View</span>
-                </button>
-            </div>
-            <span class="toolbar__separator">|</span>
+      <button class="floating-btn" type="button" aria-label="Toggle sensor panels">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M10 20v-6H4v-4h6V4h4v6h6v4h-6v6h-4z" />
+        </svg>
+      </button>
 
-            <!-- Group 4: Analysis & Tools -->
-            <div
-                class="toolbar__group toolbar__group--analysis"
-                title="Analysis & Tools"
-            >
-                <button class="toolbar__button" title="Data Analisis">
-                    <span class="toolbar__icon">Data Analisis</span>
-                </button>
-                <button class="toolbar__button" title="Data Visualization">
-                    <span class="toolbar__icon">Data Visualization</span>
-                </button>
-                <button class="toolbar__button" title="Data Visualization">
-                    <span class="toolbar__icon">Data Visualization</span>
-                </button>
-                <button class="toolbar__button" title="Data Visualization">
-                    <span class="toolbar__icon">Data Visualization</span>
-                </button>
-            </div>
-            <span class="toolbar__separator">|</span>
+      <div id="websocket-status" aria-live="polite"></div>
+      <div id="sensor-dashboard"></div>
+      <div class="tp-dfwv" aria-hidden="true"></div>
+    </div>
 
-            <!-- Group 5: Import/Export (NEW) -->
-            <div
-                class="toolbar__group toolbar__group--io"
-                title="Import/Export"
-            >
-                <button class="toolbar__button" title="Import">
-                    <span class="toolbar__icon">Import SVG</span>
-                </button>
-                <button class="toolbar__button" title="Import">
-                    <span class="toolbar__icon">Import 3D</span>
-                </button>
-                <button class="toolbar__button" title="Export">
-                    <span class="toolbar__icon">Export STL</span>
-                </button>
-                <button class="toolbar__button" title="Export">
-                    <span class="toolbar__icon">Export GLTF</span>
-                </button>
-            </div>
-        </div>
-
-        <!-- TWEAKPANE -->
-        <div class="tp-dfwv"></div>
-
-        <!-- Content area for HUI panels  -->
-        <div id="content-area">
-            <!-- Panels will be dynamically generated here -->
-        </div>
-
-        <!-- Panel indicators  -->
-        <div class="panel-indicators">
-            <!-- Indicators will be dynamically generated here -->
-        </div>
-
-        <!-- Floating action button  -->
-        <div class="floating-btn">
-            <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-            >
-                <!-- Added fill -->
-                <path d="M10 20v-6H4v-4h6V4h4v6h6v4h-6v6h-4z" />
-            </svg>
-        </div>
-
-        <!-- WebSocketStatus component will create its own element -->
-        <div id="websocket-status"></div>
-        <!-- SensorDashboard component might target an element; ensure it exists if used -->
-        <div id="sensor-dashboard"></div>
-
-        <script type="module" src="/src/main.js"></script>
-    </body>
+    <script type="module" src="/src/main.js"></script>
+  </body>
 </html>

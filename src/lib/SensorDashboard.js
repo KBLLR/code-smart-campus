@@ -1,4 +1,9 @@
-// --- START OF FILE SensorDashboard.js (Modified) ---
+// --- START OF FILE SensorDashboard.js (Categorised) ---
+
+import {
+  cleanedLabelRegistry,
+  labelCategories,
+} from "@data/labelCollections.js";
 
 export class SensorDashboard {
   constructor(containerId = "sensordashboardID") {
@@ -7,29 +12,53 @@ export class SensorDashboard {
       console.warn(
         `[SensorDashboard] Container element with ID '${containerId}' not found. Dashboard will not function.`,
       );
-      // Optionally, create the container if it doesn't exist?
       this.container = document.createElement("div");
       this.container.id = containerId;
-      document.body.appendChild(this.container); //
-      return; // Exit if container is essential and not found
+      document.body.appendChild(this.container);
     }
-    this.sensors = {}; // entity_id => { element: DOMElement } - Store references to created elements
 
-    // Clear any existing content in the container
+    this.registry = cleanedLabelRegistry;
+    this.categories = labelCategories.filter((category) =>
+      Object.values(this.registry).some(
+        (entry) => entry.category === category.key,
+      ),
+    );
+    this.sections = new Map();
+    this.sensors = {}; // entity_id => { element, valueSpan, category }
+
     this.container.innerHTML = "";
-    // Add some basic styling or class if needed
-    this.container.classList.add("containerId"); // Example class
+    this.container.classList.add("sensor-dashboard");
+    this.buildCategorySections();
     console.log(`[SensorDashboard] Initialized for container #${containerId}`);
   }
 
-  /**
-   * Updates the display for a specific sensor entity.
-   * This method should be called externally (e.g., by handleEntityUpdate in main.js)
-   * when a relevant entity's state changes.
-   * @param {object} entity - The full Home Assistant entity state object.
-   */
+  buildCategorySections() {
+    this.categories.forEach((category) => {
+      const section = document.createElement("section");
+      section.className = "sensor-dashboard__category";
+      section.dataset.category = category.key;
+
+      const header = document.createElement("header");
+      header.className = "sensor-dashboard__header";
+      const icon = document.createElement("img");
+      icon.src = `/icons/${category.icon}.svg`;
+      icon.alt = "";
+      icon.width = 18;
+      icon.height = 18;
+      const title = document.createElement("span");
+      title.textContent = category.label;
+      header.append(icon, title);
+
+      const list = document.createElement("ul");
+      list.className = "sensor-dashboard__list";
+
+      section.append(header, list);
+      this.container.appendChild(section);
+      this.sections.set(category.key, { section, list });
+    });
+  }
+
   update(entity) {
-    // Ensure the container exists and the entity is valid
     if (
       !this.container ||
       !entity ||
@@ -42,64 +71,57 @@ export class SensorDashboard {
       return;
     }
 
-    // Optional: Filter to only display specific sensor types if desired
-    if (!entity.entity_id.startsWith("sensor.")) {
-      console.log(
-        `[SensorDashboard] Skipping non-sensor entity: ${entity.entity_id}`,
-      );
-      return;
-    }
-
     const id = entity.entity_id;
-    // Use friendly name if available, otherwise derive from entity_id
-    const name =
-      entity.attributes?.friendly_name ||
-      id.replace("sensor.", "").replace(/_/g, " ");
-    const value = entity.state ?? "N/A"; // Use 'N/A' if state is null/undefined
+    const metadata = this.registry[id];
+    if (!metadata) return; // Only display sensors we have metadata for
+
+    const categoryKey = metadata.category;
+    const section = this.sections.get(categoryKey);
+    if (!section) return;
+
+    const value = entity.state ?? "N/A";
     const unit = entity.attributes?.unit_of_measurement || "";
     const displayValue = `${value} ${unit}`.trim();
 
-    // Check if the sensor entry already exists in the DOM
     if (!this.sensors[id]) {
-      // Create a new element for this sensor
-      const div = document.createElement("div");
-      div.className = "sensor-entry"; // Add a class for styling
-      div.dataset.entityId = id; // Store entity_id for potential future use
-      div.innerHTML = `
-        <strong title="${id}">${name}</strong>:
-        <span class="sensor-value">${displayValue}</span>
-      `;
-      this.container.appendChild(div);
-      // Store a reference to the created element (or just its value span)
+      const item = document.createElement("li");
+      item.className = "sensor-dashboard__item";
+      item.dataset.entityId = id;
+
+      const name = document.createElement("span");
+      name.className = "sensor-dashboard__item-label";
+      name.textContent = metadata.label;
+
+      const valueSpan = document.createElement("span");
+      valueSpan.className = "sensor-dashboard__item-value";
+      valueSpan.textContent = displayValue;
+
+      item.append(name, valueSpan);
+      section.list.appendChild(item);
+
       this.sensors[id] = {
-        element: div,
-        valueSpan: div.querySelector(".sensor-value"),
+        element: item,
+        valueSpan,
+        category: categoryKey,
       };
       console.log(`[SensorDashboard] Added entry for: ${id}`);
     } else {
-      // Update the existing element's value span
       const sensorRef = this.sensors[id];
-      if (sensorRef && sensorRef.valueSpan) {
-        sensorRef.valueSpan.textContent = displayValue;
-        // Optional: Add a temporary highlight on update
-        sensorRef.element.classList.add("updated");
-        setTimeout(() => {
-          sensorRef.element?.classList.remove("updated");
-        }, 500); // Remove highlight after 500ms
-      } else {
-        console.warn(
-          `[SensorDashboard] Could not find valueSpan to update for ${id}`,
-        );
-      }
+      sensorRef.valueSpan.textContent = displayValue;
+      sensorRef.element.classList.add("updated");
+      setTimeout(() => {
+        sensorRef.element?.classList.remove("updated");
+      }, 400);
     }
   }
+
   clear() {
-    if (this.container) {
-      this.container.innerHTML = "";
-    }
+    this.sections.forEach(({ list }) => {
+      list.innerHTML = "";
+    });
     this.sensors = {};
     console.log("[SensorDashboard] Cleared all sensor entries.");
   }
 }
 
-// --- END OF FILE SensorDashboard.js (Modified) ---
+// --- END OF FILE SensorDashboard.js (Categorised) ---

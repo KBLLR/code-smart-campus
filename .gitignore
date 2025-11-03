@@ -12,3 +12,4 @@ yarn-error.log*
 # IDEs and other
 .vscode/
 *.logpublic/models/protos/*.stl
+public/models

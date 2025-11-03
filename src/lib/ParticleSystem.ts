@@ -29,9 +29,9 @@ export default class ParticleSystem {
 
     setAttributesValues() {
         for (let i = 0; i < this.count; i++) {
-            let x = i * 3 + 0;
-            let y = i * 3 + 1;
-            let z = i * 3 + 2;
+            const x = i * 3 + 0;
+            const y = i * 3 + 1;
+            const z = i * 3 + 2;
             this.maxOffsetArr[i] = Math.random() * 2.5 + 0.5;
             this.scaleArr[i] = Math.random();
             this.rotationArr[i] = Math.random() * 2 * Math.PI;
@@ -54,14 +54,14 @@ export default class ParticleSystem {
 
             this.rotationArr[i] += 0.1;
 
-            let x = i * 3 + 0;
-            let y = i * 3 + 1;
-            let z = i * 3 + 2;
+            const x = i * 3 + 0;
+            const y = i * 3 + 1;
+            const z = i * 3 + 2;
 
             const speed = 0.2;
 
-            let waveOffset1 = (Math.sin(this.currentPositionArr[y] * 5.0) * 0.28);
-            let waveOffset2 = (Math.sin(this.currentPositionArr[x] * 6.0) * 0.23);
+            const waveOffset1 = (Math.sin(this.currentPositionArr[y] * 5.0) * 0.28);
+            const waveOffset2 = (Math.sin(this.currentPositionArr[x] * 6.0) * 0.23);
 
 
             this.currentPositionArr[x] += Math.abs(this.velocityArr[x] + waveOffset1) * speed;

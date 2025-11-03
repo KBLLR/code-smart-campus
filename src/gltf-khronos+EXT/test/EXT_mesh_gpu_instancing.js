@@ -1,4 +1,3 @@
-/* global QUnit */
 
 import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader.js';
 import GLTFMeshGpuInstancingExtension from '../loaders/EXT_mesh_gpu_instancing/EXT_mesh_gpu_instancing.js';

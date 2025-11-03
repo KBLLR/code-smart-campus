@@ -92,10 +92,10 @@ export function setupTweaks() {
   TWEAKS.speed = 1.5;
 
   meshBlade = createTweakList("Mesh", keyArr, meshArr);
-  let colorFolder = world.pane.addFolder({ title: "Color" });
-  let effectFolder = world.pane.addFolder({ title: "Dissolve Effect" });
-  let animation = world.pane.addFolder({ title: "Animation" });
-  let BloomFolder = world.pane.addFolder({ title: "Bloom Effect" });
+  const colorFolder = world.pane.addFolder({ title: "Color" });
+  const effectFolder = world.pane.addFolder({ title: "Dissolve Effect" });
+  const animation = world.pane.addFolder({ title: "Animation" });
+  const BloomFolder = world.pane.addFolder({ title: "Bloom Effect" });
 
   const meshColorBinding = colorFolder.addBinding(TWEAKS, "meshColor", {
     label: "Mesh",

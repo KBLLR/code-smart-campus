@@ -1,7 +1,9 @@
 // src/ui/components/molecules/LabelModal.js
 import { ScrollBoxModal } from "@molecules/ScrollBoxModal.js";
-import { labelRegistry } from "@registries/labelRegistry.js";
-import { getIconForEntity } from "@utils/entityUtils.js";
+import {
+  cleanedLabelRegistry,
+  labelCategories,
+} from "@data/labelCollections.js";
 
 export class LabelModal {
   constructor() {
@@ -17,21 +19,49 @@ export class LabelModal {
   }
 
   renderList(query = "") {
-    const items = Object.entries(labelRegistry)
-      .filter(([id, data]) => {
-        const l = `${id} ${data.label} ${data.type} ${data.room}`.toLowerCase();
-        return l.includes(query.toLowerCase());
+    const term = query.trim().toLowerCase();
+    const entries = Object.entries(cleanedLabelRegistry);
+
+    const groupedMarkup = labelCategories
+      .map((category) => {
+        const items = entries.filter(([, data]) => {
+          if (data.category !== category.key) return false;
+          if (!term) return true;
+          const haystack = `${data.entityId} ${data.label} ${data.room} ${data.type}`.toLowerCase();
+          return haystack.includes(term);
+        });
+
+        if (items.length === 0) return "";
+
+        const listItems = items
+          .map(([, data]) => {
+            const icon = data.icon ?? category.icon;
+            return `<li class="label-modal__item">
+              <span class="label-modal__icon">
+                <img src="/icons/${icon}.svg" alt="" width="16" height="16" />
+              </span>
+              <span class="label-modal__text">
+                <strong>${data.label}</strong>
+                <small>${data.room}</small>
+              </span>
+            </li>`;
+          })
+          .join("");
+
+        return `<section class="label-modal__group">
+            <header class="label-modal__group-header">
+              <img src="/icons/${category.icon}.svg" alt="" width="18" height="18" />
+              <span>${category.label} <sup>${items.length}</sup></span>
+            </header>
+            <ul class="label-modal__list">${listItems}</ul>
+          </section>`;
       })
-      .map(([id, data]) => {
-        const icon = getIconForEntity(id);
-        return `<li class="label-item" style="display: flex; align-items: center; gap: 6px; padding: 4px 0">
-          <img src="/icons/${icon}.svg" alt="${icon}" width="16" height="16" />
-          <span>${data.label} → <code>${data.room}</code></span>
-        </li>`;
-      });
+      .filter(Boolean)
+      .join("");
 
     this.modal.setContent(
-      `<ul style="padding-left: 0; list-style: none;">${items.join("")}</ul>`,
+      groupedMarkup ||
+        "<p style='color: rgba(255,255,255,0.7);'>No labels match your search.</p>",
     );
     this.modal.show();
   }

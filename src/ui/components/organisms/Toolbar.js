@@ -1,313 +1,300 @@
 // src/ui/components/organisms/Toolbar.js
-import { Button } from "@atoms/Button.js";
-import { Toggle } from "@atoms/Toggle.js";
-import Setup from "@/Setup.js";
-import { getIconForEntity } from "@utils/entityUtils.js";
-import { MeshExporter } from "@utils/MeshExporter.js"; // Import the exporter
+// Lightweight toolbar that wires layout controls, sensor category toggles, camera views, and export helpers.
 
-let btn;
+import {
+  labelCategories,
+  cleanedLabelRegistry,
+} from "@data/labelCollections.js";
+import { sanitizeLabelRegistry } from "@utils/labelRegistryUtils.js";
+import { MeshExporter } from "@utils/MeshExporter.js";
+import { showLabelInfoModal } from "@molecules/LabelModal.js";
+
+const LAYOUT_OPTIONS = [
+  { key: "svg-aligned", icon: "floorplan.svg", label: "Floorplan" },
+  { key: "clustered", icon: "layout-dashboard.svg", label: "Cluster" },
+  { key: "grid", icon: "grid.svg", label: "Grid" },
+  { key: "manual", icon: "pointer-code.svg", label: "Manual" },
+];
+
+const VIEW_OPTIONS = [
+  { key: "default", icon: "perspective-view.svg", label: "Default" },
+  { key: "iso", icon: "view-360-number.svg", label: "Isometric" },
+  { key: "top", icon: "orthogonal-view.svg", label: "Top" },
+  { key: "front", icon: "presentation.svg", label: "Front" },
+  { key: "side", icon: "aligned.svg", label: "Side" },
+];
+
+const TOOL_ACTIONS = [
+  {
+    key: "list-labels",
+    icon: "info.svg",
+    label: "Labels",
+    handler: () => showLabelInfoModal(),
+  },
+];
+
+const EXPORT_ACTIONS = [
+  {
+    key: "export-gltf",
+    icon: "badge-3d.svg",
+    label: "GLB",
+    handler(exporter, target) {
+      if (!target) return console.warn("[Toolbar] No export target defined.");
+      exporter.exportGLTF(target, "scene-export.glb", true);
+    },
+  },
+  {
+    key: "export-stl",
+    icon: "view-360-arrow.svg",
+    label: "STL",
+    handler(exporter, target) {
+      if (!target) return console.warn("[Toolbar] No export target defined.");
+      exporter.exportSTL(target, "scene-export.stl", true);
+    },
+  },
+];
 
 export class Toolbar {
-  // --- MODIFICATION: Accept scene and exportTarget (roundedRoomsGroup) ---
   constructor({
-    onToggleGroup,
-    initialLabels,
+    rootSelector = "#toolbar-root",
+    categories = labelCategories,
+    layoutManager,
+    labelManager,
     setupInstance,
-    scene,
-    exportTarget,
-  }) {
-    console.log("[Toolbar Constructor] STARTING...");
+    exportTarget = null,
+  } = {}) {
+    this.root =
+      typeof rootSelector === "string"
+        ? document.querySelector(rootSelector)
+        : rootSelector;
 
-    // Find the main toolbar container from HTML
-    this.container = document.querySelector(".toolbar");
-    if (!this.container) {
-      console.error("❌ Toolbar Init Failed: Element .toolbar NOT FOUND!");
-      return;
+    if (!this.root) {
+      this.root = document.createElement("header");
+      this.root.id = "toolbar-root";
+      document.body.appendChild(this.root);
     }
-    console.log("[Toolbar Constructor] Found container:", this.container);
-    this.container.classList.add("toolbar__container", "theme-scifi-glass");
 
-    // Store dependencies
-    this.onToggleGroup =
-      typeof onToggleGroup === "function" ? onToggleGroup : () => {};
-    this.labels = initialLabels || {};
-    this.setupInstance = setupInstance; // Use the provided instance
-    this.scene = scene; // Use the provided scene instance
-    this.canvas = scene.cnvs;
-    this.exportTarget = exportTarget; // The object to export (e.g., roundedRoomsGroup)
-    this.exporter = new MeshExporter(); // Instantiate the exporter utility
+    this.root.classList.add("toolbar", "toolbar__container", "theme-scifi-glass");
 
-    // Validate essential dependencies needed later
-    if (!this.setupInstance || typeof this.setupInstance.setCameraView !== "function") {
-      console.warn(
-        "Toolbar: setupInstance invalid/missing setCameraView. View controls disabled.",
+    this.categories = categories ?? labelCategories;
+    this.layoutManager = layoutManager ?? null;
+    this.labelManager = labelManager ?? null;
+    this.setup = setupInstance ?? null;
+    this.exportTarget = exportTarget;
+    this.exporter = new MeshExporter();
+
+    this.activeLayout = "svg-aligned";
+    this.activeCategories = new Set(
+      (this.categories || []).map((category) => category.key),
+    );
+
+    // If a label manager was provided, make sure the layout manager sees the same registry.
+    if (this.layoutManager && this.labelManager) {
+      this.layoutManager.labels = this.labelManager.getLabels();
+    }
+
+    this.render();
+  }
+
+  render() {
+    this.root.innerHTML = "";
+
+    const fragment = document.createDocumentFragment();
+
+    fragment.appendChild(this.buildGroup("Layouts", LAYOUT_OPTIONS, (option) =>
+      this.handleLayoutChange(option.key),
+    ));
+
+    fragment.appendChild(this.createSeparator());
+
+    fragment.appendChild(
+      this.buildCategoryGroup(this.categories || [], (category, active) =>
+        this.handleCategoryToggle(category.key, active),
+      ),
+    );
+
+    fragment.appendChild(this.createSeparator());
+
+    fragment.appendChild(this.buildGroup("Views", VIEW_OPTIONS, (option) =>
+      this.handleViewChange(option.key),
+    ));
+
+    fragment.appendChild(this.createSeparator());
+
+    fragment.appendChild(this.buildGroup("Tools", TOOL_ACTIONS, (action) =>
+      action.handler?.(),
+    ));
+
+    fragment.appendChild(this.createSeparator());
+
+    fragment.appendChild(
+      this.buildGroup("Export", EXPORT_ACTIONS, (action) =>
+        action.handler?.(this.exporter, this.exportTarget),
+      ),
+    );
+
+    this.root.appendChild(fragment);
+    this.syncInitialStates();
+  }
+
+  createSeparator() {
+    const span = document.createElement("span");
+    span.className = "toolbar__separator";
+    span.textContent = "|";
+    span.setAttribute("aria-hidden", "true");
+    return span;
+  }
+
+  buildGroup(title, options, onSelect) {
+    const group = document.createElement("div");
+    group.className = "toolbar__group";
+    group.dataset.role = title.toLowerCase();
+
+    options.forEach((option) => {
+      const button = this.createToolbarButton(option);
+      button.addEventListener("click", () => onSelect(option, button));
+      group.appendChild(button);
+    });
+
+    return group;
+  }
+
+  buildCategoryGroup(categories, onToggle) {
+    const group = document.createElement("div");
+    group.className = "toolbar__group toolbar__group--categories";
+
+    categories.forEach((category) => {
+      const button = this.createToolbarButton({
+        key: category.key,
+        icon: `${category.icon}.svg`,
+        label: `${category.label}`,
+        count: category.count,
+        isToggle: true,
+      });
+      button.classList.add("toolbar__button--chip");
+      button.dataset.category = category.key;
+      button.addEventListener("click", () => {
+        const nextState = !button.classList.contains("active");
+        button.classList.toggle("active", nextState);
+        button.setAttribute("aria-pressed", String(nextState));
+        onToggle(category, nextState);
+      });
+      group.appendChild(button);
+    });
+
+    return group;
+  }
+
+  createToolbarButton({ key, icon, label, count, isToggle = false }) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "toolbar__button";
+    if (isToggle) {
+      button.classList.add("toolbar__button--toggle");
+      button.setAttribute("aria-pressed", "true");
+      button.classList.add("active");
+    }
+    button.dataset.key = key;
+    button.title = label;
+    button.setAttribute("aria-label", label);
+
+    const iconEl = document.createElement("img");
+    iconEl.src = icon.startsWith("/") ? icon : `/icons/${icon}`;
+    iconEl.alt = "";
+    iconEl.width = 20;
+    iconEl.height = 20;
+    iconEl.className = "toolbar__button-icon";
+    button.appendChild(iconEl);
+
+    const textEl = document.createElement("span");
+    textEl.className = "toolbar__button-text";
+    textEl.textContent = label;
+    button.appendChild(textEl);
+
+    if (typeof count === "number") {
+      const badge = document.createElement("span");
+      badge.className = "toolbar__button-badge";
+      badge.textContent = String(count);
+      button.appendChild(badge);
+    }
+
+    return button;
+  }
+
+  syncInitialStates() {
+    // Apply initial layout button state
+    const layoutButton = this.root.querySelector(
+      `.toolbar__group[data-role="layouts"] button[data-key="${this.activeLayout}"]`,
+    );
+    if (layoutButton) {
+      this.setActiveButton(layoutButton);
+    }
+  }
+
+  setActiveButton(button) {
+    const group = button.closest(".toolbar__group");
+    if (!group) return;
+    group.querySelectorAll("button").forEach((btn) => {
+      btn.classList.toggle("active", btn === button);
+      btn.setAttribute("aria-pressed", String(btn === button));
+    });
+  }
+
+  handleLayoutChange(layoutKey) {
+    this.activeLayout = layoutKey;
+    const button = this.root.querySelector(
+      `.toolbar__group[data-role="layouts"] button[data-key="${layoutKey}"]`,
+    );
+    if (button) this.setActiveButton(button);
+    if (this.layoutManager?.setMode) {
+      this.layoutManager.setMode(layoutKey);
+    }
+  }
+
+  handleViewChange(viewKey) {
+    const button = this.root.querySelector(
+      `.toolbar__group[data-role="views"] button[data-key="${viewKey}"]`,
+    );
+    if (button) this.setActiveButton(button);
+    if (this.setup?.setCameraView) {
+      this.setup.setCameraView(viewKey);
+    }
+  }
+
+  handleCategoryToggle(categoryKey, active) {
+    if (active) {
+      this.activeCategories.add(categoryKey);
+    } else {
+      this.activeCategories.delete(categoryKey);
+    }
+
+    if (this.layoutManager?.toggleGroupVisibility) {
+      this.layoutManager.toggleGroupVisibility(categoryKey, active);
+    } else if (this.labelManager) {
+      const labels = this.labelManager.getLabels();
+      Object.values(labels).forEach((label) => {
+        const labelCategory = label.userData?.registry?.category;
+        if (labelCategory === categoryKey) {
+          label.visible = active;
+        }
+      });
+    }
+  }
+
+  refreshCategoryCounts() {
+    const { registry, categories } = sanitizeLabelRegistry(cleanedLabelRegistry);
+    categories.forEach((category) => {
+      const button = this.root.querySelector(
+        `.toolbar__group--categories button[data-category="${category.key}"]`,
       );
-      this.setupInstance = null;
-    }
-    if (!this.exportTarget) {
-      console.warn(
-        "Toolbar: exportTarget (e.g., roundedRoomsGroup) not provided. Export buttons disabled.",
-      );
-    }
-
-    // Populate the pre-defined group containers
-    try {
-      console.log("[Toolbar Constructor] Populating groups...");
-      this.createLayoutGroup(); // <= RENAME CALL
-      this.createDataLayerGroup(); // <= RENAME CALL
-      this.createViewControlGroup(); // <= RENAME CALL
-      this.createAnalysisGroup(); // <= RENAME CALL
-      this.createIOGroup(); // <= RENAME CALL (also rename method def below) // Populate the new IO group
-      console.log("[Toolbar Constructor] Finished populating groups.");
-    } catch (error) {
-      console.error("Toolbar: Failed during population of elements.", error);
-      if (this.container)
-        this.container.innerHTML =
-          '<p style="color: red;">Error loading toolbar content</p>';
-    }
-    console.log("[Toolbar Constructor] FINISHED.");
-  }
-
-  // --- NOTE: Separator element is now expected to be hardcoded in index.html ---
-  // separator() { /* ... Removed ... */ }
-
-  // --- MODIFICATION: Populate methods find container and add buttons ---
-
-  createLayoutGroup() {
-    const groupContainer = this.container.querySelector(
-      ".toolbar__group--data-layers",
-    );
-    if (!groupContainer) {
-      console.error("Toolbar: Data Layers group container not found.");
-      return null;
-    } // Return null on error
-    groupContainer.innerHTML = ""; // Clear placeholders
-
-    // --- Toggle All Labels Button ---
-    try {
-      // ... (Toggle All button creation logic - append to groupContainer) ...
-    } catch (error) {
-      console.error("Toolbar: Failed 'Toggle All Labels' btn.", error);
-    }
-
-    // Separator
-    if (groupContainer.childElementCount > 0) {
-      const smallSep = document.createElement("div");
-      smallSep.style.cssText =
-        "width: 1px; height: 20px; background: rgba(255, 255, 255, 0.2); margin: 0 4px;";
-      groupContainer.appendChild(smallSep);
-    }
-
-    // --- Individual Layer Toggles ---
-    const types = [
-      "calendar",
-      "temperature",
-      "occupancy",
-      "humidity",
-      "air",
-      "light",
-      "sun",
-    ];
-    types.forEach((type) => {
-      try {
-        const iconName = getIconForEntity(type);
-        btn = document.createElement("button"); // <<-- Button element is named 'btn'
-        btn.classList.add(
-          "toolbar__button",
-          "toolbar__button--toggle",
-          "active",
-        );
-        btn.type = "button";
-        const img = document.createElement("img");
-        img.src = `/icons/${iconName}.svg`;
-        img.width = 20;
-        img.height = 20;
-        img.alt = "";
-        img.classList.add("toolbar__button-icon");
-        img.style.pointerEvents = "none";
-        btn.title = `Toggle ${type} layer`;
-        btn.appendChild(img);
-        btn.dataset.labelType = type;
-
-        // --- FIX: Use 'btn' variable inside the handler ---
-        btn.onclick = () => {
-          const active = btn.classList.toggle("active"); // Use 'btn' here
-          this.onToggleGroup(type, active);
-        };
-        // --- END FIX ---
-
-        groupContainer.appendChild(btn);
-      } catch (error) {
-        console.error(`Toolbar: Failed toggle btn '${type}'.`, error);
+      if (button) {
+        const badge =
+          button.querySelector(".toolbar__button-badge") ||
+          button.appendChild(document.createElement("span"));
+        badge.className = "toolbar__button-badge";
+        badge.textContent = String(category.count);
       }
     });
-    // Return null if nothing was added (e.g., if Toggle All failed and types array was empty)
-    return groupContainer.childElementCount > 0 ? groupContainer : null;
-  }
-
-  createDataLayerGroup() {
-    const groupContainer = this.container.querySelector(
-      ".toolbar__group--data-layers",
-    );
-    if (!groupContainer) {
-      console.error("Toolbar: Data Layers group container not found.");
-      return;
-    }
-    groupContainer.innerHTML = "";
-
-    // Toggle All Button
-    try {
-      /* ... create and append Toggle All button to groupContainer ... */
-    } catch (error) {
-      console.error("Toolbar: Failed 'Toggle All Labels' btn.", error);
-    }
-
-    // Separator (if needed visually within the group) - Consider CSS :not(:first-child) margin instead
-    if (groupContainer.childElementCount > 0) {
-      const sep = document.createElement("div");
-      sep.style.cssText =
-        "width:1px; height:20px; background:rgba(255,255,255,0.1); margin: 0 4px;";
-      groupContainer.appendChild(sep);
-    }
-
-    // Individual Toggles
-    const types = ["calendar", "temperature" /* ... other types ... */];
-    types.forEach((type) => {
-      try {
-        const iconName = getIconForEntity(type);
-        // ... create individual toggle button (btn) ...
-        btn.onclick = () => {
-          const active = btn.classList.toggle("active");
-          this.onToggleGroup(type, active);
-        };
-        groupContainer.appendChild(btn);
-      } catch (error) {
-        console.error(`Toolbar: Failed toggle btn '${type}'.`, error);
-      }
-    });
-  }
-
-  createViewControlGroup() {
-    if (!this.setup) return; // Requires setup instance
-    const groupContainer = this.container.querySelector(
-      ".toolbar__group--view-controls",
-    );
-    if (!groupContainer) {
-      console.error("Toolbar: View Controls group container not found.");
-      return;
-    }
-    groupContainer.innerHTML = "";
-
-    const views = [
-      /* ... views definitions ... */
-    ];
-    views.forEach(({ view, icon, title }) => {
-      try {
-        const btn = Button({
-          icon,
-          onClick: () => this.setup.setCameraView(view),
-        });
-        if (!(btn instanceof Node)) return;
-        btn.classList?.add("toolbar__button", "toolbar__button--view");
-        btn.title = title;
-        groupContainer.appendChild(btn);
-      } catch (error) {
-        console.error(`Toolbar: Failed view btn '${view}'.`, error);
-      }
-    });
-  }
-
-  createAnalysisGroup() {
-    const groupContainer = this.container.querySelector(
-      ".toolbar__group--analysis",
-    );
-    if (!groupContainer) {
-      console.error("Toolbar: Analysis group container not found.");
-      return;
-    }
-    groupContainer.innerHTML = "";
-
-    const tools = [
-      /* ... tools definitions ... */
-    ];
-    tools.forEach(({ id, icon, title, action }) => {
-      try {
-        const btn = Button({ icon, onClick: action });
-        if (!(btn instanceof Node)) return;
-        btn.classList?.add("toolbar__button", "toolbar__button--analysis");
-        btn.title = title;
-        groupContainer.appendChild(btn);
-      } catch (error) {
-        console.error(`Toolbar: Failed analysis btn '${id}'.`, error);
-      }
-    });
-  }
-
-  // --- NEW: Populate Import/Export Group ---
-  createIOGroup() {
-    const groupContainer = this.container.querySelector(".toolbar__group--io");
-    if (!groupContainer) {
-      console.error("Toolbar: IO group container not found.");
-      return;
-    }
-    groupContainer.innerHTML = "";
-
-    const ioActions = [
-      {
-        id: "export-gltf",
-        icon: "badge-3d.svg",
-        title: "Export GLTF/GLB",
-        action: () => {
-          if (this.exportTarget)
-            this.exporter.exportGLTF(
-              this.exportTarget,
-              "scene-export.gltf",
-              true,
-            );
-          else alert("No object target defined for export.");
-        },
-      },
-      {
-        id: "export-stl",
-        icon: "view-360-number.svg",
-        title: "Export STL",
-        action: () => {
-          // Assuming you have a similar icon
-          if (this.exportTarget)
-            this.exporter.exportSTL(
-              this.exportTarget,
-              "scene-export.stl",
-              true,
-            );
-          else alert("No object target defined for export.");
-        },
-      },
-      // { id: 'import-gltf', icon: 'upload.svg', title: 'Import GLTF (NYI)', action: () => alert("Import NYI") },
-    ];
-
-    ioActions.forEach(({ id, icon, title, action }) => {
-      try {
-        const btn = Button({ icon, onClick: action });
-        if (!(btn instanceof Node)) throw new Error("Button failed");
-        btn.classList?.add("toolbar__button", "toolbar__button--io");
-        btn.title = title;
-        groupContainer.appendChild(btn);
-      } catch (error) {
-        console.error(`Toolbar: Failed IO btn '${id}'.`, error);
-      }
-    });
-  }
-
-  dispose() {
-    // Clear content instead of removing container
-    if (this.container) {
-      // Optionally remove only dynamically added children if placeholders exist
-      this.container
-        .querySelectorAll(".toolbar__group")
-        .forEach((group) => (group.innerHTML = ""));
-    }
-    console.log("Toolbar disposed (content cleared).");
+    return registry;
   }
 }
-
-// --- END OF FILE Toolbar.js (Refactored for HTML Structure & IO) ---

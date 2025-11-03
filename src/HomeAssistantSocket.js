@@ -1,5 +1,4 @@
 const WS_URL = import.meta.env.VITE_CLOUD_WS;
-const TOKEN = import.meta.env.VITE_CLOUD_TOKEN;
 
 if (!WS_URL) {
   console.error("❌ No HA WebSocket URL defined. Check .env or Vite config.");
@@ -9,7 +8,7 @@ export function createHomeAssistantSocket({
   onStateUpdate = () => {},
   onInitialStates = () => {},
   url = WS_URL,
-  token = HA_TOKEN,
+  token = import.meta.env.VITE_HA_TOKEN,
 } = {}) {
   if (!url) throw new Error("WebSocket URL not provided");
 

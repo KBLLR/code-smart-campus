@@ -5,7 +5,23 @@ import { HDRLoader } from "three/examples/jsm/loaders/HDRLoader.js";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { Pane } from "tweakpane";
 import { StatsGLPanel } from "@/debug/StatsGLPanel.js";
-import { StatsPanel } from "@/debug/StatsPanel.js";
+
+const DEFAULT_TARGET_BOUNDS = {
+  min: new THREE.Vector3(-220, -10, -220),
+  max: new THREE.Vector3(220, 160, 220),
+};
+
+const KEYBOARD_BINDINGS = {
+  forward: ["w", "arrowup"],
+  backward: ["s", "arrowdown"],
+  left: ["a", "arrowleft"],
+  right: ["d", "arrowright"],
+  up: ["e", "pageup"],
+  down: ["q", "pagedown"],
+  focus: ["f"],
+  autoRotate: ["r"],
+};
+
 
 export default class Setup {
   static fov = 75;
@@ -23,6 +39,26 @@ export default class Setup {
     this.cnvs = cnvs;
     this.resizeHandler = resizeHandler;
     this.clock = new THREE.Clock();
+    this.cameraBookmarks = new Map();
+    this.isCameraAnimating = false;
+    this.persistThrottle = 0;
+    this.keyState = new Set();
+    this.keyboardConfig = {
+      panSpeed: 40,
+      verticalSpeed: 30,
+      focusDuration: 0.6,
+    };
+    this.targetBounds = {
+      min: DEFAULT_TARGET_BOUNDS.min.clone(),
+      max: DEFAULT_TARGET_BOUNDS.max.clone(),
+    };
+    this.autoRotate = {
+      enabled: false,
+      speed: THREE.MathUtils.degToRad(6),
+      idleDelay: 4000,
+      lastInteraction: performance.now(),
+      sticky: false,
+    };
 
     const w = cnvs.clientWidth;
     const h = cnvs.clientHeight;
@@ -89,36 +125,466 @@ export default class Setup {
     this.orbCtrls.enablePan = true; // Enable panning
     this.orbCtrls.enableRotate = true; // Enable rotation
     this.orbCtrls.enableZoom = true; // Enable zooming
-    this.orbCtrls.dampingFactor = 0.05;
+    this.orbCtrls.dampingFactor = 0.08;
     this.orbCtrls.screenSpacePanning = false; // Keep panning relative to world space
-    this.orbCtrls.minDistance = 20; // Set min zoom distance
-    this.orbCtrls.maxDistance = 300; // Set max zoom distance
-    this.orbCtrls.maxPolarAngle = Math.PI / 2 - 0.05; // Prevent camera going below ground plane
+    this.orbCtrls.minDistance = 25; // Set min zoom distance
+    this.orbCtrls.maxDistance = 320; // Set max zoom distance
+    this.orbCtrls.minPolarAngle = THREE.MathUtils.degToRad(15);
+    this.orbCtrls.maxPolarAngle = Math.PI / 2 - 0.1; // Prevent camera going below ground plane
+    this.orbCtrls.rotateSpeed = 0.9;
+    this.orbCtrls.zoomSpeed = 1.1;
+    this.orbCtrls.panSpeed = 0.8;
+
+    this.restoreCameraState();
+    this.saveCameraBookmark("default", true);
+    this.persistBookmarks();
+
+    this.handleKeyDown = (event) => {
+      if (event.target && /input|textarea|select/i.test(event.target.tagName))
+        return;
+      const key = event.key.toLowerCase();
+      this.keyState.add(key);
+      this.registerInteraction();
+      if (KEYBOARD_BINDINGS.focus.includes(key)) {
+        this.focusUnderPointer();
+      }
+      if (KEYBOARD_BINDINGS.autoRotate.includes(key)) {
+        this.toggleAutoRotate();
+      }
+    };
+    this.handleKeyUp = (event) => {
+      const key = event.key.toLowerCase();
+      this.keyState.delete(key);
+      this.registerInteraction();
+    };
+    window.addEventListener("keydown", this.handleKeyDown);
+    window.addEventListener("keyup", this.handleKeyUp);
+
+    this.pointer = new THREE.Vector2();
+    this.raycaster = new THREE.Raycaster();
+    this.focusTargets = null;
+    this.lastPointer = { x: 0, y: 0 };
+    this.handleMouseMove = (event) => {
+      const rect = this.cnvs.getBoundingClientRect();
+      this.lastPointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+      this.lastPointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+      this.registerInteraction();
+    };
+    this.cnvs.addEventListener("mousemove", this.handleMouseMove);
+    this.handleDoubleClick = (event) => {
+      const rect = this.cnvs.getBoundingClientRect();
+      this.pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+      this.pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+      const targets = this.focusTargets || this.scene.children;
+      this.raycaster.setFromCamera(this.pointer, this.cam);
+      const intersections = this.raycaster.intersectObjects(targets, true);
+      if (intersections.length > 0) {
+        this.focusOnPoint(intersections[0].point);
+      }
+    };
+    this.cnvs.addEventListener("dblclick", this.handleDoubleClick);
+    this.handlePointerDown = () => {
+      this.registerInteraction();
+    };
+    this.cnvs.addEventListener("pointerdown", this.handlePointerDown);
+    this.handleWheel = () => {
+      this.registerInteraction();
+    };
+    this.cnvs.addEventListener("wheel", this.handleWheel, { passive: true });
 
     this.hdrLoader = new HDRLoader();
 
     this.pane = new Pane(); // Commented out if not used directly here
 
     // --- Event Listeners ---
-    window.addEventListener("resize", this.handleWindowResize.bind(this)); // Use bind or arrow function
+    this.boundResizeHandler = this.handleWindowResize.bind(this);
+    window.addEventListener("resize", this.boundResizeHandler);
 
-    // --- MODIFICATION START (Suggestion #5) ---
-    // Replace location.reload() with call to resize handler
-    window.addEventListener("orientationchange", () => {
+    this.orientationHandler = () => {
       console.log("Orientation changed, handling resize...");
-      // Optional delay to allow browser to settle dimensions
-      setTimeout(() => {
-        this.handleWindowResize();
-      }, 100); // Adjust delay if needed
-    });
-    // COMMENTED OUT: Old disruptive reload logic
-    // window.addEventListener("orientationchange", () => location.reload());
-    // --- MODIFICATION END ---
+      setTimeout(() => this.handleWindowResize(), 120);
+    };
+    window.addEventListener("orientationchange", this.orientationHandler);
   }
 
   isMobileDevice() {
     // Consider a more robust check or using window.matchMedia
     return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  }
+
+  setFocusTargets(objects) {
+    if (!objects) {
+      this.focusTargets = null;
+      return;
+    }
+    this.focusTargets = Array.isArray(objects) ? objects : [objects];
+  }
+
+  registerInteraction() {
+    this.autoRotate.lastInteraction = performance.now();
+    if (this.autoRotate.enabled && !this.autoRotate.sticky) {
+      this.autoRotate.enabled = false;
+      this.persistSettings();
+    }
+  }
+
+  saveCameraBookmark(name, silent = false) {
+    if (!name) return;
+    this.cameraBookmarks.set(name, {
+      position: this.cam.position.clone(),
+      target: this.orbCtrls.target.clone(),
+    });
+    if (!silent) this.persistBookmarks();
+  }
+
+  removeCameraBookmark(name) {
+    if (!name) return;
+    this.cameraBookmarks.delete(name);
+    this.persistBookmarks();
+  }
+
+  listCameraBookmarks() {
+    return Array.from(this.cameraBookmarks.keys());
+  }
+
+  getCameraBookmark(name) {
+    return this.cameraBookmarks.get(name);
+  }
+
+  goToBookmark(name, duration = 0.8) {
+    const bookmark = this.cameraBookmarks.get(name);
+    if (!bookmark) {
+      console.warn(`[Setup] Bookmark '${name}' not found.`);
+      return;
+    }
+    this.flyToTarget(bookmark.position, bookmark.target, duration);
+  }
+
+  setAutoRotate(enabled, sticky = false) {
+    this.autoRotate.enabled = Boolean(enabled);
+    this.autoRotate.sticky = Boolean(sticky);
+    this.autoRotate.lastInteraction = performance.now();
+    this.persistSettings();
+  }
+
+  toggleAutoRotate() {
+    this.autoRotate.enabled = !this.autoRotate.enabled;
+    this.autoRotate.sticky = this.autoRotate.enabled;
+    this.autoRotate.lastInteraction = performance.now();
+    this.persistSettings();
+    console.log(`[Setup] Auto rotate ${this.autoRotate.enabled ? "enabled" : "disabled"}.`);
+  }
+
+  setAutoRotateSpeed(degPerSecond) {
+    const value = THREE.MathUtils.degToRad(Math.max(0, degPerSecond));
+    this.autoRotate.speed = value;
+    this.persistSettings();
+  }
+
+  setTargetBounds(bounds) {
+    if (!bounds) return;
+    if (bounds.min) this.targetBounds.min = bounds.min.clone();
+    if (bounds.max) this.targetBounds.max = bounds.max.clone();
+  }
+
+  focusOnPoint(point, duration = this.keyboardConfig.focusDuration) {
+    if (!point) return;
+    const clamped = point.clone();
+    this.clampTarget(clamped);
+    const offset = this.cam.position.clone().sub(this.orbCtrls.target);
+    if (offset.lengthSq() === 0) {
+      offset.set(60, 60, 60);
+    }
+    const newPosition = clamped.clone().add(offset);
+    this.registerInteraction();
+    this.flyToTarget(newPosition, clamped, duration);
+  }
+
+  focusUnderPointer() {
+    if (!this.lastPointer) return;
+    this.pointer.x = this.lastPointer.x;
+    this.pointer.y = this.lastPointer.y;
+    const targets = this.focusTargets || this.scene.children;
+    this.raycaster.setFromCamera(this.pointer, this.cam);
+    const intersections = this.raycaster.intersectObjects(targets, true);
+    if (intersections.length > 0) {
+      this.focusOnPoint(intersections[0].point);
+    }
+  }
+
+  flyToTarget(targetPosition, targetLookAt, duration = 0.8) {
+    if (!targetPosition || !targetLookAt) return;
+
+    const startPosition = this.cam.position.clone();
+    const startTarget = this.orbCtrls.target.clone();
+    const toPos = targetPosition.clone();
+    const toTarget = targetLookAt.clone();
+    this.clampTarget(toTarget);
+
+    const offset = toPos.clone().sub(toTarget);
+    const distance = offset.length();
+    const min = this.orbCtrls.minDistance;
+    const max = this.orbCtrls.maxDistance;
+    if (distance < min) offset.setLength(min);
+    if (distance > max) offset.setLength(max);
+    const finalPosition = toTarget.clone().add(offset);
+
+    const startTime = this.clock.getElapsedTime();
+    const animate = () => {
+      const elapsed = this.clock.getElapsedTime() - startTime;
+      const progress = duration > 0 ? Math.min(elapsed / duration, 1) : 1;
+      const ease = duration > 0 ? 1 - Math.pow(1 - progress, 3) : 1;
+      this.cam.position.lerpVectors(startPosition, finalPosition, ease);
+      this.orbCtrls.target.lerpVectors(startTarget, toTarget, ease);
+      this.cam.lookAt(this.orbCtrls.target);
+      this.applyConstraints();
+      this.orbCtrls.update();
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      } else {
+        this.cam.position.copy(finalPosition);
+        this.orbCtrls.target.copy(toTarget);
+        this.isCameraAnimating = false;
+        this.orbCtrls.enabled = true;
+        this.orbCtrls.update();
+        this.persistCameraState();
+      }
+    };
+
+    this.isCameraAnimating = true;
+    this.orbCtrls.enabled = false;
+    if (duration > 0) {
+      requestAnimationFrame(animate);
+    } else {
+      this.cam.position.copy(finalPosition);
+      this.orbCtrls.target.copy(toTarget);
+      this.orbCtrls.enabled = true;
+      this.isCameraAnimating = false;
+      this.orbCtrls.update();
+      this.persistCameraState();
+    }
+  }
+
+  clampTarget(target) {
+    target.x = THREE.MathUtils.clamp(
+      target.x,
+      this.targetBounds.min.x,
+      this.targetBounds.max.x,
+    );
+    target.y = THREE.MathUtils.clamp(
+      target.y,
+      this.targetBounds.min.y,
+      this.targetBounds.max.y,
+    );
+    target.z = THREE.MathUtils.clamp(
+      target.z,
+      this.targetBounds.min.z,
+      this.targetBounds.max.z,
+    );
+  }
+
+  updateKeyboardNavigation(delta) {
+    if (this.isCameraAnimating || this.keyState.size === 0) return;
+    const hasKey = (binding) =>
+      binding.some((key) => this.keyState.has(key.toLowerCase()));
+
+    const forward = new THREE.Vector3();
+    this.cam.getWorldDirection(forward);
+    forward.y = 0;
+    if (forward.lengthSq() > 0) forward.normalize();
+    const right = new THREE.Vector3().crossVectors(forward, this.cam.up).normalize();
+
+    const horizontal = new THREE.Vector3();
+    if (hasKey(KEYBOARD_BINDINGS.forward)) horizontal.add(forward);
+    if (hasKey(KEYBOARD_BINDINGS.backward)) horizontal.addScaledVector(forward, -1);
+    if (hasKey(KEYBOARD_BINDINGS.left)) horizontal.addScaledVector(right, -1);
+    if (hasKey(KEYBOARD_BINDINGS.right)) horizontal.add(right);
+
+    let moved = false;
+    if (horizontal.lengthSq() > 0) {
+      horizontal
+        .normalize()
+        .multiplyScalar(this.keyboardConfig.panSpeed * delta);
+      this.cam.position.add(horizontal);
+      this.orbCtrls.target.add(horizontal);
+      moved = true;
+    }
+
+    let verticalDelta = 0;
+    if (hasKey(KEYBOARD_BINDINGS.up)) verticalDelta += this.keyboardConfig.verticalSpeed * delta;
+    if (hasKey(KEYBOARD_BINDINGS.down)) verticalDelta -= this.keyboardConfig.verticalSpeed * delta;
+    if (verticalDelta !== 0) {
+      this.cam.position.y += verticalDelta;
+      this.orbCtrls.target.y += verticalDelta;
+      moved = true;
+    }
+    if (moved) this.registerInteraction();
+  }
+
+  applyConstraints() {
+    this.clampTarget(this.orbCtrls.target);
+    const offset = this.cam.position.clone().sub(this.orbCtrls.target);
+    const distance = offset.length();
+    const min = this.orbCtrls.minDistance;
+    const max = this.orbCtrls.maxDistance;
+    if (distance < min) offset.setLength(min);
+    if (distance > max) offset.setLength(max);
+    this.cam.position.copy(this.orbCtrls.target).add(offset);
+  }
+
+  persistCameraState() {
+    if (typeof localStorage === "undefined") return;
+    try {
+      const payload = JSON.stringify({
+        position: this.cam.position,
+        target: this.orbCtrls.target,
+      });
+      localStorage.setItem("smartCampus.camera.state", payload);
+      this.persistSettings();
+    } catch (error) {
+      console.warn("[Setup] Unable to persist camera state:", error);
+    }
+  }
+
+  persistBookmarks() {
+    if (typeof localStorage === "undefined") return;
+    try {
+      const serialized = Array.from(this.cameraBookmarks.entries()).map(
+        ([name, data]) => ({
+          name,
+          position: data.position,
+          target: data.target,
+        }),
+      );
+      localStorage.setItem(
+        "smartCampus.camera.bookmarks",
+        JSON.stringify(serialized),
+      );
+      this.persistSettings();
+    } catch (error) {
+      console.warn("[Setup] Unable to persist camera bookmarks:", error);
+    }
+  }
+
+  persistSettings() {
+    if (typeof localStorage === "undefined") return;
+    try {
+      const payload = {
+        autoRotate: {
+          enabled: this.autoRotate.enabled,
+          speed: this.autoRotate.speed,
+          idleDelay: this.autoRotate.idleDelay,
+          sticky: this.autoRotate.sticky,
+        },
+        keyboard: { ...this.keyboardConfig },
+        bounds: {
+          min: this.targetBounds.min,
+          max: this.targetBounds.max,
+        },
+      };
+      localStorage.setItem(
+        "smartCampus.camera.settings",
+        JSON.stringify(payload),
+      );
+    } catch (error) {
+      console.warn("[Setup] Unable to persist camera settings:", error);
+    }
+  }
+
+  restoreCameraState() {
+    if (typeof localStorage === "undefined") return;
+    try {
+      const rawState = localStorage.getItem("smartCampus.camera.state");
+      if (rawState) {
+        const state = JSON.parse(rawState);
+        if (state?.position && state?.target) {
+          this.cam.position.set(state.position.x, state.position.y, state.position.z);
+          this.orbCtrls.target.set(state.target.x, state.target.y, state.target.z);
+          this.cam.lookAt(this.orbCtrls.target);
+        }
+      }
+      const rawBookmarks = localStorage.getItem("smartCampus.camera.bookmarks");
+      if (rawBookmarks) {
+        JSON.parse(rawBookmarks).forEach((entry) => {
+          if (entry?.name && entry.position && entry.target) {
+            this.cameraBookmarks.set(entry.name, {
+              position: new THREE.Vector3(
+                entry.position.x,
+                entry.position.y,
+                entry.position.z,
+              ),
+              target: new THREE.Vector3(
+                entry.target.x,
+                entry.target.y,
+                entry.target.z,
+              ),
+            });
+          }
+        });
+      }
+      const rawSettings = localStorage.getItem("smartCampus.camera.settings");
+      if (rawSettings) {
+        const settings = JSON.parse(rawSettings);
+        if (settings?.autoRotate) {
+          this.autoRotate.enabled = Boolean(settings.autoRotate.enabled);
+          if (Number.isFinite(settings.autoRotate.speed))
+            this.autoRotate.speed = settings.autoRotate.speed;
+          if (Number.isFinite(settings.autoRotate.idleDelay))
+            this.autoRotate.idleDelay = settings.autoRotate.idleDelay;
+          if (typeof settings.autoRotate.sticky === "boolean")
+            this.autoRotate.sticky = settings.autoRotate.sticky;
+        }
+        if (settings?.keyboard) {
+          Object.assign(this.keyboardConfig, settings.keyboard);
+        }
+        if (settings?.bounds) {
+          if (settings.bounds.min)
+            this.targetBounds.min = new THREE.Vector3(
+              settings.bounds.min.x,
+              settings.bounds.min.y,
+              settings.bounds.min.z,
+            );
+          if (settings.bounds.max)
+            this.targetBounds.max = new THREE.Vector3(
+              settings.bounds.max.x,
+              settings.bounds.max.y,
+              settings.bounds.max.z,
+            );
+        }
+      }
+    } catch (error) {
+      console.warn("[Setup] Unable to restore camera state/bookmarks:", error);
+    }
+    this.autoRotate.lastInteraction = performance.now();
+  }
+
+  update(delta = this.clock.getDelta()) {
+    this.updateKeyboardNavigation(delta);
+    this.updateAutoRotate(delta);
+    this.applyConstraints();
+    this.orbCtrls.update();
+    this.persistThrottle += delta;
+    if (this.persistThrottle >= 1.5) {
+      this.persistCameraState();
+      this.persistThrottle = 0;
+    }
+  }
+
+  updateAutoRotate(delta) {
+    if (!this.autoRotate.enabled) return;
+    const now = performance.now();
+    const requiredIdle = this.autoRotate.sticky
+      ? Math.min(this.autoRotate.idleDelay, 1000)
+      : this.autoRotate.idleDelay;
+    if (now - this.autoRotate.lastInteraction < requiredIdle) return;
+    const offset = this.cam.position.clone().sub(this.orbCtrls.target);
+    if (offset.lengthSq() === 0) return;
+    const rotation = new THREE.Matrix4().makeRotationY(
+      this.autoRotate.speed * delta,
+    );
+    offset.applyMatrix4(rotation);
+    this.cam.position.copy(this.orbCtrls.target).add(offset);
+    this.cam.lookAt(this.orbCtrls.target);
   }
 
   setEnvMap(url) {
@@ -195,61 +661,20 @@ export default class Setup {
     }
 
     console.log(`[Setup] Setting camera view to: ${viewName}`);
-
-    // Stop any ongoing OrbitControls movement
-    this.orbCtrls.enabled = false; // Temporarily disable controls during transition
-
-    // Use GSAP or a similar library for smooth transitions if available
-    // Example using a simple Lerp loop if GSAP isn't imported/available
-    const startPosition = this.cam.position.clone();
-    const startLookAt = this.orbCtrls.target.clone(); // Use controls target for smooth lookAt transition
-    const startTime = this.clock.getElapsedTime();
-
-    const animateView = () => {
-      const elapsed = this.clock.getElapsedTime() - startTime;
-      const progress = Math.min(elapsed / transitionDuration, 1);
-      const easeProgress = 1 - Math.pow(1 - progress, 3); // Ease out cubic
-
-      this.cam.position.lerpVectors(
-        startPosition,
-        targetPosition,
-        easeProgress,
-      );
-      this.orbCtrls.target.lerpVectors(startLookAt, targetLookAt, easeProgress);
-      this.cam.lookAt(this.orbCtrls.target); // Ensure camera always looks at the interpolated target
-      this.orbCtrls.update(); // Required for damping and target updates
-
-      if (progress < 1) {
-        requestAnimationFrame(animateView);
-      } else {
-        // Ensure final position and target are set precisely
-        this.cam.position.copy(targetPosition);
-        this.orbCtrls.target.copy(targetLookAt);
-        this.cam.lookAt(this.orbCtrls.target);
-        this.orbCtrls.enabled = true; // Re-enable controls
-        this.orbCtrls.update(); // Final update
-        console.log(`[Setup] Camera view '${viewName}' set.`);
-      }
-    };
-
-    if (transitionDuration > 0) {
-      requestAnimationFrame(animateView);
-    } else {
-      // Instant change
-      this.cam.position.copy(targetPosition);
-      this.orbCtrls.target.copy(targetLookAt);
-      this.cam.lookAt(this.orbCtrls.target);
-      this.orbCtrls.enabled = true;
-      this.orbCtrls.update();
-      console.log(`[Setup] Camera view '${viewName}' set instantly.`);
-    }
+    this.flyToTarget(targetPosition, targetLookAt, transitionDuration);
   }
   // --- MODIFICATION END ---
 
   // Optional: Dispose method to clean up resources
   dispose() {
-    window.removeEventListener("resize", this.handleWindowResize.bind(this));
-    window.removeEventListener("orientationchange", this.handleWindowResize); // Ensure correct listener removal
+    window.removeEventListener("resize", this.boundResizeHandler);
+    window.removeEventListener("orientationchange", this.orientationHandler);
+    window.removeEventListener("keydown", this.handleKeyDown);
+    window.removeEventListener("keyup", this.handleKeyUp);
+    this.cnvs.removeEventListener("dblclick", this.handleDoubleClick);
+    this.cnvs.removeEventListener("mousemove", this.handleMouseMove);
+    this.cnvs.removeEventListener("pointerdown", this.handlePointerDown);
+    this.cnvs.removeEventListener("wheel", this.handleWheel);
     this.orbCtrls?.dispose();
     this.stats?.dispose(); // Call dispose on the panel instance
     this.re?.dispose();

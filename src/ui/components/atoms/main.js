@@ -273,4 +273,11 @@ function enableOrbitControls(camera, renderer, scene) {
     
     if (intersects.length > 0) {
       // Check if the clicked object has callback
-      const selectedObject
+      const selectedObject = intersects[0].object;
+      if (selectedObject.callback) {
+        selectedObject.callback();
+      }
+    }
+  });
+  // TODO: Complete the logic for OrbitControls if needed, as this is a simplified version.
+}

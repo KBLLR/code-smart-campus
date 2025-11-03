@@ -2,11 +2,16 @@
 
 import * as THREE from "three";
 import { roomRegistry } from "@registries/roomRegistry.js";
-import { labelRegistry } from "@registries/labelRegistry.js";
+import { cleanedLabelRegistry } from "@data/labelCollections.js";
 import { LabelLayoutManager } from "@utils/LabelLayoutManager.js";
-import { markReady } from "@utils/initCoordinator.js";
 import { LabelManager } from "@lib/LabelManager.js";
 import { Floor } from "@three/FloorGeometry.js";
+import { SunController } from "@lib/SunController.js";
+import { SunTelemetry } from "@lib/SunTelemetry.js";
+import { SunSkyDome, DEFAULT_SUN_SKY_PALETTE } from "@lib/SunSkyDome.js";
+import { SunPathArc } from "@lib/SunPathArc.js";
+import { MoonController } from "@lib/MoonController.js";
+import { SITE_COORDINATES } from "@utils/location.js";
 
 // 🔌 Env
 const WS_URL =
@@ -16,31 +21,121 @@ const WS_URL =
 const HA_TOKEN = import.meta.env.VITE_HA_TOKEN;
 
 // 🔧 Globals
-let camera, renderer, controls;
 
 // ✅ Essentials
 const scene = new THREE.Scene();
+scene.camera = null;
+scene.renderer = null;
+scene.controls = null;
 const layoutManager = new LabelLayoutManager(scene, {}, roomRegistry);
-const labelManager = new LabelManager(scene, labelRegistry, roomRegistry);
+const labelManager = new LabelManager(
+  scene,
+  cleanedLabelRegistry,
+  roomRegistry,
+);
+const sunController = new SunController();
+const sunTelemetry = new SunTelemetry();
+const sunSkyDome = new SunSkyDome();
+const sunPathArc = new SunPathArc();
+const moonController = new MoonController({ siteCoords: SITE_COORDINATES });
+
+const DEFAULT_SUN_VISUAL_CONFIG = Object.freeze({
+  palette: {
+    dayTop: DEFAULT_SUN_SKY_PALETTE.dayTop,
+    dayHorizon: DEFAULT_SUN_SKY_PALETTE.dayHorizon,
+    nightTop: DEFAULT_SUN_SKY_PALETTE.nightTop,
+    nightHorizon: DEFAULT_SUN_SKY_PALETTE.nightHorizon,
+    glow: DEFAULT_SUN_SKY_PALETTE.glow,
+    arc: "#ffd48a",
+  },
+  arcOpacity: 0.4,
+});
+
+const sunVisualConfig = {
+  palette: { ...DEFAULT_SUN_VISUAL_CONFIG.palette },
+  arcOpacity: DEFAULT_SUN_VISUAL_CONFIG.arcOpacity,
+};
+
+let moonPhaseName = null;
+
+function applySunVisualConfig() {
+  sunSkyDome.setPalette({
+    dayTop: sunVisualConfig.palette.dayTop,
+    dayHorizon: sunVisualConfig.palette.dayHorizon,
+    nightTop: sunVisualConfig.palette.nightTop,
+    nightHorizon: sunVisualConfig.palette.nightHorizon,
+    glow: sunVisualConfig.palette.glow,
+  });
+  sunPathArc.setColor(sunVisualConfig.palette.arc);
+  const latest = sunTelemetry.getLatest();
+  if (latest) {
+    const opacity =
+      THREE.MathUtils.clamp((latest.elevation + 15) / 60, 0, 1) *
+      sunVisualConfig.arcOpacity;
+    sunPathArc.setOpacity(opacity);
+  } else {
+    sunPathArc.setOpacity(sunVisualConfig.arcOpacity);
+  }
+}
+
+function resetSunVisualConfig() {
+  Object.assign(sunVisualConfig.palette, DEFAULT_SUN_VISUAL_CONFIG.palette);
+  sunVisualConfig.arcOpacity = DEFAULT_SUN_VISUAL_CONFIG.arcOpacity;
+}
+
+function updateMoon(date = new Date()) {
+  try {
+    moonController.update({ date, phaseName: moonPhaseName });
+  } catch (error) {
+    console.warn("[Moon] update failed", error);
+  }
+}
 
 try {
   labelManager.injectLabels(); // Inject labels early as before
 } catch (error) {
   console.error("❌ Error injecting labels:", error);
 }
+layoutManager.labels = labelManager.getLabels();
 
 const floor = new Floor(); // Add floor
 scene.add(floor.mesh);
+scene.add(sunController.object3d);
+scene.add(sunSkyDome.mesh);
+scene.add(sunPathArc.line);
+scene.add(moonController.object3d);
+
+applySunVisualConfig();
+
+scene.userData.sunDebug = {
+  config: sunVisualConfig,
+  apply: () => applySunVisualConfig(),
+  reset: () => {
+    resetSunVisualConfig();
+    applySunVisualConfig();
+  },
+};
+
+scene.userData.moonDebug = {
+  update: updateMoon,
+  controller: moonController,
+};
+
+const DEFAULT_SUN_BOOTSTRAP = { azimuth: 180, elevation: 35 };
+sunTelemetry.ingest(DEFAULT_SUN_BOOTSTRAP);
+sunController.updateFromAttributes(DEFAULT_SUN_BOOTSTRAP);
+sunSkyDome.update(DEFAULT_SUN_BOOTSTRAP);
+sunPathArc.update(sunTelemetry.getSamples(), (az, el) =>
+  sunController.computeSunPosition(az, el),
+);
+updateMoon();
 
 // ✅ Setup injection
-function attachSetup({ scene: setupScene, cam, re, orbCtrls }) {
-  camera = cam;
-  renderer = re;
-  controls = orbCtrls;
-  scene.add(new THREE.AmbientLight(0xffffff, 1.0));
-  const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
-  dirLight.position.set(50, 100, 50);
-  scene.add(dirLight);
+function attachSetup({ cam, re, orbCtrls }) {
+  scene.camera = cam;
+  scene.renderer = re;
+  scene.controls = orbCtrls;
+  scene.add(new THREE.AmbientLight(0xffffff, 0.25));
 }
 
 // ✅ Handle updates via WebSocket
@@ -70,6 +165,58 @@ function updateLabel(entityId, value) {
     }
     mesh.material.needsUpdate = true;
   }
+}
+
+function updateSunFromEntity(entity) {
+  const attributes = entity?.attributes;
+  if (!attributes) return;
+
+  const timestamp = Date.parse(entity?.last_updated || entity?.last_changed || "") || Date.now();
+  const smoothed = sunTelemetry.ingest(attributes, timestamp);
+  const reading = sunTelemetry.getInterpolated();
+
+  if (reading) {
+    sunController.updateFromAttributes(reading);
+    sunSkyDome.update(reading);
+    sunPathArc.update(
+      sunTelemetry.getSamples(),
+      (az, el) => sunController.computeSunPosition(az, el),
+    );
+    const opacity =
+      THREE.MathUtils.clamp((reading.elevation + 15) / 60, 0, 1) *
+      sunVisualConfig.arcOpacity;
+    sunPathArc.setOpacity(opacity);
+    updateMoon(new Date(timestamp));
+  } else if (smoothed) {
+    sunController.updateFromAttributes(smoothed);
+    sunSkyDome.update(smoothed);
+    sunPathArc.update(
+      sunTelemetry.getSamples(),
+      (az, el) => sunController.computeSunPosition(az, el),
+    );
+    const opacity =
+      THREE.MathUtils.clamp((smoothed.elevation + 15) / 60, 0, 1) *
+      sunVisualConfig.arcOpacity;
+    sunPathArc.setOpacity(opacity);
+    updateMoon(new Date(timestamp));
+  } else {
+    const fallback = sunTelemetry.getLatest() || DEFAULT_SUN_BOOTSTRAP;
+    sunController.updateFromAttributes(fallback);
+    sunSkyDome.update(fallback);
+    sunPathArc.update(
+      sunTelemetry.getSamples(),
+      (az, el) => sunController.computeSunPosition(az, el),
+    );
+    sunPathArc.setOpacity(0);
+    updateMoon(new Date());
+  }
+}
+
+function updateMoonFromEntity(entity) {
+  if (!entity) return;
+  moonPhaseName = entity.state || moonPhaseName;
+  const timestamp = Date.parse(entity.last_updated || entity.last_changed || "") || Date.now();
+  updateMoon(new Date(timestamp));
 }
 
 // ✅ Connect WebSocket (Revised ID Management & Data Passing)
@@ -240,9 +387,13 @@ export {
   scene,
   layoutManager,
   labelManager,
+  sunController,
+  moonController,
   labels,
   connectToHomeAssistantWS,
   updateLabel,
+  updateSunFromEntity,
+  updateMoonFromEntity,
   attachSetup,
 };
 

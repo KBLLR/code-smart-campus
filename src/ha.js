@@ -396,6 +396,11 @@ async function pollStates() {
   }
 }
 
+/**
+ * Starts a fallback polling mechanism using REST API if WebSocket connection is not active.
+ * This function is called internally when WebSocket connection fails or is not established.
+ * @param {number} interval - The polling interval in milliseconds.
+ */
 function startPollingFallback(interval = 30000) {
   if (pollingIntervalId || (wsConnected && wsAuthenticated)) return;
   console.warn(`HA: Starting REST polling fallback (${interval / 1000}s).`);
