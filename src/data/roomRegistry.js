@@ -1,8 +1,32 @@
 // roomRegistry.js
-// Auto-generated from floorplan.svg on 2025-11-06T03:41:11.224Z
+// Auto-generated from floorplan.svg on 2025-11-06T17:01:10.562Z
 // Contains center coordinates for rooms defined in the SVG.
 
 export const roomRegistry = {
+  "2": {
+    "name": "Vector_2",
+    "center": [
+      60.9,
+      20,
+      60.9
+    ]
+  },
+  "3": {
+    "name": "Vector_3",
+    "center": [
+      67.4,
+      20,
+      67.4
+    ]
+  },
+  "4": {
+    "name": "Vector_4",
+    "center": [
+      107.15,
+      20,
+      107.15
+    ]
+  },
   "vector": {
     "name": "Vector",
     "center": [
@@ -43,7 +67,23 @@ export const roomRegistry = {
       54.75
     ]
   },
+  "a.14": {
+    "name": "Houston_A.14",
+    "center": [
+      54.75,
+      20,
+      54.75
+    ]
+  },
   "bathrooms and exits": {
+    "name": "Bathrooms and Exits",
+    "center": [
+      63.6,
+      20,
+      63.6
+    ]
+  },
+  "exits": {
     "name": "Bathrooms and Exits",
     "center": [
       63.6,
@@ -75,6 +115,14 @@ export const roomRegistry = {
       73.1
     ]
   },
+  "b.14": {
+    "name": "Dark Matter-B.14",
+    "center": [
+      73.1,
+      20,
+      73.1
+    ]
+  },
   "library": {
     "name": "Library",
     "center": [
@@ -91,7 +139,23 @@ export const roomRegistry = {
       95.75
     ]
   },
+  "a.12": {
+    "name": "Tet_Ris_A.11_A.12",
+    "center": [
+      94.35,
+      20,
+      95.75
+    ]
+  },
   "muted-a.6": {
+    "name": "Muted-A.6",
+    "center": [
+      142,
+      20,
+      142
+    ]
+  },
+  "a.6": {
     "name": "Muted-A.6",
     "center": [
       142,
@@ -107,7 +171,23 @@ export const roomRegistry = {
       146.3
     ]
   },
+  "a.2": {
+    "name": "Jungle-A.2",
+    "center": [
+      146.3,
+      20,
+      146.3
+    ]
+  },
   "babylon-a.1": {
+    "name": "Babylon-A.1",
+    "center": [
+      136.75,
+      20,
+      136.75
+    ]
+  },
+  "a.1": {
     "name": "Babylon-A.1",
     "center": [
       136.75,
@@ -203,7 +283,23 @@ export const roomRegistry = {
       44
     ]
   },
+  "smoke": {
+    "name": "Balcony_no_smoke",
+    "center": [
+      44,
+      20,
+      44
+    ]
+  },
   "balcony_smokers": {
+    "name": "Balcony_smokers",
+    "center": [
+      52.25,
+      20,
+      52.25
+    ]
+  },
+  "smokers": {
     "name": "Balcony_smokers",
     "center": [
       52.25,
@@ -291,7 +387,23 @@ export const roomRegistry = {
       148.4
     ]
   },
+  "a.5": {
+    "name": "Maker space-A.5",
+    "center": [
+      148.4,
+      20,
+      148.4
+    ]
+  },
   "hive-a.3": {
+    "name": "Hive-A.3",
+    "center": [
+      162.6,
+      20,
+      162.6
+    ]
+  },
+  "a.3": {
     "name": "Hive-A.3",
     "center": [
       162.6,

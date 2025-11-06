@@ -1,45 +1,31 @@
 
 export class WebSocketStatus {
-  constructor(socket) {
+  constructor(socket, { containerId = "websocket-status" } = {}) {
     this.socket = socket;
     this.retryCount = 0;
     this.lastEventTime = null;
     this.visible = true;
 
-    this.container = document.createElement("div");
-    this.container.id = "websocket-status";
-    this.container.style.cssText = `
-      position: fixed;
-      top: 12px;
-      left: 12px;
-      padding: 8px 16px;
-      border-radius: 16px;
-      font-size: 12px;
-      font-family: monospace;
-      z-index: 9999;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      backdrop-filter: blur(12px);
-      background: rgba(0, 0, 0, 0.55);
-      box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
-      color: white;
-    `;
+    this.container =
+      document.getElementById(containerId) || document.createElement("div");
+    this.container.id = containerId;
+    this.container.classList.add("status-pill");
 
-    this.indicator = document.createElement("div");
-    this.indicator.style.cssText = `
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background: gray;
-    `;
+    if (!this.container.parentElement) {
+      document.body.appendChild(this.container);
+    } else {
+      this.container.innerHTML = "";
+    }
+
+    this.indicator = document.createElement("span");
+    this.indicator.className = "status-indicator";
 
     this.label = document.createElement("span");
+    this.label.className = "status-label";
     this.label.textContent = "Connecting...";
 
     this.container.appendChild(this.indicator);
     this.container.appendChild(this.label);
-    document.body.appendChild(this.container);
 
     this.initEvents();
   }

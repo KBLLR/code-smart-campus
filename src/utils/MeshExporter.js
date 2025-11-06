@@ -1,4 +1,5 @@
 // src/utils/MeshExporter.js
+import * as THREE from "three";
 import { GLTFExporter } from "three/examples/jsm/exporters/GLTFExporter.js";
 import { STLExporter } from "three/examples/jsm/exporters/STLExporter.js";
 
@@ -29,6 +30,26 @@ export class MeshExporter {
     console.log("[MeshExporter] Initialized.");
   }
 
+  _resolveObject(raw) {
+    if (!raw) return null;
+    if (raw instanceof THREE.Object3D || typeof raw.traverse === "function") {
+      return raw;
+    }
+    const group = new THREE.Group();
+    const ingest = (value) => {
+      const resolved = this._resolveObject(value);
+      if (resolved) {
+        group.add(resolved);
+      }
+    };
+    if (Array.isArray(raw)) {
+      raw.forEach(ingest);
+    } else if (typeof raw === "object") {
+      Object.values(raw).forEach(ingest);
+    }
+    return group.children.length ? group : null;
+  }
+
   /**
    * Exports a given Three.js object (Scene, Group, Mesh) as a GLTF/GLB file.
    * @param {THREE.Object3D} objectToExport - The object to export.
@@ -36,13 +57,14 @@ export class MeshExporter {
    * @param {boolean} [binary=true] - Export as binary GLB (true) or JSON GLTF (false).
    */
   exportGLTF(objectToExport, filename = "scene.gltf", binary = true) {
-    if (!objectToExport) {
-      console.error("[MeshExporter] No object provided for GLTF export.");
+    const target = this._resolveObject(objectToExport);
+    if (!target) {
+      console.error("[MeshExporter] No exportable object resolved for GLTF export.");
       alert("Error: No object selected for export.");
       return;
     }
     console.log(
-      `[MeshExporter] Exporting ${objectToExport.name || "object"} as GLTF (Binary: ${binary})...`,
+      `[MeshExporter] Exporting ${target.name || "object"} as GLTF (Binary: ${binary})...`,
     );
 
     const options = {
@@ -54,7 +76,7 @@ export class MeshExporter {
     };
 
     this.gltfExporter.parse(
-      objectToExport,
+      target,
       (result) => {
         if (result instanceof ArrayBuffer) {
           saveArrayBuffer(result, filename.replace(/\.gltf$/, ".glb")); // Ensure .glb extension for binary
@@ -81,17 +103,18 @@ export class MeshExporter {
    * @param {boolean} [binary=true] - Export as binary STL (true) or ASCII STL (false).
    */
   exportSTL(objectToExport, filename = "mesh.stl", binary = true) {
-    if (!objectToExport) {
-      console.error("[MeshExporter] No object provided for STL export.");
+    const target = this._resolveObject(objectToExport);
+    if (!target) {
+      console.error("[MeshExporter] No exportable object resolved for STL export.");
       alert("Error: No object selected for export.");
       return;
     }
     console.log(
-      `[MeshExporter] Exporting ${objectToExport.name || "object"} as STL (Binary: ${binary})...`,
+      `[MeshExporter] Exporting ${target.name || "object"} as STL (Binary: ${binary})...`,
     );
 
     const options = { binary: binary };
-    const result = this.stlExporter.parse(objectToExport, options);
+    const result = this.stlExporter.parse(target, options);
 
     if (binary && result instanceof DataView) {
       // Binary parse returns DataView

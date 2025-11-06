@@ -1,6 +1,6 @@
 // --- START OF FILE main.js (Improved Loader, Panel Debugging) ---
 
-import "@/styles/main.css";
+import "@styles/main.css";
 import * as THREE from "three";
 import Setup from "@/Setup.js";
 import { markReady, whenReady, createSignal } from "@utils/initCoordinator.js"; // Assuming createSignal exists in initCoordinator
@@ -17,6 +17,11 @@ import {
   layoutManager,
   updateSunFromEntity,
   updateMoonFromEntity,
+  setHoveredEntity,
+  clearHoveredEntity,
+  setSelectedEntity,
+  clearSelectedEntity,
+  focusEntity,
 } from "@/scene.js";
 import { SensorDashboard } from "@lib/SensorDashboard.js";
 import { Debugger } from "@debug/Debugger.js";
@@ -55,9 +60,15 @@ const canvas =
     document.body.appendChild(c);
     return c;
   })();
+const panelShell = document.querySelector(".panel-shell");
 const contentArea = document.getElementById("content-area");
 const panelIndicators = document.querySelector(".panel-indicators");
 const floatingBtn = document.querySelector(".floating-btn");
+
+panelShell?.classList.remove("is-open");
+contentArea?.classList.remove("is-open");
+panelIndicators?.classList.remove("is-open");
+floatingBtn?.classList.remove("active");
 
 // --- Setup 3D Environment ---
 const setup = new Setup(canvas, () => {
@@ -66,7 +77,7 @@ const setup = new Setup(canvas, () => {
   }
 });
 
-setup.setEnvMap("/hdri/night.hdr");
+setup.setEnvMap("/hdri/night1k.hdr");
 attachSetup(setup);
 
 postProcessor = new PostProcessor({
@@ -143,6 +154,53 @@ scene.userData.hud = {
   manager: hudManager,
 };
 hudManager.sync(labelManager.getLabels());
+const hudInteractionState = {
+  hoveredEntityId: null,
+  selectedEntityId: null,
+};
+
+hudManager.on("hover", ({ entityId }) => {
+  if (!entityId) return;
+  hudInteractionState.hoveredEntityId = entityId;
+  setHoveredEntity(entityId);
+});
+
+hudManager.on("hoverend", ({ entityId }) => {
+  const targetId = entityId || hudInteractionState.hoveredEntityId;
+  if (!targetId) return;
+  if (hudInteractionState.hoveredEntityId === targetId) {
+    hudInteractionState.hoveredEntityId = null;
+  }
+  clearHoveredEntity(targetId);
+  if (
+    hudInteractionState.selectedEntityId &&
+    hudInteractionState.selectedEntityId !== targetId
+  ) {
+    setSelectedEntity(hudInteractionState.selectedEntityId);
+  }
+});
+
+hudManager.on("focusin", ({ entityId }) => {
+  if (!entityId) return;
+  setHoveredEntity(entityId);
+});
+
+hudManager.on("focusout", ({ entityId }) => {
+  if (!entityId) return;
+  clearHoveredEntity(entityId);
+});
+
+hudManager.on("select", ({ entityId }) => {
+  if (!entityId) return;
+  hudInteractionState.selectedEntityId = entityId;
+  setSelectedEntity(entityId);
+  focusEntity(entityId, { duration: 0.8 });
+});
+
+hudManager.on("selectclear", () => {
+  hudInteractionState.selectedEntityId = null;
+  clearSelectedEntity();
+});
 
 scene.userData.cameraDebug = {
   saveBookmark: (name) => setup.saveCameraBookmark(name),
@@ -178,7 +236,7 @@ function initializeToolbar(exportTarget = null) {
   if (toolbarInstance) return toolbarInstance;
   try {
     const target =
-      exportTarget || window.roundedRoomsGroup || window.roomMeshes || null;
+      exportTarget || window.roundedRoomsGroup || scene;
     toolbarInstance = new Toolbar({
       rootSelector: "#toolbar-root",
       layoutManager,
@@ -576,15 +634,16 @@ document.body.addEventListener("click", (event) => {
 
 // Floating button toggle for panel visibility
 floatingBtn?.addEventListener("click", function () {
-  // console.log("Floating button clicked!"); // Debug log removed
-  if (!contentArea || !panelIndicators || !floatingBtn) {
+  if (!panelShell || !contentArea || !panelIndicators || !floatingBtn) {
     console.error("Floating button click: Required UI elements missing!");
     return; // Prevent toggling if elements are missing
   }
 
-  floatingBtn.classList.toggle("active");
-  contentArea.classList.toggle("visible");
-  panelIndicators.classList.toggle("visible");
+  const willOpen = !panelShell.classList.contains("is-open");
+  panelShell.classList.toggle("is-open", willOpen);
+  contentArea.classList.toggle("is-open", willOpen);
+  panelIndicators.classList.toggle("is-open", willOpen);
+  floatingBtn.classList.toggle("active", willOpen);
 });
 
 // Panel indicators scroll sync
@@ -690,19 +749,15 @@ function toggleDebugUI(show) {
 
   // Toggle Tweakpane panel
   if (debuggerInstance?.domElement) {
-    debuggerInstance.domElement.style.visibility = show ? "visible" : "hidden";
+    debuggerInstance.domElement.style.display = show ? "block" : "none";
     debuggerInstance.domElement.style.pointerEvents = show ? "auto" : "none";
-    if (show && typeof debuggerInstance.pane?.refresh === "function") {
-      debuggerInstance.pane.refresh();
-    }
+    debuggerInstance.pane?.refresh?.();
   } else if (debuggerInstance) {
     const tpPane = document.querySelector(".tp-dfwv");
     if (tpPane) {
-      tpPane.style.visibility = show ? "visible" : "hidden";
+      tpPane.style.display = show ? "block" : "none";
       tpPane.style.pointerEvents = show ? "auto" : "none";
-      if (show && typeof debuggerInstance.pane?.refresh === "function") {
-        debuggerInstance.pane.refresh();
-      }
+      debuggerInstance.pane?.refresh?.();
     }
   }
 }
@@ -941,8 +996,8 @@ whenReady("roundedRoomsGroup", (group) => {
 
     console.log("🐛 Debugger initialized successfully.");
 
-    isDebugModeActive = true;
-    toggleDebugUI(true);
+    isDebugModeActive = false;
+    toggleDebugUI(false);
 
     // --- Hide Debug UI Panels Initially (if needed) ---
     // Call the function defined elsewhere in main.js to set initial visibility
@@ -1036,8 +1091,7 @@ function loop() {
   // --- Update Dynamic Scene Elements ---
   // Example: Update label positions/scaling relative to the camera.
   // Check if labelManager exists and has the update method.
-  if (labelManager && typeof labelManager.updateLabelPositions === "function") {
-    // Pass the camera from the setup instance.
+  if (labelManager?.useSprites) {
     labelManager.updateLabelPositions(setup.cam);
   }
   hudManager?.update(setup.cam);

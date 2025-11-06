@@ -31,7 +31,8 @@
       "@debug/*": ["./debug/*"],
       "@panes/*": ["./debug/panes/*"],
       "@tools/*": ["./tools/*"],
-      "@network/*": ["./network/*"]
+      "@network/*": ["./network/*"],
+      "@styles/*": ["./styles/*"]
     },
 
     /* Linting */

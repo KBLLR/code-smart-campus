@@ -155,10 +155,24 @@ export function generate() {
       const center = extractCenter(d, SVG_SCALE, ROOM_Y_POSITION);
       if (center) {
         // Use lowercase ID as key for consistency
-        registry[id.toLowerCase()] = {
+        const key = id.toLowerCase();
+        const entry = {
           name: name || id, // Use ID as name if specific name is missing
           center,
         };
+        registry[key] = entry;
+
+        const aliasCandidates = [
+          key.split(/[-_\s]+/).pop(),
+          name ? name.toLowerCase() : null,
+        ].filter(Boolean);
+
+        aliasCandidates.forEach((alias) => {
+          if (!alias || alias === key) return;
+          const normalizedAlias = alias.trim();
+          if (!normalizedAlias || registry[normalizedAlias]) return;
+          registry[normalizedAlias] = entry;
+        });
         processedCount++;
       } else {
         console.warn(

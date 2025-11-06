@@ -1,6 +1,6 @@
 // src/ui/createLabel.js
 import * as THREE from "three";
-import { makeTextTexture } from "@ui/makeTextTexture.js";
+import { makeTextTexture } from "@three/makeTextTexture.js";
 
 export function createLabel(text = "Label", entityId = "") {
   const texture = makeTextTexture(text, entityId);

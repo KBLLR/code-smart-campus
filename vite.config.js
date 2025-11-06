@@ -33,6 +33,7 @@ export default defineConfig({
       "@utils": path.resolve(__dirname, "./src/utils"),
       "@ui": path.resolve(__dirname, "./src/ui"),
       "@widgets": path.resolve(__dirname, "./src/ui/widgets"),
+      "@styles": path.resolve(__dirname, "./src/styles"),
       "@three": path.resolve(__dirname, "./src/three"),
       "@lib": path.resolve(__dirname, "./src/lib"),
       "@debug": path.resolve(__dirname, "./src/debug"),

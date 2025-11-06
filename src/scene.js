@@ -12,7 +12,7 @@ import { SunSkyDome, DEFAULT_SUN_SKY_PALETTE } from "@lib/SunSkyDome.js";
 import { SunPathArc } from "@lib/SunPathArc.js";
 import { MoonController } from "@lib/MoonController.js";
 import { SITE_COORDINATES } from "@utils/location.js";
-import { materialRegistry } from "@/materials/registry.js";
+import { materialRegistry } from "@registries/materialsRegistry.js";
 
 // 🔌 Env
 const WS_URL =
@@ -46,6 +46,163 @@ const sunTelemetry = new SunTelemetry();
 const sunSkyDome = new SunSkyDome();
 const sunPathArc = new SunPathArc();
 const moonController = new MoonController({ siteCoords: SITE_COORDINATES });
+
+const highlightColor = new THREE.Color("#38bdf8");
+const highlightEmissive = new THREE.Color("#0ea5e9");
+const roomHighlightCache = new Map();
+let hoveredRoomKey = null;
+let selectedRoomKey = null;
+
+const tempVec3 = new THREE.Vector3();
+
+const normalizeRoomKey = (key) =>
+  typeof key === "string" ? key.toLowerCase().replace(/[^a-z0-9]/g, "") : "";
+
+const getMeshForRoomKey = (roomKey) => {
+  const registry = window.roomMeshes || {};
+  return registry[roomKey] || null;
+};
+
+const ensureHighlightCache = (normalizedKey) => {
+  let cache = roomHighlightCache.get(normalizedKey);
+  if (!cache) {
+    const mesh = getMeshForRoomKey(normalizedKey);
+    if (!mesh || !mesh.material) return null;
+    const material = mesh.material;
+    cache = {
+      material,
+      originalColor: material.color ? material.color.clone() : null,
+      originalEmissive: material.emissive ? material.emissive.clone() : null,
+      originalEmissiveIntensity:
+        typeof material.emissiveIntensity === "number"
+          ? material.emissiveIntensity
+          : undefined,
+    };
+    roomHighlightCache.set(normalizedKey, cache);
+  }
+  return cache;
+};
+
+const applyRoomHighlight = (normalizedKey) => {
+  if (!normalizedKey) return false;
+  const cache = ensureHighlightCache(normalizedKey);
+  if (!cache) return false;
+  const { material, originalColor, originalEmissive } = cache;
+  if (material.color && originalColor) {
+    material.color.copy(originalColor).lerp(highlightColor, 0.35);
+  }
+  if (material.emissive) {
+    material.emissive
+      .copy(originalEmissive || new THREE.Color(0x000000))
+      .lerp(highlightEmissive, 0.85);
+  } else if (material.emissive === undefined) {
+    material.emissive = highlightEmissive.clone();
+  }
+  if (typeof material.emissiveIntensity === "number") {
+    const { originalEmissiveIntensity } = cache;
+    material.emissiveIntensity = Math.max(
+      originalEmissiveIntensity ?? 0.6,
+      1.25,
+    );
+  }
+  material.needsUpdate = true;
+  return true;
+};
+
+const removeRoomHighlight = (normalizedKey) => {
+  if (!normalizedKey) return;
+  const cache = roomHighlightCache.get(normalizedKey);
+  if (!cache) return;
+  const { material, originalColor, originalEmissive, originalEmissiveIntensity } =
+    cache;
+  if (!material) return;
+  if (material.color && originalColor) {
+    material.color.copy(originalColor);
+  }
+  if (material.emissive) {
+    if (originalEmissive) {
+      material.emissive.copy(originalEmissive);
+    } else {
+      material.emissive.setRGB(0, 0, 0);
+    }
+  }
+  if (typeof originalEmissiveIntensity === "number") {
+    material.emissiveIntensity = originalEmissiveIntensity;
+  }
+  material.needsUpdate = true;
+};
+
+const getRoomKeyForEntity = (entityId) => {
+  const anchor = labelManager.getAnchor(entityId);
+  return anchor?.userData?.room ?? null;
+};
+
+const setHoveredEntity = (entityId) => {
+  const roomKey = getRoomKeyForEntity(entityId);
+  if (!roomKey) return false;
+  const normalizedKey = normalizeRoomKey(roomKey);
+  if (!normalizedKey) return false;
+  if (hoveredRoomKey && hoveredRoomKey !== normalizedKey) {
+    if (hoveredRoomKey !== selectedRoomKey) {
+      removeRoomHighlight(hoveredRoomKey);
+    }
+  }
+  const applied = applyRoomHighlight(normalizedKey);
+  if (applied) hoveredRoomKey = normalizedKey;
+  return applied;
+};
+
+const clearHoveredEntity = (entityId) => {
+  const roomKey = entityId ? getRoomKeyForEntity(entityId) : null;
+  const normalizedKey = roomKey ? normalizeRoomKey(roomKey) : hoveredRoomKey;
+  if (!normalizedKey) return;
+  if (normalizedKey === selectedRoomKey) {
+    hoveredRoomKey = null;
+    return;
+  }
+  removeRoomHighlight(normalizedKey);
+  if (hoveredRoomKey === normalizedKey) hoveredRoomKey = null;
+};
+
+const setSelectedEntity = (entityId) => {
+  const roomKey = getRoomKeyForEntity(entityId);
+  if (!roomKey) return false;
+  const normalizedKey = normalizeRoomKey(roomKey);
+  if (!normalizedKey) return false;
+  if (selectedRoomKey && selectedRoomKey !== normalizedKey) {
+    if (selectedRoomKey !== hoveredRoomKey) {
+      removeRoomHighlight(selectedRoomKey);
+    }
+  }
+  const applied = applyRoomHighlight(normalizedKey);
+  if (applied) {
+    selectedRoomKey = normalizedKey;
+    scene.userData?.hud?.manager?.selectEntity(entityId);
+  }
+  return applied;
+};
+
+const clearSelectedEntity = () => {
+  if (!selectedRoomKey) return;
+  if (selectedRoomKey !== hoveredRoomKey) {
+    removeRoomHighlight(selectedRoomKey);
+  }
+  selectedRoomKey = null;
+  scene.userData?.hud?.manager?.clearSelection({ silent: true });
+};
+
+const focusEntity = (entityId, { duration } = {}) => {
+  const anchor = labelManager.getAnchor(entityId);
+  if (!anchor) return false;
+  const point = anchor.getWorldPosition(tempVec3);
+  point.y += anchor.userData?.hudOffset ?? 12;
+  const cameraDebug = scene.userData?.cameraDebug;
+  if (cameraDebug?.focusOnPoint) {
+    cameraDebug.focusOnPoint(point, duration);
+    return true;
+  }
+  return false;
+};
 
 const clonePaletteSlots = (source) => ({
   dawn: { ...source.dawn },
@@ -424,6 +581,11 @@ export {
   updateSunFromEntity,
   updateMoonFromEntity,
   attachSetup,
+  setHoveredEntity,
+  clearHoveredEntity,
+  setSelectedEntity,
+  clearSelectedEntity,
+  focusEntity,
 };
 
 // --- END OF FILE scene.js (Modified) ---

@@ -119,6 +119,8 @@ Do **not** write into build artifacts.
 - `SITEMAP_DETAILED.md`
 - `AUDIT-log.md`
 - `AGENTS.md`
+- `agents-docs/README.md`
+- `agents-docs/templates/project-template/qa/qa-checklist.md`
 
 If missing → create from template.
 

@@ -54,6 +54,7 @@ CSSHudManager                         ├─ badges (battery, alerts)
 - Use CSS variables for palette alignment: `--hud-bg`, `--hud-border`, `--hud-success`, etc.
 - Rely on `will-change: transform` + `transform: translate3d(x, y, 0)` for smooth positioning.
 - Maintain z-index ordering by optional `translateZ` derived from anchor depth or by sorting `z-index`.
+- DOM labels now expose `data-category`, `data-type`, and `data-room` attributes with category badges so future UI shells can restyle or filter without touching Three.js objects.
 
 ## Migration Strategy
 1. **Phase 1 – Parallel Anchors**  
@@ -87,4 +88,4 @@ CSSHudManager                         ├─ badges (battery, alerts)
 **Next Actions**
 - [x] Create `CSSHudManager` skeleton + projection helper (`src/hud/` namespace).  
 - [x] Replace sprite groups with lightweight anchors in `LabelManager`, keeping CSS HUD hydrated.  
-- [ ] Map HUD interactions (hover/click) to camera focus + selection UX, then retire sprite scaling loop.
+- [x] Map HUD interactions (hover/click) to camera focus + selection UX, then retire sprite scaling loop.

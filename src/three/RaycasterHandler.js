@@ -1,4 +1,4 @@
-// src/ui/components/RaycasterHandler.js
+// src/three/RaycasterHandler.js
 
 import * as THREE from "three";
 

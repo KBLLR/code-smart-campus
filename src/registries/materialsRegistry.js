@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader.js";
+import { HDRLoader } from "three/examples/jsm/loaders/HDRLoader.js";
 
 const MATERIAL_PRESETS = {
   roomBase: {
@@ -85,7 +85,7 @@ class MaterialRegistry {
     if (this.initPromise) return this.initPromise;
 
     this.initPromise = new Promise((resolve) => {
-      const loader = new RGBELoader();
+      const loader = new HDRLoader();
       loader.setPath("/hdri/");
       loader.load(
         "night1k.hdr",

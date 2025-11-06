@@ -125,6 +125,7 @@ export default class Setup {
     this.orbCtrls.enablePan = true; // Enable panning
     this.orbCtrls.enableRotate = true; // Enable rotation
     this.orbCtrls.enableZoom = true; // Enable zooming
+    this.cnvs.style.touchAction = "pan-x pan-y";
     this.orbCtrls.dampingFactor = 0.08;
     this.orbCtrls.screenSpacePanning = false; // Keep panning relative to world space
     this.orbCtrls.minDistance = 25; // Set min zoom distance
@@ -192,7 +193,10 @@ export default class Setup {
     };
     this.cnvs.addEventListener("wheel", this.handleWheel, { passive: true });
 
+    this.pmremGenerator = new THREE.PMREMGenerator(this.re);
+    this.pmremGenerator.compileEquirectangularShader();
     this.hdrLoader = new HDRLoader();
+    this.environmentRT = null;
 
     this.pane = new Pane(); // Commented out if not used directly here
 
@@ -609,19 +613,30 @@ export default class Setup {
   }
 
   setEnvMap(url) {
+    if (!url) return;
     this.hdrLoader.load(
       url,
       (texture) => {
-        texture.mapping = THREE.EquirectangularReflectionMapping;
-        this.scene.environment = texture; // Set environment map for reflections
-        // Keep sky dome visible by letting background stay managed elsewhere
-        if (this.scene.background === texture) {
-          this.scene.background = null;
+        try {
+          const renderTarget = this.pmremGenerator.fromEquirectangular(texture);
+          texture.dispose();
+
+          if (this.environmentRT) {
+            this.environmentRT.texture?.dispose?.();
+            this.environmentRT.dispose?.();
+          }
+
+          this.environmentRT = renderTarget;
+          this.scene.environment = renderTarget.texture;
+          if (!this.scene.background) {
+            this.scene.background = null;
+          }
+          console.log(`[Setup] Environment map loaded from ${url}`);
+        } catch (error) {
+          console.error("[Setup] Failed to process HDR environment:", error);
         }
-        console.log(`[Setup] Environment map loaded from ${url}`);
-        texture.needsUpdate = true; // Ensure update
       },
-      undefined, // Progress callback (optional)
+      undefined,
       (error) => {
         console.error(
           `[Setup] Failed to load environment map from ${url}:`,
@@ -698,6 +713,9 @@ export default class Setup {
     this.cnvs.removeEventListener("mousemove", this.handleMouseMove);
     this.cnvs.removeEventListener("pointerdown", this.handlePointerDown);
     this.cnvs.removeEventListener("wheel", this.handleWheel);
+    this.environmentRT?.texture?.dispose?.();
+    this.environmentRT?.dispose?.();
+    this.pmremGenerator?.dispose?.();
     this.orbCtrls?.dispose();
     this.stats?.dispose(); // Call dispose on the panel instance
     this.re?.dispose();

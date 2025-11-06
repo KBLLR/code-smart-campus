@@ -3,7 +3,34 @@ import * as THREE from "three";
 import { SVGLoader } from "three/examples/jsm/loaders/SVGLoader.js";
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
 import GenColor from "@utils/GenColor.js";
-import { materialRegistry } from "@/materials/registry.js";
+import { materialRegistry } from "@registries/materialsRegistry.js";
+
+const ROOM_COLOR_PALETTE =
+  GenColor.getPalette("cool") ??
+  GenColor.getPalette("pastel") ?? [
+    "#38bdf8",
+    "#0ea5e9",
+    "#2dd4bf",
+    "#22d3ee",
+    "#8b5cf6",
+    "#f472b6",
+  ];
+
+function hashStringToIndex(id, modulo) {
+  if (!id || !modulo) return 0;
+  let hash = 0;
+  for (let i = 0; i < id.length; i++) {
+    hash = (hash << 5) - hash + id.charCodeAt(i);
+    hash |= 0;
+  }
+  return Math.abs(hash) % modulo;
+}
+
+function getRoomColorHex(roomId, fallbackIndex = 0) {
+  const palette = ROOM_COLOR_PALETTE;
+  const index = hashStringToIndex(roomId, palette.length);
+  return palette[index ?? fallbackIndex] || palette[0];
+}
 
 /**
  * Generate rounded boxes from SVG path data and align them to the scene layout.
@@ -44,13 +71,9 @@ export async function generateRoundedBlocksFromSVG(
             const center = new THREE.Vector3();
             bbox.getCenter(center);
 
-            const color = new GenColor(
-              `#${Math.floor(Math.random() * 16777215)
-                .toString(16)
-                .padStart(6, "0")}`,
-            ).rgb;
+            const colorHex = getRoomColorHex(normId || rawId || `room-${group.children.length}`);
             const material = materialRegistry.create("roomBase", {
-              color,
+              color: colorHex,
               transparent: true,
               opacity: 0.95,
               roughness: 0.5,

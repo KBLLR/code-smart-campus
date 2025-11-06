@@ -9,10 +9,12 @@
   <body>
     <canvas id="canvas" aria-label="Campus 3D canvas"></canvas>
 
-    <header id="toolbar-root"></header>
-
     <div id="ui-shell">
       <div id="hud-root" aria-live="polite"></div>
+      <div class="ui-shell__top">
+        <header id="toolbar-root"></header>
+        <div id="websocket-status" aria-live="polite"></div>
+      </div>
       <main class="panel-shell">
         <section id="content-area" class="panel-strip" role="region" aria-live="polite"></section>
         <nav class="panel-indicators" aria-label="Sensor panels"></nav>
@@ -24,7 +26,6 @@
         </svg>
       </button>
 
-      <div id="websocket-status" aria-live="polite"></div>
       <div id="sensor-dashboard"></div>
     </div>
 

@@ -146,6 +146,7 @@ export class LabelLayoutManager {
         label.visible = visible;
       }
     });
+    this.scene?.userData?.hud?.manager?.setCategoryVisibility?.(group, visible);
   }
 
   async reinjectLabels(newRegistry) {

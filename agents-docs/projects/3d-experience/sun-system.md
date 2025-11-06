@@ -7,6 +7,7 @@ _Last updated: 2025-11-03_
 - **Sky dome shader** (`SunSkyDome`) now blends dawn/day/dusk/night palettes with adaptive glow/fog tint driven by sun elevation; colours remain tweakable via “🌞 Sun Visuals”.
 - **Sun path arc** (`SunPathArc`) visualises the recent trajectory with configurable colour/opacity so users can see how the sun has moved.
 - **Moon companion** (`MoonController`) positions a directional light and sprite using on-device ephemeris (SunCalc-derived math) with Home Assistant phase data when available.
+- **HDR environment loading** now uses `RGBELoader` + PMREM so reflections stay consistent with the sky palette while keeping the dome visible.
 
 ## Configuration & Debugging
 - Shared coordinates load from `SITE_COORDINATES` (ENV override: `VITE_SITE_LAT`, `VITE_SITE_LNG`).

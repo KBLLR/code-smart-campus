@@ -5,7 +5,11 @@ export function createPanelsFromData(data) {
   contentArea.innerHTML = "";
   panelIndicators.innerHTML = "";
 
-  data.forEach((entity, index) => {
+  const MAX_PANELS = 10;
+  const trimmedData = data.slice(0, MAX_PANELS);
+  const hasOverflow = data.length > MAX_PANELS;
+
+  trimmedData.forEach((entity, index) => {
     const panel = document.createElement("div");
     panel.className = "hui-panel";
     panel.dataset.entityId = entity.entity_id;
@@ -42,9 +46,36 @@ export function createPanelsFromData(data) {
     const indicator = document.createElement("div");
     indicator.className = "panel-indicator" + (index === 0 ? " active" : "");
     indicator.onclick = () => {
-      const scrollX = index * (contentArea.scrollWidth / data.length);
+      const scrollX = index * (contentArea.scrollWidth / trimmedData.length);
       contentArea.scrollTo({ left: scrollX, behavior: "smooth" });
     };
     panelIndicators.appendChild(indicator);
   });
+
+  if (hasOverflow) {
+    const summaryPanel = document.createElement("div");
+    summaryPanel.className = "hui-panel hui-panel--summary";
+    summaryPanel.innerHTML = `
+      <div class="panel-title">Additional Sensors</div>
+      <p class="panel-summary">
+        Showing the first ${MAX_PANELS} entries. View all data inside the Home Assistant dashboard for the full list.
+      </p>
+      <button class="panel-summary__button" type="button">Open Dashboard</button>
+    `;
+    summaryPanel
+      .querySelector(".panel-summary__button")
+      .addEventListener("click", () => {
+        window.open(import.meta.env.VITE_HA_DASHBOARD_URL || "/", "_blank");
+      });
+    contentArea.appendChild(summaryPanel);
+
+    const summaryIndicator = document.createElement("div");
+    summaryIndicator.className = "panel-indicator";
+    summaryIndicator.onclick = () => {
+      const scrollX =
+        trimmedData.length * (contentArea.scrollWidth / (trimmedData.length + 1));
+      contentArea.scrollTo({ left: scrollX, behavior: "smooth" });
+    };
+    panelIndicators.appendChild(summaryIndicator);
+  }
 }

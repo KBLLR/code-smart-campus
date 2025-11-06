@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { materialRegistry } from "@/materials/registry.js";
+import { materialRegistry } from "@registries/materialsRegistry.js";
 
 export class Floor {
   constructor(width = 320, height = 250, color = 0x2b2b2b) {
