@@ -57,6 +57,21 @@ canvas#canvas {
     z-index: 2;
 }
 
+.uil-root {
+    position: fixed;
+    top: 7rem;
+    left: 2rem;
+    z-index: 40;
+    pointer-events: auto;
+}
+
+.uil-root .uil-js {
+    position: relative;
+    margin: 0;
+    pointer-events: auto;
+    transform: none !important;
+}
+
 #root,
 :root {
     --hud-cat-accent-default: rgba(148, 163, 184, 0.6);
@@ -74,7 +89,6 @@ canvas#canvas {
 .floating-btn,
 #sensor-dashboard,
 #sensor-dashboard *,
-.tp-dfwv,
 #websocket-status,
 .panel-shell * {
     pointer-events: auto;
@@ -371,15 +385,6 @@ canvas#canvas {
     --hud-accent: var(--hud-cat-accent-misc);
     --hud-badge-bg: rgba(148, 163, 184, 0.25);
     --hud-badge-fg: #f8fafc;
-}
-
-.tp-dfwv {
-    position: fixed !important;
-    top: 16px;
-    right: 16px;
-    z-index: 60;
-    min-width: 280px;
-    min-height: 240px;
 }
 
 #loader {

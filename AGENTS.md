@@ -10,6 +10,9 @@ The 3D campus experience lives in `src/`, split into targeted modules: `ui/` for
 - `npm run lint` — Applies the project ESLint ruleset to every JS/TS module in `src/`.
 - `npm run generateRoomRegistry` / `npm run generateLabelRegistry` — Rebuild generated data when source SVG or Home Assistant fields change.
 
+## Task Research Prerequisite
+Before opening or working on any task, run a quick web search on the topic to gather current best practices, terminology, and known blockers. Capture the key links or takeaways in the task’s Notes column (or description) so downstream agents understand the reference context that informed the work.
+
 ## Coding Style & Naming Conventions
 Follow the ESLint configuration in `eslint.config.js`, which enforces modern ECMAScript/TypeScript defaults with browser and Node globals. Use 2-space indentation, dangling commas only where they clarify multi-line literals, and prefer ES modules (`import`/`export`). Mirror existing names: PascalCase classes/components (`Setup.js`), camelCase helpers (`uiUpdater.js`), and kebab-case asset files. Keep configuration constants in `config/` and isolate side-effectful code in the relevant module rather than `utils/`.
 

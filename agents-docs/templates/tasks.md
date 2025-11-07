@@ -1,6 +1,7 @@
 # Task Ledger
 
 Track all work for this project here. Keep the table **sorted by priority** (top = highest).
+Every task must include a short summary of the prerequisite web search (links or keywords) in its Description or Notes column so future agents know which references were consulted.
 
 ## Backlog
 | ID    | Title                | Description                               | Priority | Owner | Notes |

@@ -25,7 +25,6 @@ import {
   focusEntity,
 } from "@/scene.js";
 import { SensorDashboard } from "@lib/SensorDashboard.js";
-import { Debugger } from "@debug/Debugger.js";
 import { createPanelsFromData } from "@lib/PanelBuilder.js";
 import { WebSocketStatus } from "@network/WebSocketStatus.js";
 import { setHaStates, updateEntityState } from "@home_assistant/haState.js";
@@ -35,6 +34,14 @@ import {
   isHaApiConfigured,
 } from "@home_assistant/haClient.js";
 import { ViewHero } from "@molecules/ViewHero.js";
+import { uilController } from "@ui/UILController.js";
+import { registerNavigationControls } from "@ui/modules/NavigationControls.js";
+import { registerLightingControls } from "@ui/modules/LightingControls.js";
+import { registerSunSkyControls } from "@ui/modules/SunSkyControls.js";
+import { registerDebuggerControls } from "@ui/modules/DebuggerControls.js";
+import { registerOrbitDebugControls } from "@ui/modules/OrbitDebugControls.js";
+import { registerRoomLevelsControls } from "@ui/modules/RoomLevelsControls.js";
+import { CanvasUILPanels } from "@ui/modules/CanvasUILPanels.js";
 import { PostProcessor } from "@/postprocessing/PostProcessor.js";
 import { CSSHudManager } from "@hud/CSSHudManager.js";
 import { dataPipeline } from "@data/DataPipeline.js";
@@ -45,13 +52,6 @@ import { RoomSelectionController } from "@interaction/RoomSelectionController.js
 let initialStatesReceived = false;
 const initialStatesProcessedSignal = createSignal(); // Signal for when initial states are done
 window.roomMeshes = {};
-let isDebugModeActive = false; // Start with debug UI hidden
-const debugSettings = {
-  // State object for Tweakpane bindings
-  enableLabelUpdates: true,
-  // Add other debug flags here if needed
-};
-let debuggerInstance = null; // Hold the debugger instance
 let sensorDashboardInstance = null;
 let toolbarInstance = null;
 let postProcessor = null;
@@ -85,6 +85,7 @@ const contentArea = document.getElementById("content-area");
 const panelIndicators = document.querySelector(".panel-indicators");
 const floatingBtn = document.querySelector(".floating-btn");
 const viewHeroRoot = document.getElementById("view-hero-root");
+const uilRoot = document.getElementById("uil-root");
 const viewHero = new ViewHero({
   mount: viewHeroRoot,
   eyebrow: "Smart Campus",
@@ -192,6 +193,53 @@ const setup = new Setup(canvas, () => {
 
 setup.setEnvMap("/hdri/night1k.hdr");
 attachSetup(setup);
+const navigationController = uilController;
+navigationController.init({
+  mount: uilRoot,
+  width: 300,
+  theme: { accent: "#2dd4bf" },
+});
+
+registerNavigationControls({ setup, controller: navigationController });
+registerOrbitDebugControls({
+  controller: navigationController,
+  setup,
+});
+whenReady("roomMeshes", (meshesMap) => {
+  registerDebuggerControls({
+    controller: navigationController,
+    roomMeshes: meshesMap,
+    setup,
+    scene,
+  });
+});
+
+registerLightingControls({
+  controller: navigationController,
+  postFX: scene.userData.postFX,
+  setup,
+});
+registerSunSkyControls({
+  controller: navigationController,
+  sunDebug: scene.userData.sunDebug,
+});
+whenReady("roundedRoomsGroup", (group) => {
+  registerRoomLevelsControls({
+    controller: navigationController,
+    group,
+  });
+  const canvasPanels = new CanvasUILPanels({
+    scene,
+    camera: setup.cam,
+    controls: setup.orbCtrls,
+    canvas,
+    setup,
+    sunDebug: scene.userData.sunDebug,
+    postFX: scene.userData.postFX,
+    anchor: group,
+  });
+  canvasPanels.init();
+});
 
 postProcessor = new PostProcessor({
   renderer: setup.re,
@@ -990,63 +1038,6 @@ contentArea?.addEventListener(
   { passive: true },
 ); // Use passive listener for scroll performance
 
-// --- Keystroke Listener for Debug Toggle (Using 'R' key) ---
-window.addEventListener("keydown", (event) => {
-  // Ignore keydown events if user is typing in an input field
-  if (
-    event.target.tagName === "INPUT" ||
-    event.target.tagName === "TEXTAREA" ||
-    event.target.isContentEditable
-  ) {
-    return;
-  }
-
-  // Use 'KeyR' for the "R" key (case-insensitive check just in case)
-  if (event.code === "KeyR" || event.key.toLowerCase() === "r") {
-    // Don't prevent default unless it interferes with something else
-    // event.preventDefault();
-    isDebugModeActive = !isDebugModeActive;
-    console.log(
-      `Debug Mode ${isDebugModeActive ? "Activated" : "Deactivated"} (Key R)`,
-    );
-    toggleDebugUI(isDebugModeActive); // Assumes toggleDebugUI is defined elsewhere
-  }
-});
-
-// --- Function to Toggle Debug UI Visibility ---
-function toggleDebugUI(show) {
-  // Toggle Stats.js panel
-  if (setup.stats) {
-    // Check if stats instance exists
-    if (show) setup.stats.show();
-    else setup.stats.hide();
-  }
-
-  // Toggle Tweakpane panel
-  if (debuggerInstance?.domElement) {
-    debuggerInstance.domElement.style.display = show ? "block" : "none";
-    debuggerInstance.domElement.style.pointerEvents = show ? "auto" : "none";
-    debuggerInstance.pane?.refresh?.();
-  } else if (debuggerInstance) {
-    const tpPane = document.querySelector(".tp-dfwv");
-    if (tpPane) {
-      tpPane.style.display = show ? "block" : "none";
-      tpPane.style.pointerEvents = show ? "auto" : "none";
-      debuggerInstance.pane?.refresh?.();
-    }
-  }
-}
-
-// --- End Debug Toggle ---
-// // --- END of UI Interactions section in main.js ---
-
-// --- START of Debug section in main.js ---
-
-// 🧪 Debugger setup
-//
-//
-// Wait until the main 3D group for rooms is ready before initializing the debugger
-// --- START of Initial Setup Calls section in main.js ---
 
 // ========== Initial Setup Calls ==========
 
@@ -1272,145 +1263,6 @@ whenReady("labels", (labelsData) => {
 }); // End whenReady for "labels"
 
 // --- END of Toolbar UI initialization section in main.js ---
-
-// --- START of Complete Debugger Setup section in main.js ---
-
-// 🧪 Debugger setup
-// Wait until the main 3D group for rooms ('roundedRoomsGroup') is ready before initializing the debugger.
-// This ensures the scene has the primary objects the debugger might interact with initially.
-whenReady("roundedRoomsGroup", (group) => {
-  console.log("[Debugger Init] Prerequisite 'roundedRoomsGroup' is ready.");
-  initializeToolbar(group);
-
-  // --- Step 1: Basic Validation ---
-  // Ensure we have valid Scene and Camera objects from the Setup module.
-  // The debugger relies heavily on these.
-  if (!(scene instanceof THREE.Scene)) {
-    console.error(
-      "❌ Debugger Setup Aborted: Invalid 'scene' object provided. Expected THREE.Scene.",
-      scene,
-    );
-    return; // Stop initialization if the scene is invalid
-  }
-  if (!(setup.cam instanceof THREE.Camera)) {
-    // Check against base Camera class for flexibility
-    console.error(
-      "❌ Debugger Setup Aborted: Invalid 'setup.cam' object provided. Expected THREE.Camera.",
-      setup.cam,
-    );
-    return; // Stop initialization if the camera is invalid
-  }
-  // OrbitControls validation (added based on Debugger constructor)
-  if (!setup.orbCtrls || typeof setup.orbCtrls.update !== "function") {
-    console.error(
-      "❌ Debugger Setup Aborted: Invalid 'setup.orbCtrls' object provided.",
-      setup.orbCtrls,
-    );
-    return; // Stop initialization if OrbitControls are invalid
-  }
-  // Check the group object itself, although whenReady should provide it if resolved.
-  if (!group) {
-    console.warn(
-      "❌ Debugger Setup: 'group' object from roundedRoomsGroup is unexpectedly missing.",
-    );
-    // Depending on Debugger's design, you might still proceed or return here.
-  }
-
-  // --- Step 2: Initialize Debugger Instance ---
-  try {
-    // Create the debugger instance, passing essential references.
-    // Assumes Debugger constructor requires scene, camera, controls, and the debugSettings state object.
-    debuggerInstance = new Debugger(
-      scene,
-      setup.cam,
-      setup.orbCtrls,
-      debugSettings,
-    );
-
-    // --- (Optional) Make globally accessible for console debugging ---
-    // Useful during development but consider removing or wrapping for production builds.
-    // Example: if (process.env.NODE_ENV === 'development') { window.debugger = debug; }
-    window.debugger = debuggerInstance; // Assign the instance stored in debuggerInstance
-    // --- End Optional ---
-
-    console.log("🐛 Debugger initialized successfully.");
-
-    isDebugModeActive = false;
-    toggleDebugUI(false);
-
-    // --- Hide Debug UI Panels Initially (if needed) ---
-    // Call the function defined elsewhere in main.js to set initial visibility
-    // based on the isDebugModeActive flag.
-    if (!isDebugModeActive) {
-      console.log("[Debugger Init] Hiding debug UI panels initially.");
-      toggleDebugUI(false); // Assumes toggleDebugUI is defined
-    }
-
-    // --- Step 3: Update Debugger Object Picker (Asynchronously) ---
-    // The object picker needs the 'roomMeshes' data, which might become ready
-    // at the same time or slightly after 'roundedRoomsGroup'.
-    // We use another whenReady to ensure this data is available before updating the picker.
-    whenReady("roomMeshes", (meshesMap) => {
-      console.log("[Debugger Update] Dependency 'roomMeshes' is ready.");
-
-      // Check if the debugger instance was created successfully and has the required method.
-      if (
-        !debuggerInstance ||
-        typeof debuggerInstance.updateObjectPickerOptions !== "function"
-      ) {
-        console.warn(
-          "Debugger instance is missing or lacks 'updateObjectPickerOptions' method. Skipping picker update.",
-        );
-        return;
-      }
-      // Check if the meshesMap data is valid.
-      if (
-        !meshesMap ||
-        typeof meshesMap !== "object" ||
-        Object.keys(meshesMap).length === 0
-      ) {
-        console.warn(
-          "Debugger: Invalid or empty 'meshesMap' received. Skipping object picker update.",
-          meshesMap,
-        );
-        return; // Don't proceed if no valid mesh data
-      }
-
-      // Prepare options for the object picker in the format { 'Display Name': uuid }
-      const formattedMeshes = {};
-      let validMeshCount = 0;
-      Object.entries(meshesMap).forEach(([id, mesh]) => {
-        // Validate that each entry is a THREE.Object3D before adding.
-        if (mesh instanceof THREE.Object3D) {
-          formattedMeshes[mesh.name || id] = mesh.uuid; // Use mesh name or fallback to id from the registry key
-          validMeshCount++;
-        } else {
-          console.warn(
-            `Debugger: Invalid mesh object found in meshesMap for id '${id}'.`,
-            mesh,
-          );
-        }
-      });
-
-      // Update the picker only if valid meshes were found.
-      if (validMeshCount > 0) {
-        debuggerInstance.updateObjectPickerOptions(formattedMeshes);
-        console.log(
-          `🐛 Debugger object picker updated with ${validMeshCount} room meshes.`,
-        );
-      } else {
-        console.warn(
-          "Debugger: No valid meshes found in meshesMap to update object picker.",
-        );
-      }
-    }); // End whenReady for "roomMeshes"
-  } catch (error) {
-    // Catch errors specifically during Debugger instantiation.
-    console.error("❌ Error initializing Debugger instance:", error);
-    debuggerInstance = null; // Ensure instance is null if init fails
-    // Provide feedback - maybe disable debug features?
-  }
-}); // End whenReady for "roundedRoomsGroup"
 
 // --- START of Animation Loop section in main.js ---
 

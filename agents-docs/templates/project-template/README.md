@@ -21,5 +21,6 @@ Use this template project to organise work streams, capture tasks, and attach se
 - Keep entries concise but descriptive; future contributors should understand context at a glance.
 - Link tasks to GitHub issues, tickets, or Notion docs where applicable.
 - Reference session IDs in PR descriptions so reviewers can trace decisions quickly.
+- Before adding or starting any task, perform a quick web search on the topic and record the key links or notes inside `tasks.md` so the research trail is preserved.
 
 > Tip: Commit session logs alongside the code they describe to maintain an auditable history.

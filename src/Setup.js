@@ -5,7 +5,6 @@ import { HDRLoader } from "three/examples/jsm/loaders/HDRLoader.js";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { Reflector } from "three/examples/jsm/objects/Reflector.js";
 import { color, screenUV, vec2 } from "three/tsl";
-import { Pane } from "tweakpane";
 import { StatsGLPanel } from "@/debug/StatsGLPanel.js";
 
 const DEFAULT_TARGET_BOUNDS = {
@@ -214,8 +213,6 @@ export default class Setup {
     this.pmremGenerator.compileEquirectangularShader();
     this.hdrLoader = new HDRLoader();
     this.environmentRT = null;
-
-    this.pane = new Pane(); // Commented out if not used directly here
 
     // --- Event Listeners ---
     this.boundResizeHandler = this.handleWindowResize.bind(this);
