@@ -29,6 +29,12 @@ import { Debugger } from "@debug/Debugger.js";
 import { createPanelsFromData } from "@lib/PanelBuilder.js";
 import { WebSocketStatus } from "@network/WebSocketStatus.js";
 import { setHaStates, updateEntityState } from "@home_assistant/haState.js";
+import {
+  fetchEntityHistory,
+  requestEntityRefresh,
+  isHaApiConfigured,
+} from "@home_assistant/haClient.js";
+import { ViewHero } from "@molecules/ViewHero.js";
 import { PostProcessor } from "@/postprocessing/PostProcessor.js";
 import { CSSHudManager } from "@hud/CSSHudManager.js";
 import { dataPipeline } from "@data/DataPipeline.js";
@@ -60,6 +66,8 @@ const hydrateSensorDashboard = (entities = []) => {
 const normalizeRoomId = (value) =>
   typeof value === "string" ? value.toLowerCase().replace(/[^a-z0-9]/g, "") : null;
 
+const DEFAULT_HISTORY_WINDOW_HOURS = 6;
+
 // --- End Debug State ---
 
 // --- UI References ---
@@ -76,6 +84,18 @@ const panelShell = document.querySelector(".panel-shell");
 const contentArea = document.getElementById("content-area");
 const panelIndicators = document.querySelector(".panel-indicators");
 const floatingBtn = document.querySelector(".floating-btn");
+const viewHeroRoot = document.getElementById("view-hero-root");
+const viewHero = new ViewHero({
+  mount: viewHeroRoot,
+  eyebrow: "Smart Campus",
+  title: "3D CODE Floorplan",
+  subtitle:
+    "Navigate the live campus replica, inspect rooms, and track real-time telemetry.",
+  status: {
+    label: "Telemetry Pending",
+    tone: "warning",
+  },
+});
 
 panelShell?.classList.remove("is-open");
 contentArea?.classList.remove("is-open");
@@ -648,10 +668,55 @@ function showDetailedView(entity) {
   const actions = document.createElement("div");
   actions.className = "detail-actions";
   actions.innerHTML = `
-    <button class="action-button" title="Not implemented">History Chart</button>
-    <button class="action-button primary" title="Request state refresh (no backend)">Refresh</button>
+    <button class="action-button" type="button" data-action="history" title="Render a chart from Home Assistant history">
+      History Chart
+    </button>
+    <button class="action-button primary" type="button" data-action="refresh" title="Ask Home Assistant to refresh this entity">
+      Refresh
+    </button>
   `;
   modalContent.appendChild(actions);
+
+  const chartSection = document.createElement("div");
+  chartSection.className = "detail-section detail-chart";
+  chartSection.innerHTML = `
+    <div class="detail-chart__header">
+      <h3>History Chart</h3>
+      <span class="detail-chart__range">Last ${DEFAULT_HISTORY_WINDOW_HOURS}h</span>
+    </div>
+  `;
+  const chartBody = document.createElement("div");
+  chartBody.className = "detail-chart__body";
+  chartBody.innerHTML =
+    '<p class="detail-chart__placeholder">Run “History Chart” to fetch live data from Home Assistant.</p>';
+  chartSection.appendChild(chartBody);
+  modalContent.appendChild(chartSection);
+
+  const footer = document.createElement("div");
+  footer.className = "detail-footer detail-footer--neutral";
+  const footerMessage = document.createElement("span");
+  footerMessage.className = "detail-footer__message";
+  footer.appendChild(footerMessage);
+  modalContent.appendChild(footer);
+
+  const setFooterMessage = (message, tone = "neutral") => {
+    footer.classList.remove(
+      "detail-footer--info",
+      "detail-footer--success",
+      "detail-footer--error",
+      "detail-footer--neutral",
+    );
+    footer.classList.add(`detail-footer--${tone}`);
+    footerMessage.textContent = message;
+  };
+
+  const apiReady = isHaApiConfigured();
+  setFooterMessage(
+    apiReady
+      ? "Actions ready."
+      : "Set VITE_HA_URL + VITE_HA_TOKEN to enable HA actions.",
+    apiReady ? "neutral" : "error",
+  );
 
   // --- Add to DOM & Show ---
   modal.appendChild(modalContent);
@@ -669,21 +734,161 @@ function showDetailedView(entity) {
   modal.addEventListener("click", (e) => {
     if (e.target === modal) closeModal();
   });
-  modal.querySelectorAll(".action-button").forEach((button) => {
+  const historyButton = actions.querySelector('[data-action="history"]');
+  const refreshButton = actions.querySelector('[data-action="refresh"]');
+
+  const addPressEffect = (button) => {
+    if (!button) return;
     button.addEventListener("click", function () {
       this.classList.add("clicked");
       setTimeout(() => this.classList.remove("clicked"), 200);
-      console.log(`Action button clicked: ${this.textContent}`);
-      // TODO: Implement actual actions
-      if (this.textContent === "Refresh") {
-        // Optionally try to find and re-render the entity display if needed,
-        // but a full refresh isn't implemented client-side easily without WS request
-        console.log("Refresh requested (client-side only)");
-      }
     });
-  });
+  };
+
+  addPressEffect(historyButton);
+  addPressEffect(refreshButton);
+
+  if (!apiReady) {
+    [historyButton, refreshButton].forEach((btn) => {
+      if (!btn) return;
+      btn.disabled = true;
+      btn.title = "Configure VITE_HA_URL and VITE_HA_TOKEN to enable.";
+    });
+    return;
+  }
+
+  const runHistoryChart = async () => {
+    if (!historyButton) return;
+    setFooterMessage("Fetching HA history…", "info");
+    historyButton.disabled = true;
+    chartSection.classList.add("detail-chart--loading");
+    try {
+      const samples = await fetchEntityHistory(entity.entity_id, {
+        hours: DEFAULT_HISTORY_WINDOW_HOURS,
+      });
+      renderHistoryChart(samples, chartBody, {
+        hours: DEFAULT_HISTORY_WINDOW_HOURS,
+        entityName: entity.attributes?.friendly_name || entity.entity_id,
+      });
+      setFooterMessage(
+        samples.length
+          ? `Loaded ${samples.length} samples from HA.`
+          : "No history returned for this window.",
+        samples.length ? "success" : "neutral",
+      );
+    } catch (error) {
+      console.error(
+        `[DetailModal] History fetch failed for ${entity.entity_id}`,
+        error,
+      );
+      chartBody.innerHTML =
+        '<p class="detail-chart__error">Unable to fetch history from Home Assistant.</p>';
+      setFooterMessage(error.message || "History fetch failed.", "error");
+    } finally {
+      chartSection.classList.remove("detail-chart--loading");
+      historyButton.disabled = false;
+    }
+  };
+
+  const requestRefresh = async () => {
+    if (!refreshButton) return;
+    setFooterMessage("Requesting entity refresh…", "info");
+    refreshButton.disabled = true;
+    try {
+      await requestEntityRefresh(entity.entity_id);
+      setFooterMessage(
+        "Refresh requested. Awaiting live update from Home Assistant.",
+        "success",
+      );
+    } catch (error) {
+      console.error(
+        `[DetailModal] Refresh failed for ${entity.entity_id}`,
+        error,
+      );
+      setFooterMessage(error.message || "Refresh failed.", "error");
+    } finally {
+      refreshButton.disabled = false;
+    }
+  };
+
+  historyButton?.addEventListener("click", runHistoryChart);
+  refreshButton?.addEventListener("click", requestRefresh);
 }
 window.showDetailedView = showDetailedView;
+
+function renderHistoryChart(
+  samples,
+  container,
+  { hours = DEFAULT_HISTORY_WINDOW_HOURS, entityName = "" } = {},
+) {
+  if (!container) return;
+  if (!Array.isArray(samples) || samples.length === 0) {
+    container.innerHTML = `<p class="detail-chart__placeholder">No history returned in the past ${hours}h.</p>`;
+    return;
+  }
+
+  const numericSamples = samples.filter(
+    (sample) => typeof sample.value === "number",
+  );
+
+  if (!numericSamples.length) {
+    const latestStates = samples
+      .slice(-8)
+      .reverse()
+      .map(
+        (sample) =>
+          `<li><span>${formatChartTime(sample.timestamp)}</span><span>${sample.state}</span></li>`,
+      )
+      .join("");
+    container.innerHTML = `
+      <p class="detail-chart__placeholder">History fetched, but values are non-numeric.</p>
+      <ul class="detail-chart__states">${latestStates}</ul>
+    `;
+    return;
+  }
+
+  const width = 360;
+  const height = 140;
+  const minValue = Math.min(...numericSamples.map((sample) => sample.value));
+  const maxValue = Math.max(...numericSamples.map((sample) => sample.value));
+  const range = maxValue - minValue || 1;
+  const gradientId = `detailChartGradient-${Math.random().toString(36).slice(2, 8)}`;
+
+  const points = numericSamples
+    .map((sample, index) => {
+      const x =
+        numericSamples.length === 1
+          ? width / 2
+          : (index / (numericSamples.length - 1)) * width;
+      const y =
+        height - ((sample.value - minValue) / range) * (height - 12) - 6;
+      return `${x.toFixed(2)},${y.toFixed(2)}`;
+    })
+    .join(" ");
+
+  container.innerHTML = `
+    <svg class="detail-chart__svg" viewBox="0 0 ${width} ${height}" preserveAspectRatio="none" role="img" aria-label="History for ${entityName}">
+      <defs>
+        <linearGradient id="${gradientId}" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#60a5fa" />
+          <stop offset="100%" stop-color="#14b8a6" />
+        </linearGradient>
+      </defs>
+      <polyline points="${points}" fill="none" stroke="url(#${gradientId})" stroke-width="2" vector-effect="non-scaling-stroke" />
+    </svg>
+    <div class="detail-chart__stats">
+      <span>Min ${minValue.toFixed(2)}</span>
+      <span>Max ${maxValue.toFixed(2)}</span>
+      <span>Last ${numericSamples[numericSamples.length - 1].value.toFixed(2)}</span>
+    </div>
+  `;
+}
+
+function formatChartTime(timestamp) {
+  const date = new Date(timestamp);
+  if (Number.isNaN(date.getTime())) return timestamp;
+  return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+}
 
 // ========== UI Interactions ==========
 
@@ -949,6 +1154,10 @@ window.addEventListener("DOMContentLoaded", () => {
   const unsubInitialised = dataPipeline.on("initialised", ({ detail }) => {
     const rawStates = Array.isArray(detail?.raw) ? detail.raw : [];
     handleInitialStates(rawStates);
+    viewHero.setStatus({
+      label: "Telemetry Live",
+      tone: "success",
+    });
   });
 
   const unsubEntityUpdate = dataPipeline.on(
@@ -965,11 +1174,19 @@ window.addEventListener("DOMContentLoaded", () => {
     if (haStatusWidget) {
       haStatusWidget.setStatus("connected");
     }
+    viewHero.setStatus({
+      label: "Connected",
+      tone: "info",
+    });
   });
 
   const unsubSocketError = dataPipeline.on("socket-error", ({ detail }) => {
     console.error("[DataPipeline] WebSocket reported an error:", detail);
     haStatusWidget?.setStatus("error");
+    viewHero.setStatus({
+      label: "Connection Error",
+      tone: "danger",
+    });
   });
 
   const unsubSocketClose = dataPipeline.on(
@@ -979,6 +1196,10 @@ window.addEventListener("DOMContentLoaded", () => {
         `[DataPipeline] WebSocket closed (${code ?? "n/a"} ${reason ?? ""})`,
       );
       haStatusWidget?.setStatus("closed");
+      viewHero.setStatus({
+        label: "Disconnected",
+        tone: "warning",
+      });
     },
   );
 

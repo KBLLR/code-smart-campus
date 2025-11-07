@@ -12,11 +12,14 @@ Keep the table sorted by priority (top = highest). Reference session logs when m
 | FE-103 | CSS HUD Labels                         | Replace Three.js text sprites with screen-space HUD cards & interactions.  | High     |      | HUD visible on load + category badges; next: search/occlusion + AIM modes (see plan). |
 | FE-108 | UI Shell Refresh                       | Rework panel shell, layout toggles, and HUD z-order so navigation/UI coexist. | High     |      | Panel tray slides up, toolbar/status docked; next: polish HA card content + mobile tweaks. |
 | FE-109 | Sensor Dashboard Refresh               | Modernise sensor dashboard glass UI, category chips, and data syncing.     | Medium   |      | Align markup with `SensorDashboard` component; dock alongside HUD. |
+| FE-115 | UI updater orchestrator                | Replace the empty stub at `src/ui/uiUpdater.js` with a small orchestrator that bridges sensor dashboard data to HUD/toolbars (or delete file). | Medium | Codex | Prevents future confusion after removing the old global `uiUpdater.js`. |
 | FE-104 | Raycast Selection & Camera Focus       | Implement room/sensor picking, focus transitions, and highlight outlines.  | Medium   |      | Requires selection manager + outlines. |
 | FE-104a | Room Raycasting Overhaul              | Ship robust raycaster with hover/selection states, debounced hits, and room highlight syncing. | High | Codex | Reusable controller + highlight easing live; next phase adds tests/edge-case UX. |
 | FE-105 | Layer Visualisation Framework          | Build API to toggle heatmaps, energy flows, anomalies with smooth blending.| Medium   |      | Hook into LabelLayoutManager + materials. |
 | FE-106 | Saved Scene Presets                    | Snapshot layout/layer/camera combos for rapid context switching.           | Low      |      | Store presets in config with UI controls. |
 | FE-107 | Navigation & Orbit Enhancements        | Add camera bookmarks, keyboard shortcuts, and refined orbit damping.       | High     |      | Build on existing Setup/controls; coordinate with UI shell. |
+| FE-111 | Telemetry-driven gradient & env swap   | Bind body/canvas gradient + fog colors to Sun/Moon telemetry and prep HDRI day/night swap. | High | Codex | Build on `SunSkyDome` + `SunTelemetry` outputs. |
+| FE-112 | Room selection event bridge            | Emit structured events (roomKey, persona id) from `RoomSelectionController` so room views can subscribe. | High | | Coordinates with new room-views project. |
 
 ## In Progress
 | ID | Title | Started (YYYY-MM-DD) | Owner | Notes |
@@ -35,3 +38,6 @@ Keep the table sorted by priority (top = highest). Reference session logs when m
 ## Done
 | ID | Title | Completed (YYYY-MM-DD) | Outcome |
 |----|-------|------------------------|---------|
+| FE-114 | Reusable hero header component | 2025-11-07 | Introduced `ViewHero` component + status API so 3D and future pages share the same header system. |
+| FE-113 | Sensor modal actions | 2025-11-07 | Detail modal now fetches HA history, renders a sparkline, and calls `homeassistant.update_entity` with inline status feedback. |
+| FE-110 | Remove legacy UI updater & demo scene | 2025-11-07 | Deleted the orphaned dashboard updater + demo Three scene to eliminate missing HA imports and duplicate renderers. |

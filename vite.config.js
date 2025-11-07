@@ -2,7 +2,7 @@ import { defineConfig } from "vite";
 import tailwindcss from "@tailwindcss/vite";
 import path from "path";
 import dotenv from "dotenv";
-import { labelRegistryDevPlugin } from "./vite.api.js";
+import labelRegistryDevPlugin from "./vite.server.js";
 
 dotenv.config();
 

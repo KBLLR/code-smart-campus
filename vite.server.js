@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
-import { generate as generateLabels } from "@tools/generateLabelRegistry.js";
-import { generate as generateRooms } from "@tools/generateRoomRegistry.js";
+import { generate as generateLabels } from "./src/tools/generateLabelRegistry.js";
+import { generate as generateRooms } from "./src/tools/generateRoomRegistry.js";
 
 export default function labelRegistryDevPlugin() {
   return {
