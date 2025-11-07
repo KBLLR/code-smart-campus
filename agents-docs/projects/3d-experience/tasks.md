@@ -13,6 +13,7 @@ Keep the table sorted by priority (top = highest). Reference session logs when m
 | FE-108 | UI Shell Refresh                       | Rework panel shell, layout toggles, and HUD z-order so navigation/UI coexist. | High     |      | Panel tray slides up, toolbar/status docked; next: polish HA card content + mobile tweaks. |
 | FE-109 | Sensor Dashboard Refresh               | Modernise sensor dashboard glass UI, category chips, and data syncing.     | Medium   |      | Align markup with `SensorDashboard` component; dock alongside HUD. |
 | FE-104 | Raycast Selection & Camera Focus       | Implement room/sensor picking, focus transitions, and highlight outlines.  | Medium   |      | Requires selection manager + outlines. |
+| FE-104a | Room Raycasting Overhaul              | Ship robust raycaster with hover/selection states, debounced hits, and room highlight syncing. | High | Codex | Reusable controller + highlight easing live; next phase adds tests/edge-case UX. |
 | FE-105 | Layer Visualisation Framework          | Build API to toggle heatmaps, energy flows, anomalies with smooth blending.| Medium   |      | Hook into LabelLayoutManager + materials. |
 | FE-106 | Saved Scene Presets                    | Snapshot layout/layer/camera combos for rapid context switching.           | Low      |      | Store presets in config with UI controls. |
 | FE-107 | Navigation & Orbit Enhancements        | Add camera bookmarks, keyboard shortcuts, and refined orbit damping.       | High     |      | Build on existing Setup/controls; coordinate with UI shell. |

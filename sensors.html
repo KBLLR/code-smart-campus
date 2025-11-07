@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Smart Campus Sensors</title>
+    <link rel="icon" type="image/x-icon" href="/ico.jpg" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="page-header">
+        <div>
+          <p class="page-eyebrow">Smart Campus</p>
+          <h1 class="page-title">Sensor Intelligence</h1>
+          <p class="page-subtitle">
+            Live environmental and occupancy telemetry synchronised with the 3D experience.
+          </p>
+        </div>
+        <div id="websocket-status" aria-live="polite"></div>
+      </header>
+
+      <main class="page-main">
+        <section class="summary-panel" aria-label="Category summary">
+          <h2>Category Overview</h2>
+          <ul id="category-summary" class="summary-grid" role="tablist"></ul>
+        </section>
+
+        <section class="dashboard-panel" aria-label="Sensor dashboard">
+          <div class="dashboard-panel__header">
+            <div>
+              <h2 id="category-title">Live Sensors</h2>
+              <p id="category-subtitle" class="category-subtitle">Select a category to filter sensors.</p>
+            </div>
+            <button id="refresh-button" type="button">Refresh</button>
+          </div>
+          <div id="sensor-dashboard" class="sensor-dashboard sensor-dashboard--page" role="tabpanel" aria-live="polite"></div>
+        </section>
+      </main>
+
+      <footer class="page-footer">
+        <span>
+          Need the immersive view?
+          <a href="/" class="page-link">Return to the 3D experience.</a>
+        </span>
+      </footer>
+    </div>
+
+    <script type="module" src="/src/pages/sensors/main.js"></script>
+  </body>
+</html>

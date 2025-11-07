@@ -11,7 +11,6 @@ import historyManager from "@data/modules/HistoryManager.js";
 import {
   scene,
   updateLabel as updateLabelInScene,
-  connectToHomeAssistantWS,
   attachSetup,
   labelManager,
   layoutManager,
@@ -21,6 +20,8 @@ import {
   clearHoveredEntity,
   setSelectedEntity,
   clearSelectedEntity,
+  highlightRoomByKey,
+  clearRoomHighlightByKey,
   focusEntity,
 } from "@/scene.js";
 import { SensorDashboard } from "@lib/SensorDashboard.js";
@@ -30,6 +31,8 @@ import { WebSocketStatus } from "@network/WebSocketStatus.js";
 import { setHaStates, updateEntityState } from "@home_assistant/haState.js";
 import { PostProcessor } from "@/postprocessing/PostProcessor.js";
 import { CSSHudManager } from "@hud/CSSHudManager.js";
+import { dataPipeline } from "@data/DataPipeline.js";
+import { RoomSelectionController } from "@interaction/RoomSelectionController.js";
 
 // --- Global Variables / State ---
 
@@ -47,6 +50,15 @@ let sensorDashboardInstance = null;
 let toolbarInstance = null;
 let postProcessor = null;
 let hudManager = null;
+let roomSelectionController = null;
+
+const hydrateSensorDashboard = (entities = []) => {
+  if (!sensorDashboardInstance || !Array.isArray(entities)) return;
+  entities.forEach((entity) => sensorDashboardInstance.update(entity));
+};
+
+const normalizeRoomId = (value) =>
+  typeof value === "string" ? value.toLowerCase().replace(/[^a-z0-9]/g, "") : null;
 
 // --- End Debug State ---
 
@@ -69,6 +81,87 @@ panelShell?.classList.remove("is-open");
 contentArea?.classList.remove("is-open");
 panelIndicators?.classList.remove("is-open");
 floatingBtn?.classList.remove("active");
+
+const buildRoomEntityMap = () => {
+  const anchors = labelManager?.getAnchors?.();
+  const map = new Map();
+  if (!anchors) return map;
+  Object.entries(anchors).forEach(([entityId, anchor]) => {
+    const normalizedRoom = normalizeRoomId(anchor?.userData?.room);
+    if (normalizedRoom && !map.has(normalizedRoom)) {
+      map.set(normalizedRoom, entityId);
+    }
+  });
+  return map;
+};
+
+function initRoomSelectionController() {
+  if (!setup?.cam || !canvas) return;
+  const meshes = window.roomMeshes;
+  if (!meshes || !Object.keys(meshes).length) return;
+
+  const roomEntityMap = buildRoomEntityMap();
+  const resolver = (roomKey) => roomEntityMap.get(roomKey ?? "");
+
+  const hoverHandler = ({ roomKey, entityId } = {}) => {
+    if (entityId) {
+      setHoveredEntity(entityId);
+      return;
+    }
+    if (roomKey) {
+      highlightRoomByKey(roomKey);
+    }
+  };
+
+  const hoverOutHandler = ({ roomKey, entityId } = {}) => {
+    if (entityId) {
+      clearHoveredEntity(entityId);
+      return;
+    }
+    if (roomKey) {
+      clearRoomHighlightByKey(roomKey);
+    }
+  };
+
+  const selectHandler = ({ roomKey, entityId } = {}) => {
+    if (entityId) {
+      setSelectedEntity(entityId);
+      focusEntity(entityId, { duration: 0.85 });
+      return;
+    }
+    if (roomKey) {
+      highlightRoomByKey(roomKey);
+    }
+  };
+
+  const selectClearHandler = ({ roomKey, entityId } = {}) => {
+    if (entityId) {
+      clearSelectedEntity();
+      return;
+    }
+    if (roomKey) {
+      clearRoomHighlightByKey(roomKey);
+    }
+  };
+
+  if (roomSelectionController) {
+    roomSelectionController.updateEntityResolver(resolver);
+    roomSelectionController.updateInteractiveMeshes();
+    return;
+  }
+
+  roomSelectionController = new RoomSelectionController({
+    camera: setup.cam,
+    scene,
+    domElement: canvas,
+    getRoomMeshes: () => window.roomMeshes,
+    getEntityIdForRoom: resolver,
+    onHoverRoom: hoverHandler,
+    onHoverOut: hoverOutHandler,
+    onSelectRoom: selectHandler,
+    onSelectClear: selectClearHandler,
+  });
+}
 
 // --- Setup 3D Environment ---
 const setup = new Setup(canvas, () => {
@@ -388,31 +481,6 @@ function handleInitialStates(states) {
         console.log("[handleInitialStates] Calling createPanelsFromData...");
         createPanelsFromData(allSensorEntities);
         console.log("🎨 Panels created from initial states.");
-
-        // Regenerate indicators based on created panels
-        const panelCount = contentArea.querySelectorAll(".hui-panel").length;
-        panelIndicators.innerHTML = ""; // Clear existing
-        if (panelCount > 0) {
-          // --- Fill in indicator creation loop ---
-          for (let i = 0; i < panelCount; i++) {
-            const indicator = document.createElement("div");
-            indicator.className = "panel-indicator";
-            indicator.dataset.index = i; // Store index for easier lookup
-            indicator.onclick = () => {
-              const targetPanel = contentArea.querySelectorAll(".hui-panel")[i];
-              targetPanel?.scrollIntoView({
-                behavior: "smooth",
-                block: "nearest",
-                inline: "center",
-              });
-            };
-            panelIndicators.appendChild(indicator);
-          }
-          panelIndicators
-            .querySelector(".panel-indicator")
-            ?.classList.add("active"); // Activate first
-          // --- End indicator creation loop ---
-        }
       } else {
         console.error(
           "❌ Cannot create panels: PanelBuilder function or UI elements missing.",
@@ -430,17 +498,19 @@ function handleInitialStates(states) {
         "<p style='color: grey; text-align: center; padding: 20px;'>No sensor data available.</p>";
     }
     if (panelIndicators) panelIndicators.innerHTML = "";
-    if (sensorDashboardInstance) {
-      console.log(
-        "[handleInitialStates] Populating Sensor Dashboard with initial states...",
-      );
-      const initialSensors = states.filter((e) =>
-        e.entity_id?.startsWith("sensor."),
-      );
-      initialSensors.forEach((sensor) => {
-        sensorDashboardInstance.update(sensor);
-      });
-    }
+  }
+
+  if (sensorDashboardInstance) {
+    console.log(
+      "[handleInitialStates] Populating Sensor Dashboard with initial states...",
+    );
+    const dashboardEntities = states.filter((entity) => {
+      const id = entity.entity_id || "";
+      return id.startsWith("sensor.") || id.startsWith("binary_sensor.");
+    });
+    dashboardEntities.forEach((entity) => {
+      sensorDashboardInstance.update(entity);
+    });
   }
   // Signal that processing is done
   initialStatesProcessedSignal.resolve(); // Make sure initialStatesProcessedSignal is defined in global scope
@@ -781,6 +851,7 @@ loader.updateText("Initializing...");
 // --- Create promises/signals for async operations ---
 // whenReady creates a promise that waits for markReady(resourceName)
 const roomsReadyPromise = whenReady("roundedRoomsGroup");
+const roomMeshesReadyPromise = whenReady("roomMeshes");
 
 // --- Add logging to track promise states (for debugging) ---
 console.log(
@@ -846,8 +917,20 @@ generateRoundedBlocksFromSVG(svgURL, scene, window.roomMeshes) // Pass the main 
     // Better to let the roomsReadyPromise hang and potentially handle timeout later if needed.
   });
 
+roomsReadyPromise.then(() => {
+  initRoomSelectionController();
+});
+
+roomMeshesReadyPromise.then(() => {
+  if (roomSelectionController) {
+    roomSelectionController.updateInteractiveMeshes();
+  } else {
+    initRoomSelectionController();
+  }
+});
+
 // --- 2. Connect Home Assistant (Async Operation Triggered by DOMContentLoaded) ---
-let haSocket = null;
+let haStatusWidget = null;
 window.addEventListener("DOMContentLoaded", () => {
   // This ensures the DOM is ready for UI elements like WebSocketStatus if needed
   console.log("[Init] DOMContentLoaded event fired.");
@@ -863,28 +946,63 @@ window.addEventListener("DOMContentLoaded", () => {
   loader.updateText("Connecting to Home Assistant...");
   console.log("[Init] Attempting to connect WebSocket...");
 
-  // connectToHomeAssistantWS handles its own connection logic.
-  // We pass handleInitialStates, which MUST call initialStatesProcessedSignal.resolve() on success.
-  haSocket = connectToHomeAssistantWS(handleEntityUpdate, handleInitialStates);
+  const unsubInitialised = dataPipeline.on("initialised", ({ detail }) => {
+    const rawStates = Array.isArray(detail?.raw) ? detail.raw : [];
+    handleInitialStates(rawStates);
+  });
 
-  if (haSocket) {
-    // Initialize WebSocket status UI *after* attempting connection
+  const unsubEntityUpdate = dataPipeline.on(
+    "entity-update",
+    ({ detail }) => {
+      const raw = detail?.raw;
+      if (raw?.entity_id) {
+        handleEntityUpdate(raw.entity_id, raw);
+      }
+    },
+  );
+
+  const unsubSocketOpen = dataPipeline.on("socket-open", () => {
+    if (haStatusWidget) {
+      haStatusWidget.setStatus("connected");
+    }
+  });
+
+  const unsubSocketError = dataPipeline.on("socket-error", ({ detail }) => {
+    console.error("[DataPipeline] WebSocket reported an error:", detail);
+    haStatusWidget?.setStatus("error");
+  });
+
+  const unsubSocketClose = dataPipeline.on(
+    "socket-close",
+    ({ detail: { code, reason } = {} }) => {
+      console.warn(
+        `[DataPipeline] WebSocket closed (${code ?? "n/a"} ${reason ?? ""})`,
+      );
+      haStatusWidget?.setStatus("closed");
+    },
+  );
+
+  const socket = dataPipeline.connect();
+  if (!socket) {
+    console.error("🔴 Failed to create WebSocket instance. Check configuration.");
+    loader.updateText("Error: HA Connection Failed");
+    initialStatesProcessedSignal.reject("WebSocket creation failed");
+    unsubInitialised();
+    unsubEntityUpdate();
+    unsubSocketOpen();
+    unsubSocketError();
+    unsubSocketClose();
+  } else {
     try {
-      new WebSocketStatus(haSocket); // Assumes WebSocketStatus handles its own DOM insertion
-      console.log("🟢 WebSocketStatus UI initialized.");
+      if (!haStatusWidget) {
+        haStatusWidget = new WebSocketStatus(socket);
+        console.log("🟢 WebSocketStatus UI initialized.");
+      }
     } catch (wsError) {
       console.error("❌ Error initializing WebSocketStatus UI:", wsError);
     }
-  } else {
-    // Connection failed immediately (e.g., invalid URL)
-    console.error("🔴 Failed to create WebSocket instance. Check WS_URL.");
-    loader.updateText("Error: HA Connection Failed");
-    // Reject the signal promise to indicate HA init failure
-    initialStatesProcessedSignal.reject("WebSocket creation failed");
   }
-  // Note: Further HA connection errors (auth fail, close) might need to trigger
-  // initialStatesProcessedSignal.reject() from within scene.js or the WS handlers if you
-  // want Promise.all to fail in those cases too. Currently, handleInitialStates only resolves.
+  // Note: `initialStatesProcessedSignal` resolves within handleInitialStates once the pipeline emits the initial dump.
 });
 
 // --- 3. Wait for Critical Operations, then Hide Loader ---

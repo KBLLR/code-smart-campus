@@ -14,13 +14,6 @@ import { MoonController } from "@lib/MoonController.js";
 import { SITE_COORDINATES } from "@utils/location.js";
 import { materialRegistry } from "@registries/materialsRegistry.js";
 
-// 🔌 Env
-const WS_URL =
-  import.meta.env.VITE_CLOUD_WS ||
-  import.meta.env.VITE_LOCAL_WS ||
-  "ws://localhost:8123/api/websocket";
-const HA_TOKEN = import.meta.env.VITE_HA_TOKEN;
-
 // 🔧 Globals
 
 // ✅ Essentials
@@ -30,8 +23,8 @@ scene.renderer = null;
 scene.controls = null;
 scene.userData.postFX = null;
 scene.fog = new THREE.FogExp2(
-  new THREE.Color(DEFAULT_SUN_SKY_PALETTE.night.horizon),
-  0.0012,
+  new THREE.Color("#13243d"),
+  0.0009,
 );
 const fogScratchColor = new THREE.Color();
 const layoutManager = new LabelLayoutManager(scene, {}, roomRegistry);
@@ -54,6 +47,55 @@ let hoveredRoomKey = null;
 let selectedRoomKey = null;
 
 const tempVec3 = new THREE.Vector3();
+
+const colorAnimationHandles = new Map();
+const numericAnimationHandles = new Map();
+
+function animateColor(material, property, fromColor, toColor, duration = 180) {
+  if (!material?.[property]?.isColor) return;
+  const key = `${material.uuid}:${property}`;
+  if (colorAnimationHandles.has(key)) {
+    cancelAnimationFrame(colorAnimationHandles.get(key));
+    colorAnimationHandles.delete(key);
+  }
+  const prop = material[property];
+  const startColor = fromColor.clone();
+  const targetColor = toColor.clone();
+  const start = performance.now();
+  const step = (now) => {
+    const t = Math.min((now - start) / duration, 1);
+    prop.copy(startColor).lerp(targetColor, t);
+    material.needsUpdate = true;
+    if (t < 1) {
+      colorAnimationHandles.set(key, requestAnimationFrame(step));
+    } else {
+      colorAnimationHandles.delete(key);
+    }
+  };
+  colorAnimationHandles.set(key, requestAnimationFrame(step));
+}
+
+function animateNumber(target, property, from, to, duration = 180) {
+  if (typeof target?.[property] !== "number") return;
+  const key = `${target.uuid || target.id || ""}:${property}`;
+  if (numericAnimationHandles.has(key)) {
+    cancelAnimationFrame(numericAnimationHandles.get(key));
+    numericAnimationHandles.delete(key);
+  }
+  const startValue = Number(from ?? target[property]);
+  const endValue = Number(to ?? target[property]);
+  const start = performance.now();
+  const step = (now) => {
+    const t = Math.min((now - start) / duration, 1);
+    target[property] = startValue + (endValue - startValue) * t;
+    if (t < 1) {
+      numericAnimationHandles.set(key, requestAnimationFrame(step));
+    } else {
+      numericAnimationHandles.delete(key);
+    }
+  };
+  numericAnimationHandles.set(key, requestAnimationFrame(step));
+}
 
 const normalizeRoomKey = (key) =>
   typeof key === "string" ? key.toLowerCase().replace(/[^a-z0-9]/g, "") : "";
@@ -89,23 +131,21 @@ const applyRoomHighlight = (normalizedKey) => {
   if (!cache) return false;
   const { material, originalColor, originalEmissive } = cache;
   if (material.color && originalColor) {
-    material.color.copy(originalColor).lerp(highlightColor, 0.35);
+    const targetColor = originalColor.clone().lerp(highlightColor, 0.35);
+    animateColor(material, "color", material.color.clone(), targetColor);
   }
   if (material.emissive) {
-    material.emissive
-      .copy(originalEmissive || new THREE.Color(0x000000))
-      .lerp(highlightEmissive, 0.85);
-  } else if (material.emissive === undefined) {
-    material.emissive = highlightEmissive.clone();
+    const start = material.emissive.clone();
+    const base = originalEmissive?.clone() || new THREE.Color(0x000000);
+    const targetEmissive = base.clone().lerp(highlightEmissive, 0.85);
+    animateColor(material, "emissive", start, targetEmissive);
   }
   if (typeof material.emissiveIntensity === "number") {
     const { originalEmissiveIntensity } = cache;
-    material.emissiveIntensity = Math.max(
-      originalEmissiveIntensity ?? 0.6,
-      1.25,
-    );
+    const startIntensity = material.emissiveIntensity;
+    const targetIntensity = Math.max(originalEmissiveIntensity ?? 0.6, 1.25);
+    animateNumber(material, "emissiveIntensity", startIntensity, targetIntensity);
   }
-  material.needsUpdate = true;
   return true;
 };
 
@@ -117,19 +157,20 @@ const removeRoomHighlight = (normalizedKey) => {
     cache;
   if (!material) return;
   if (material.color && originalColor) {
-    material.color.copy(originalColor);
+    animateColor(material, "color", material.color.clone(), originalColor.clone());
   }
   if (material.emissive) {
-    if (originalEmissive) {
-      material.emissive.copy(originalEmissive);
-    } else {
-      material.emissive.setRGB(0, 0, 0);
-    }
+    const base = originalEmissive?.clone() || new THREE.Color(0x000000);
+    animateColor(material, "emissive", material.emissive.clone(), base);
   }
   if (typeof originalEmissiveIntensity === "number") {
-    material.emissiveIntensity = originalEmissiveIntensity;
+    animateNumber(
+      material,
+      "emissiveIntensity",
+      material.emissiveIntensity,
+      originalEmissiveIntensity,
+    );
   }
-  material.needsUpdate = true;
 };
 
 const getRoomKeyForEntity = (entityId) => {
@@ -191,6 +232,18 @@ const clearSelectedEntity = () => {
   scene.userData?.hud?.manager?.clearSelection({ silent: true });
 };
 
+const highlightRoomByKey = (roomKey) => {
+  const normalizedKey = normalizeRoomKey(roomKey);
+  if (!normalizedKey) return false;
+  return applyRoomHighlight(normalizedKey);
+};
+
+const clearRoomHighlightByKey = (roomKey) => {
+  const normalizedKey = normalizeRoomKey(roomKey);
+  if (!normalizedKey) return;
+  removeRoomHighlight(normalizedKey);
+};
+
 const focusEntity = (entityId, { duration } = {}) => {
   const anchor = labelManager.getAnchor(entityId);
   if (!anchor) return false;
@@ -232,8 +285,8 @@ function applySunVisualConfig() {
     const dayFog = fogScratchColor.set(sunVisualConfig.palette.day.horizon);
     scene.fog.color
       .set(sunVisualConfig.palette.night.horizon)
-      .lerp(dayFog, 0.25);
-    scene.fog.density = 0.0012;
+      .lerp(dayFog, 0.35);
+    scene.fog.density = 0.0009;
   }
   const latest = sunTelemetry.getLatest();
   if (latest) {
@@ -405,161 +458,6 @@ function updateMoonFromEntity(entity) {
   updateMoon(new Date(timestamp));
 }
 
-// ✅ Connect WebSocket (Revised ID Management & Data Passing)
-function connectToHomeAssistantWS(
-  onStateUpdate = updateLabel, // Default callback (though main.js will override this)
-  onInitialStates = null, // Callback for get_states result
-) {
-  if (!WS_URL) {
-    console.error("[HA] WebSocket URL is not defined.");
-    return null;
-  }
-  if (!HA_TOKEN) {
-    console.warn("[HA] HA_TOKEN is not defined.");
-  }
-
-  let socket = null;
-  try {
-    socket = new WebSocket(WS_URL);
-  } catch (error) {
-    console.error("[HA] Failed to create WebSocket:", error);
-    scheduleReconnect();
-    return null;
-  }
-
-  let reconnectTimer = null;
-  let commandIdCounter = 1; // Start command IDs from 1
-  let getStatesCommandId = -1; // Store the ID used for get_states
-  let subscribeCommandId = -1; // Store the ID used for subscribe_events
-
-  const scheduleReconnect = () => {
-    clearTimeout(reconnectTimer);
-    if (
-      !socket ||
-      (socket.readyState !== WebSocket.CONNECTING &&
-        socket.readyState !== WebSocket.OPEN)
-    ) {
-      reconnectTimer = setTimeout(
-        () => connectToHomeAssistantWS(onStateUpdate, onInitialStates),
-        5000,
-      );
-    }
-  };
-
-  socket.onopen = () => {
-    console.log("[HA] WebSocket connected");
-    commandIdCounter = 1; // Reset command counter on new connection
-    getStatesCommandId = -1;
-    subscribeCommandId = -1;
-    clearTimeout(reconnectTimer);
-    if (HA_TOKEN) {
-      socket.send(JSON.stringify({ type: "auth", access_token: HA_TOKEN }));
-    } else {
-      console.warn("[HA] No auth token provided.");
-    }
-  };
-
-  socket.onmessage = (event) => {
-    try {
-      const msg = JSON.parse(event.data);
-
-      if (msg.type === "auth_ok") {
-        console.log("[HA] Authentication successful.");
-
-        // Send commands sequentially with increasing IDs
-        getStatesCommandId = commandIdCounter++;
-        console.log(`[HA] Sending get_states (ID: ${getStatesCommandId})`);
-        socket.send(
-          JSON.stringify({
-            id: getStatesCommandId,
-            type: "get_states",
-          }),
-        );
-
-        subscribeCommandId = commandIdCounter++;
-        console.log(
-          `[HA] Sending subscribe_events (ID: ${subscribeCommandId})`,
-        );
-        socket.send(
-          JSON.stringify({
-            id: subscribeCommandId,
-            type: "subscribe_events",
-            event_type: "state_changed",
-          }),
-        );
-      } else if (msg.type === "auth_required") {
-        console.log("[HA] Authentication required.");
-      } else if (msg.type === "auth_invalid") {
-        console.error("[HA] Authentication failed:", msg.message);
-        socket.close();
-      } else if (
-        msg.type === "event" &&
-        msg.event?.event_type === "state_changed" &&
-        msg.event?.data?.new_state // Ensure new_state exists
-      ) {
-        // --- MODIFICATION START (Suggestion #4) ---
-        // Process state changes - Pass the full entity object
-        const entity = msg.event.data.new_state; // Get the complete new_state object
-
-        // NEW: Pass the entity_id and the full entity object to the callback
-        if (typeof onStateUpdate === "function") {
-          // The function provided by main.js (handleEntityUpdate) will now receive this object
-          onStateUpdate(entity.entity_id, entity);
-        }
-        // --- MODIFICATION END ---
-      } else if (msg.type === "result") {
-        // Check against stored command IDs
-        if (msg.id === getStatesCommandId) {
-          if (msg.success && msg.result) {
-            console.log("[HA] Received result for get_states.");
-            if (typeof onInitialStates === "function") {
-              // Pass the array of state objects to the callback
-              onInitialStates(msg.result);
-            }
-          } else {
-            console.error("[HA] Failed to get initial states:", msg.error);
-          }
-        } else if (msg.id === subscribeCommandId) {
-          if (msg.success) {
-            console.log(
-              "[HA] Successfully subscribed to state_changed events.",
-            );
-          } else {
-            console.error(
-              "[HA] Failed to subscribe to state_changed events:",
-              msg.error || "No error details provided.",
-            );
-          }
-        } else {
-          console.log(
-            `[HA] Received unhandled result for command ID: ${msg.id}`,
-          );
-        }
-      }
-      // Handle other message types if needed
-    } catch (error) {
-      console.error(
-        "[HA] Error processing WebSocket message:",
-        error,
-        event.data,
-      );
-    }
-  };
-
-  socket.onerror = (err) => {
-    console.error("[HA] WebSocket error:", err);
-  };
-
-  socket.onclose = (event) => {
-    console.warn(
-      `[HA] Socket closed. Code: ${event.code}, Reason: ${event.reason || "N/A"}. Reconnecting...`,
-    );
-    scheduleReconnect();
-  };
-
-  return socket;
-}
-
 // ✅ Provide shared references
 //window.addEventListener("DOMContentLoaded", () => {
 //  console.log("🔔 scene.js: DOMContentLoaded—firing ready signals");
@@ -576,7 +474,6 @@ export {
   sunController,
   moonController,
   labels,
-  connectToHomeAssistantWS,
   updateLabel,
   updateSunFromEntity,
   updateMoonFromEntity,
@@ -585,6 +482,8 @@ export {
   clearHoveredEntity,
   setSelectedEntity,
   clearSelectedEntity,
+  highlightRoomByKey,
+  clearRoomHighlightByKey,
   focusEntity,
 };
 

@@ -8,6 +8,15 @@ export function createPanelsFromData(data) {
   const MAX_PANELS = 10;
   const trimmedData = data.slice(0, MAX_PANELS);
   const hasOverflow = data.length > MAX_PANELS;
+  const panels = [];
+
+  const setActiveIndicator = (index) => {
+    panelIndicators
+      .querySelectorAll(".panel-indicator")
+      .forEach((indicator, i) => {
+        indicator.classList.toggle("active", i === index);
+      });
+  };
 
   trimmedData.forEach((entity, index) => {
     const panel = document.createElement("div");
@@ -42,12 +51,20 @@ export function createPanelsFromData(data) {
     panel.appendChild(button);
 
     contentArea.appendChild(panel);
+    panels.push(panel);
 
     const indicator = document.createElement("div");
     indicator.className = "panel-indicator" + (index === 0 ? " active" : "");
     indicator.onclick = () => {
-      const scrollX = index * (contentArea.scrollWidth / trimmedData.length);
-      contentArea.scrollTo({ left: scrollX, behavior: "smooth" });
+      const targetPanel = panels[index];
+      if (targetPanel) {
+        targetPanel.scrollIntoView({
+          behavior: "smooth",
+          block: "nearest",
+          inline: "center",
+        });
+        setActiveIndicator(index);
+      }
     };
     panelIndicators.appendChild(indicator);
   });
@@ -65,16 +82,22 @@ export function createPanelsFromData(data) {
     summaryPanel
       .querySelector(".panel-summary__button")
       .addEventListener("click", () => {
-        window.open(import.meta.env.VITE_HA_DASHBOARD_URL || "/", "_blank");
+        const targetUrl =
+          import.meta.env.VITE_HA_DASHBOARD_URL || "/sensors.html";
+        window.open(targetUrl, "_blank", "noopener,noreferrer");
       });
     contentArea.appendChild(summaryPanel);
+    panels.push(summaryPanel);
 
     const summaryIndicator = document.createElement("div");
     summaryIndicator.className = "panel-indicator";
     summaryIndicator.onclick = () => {
-      const scrollX =
-        trimmedData.length * (contentArea.scrollWidth / (trimmedData.length + 1));
-      contentArea.scrollTo({ left: scrollX, behavior: "smooth" });
+      summaryPanel.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+        inline: "center",
+      });
+      setActiveIndicator(panelIndicators.childElementCount - 1);
     };
     panelIndicators.appendChild(summaryIndicator);
   }

@@ -3,6 +3,8 @@
 import * as THREE from "three";
 import { HDRLoader } from "three/examples/jsm/loaders/HDRLoader.js";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { Reflector } from "three/examples/jsm/objects/Reflector.js";
+import { color, screenUV, vec2 } from "three/tsl";
 import { Pane } from "tweakpane";
 import { StatsGLPanel } from "@/debug/StatsGLPanel.js";
 
@@ -64,6 +66,15 @@ export default class Setup {
     const h = cnvs.clientHeight;
     const aspect = w > 0 && h > 0 ? w / h : 1; // Prevent aspect ratio of 0 or NaN
 
+    const webGpuAvailable =
+      typeof navigator !== "undefined" && typeof navigator.gpu !== "undefined";
+    if (webGpuAvailable) {
+      console.info("[Setup] WebGPU available; renderer will fall back to WebGL until post-processing supports it.");
+    }
+
+    // WebGPU support is tracked for future migration but we still rely on WebGL
+    // because EffectComposer-based post-processing is not WebGPU-ready yet.
+    this.usingWebGPU = false;
     this.re = new THREE.WebGLRenderer({
       canvas: cnvs,
       antialias: true,
@@ -74,6 +85,7 @@ export default class Setup {
     this.re.outputColorSpace = THREE.SRGBColorSpace;
     this.re.shadowMap.enabled = true;
     this.re.shadowMap.type = THREE.PCFSoftShadowMap;
+    this.re.setClearColor(0x0b1224, 1);
 
     // Initial size setting - consider removing the mobile check if full screen is always desired
     if (this.isMobileDevice()) {
@@ -101,6 +113,11 @@ export default class Setup {
     // This seems confusing. Usually Setup would own the scene or receive it.
     // Let's assume scene is created here for simplicity unless told otherwise.
     this.scene = new THREE.Scene();
+    this.backgroundTexture = null;
+    this.setupBackground();
+    this.setupGroundPlane();
+    this.setupReflector();
+    this.setupGridHelper();
 
     try {
       this.stats = new StatsGLPanel(this.re, {}, "bottom-right"); // Pass renderer, empty options, align top-left
@@ -612,6 +629,160 @@ export default class Setup {
     this.cam.lookAt(this.orbCtrls.target);
   }
 
+  createGradientTexture({
+    width = 1024,
+    height = 1024,
+    topColor = "#0f172a",
+    midColor = "#311649",
+    bottomColor = "#0c5d68",
+    glowColor = "rgba(96, 165, 250, 0.25)",
+  } = {}) {
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return null;
+
+    const linear = ctx.createLinearGradient(0, 0, 0, height);
+    linear.addColorStop(0, topColor);
+    linear.addColorStop(0.55, midColor);
+    linear.addColorStop(1, bottomColor);
+    ctx.fillStyle = linear;
+    ctx.fillRect(0, 0, width, height);
+
+    const radial = ctx.createRadialGradient(
+      width * 0.25,
+      height * 0.2,
+      width * 0.05,
+      width * 0.3,
+      height * 0.25,
+      width * 0.7,
+    );
+    radial.addColorStop(0, glowColor);
+    radial.addColorStop(1, "rgba(255,255,255,0)");
+    ctx.fillStyle = radial;
+    ctx.fillRect(0, 0, width, height);
+
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.colorSpace = THREE.SRGBColorSpace;
+    texture.magFilter = THREE.LinearFilter;
+    texture.minFilter = THREE.LinearMipmapLinearFilter;
+    return texture;
+  }
+
+  setupBackground() {
+    try {
+      const horizontalEffect = screenUV.x.mix(
+        color(0x13172b),
+        color(0x311649),
+      );
+      const lightEffect = screenUV
+        .distance(vec2(0.5, 1.0))
+        .oneMinus()
+        .mul(color(0x0c5d68));
+      this.scene.backgroundNode = horizontalEffect.add(lightEffect);
+    } catch {
+      // Node-based backgrounds require WebGPU; gracefully fallback below.
+    }
+    this.backgroundTexture =
+      this.createGradientTexture({
+        topColor: "#0f1f3a",
+        midColor: "#1c1b3f",
+        bottomColor: "#0c5d68",
+        glowColor: "rgba(82, 190, 255, 0.35)",
+      }) || new THREE.Color(0x122037);
+    this.scene.background = this.backgroundTexture;
+  }
+
+  setupGroundPlane({
+    size = 400,
+    colorHex = 0x141f36,
+    roughness = 0.8,
+    metalness = 0.15,
+  } = {}) {
+    if (this.floor) {
+      this.scene.remove(this.floor);
+      this.floor.geometry?.dispose?.();
+      this.floor.material?.dispose?.();
+    }
+    const geometry = new THREE.CircleGeometry(size, 96);
+    const material = new THREE.MeshStandardMaterial({
+      color: colorHex,
+      roughness,
+      metalness,
+    });
+    const floor = new THREE.Mesh(geometry, material);
+    floor.name = "GroundPlane";
+    floor.rotation.x = -Math.PI / 2;
+    floor.receiveShadow = true;
+    floor.position.set(0, 0, 0);
+    this.scene.add(floor);
+    this.floor = floor;
+  }
+
+  setupReflector({
+    size = 360,
+    opacity = 0.22,
+    tintHex = 0x111a2d,
+    clipBias = 0.0025,
+  } = {}) {
+    if (!this.re) return;
+    if (this.reflector) {
+      this.scene.remove(this.reflector);
+      this.reflector.geometry?.dispose?.();
+      this.reflector.material?.dispose?.();
+      this.reflector.getRenderTarget()?.dispose?.();
+    }
+
+    const geometry = new THREE.CircleGeometry(size, 128);
+    const rendererSize = new THREE.Vector2();
+    this.re.getSize(rendererSize);
+    const pixelRatio = this.re.getPixelRatio();
+
+    const reflector = new Reflector(geometry, {
+      textureWidth: rendererSize.x * pixelRatio,
+      textureHeight: rendererSize.y * pixelRatio,
+      clipBias,
+    });
+    reflector.name = "GroundReflector";
+    reflector.rotation.x = -Math.PI / 2;
+    reflector.position.y = 0.02;
+    reflector.material.transparent = true;
+    reflector.material.opacity = opacity;
+    reflector.material.color = new THREE.Color(tintHex);
+    reflector.userData = {
+      ...(reflector.userData || {}),
+      refresh: () => {
+        const size = new THREE.Vector2();
+        this.re.getSize(size);
+        const ratio = this.re.getPixelRatio();
+        reflector.getRenderTarget().setSize(size.x * ratio, size.y * ratio);
+      },
+    };
+
+    this.scene.add(reflector);
+    this.reflector = reflector;
+  }
+
+  setupGridHelper({ size = 400, divisions = 64 } = {}) {
+    if (this.gridHelper) {
+      this.scene.remove(this.gridHelper);
+      this.gridHelper.geometry?.dispose?.();
+      this.gridHelper.material?.dispose?.();
+    }
+    const grid = new THREE.GridHelper(size, divisions, 0x324069, 0x15203a);
+    grid.name = "SceneGridHelper";
+    grid.position.y = 0.01;
+    const material = grid.material;
+    if (material && "opacity" in material) {
+      material.opacity = 0.35;
+      material.transparent = true;
+      material.depthWrite = false;
+    }
+    this.scene.add(grid);
+    this.gridHelper = grid;
+  }
+
   setEnvMap(url) {
     if (!url) return;
     this.hdrLoader.load(
@@ -628,8 +799,8 @@ export default class Setup {
 
           this.environmentRT = renderTarget;
           this.scene.environment = renderTarget.texture;
-          if (!this.scene.background) {
-            this.scene.background = null;
+          if (this.backgroundTexture) {
+            this.scene.background = this.backgroundTexture;
           }
           console.log(`[Setup] Environment map loaded from ${url}`);
         } catch (error) {
@@ -659,6 +830,7 @@ export default class Setup {
     const h = this.cnvs.clientHeight;
     this.cam.aspect = w / h;
     this.cam.updateProjectionMatrix();
+    this.reflector?.userData?.refresh?.();
   }
 
   // --- MODIFICATION START (Camera Views) ---

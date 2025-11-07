@@ -1,0 +1,293 @@
+{
+  "modules": [
+    {
+      "title_and_version": "DS_30 Artificial Intelligence in D...",
+      "credits_and_workload": "10 ECTS and 300h Workload",
+      "registration_deadline": "11/04/2025",
+      "offering_type": "Yearly and Graded",
+      "prerequisites": "OS_01 Introduction to Software Engineering, OS_02 Introduction to Design, OS_03 Introduction to Business Management & Entrepreneurship, OS_05 Application of Project-Based Learning Methods",
+      "coordinator": "Daniel Buzzo",
+      "core_focus": "This module explores Al and ML as design materials, investigating the potentials and challenges of Al techniques in an interaction design and creative context.",
+      "technical_skills": null,
+      "learning_goals": [],
+      "learning_qualification_objectives": "Students who successfully pass this module are able to:\n- Describe the main categories and effects of ML and AI techniques and areas that are appropriate for their application\n- Devise a research and design process for investigating and evaluating applications and opportunities for machine learning in a design context or product\n- Understand and explain relevant issues associated with the use and deployment of AI techniques from a legal, ethical, regulatory, and usability perspective",
+      "levels": [],
+      "topics": [
+        "Artificial Intelligence",
+        "Machine Learning",
+        "Interaction Design",
+        "Creative Design"
+      ]
+    },
+    {
+      "title_and_version": "DS_03 Editorial Design Module Handbook Version: DS_03_v4",
+      "credits_and_workload": "5 ECTS and 150h Workload",
+      "registration_deadline": "11/04/2025",
+      "offering_type": "Offered Yearly and Graded",
+      "prerequisites": "OS_01 — Introduction to Software Engineering, OS_02 — Introduction to Design, OS_03 — Introduction to Business Management & Entrepreneurship, OS_05 — Application of Project-Based Learning Methods",
+      "coordinator": "Martin Knobel",
+      "core_focus": "This module is intended to introduce the student to the fundamentals of Visual Communication practice. Additionally, this module introduces students to fundamental principles and applications of design, emphasizing critical, social and cultural awareness of design issues and developing technical skills.",
+      "technical_skills": null,
+      "learning_goals": [
+        "Understand and apply the use of grids for print media",
+        "Understand how to build up a magazine",
+        "Understand and apply how to create printed material in a professional way",
+        "Create diverse editorial assets with a variety of visual languages",
+        "Create and iterate on a flat plan",
+        "Create diversity in editorial work (e.g., different formats like stickers, posters, etc.) added to the magazine",
+        "Present visual work in a professional way"
+      ],
+      "learning_qualification_objectives": "Students who successfully pass this module are able to:\nUnderstand and apply the use of grids for print media\nUnderstand how to build up a magazine\nUnderstand and apply how to create printed material in a professional way\nCreate diverse editorial assets with a variety of visual languages\nCreate and iterate on a flat plan\nCreate diversity in editorial work (e.g., different formats like stickers, posters, etc.) which are added to the magazine\nPresent visual work in a professional way",
+      "levels": [],
+      "topics": [
+        "Visual Communication",
+        "Design Principles",
+        "Print Media",
+        "Editorial Design"
+      ]
+    },
+    {
+      "title_and_version": "DS_05 Design History",
+      "credits_and_workload": "5 ECTS and 150h Workload",
+      "registration_deadline": "11/04/2025",
+      "offering_type": "Yearly and Graded",
+      "prerequisites": "OS_01 Introduction to Software Engineering, OS_02 Introduction to Design, OS_03 Introduction to Business Management & Entrepreneurship, OS_05 Application of Project-Based Learning Methods",
+      "coordinator": "Martin Knobel",
+      "core_focus": "This module aims to address these questions by providing a general, introductory overview of the history of design, including influential design movements. The central idea is that studying the past enables us to better understand our present and predict possible futures.",
+      "technical_skills": null,
+      "learning_goals": [
+        "Gain a comprehensive understanding of the historical evolution of design styles, movements, and influential designers.",
+        "Analyze the impact of design history on contemporary visual culture and its relevance in shaping the future of design."
+      ],
+      "learning_qualification_objectives": "Students who successfully pass this module are able to:\n\nUnderstand influential designers and important historical, theoretical, social, and ethical frameworks in design\nApply this knowledge to reflect on their own work as well as the work of others\nUtilize a future-oriented perspective in design by incorporating important historical, social, and ethical aspects and up-to-date research and addressing these topics in complex conceptual and visual work",
+      "levels": [],
+      "topics": [
+        "Design History",
+        "Historical Movements",
+        "Influential Designers",
+        "Future Trends"
+      ]
+    },
+    {
+      "title_and_version": "DS_01 Composition Module Handbook Version: DS_01_v4",
+      "credits_and_workload": "5 ECTS and 150h Workload",
+      "registration_deadline": "11/04/2025",
+      "offering_type": "Yearly and Graded",
+      "prerequisites": "OS_01 Introduction to Software Engineering, OS_02 Introduction to Design, OS_03 Introduction to Business Management & Entrepreneurship, OS_05 Application of Project-Based Learning Methods",
+      "coordinator": "Martin Knobel",
+      "core_focus": "The students learn and practice the use of color, contrast, shapes, and proportions according to the gestalt principles and drawing sessions. Photography is used to further apply and practice. Students learn the fundamentals of photography, i.e., image composition, lighting and flash, aperture and exposure, the basic chemical process of b/w photography, basics of digital photography. Students will be using the medium of photography as an expressive and experimental tool.",
+      "technical_skills": "Fundamentals of photography, i.e., image composition, lighting and flash, aperture and exposure, the basic chemical process of b/w photography, basics of digital photography.",
+      "learning_goals": [
+        "Understand how to use rules of aesthetics in your design practice",
+        "Understand how to create colors palettes",
+        "Understand and apply the gestalt principles",
+        "Understand the composition of visual design work",
+        "Understand the use of light, shadows, and contrast",
+        "Understand how to focus on certain elements with a visual language",
+        "Create sets of visual work in diverse areas to apply the points mentioned above",
+        "Critically reflect on aesthetics in a constructive way",
+        "Present visual work in a professional way"
+      ],
+      "learning_qualification_objectives": "Students who successfully pass this module are able to:\nUnderstand the gestalt principles and interpret images accordingly\nCreate diverse assets with different techniques that adhere to the gestalt principles\nDemonstrate understanding of image composition by developing experimental techniques, taking the nature of visual practice into account",
+      "levels": [],
+      "topics": [
+        "Photography",
+        "Gestalt Principles",
+        "Image Composition",
+        "Visual Aesthetics"
+      ]
+    },
+    {
+      "title_and_version": "DS_02 Generative Design",
+      "credits_and_workload": "5 ECTS and 150h Workload",
+      "registration_deadline": "11/04/2025",
+      "offering_type": "Yearly and Graded",
+      "prerequisites": "OS_01 Introduction to Software Engineering, OS_02 Introduction to Design, OS_03 Introduction to Business Management & Entrepreneurship, OS_05 Application of Project-Based Learning Methods",
+      "coordinator": "Daniel Buzzo",
+      "core_focus": "Generative Design is a design exploration process for personal expression. The iterative writing and modification of software code combines applied design with art, as it is done in an experimental and playful way. The goal is to build awareness of the creational process of setting initial parameters that lead to an (intended) computer-generated output, and consequently to novel forms of visual and interactive communication for engaging experiences.",
+      "technical_skills": "learning the coding basics in the Processing IDE, various graphing libraries, such as the ControlP5 will be used. In this class we will use p5.js and webGl to develop an online graphic animation system that offers a variety of complex and often non-repeating patterns. We will be able to create evolving design that can react to different information, such as weather data, sound frequency or gesture tracking. We will also use the software touchDesigner to create immersive digital spaces that can lead to new and impactful artworks and experiences.",
+      "learning_goals": [],
+      "learning_qualification_objectives": "Students who successfully pass this module are able to:\nUnderstand Generative Design, e.g. creating Sketches and multi-document Sketches, different renderers to create images, PDFs, animation, applications, and web interfaces\nUnderstand functions and libraries in this context: video, sound, PDF Export and Serial as well as important third-party libraries and third-party input devices",
+      "levels": [],
+      "topics": [
+        "Generative Design",
+        "Creative Coding",
+        "Algorithmic Art",
+        "Interactive Animation",
+        "Immersive Digital Spaces"
+      ]
+    },
+    {
+      "title_and_version": "DS_06 Design Methods I",
+      "credits_and_workload": "5 ECTS and 150h Workload",
+      "registration_deadline": "11/04/2025",
+      "offering_type": "Yearly",
+      "prerequisites": "OS_01 Introduction to Software Engineering, OS_02 Introduction to Design, OS_03 Introduction to Business Management & Entrepreneurship, OS_05 Application of Project-Based Learning Methods",
+      "coordinator": "Pras Gunasekera",
+      "core_focus": "Students who study this module will be provided with an introduction to human-centered design, field studies, gathering data and formulating insights. Interaction designers are designers of interactions and this is the expertise and focus they bring to a team. As such, this module introduces notions of interactivity and raises awareness about users' motivations, needs, desires, fears, and their context. This module introduces the basics of what a design methodology is and how this can be used to guide projects. This module looks into design field research (or field studies) which includes gathering insights (data) about users through observation techniques, conducting interviews, implementing cultural probes, among other methods. It is a practical module so students are expected to demonstrate a body of work that includes experiments and documentation.",
+      "technical_skills": null,
+      "learning_goals": [
+        "Investigate a topic through the use of a primary research method (inc. the use of secondary sources)",
+        "Analyze gathered data through contextually relevant methods/approaches",
+        "Synthesize information from multiple perspectives to generate topic-relevant insights",
+        "Present work in a creative, coherent, and concise manner (which includes adherence to the word count, proper referencing and citation and the use of contextually located images)."
+      ],
+      "learning_qualification_objectives": "Students who successfully pass this module are able to:\n• Investigate a topic through the use of a primary research method\n• Analyze gathered data through contextually relevant methods/approaches\n• Synthesize information from multiple perspectives to generate topic relevant insights\n• Present work in a creative, coherent, and concise manner",
+      "levels": [],
+      "topics": [
+        "Human-Centered Design",
+        "Field Research",
+        "User Insights",
+        "Design Methodology"
+      ]
+    },
+    {
+      "title_and_version": "DS_09 Design Strategy",
+      "credits_and_workload": "5 ECTS and 150h Workload",
+      "registration_deadline": "11/04/2025",
+      "offering_type": "Yearly and Graded",
+      "prerequisites": "OS_01 Introduction to Software Engineering, OS_02 Introduction to Design, OS_03 Introduction to Business Management & Entrepreneurship, OS_05 Application of Project-Based Learning Methods",
+      "coordinator": "Pras Gunasekera",
+      "core_focus": "This module explores the new and emerging role for design in industry and its contribution to product innovation and value proposition. It provides students with an overview of how to determine what to make and do, why to do it, and how to innovate contextually, both immediately and over the long-term. This further enables students to create meaningful products-services with character-by considering relevant touch-points. Thereby students learn techniques like market and brand analyses, future scenarios, technology forecasting and roadmapping as drivers for strategic design.",
+      "technical_skills": null,
+      "learning_goals": [],
+      "learning_qualification_objectives": "Students who successfully pass this module are able to:\n• Identify and utilize a range of methods to assist in the strategic development of your project (e.g., stakeholder mapping, future scenarios, technology forecasting, storyboarding, user stories, etc.) •\nDevelop clear avenues for 'creative outcome' development (e.g., design product, service, experience, analog object, loT, etc.) Create project development milestones and/or time plans that are contextually appropriate and acknowledge local/global developments (e.g., technological, political, social)\nCommunicate project work in a creative, coherent, and concise manner",
+      "levels": [],
+      "topics": [
+        "Design Strategy",
+        "Product Innovation",
+        "Market Analysis",
+        "Future Scenarios",
+        "Technology Forecasting"
+      ]
+    },
+    {
+      "title_and_version": "DS_13 Physical Interfaces I",
+      "credits_and_workload": "5 ECTS and 150h Workload",
+      "registration_deadline": "11/04/2025",
+      "offering_type": "Offered Yearly and Graded",
+      "prerequisites": "OS_01 – Introduction to Software Engineering, OS_02 – Introduction to Design, OS_03 – Introduction to Business Management & Entrepreneurship, OS_05 – Application of Project-Based Learning Methods",
+      "coordinator": "Daniel Buzzo",
+      "core_focus": "In this series of Learning Units the easy-to-use Arduino microcoontroller board is used for teaching techiques of physical computing and an understanding of digital and physical interaction, beyond the screen and touchpad. Basic electronic circuits are created, with the use of Fritzing, as well as the breadboard and electronic components. In workshops, students learn to work with sensors, motors, LEDs and other components driven by microcontrollers such as Arduino boards, ESP8266 or ESP32 or their smartphones",
+      "technical_skills": "the easy-to-use Arduino microcoontroller board is used for teaching techiques of physical computing and an understanding of digital and physical interaction, beyond the screen and touchpad. Basic electronic circuits are created, with the use of Fritzing, as well as the breadboard and electronic components. In workshops, students learn to work with sensors, motors, LEDs and other components driven by microcontrollers such as Arduino boards, ESP8266 or ESP32 or their smartphones",
+      "learning_goals": [
+        "Understand and apply the use of microcontrollers including crafting source code for microcontrollers",
+        "The ability to read and create circuit diagrams",
+        "Understand and apply hardware for sketching in a diverse matter",
+        "Understand and critique microcontroller-based prototypes a constructive way",
+        "Iterate on hardware sketches",
+        "Understand and apply on affordances with physical interfaces",
+        "Ability to create prototypes with hardware with the help of microcontrollers"
+      ],
+      "learning_qualification_objectives": "Students who successfully pass this module are able to:\n• Understand and apply the use of microcontrollers, including crafting source code for microcontrollers\n• Read and create circuit diagrams - Understand and apply hardware for sketching in a diverse matter\nUnderstand and critique microcontroller-based prototypes in a constructive way. Iterate on hardware sketches - Understand and apply affordances with physical interfaces - Create prototypes with hardware with the help of microcontrollers",
+      "levels": [],
+      "topics": [
+        "Physical Interfaces",
+        "Hardware Prototyping",
+        "Interaction Design",
+        "Sensor Integration",
+        "User Experience"
+      ]
+    },
+    {
+      "title_and_version": "DS_19 Responsive Design Module Handbook Version: DS_19_v4",
+      "credits_and_workload": "5 ECTS and 150h Workload",
+      "registration_deadline": "11/04/2025",
+      "offering_type": "Yearly and Graded",
+      "prerequisites": "OS_01 — Introduction to Software Engineering, OS_02 — Introduction to Design, OS_03 — Introduction to Business Management & Entrepreneurship, OS_05 — Application of Project-Based Learning Methods",
+      "coordinator": "Dinko Verzi",
+      "core_focus": "This module explores the theoretical, design-related, and technical aspects of responsive web design (abbreviated RWD in the text below). Students will learn about the history of web design and its evolution to responsive design. Using contemporary tools and methods, students will then learn how to create basic, intermediate or advanced web designs and / or HTML / CSS implementations based on responsive web design criteria and principles.",
+      "technical_skills": null,
+      "learning_goals": [],
+      "learning_qualification_objectives": "Students who successfully pass this module are able to: Understand how to think creatively in design, technology, and user needs in regard to a responsive website; Apply creative thinking to design a website, produce a screen design, and/or implement these in HTML/CSS; Understand placement, layout techniques, and typography and employ their knowledge on a project of their choice; Evaluate their work and the work of others regarding responsive design",
+      "levels": [],
+      "topics": [
+        "Responsive Web Design",
+        "Web Design History",
+        "HTML/CSS Implementation",
+        "Design Principles",
+        "Usability"
+      ]
+    },
+    {
+      "title_and_version": "DS_20 Service Design",
+      "credits_and_workload": "5 ECTS and 150h Workload",
+      "registration_deadline": "11/04/2025",
+      "offering_type": "Yearly and Graded",
+      "prerequisites": "OS_01 Introduction to Software Engineering, OS_02 Introduction to Design, OS_03 Introduction to Business Management & Entrepreneurship, OS_05 Application of Project-Based Learning Methods",
+      "coordinator": "Lara Piccolo",
+      "core_focus": "Services are ubiquitous and their design utilises a people-centered design process that is used by designers and organisations in order to develop better services. Service Design adds value for users by exploring, understanding, and improving their experiences across the various stages of service and for service providers by enhancing their back-end operations.",
+      "technical_skills": null,
+      "learning_goals": [
+        "Develop an understanding of the emergence of service design and its role/impact within society",
+        "Identify and utilize a range of service design methods and tools within a self-defined context",
+        "Synthesise information to develop a range of creative outcomes within a self-defined context",
+        "Critically reflect on the investigation, application, and outcomes of service design tools and methods (process). This also includes adherence to the word count, proper referencing and citation and the use of contextually located images."
+      ],
+      "learning_qualification_objectives": "",
+      "levels": [],
+      "topics": [
+        "Service Design",
+        "People-Centered Design",
+        "User Experience",
+        "Operational Improvement"
+      ]
+    },
+    {
+      "title_and_version": "DS_23 Visual Interface Design Module Handbook Version: DS_23_v4",
+      "credits_and_workload": "10 ECTS and 300h Workload",
+      "registration_deadline": "11/04/2025",
+      "offering_type": "Offered Yearly and Graded",
+      "prerequisites": "OS_01 Introduction to Software Engineering, OS_02 Introduction to Design, OS_03 Introduction to Business Management & Entrepreneurship, OS_05 Application of Project-Based Learning Methods",
+      "coordinator": "Lara Piccolo",
+      "core_focus": "This module sheds light on the foundational knowledge for designing user visual interfaces. It addresses how we humans perceive visual interfaces, and how designers apply this knowledge to create user interfaces in creative and professional ways. With a user-centred and inclusive perspective, the module covers the design process that includes modelling users' needs, information architecture, sketching and wireframes, design standards, usability, evaluation with users and design systems.",
+      "technical_skills": null,
+      "learning_goals": [
+        "Analyse users' needs by applying critical thinking to models such as users' stories, personas, empathy model, etc.",
+        "Propose an Information Architecture (IA) that aligns with users' information needs, IA principles, and the users' expectations on the content organization and labels",
+        "Formulate design ideas with sketches",
+        "Design wireframes and high-fidelity prototypes",
+        "Utilize design patterns, style guides and design systems to ensure consistency across the design"
+      ],
+      "learning_qualification_objectives": "Students who successfully pass this module are able to:\nAnalyze users' needs by applying critical thinking to models such as users' stories, personas, empathy model, etc.\nPropose an Information Architecture (IA) that aligns with users' information needs, IA principles, and the users' expectations on the content organization and labels\nFormulate design ideas with sketches\nDesign wireframes and high-fidelity prototypes\nJustify design decisions by referencing design principles, heuristics, accessibility guidelines and ethical considerations, such as avoiding dark patterns",
+      "levels": [],
+      "topics": [
+        "Visual Interfaces",
+        "User-Centered Design",
+        "Information Architecture",
+        "Wireframing and Prototyping",
+        "Design Systems"
+      ]
+    },
+    {
+      "title_and_version": "DS_24 Experience Design Proj...",
+      "credits_and_workload": "10 ECTS and 300h Workload",
+      "registration_deadline": "11/04/2025",
+      "offering_type": "Yearly and Graded module",
+      "prerequisites": "OS_01 – Introduction to Software Engineering, OS_02 – Introduction to Design, OS_03 – Introduction to Business Management & Entrepreneurship, OS_05 – Application of Project-Based Learning Methods",
+      "coordinator": "Martin Knobel",
+      "core_focus": "Students develop an understanding of human centered design through practical application. Students begin by investigating a given context and finish with an evaluated concept.",
+      "technical_skills": null,
+      "learning_goals": [
+        "Create an early stage design project in a group setting",
+        "Conduct in-depth qualitative research in the form of narratives and observations",
+        "Synthesize narratives derived from qualitative research, both individually and in a group session",
+        "Ideate on the insights developed through synthesis, using storytelling as a tool",
+        "Facilitate creative group workshops for ideation",
+        "Examine different concepts and reflect on them based on insights",
+        "Evaluate the final concept (plan, apply, and reflect)",
+        "Present early stage prototypes to a group of professionals from diverse backgrounds",
+        "Understand how to use design methods differently in order to apply them with a focus on positive experiences"
+      ],
+      "learning_qualification_objectives": "Students who successfully pass this module are able to:\nCreate an early stage design project in a group setting\nConduct in-depth qualitative research in the form of narratives and observations\nSynthesize narratives derived from qualitative research, both individually and in a group session\nIdeate on the insights developed through synthesis, using storytelling as a tool\nFacilitate creative group workshops for ideation\nExamine different concepts and reflect on them based on insights\nEvaluate the final concept (plan, apply, and reflect)\nPresent early stage prototypes to a group of professionals from diverse backgrounds\nUnderstand how to use design methods differently in order to apply them with a focus on positive experiences",
+      "levels": [],
+      "topics": [
+        "Experience Design",
+        "Human-Centered Design",
+        "Qualitative Research",
+        "Storytelling",
+        "Prototyping"
+      ]
+    }
+  ]
+}

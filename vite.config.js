@@ -41,6 +41,7 @@ export default defineConfig({
       "@tools": path.resolve(__dirname, "./src/tools"),
       "@network": path.resolve(__dirname, "./src/network"),
       "@hud": path.resolve(__dirname, "./src/hud"),
+      "@interaction": path.resolve(__dirname, "./src/interaction"),
     },
   },
   optimizeDeps: {
@@ -53,6 +54,14 @@ export default defineConfig({
       "three/examples/jsm/postprocessing/RenderPass",
       "three/examples/jsm/postprocessing/UnrealBloomPass",
     ],
+  },
+  build: {
+    rollupOptions: {
+      input: {
+        main: path.resolve(__dirname, "index.html"),
+        sensors: path.resolve(__dirname, "sensors.html"),
+      },
+    },
   },
   plugins: [labelRegistryDevPlugin(), tailwindcss()],
   experimental: {

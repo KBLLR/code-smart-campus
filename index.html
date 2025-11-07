@@ -10,10 +10,19 @@
     <canvas id="canvas" aria-label="Campus 3D canvas"></canvas>
 
     <div id="ui-shell">
+      <header class="view-hero">
+        <div class="view-hero__content">
+          <p class="view-hero__eyebrow">Smart Campus</p>
+          <h1 class="view-hero__title">3D CODE Floorplan</h1>
+          <p class="view-hero__subtitle">
+            Navigate the live campus replica, inspect rooms, and track real-time telemetry.
+          </p>
+        </div>
+      </header>
+
       <div id="hud-root" aria-live="polite"></div>
       <div class="ui-shell__top">
         <header id="toolbar-root"></header>
-        <div id="websocket-status" aria-live="polite"></div>
       </div>
       <main class="panel-shell">
         <section id="content-area" class="panel-strip" role="region" aria-live="polite"></section>
@@ -26,7 +35,10 @@
         </svg>
       </button>
 
-      <div id="sensor-dashboard"></div>
+      <div class="sensor-dashboard-panel">
+        <div id="sensor-dashboard"></div>
+        <div id="websocket-status" class="sensor-dashboard__status" aria-live="polite"></div>
+      </div>
     </div>
 
     <script type="module" src="/src/main.js"></script>

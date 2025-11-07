@@ -87,6 +87,11 @@ export async function generateRoundedBlocksFromSVG(
             mesh.rotation.x = -Math.PI / 2; // Align to floor
             mesh.castShadow = true;
             mesh.receiveShadow = true;
+            mesh.userData = {
+              ...(mesh.userData || {}),
+              roomKey: normId || rawId || null,
+              roomId: rawId || null,
+            };
 
             if (normId) {
               mesh.name = normId;
