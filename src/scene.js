@@ -39,6 +39,35 @@ const sunTelemetry = new SunTelemetry();
 const sunSkyDome = new SunSkyDome();
 const sunPathArc = new SunPathArc();
 const moonController = new MoonController({ siteCoords: SITE_COORDINATES });
+let sunAssetsMounted = false;
+
+function detachSunAssets() {
+  if (!sunAssetsMounted) return;
+  scene.remove(sunSkyDome.mesh);
+  scene.remove(sunPathArc.line);
+  scene.remove(moonController.object3d);
+  sunAssetsMounted = false;
+}
+
+function syncSunAssets(renderer) {
+  if (renderer?.isWebGPURenderer) {
+    if (sunAssetsMounted) {
+      detachSunAssets();
+    }
+    if (!scene.__loggedWebGPUSkyWarning) {
+      console.info(
+        "[Scene] SunSkyDome disabled in WebGPU mode (custom ShaderMaterial not supported).",
+      );
+      scene.__loggedWebGPUSkyWarning = true;
+    }
+    return;
+  }
+  if (sunAssetsMounted) return;
+  scene.add(sunSkyDome.mesh);
+  scene.add(sunPathArc.line);
+  scene.add(moonController.object3d);
+  sunAssetsMounted = true;
+}
 
 const highlightColor = new THREE.Color("#38bdf8");
 const highlightEmissive = new THREE.Color("#0ea5e9");
@@ -218,8 +247,8 @@ const setSelectedEntity = (entityId) => {
   const applied = applyRoomHighlight(normalizedKey);
   if (applied) {
     selectedRoomKey = normalizedKey;
-    scene.userData?.hud?.manager?.selectEntity(entityId);
-  }
+scene.userData?.hud?.manager?.selectEntity(entityId);
+ }
   return applied;
 };
 
@@ -325,10 +354,7 @@ layoutManager.labels = labelManager.getAnchors();
 const floor = new Floor(); // Add floor
 scene.add(floor.mesh);
 scene.add(sunController.object3d);
-scene.add(sunSkyDome.mesh);
-scene.add(sunPathArc.line);
-scene.add(moonController.object3d);
-
+syncSunAssets();
 applySunVisualConfig();
 
 scene.userData.sunDebug = {
@@ -359,6 +385,7 @@ function attachSetup({ cam, re, orbCtrls }) {
   scene.camera = cam;
   scene.renderer = re;
   scene.controls = orbCtrls;
+  syncSunAssets(re);
   scene.add(new THREE.AmbientLight(0xffffff, 0.25));
   materialRegistry
     .init({ renderer: re })

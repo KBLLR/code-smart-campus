@@ -42,10 +42,13 @@ import { registerDebuggerControls } from "@ui/modules/DebuggerControls.js";
 import { registerOrbitDebugControls } from "@ui/modules/OrbitDebugControls.js";
 import { registerRoomLevelsControls } from "@ui/modules/RoomLevelsControls.js";
 import { CanvasUILPanels } from "@ui/modules/CanvasUILPanels.js";
+import { registerProjectorControls } from "@ui/modules/ProjectorControls.js";
 import { PostProcessor } from "@/postprocessing/PostProcessor.js";
 import { CSSHudManager } from "@hud/CSSHudManager.js";
 import { dataPipeline } from "@data/DataPipeline.js";
 import { RoomSelectionController } from "@interaction/RoomSelectionController.js";
+import { WebGPUProjector } from "@three/WebGPUProjector.js";
+import { materialRegistry } from "@registries/materialsRegistry.js";
 
 // --- Global Variables / State ---
 
@@ -57,6 +60,8 @@ let toolbarInstance = null;
 let postProcessor = null;
 let hudManager = null;
 let roomSelectionController = null;
+let webgpuProjector = null;
+let projectorControlsRegistered = false;
 
 const hydrateSensorDashboard = (entities = []) => {
   if (!sensorDashboardInstance || !Array.isArray(entities)) return;
@@ -86,6 +91,102 @@ const panelIndicators = document.querySelector(".panel-indicators");
 const floatingBtn = document.querySelector(".floating-btn");
 const viewHeroRoot = document.getElementById("view-hero-root");
 const uilRoot = document.getElementById("uil-root");
+const uilPanelState = {
+  root: uilRoot,
+  visible: false,
+  dragged: false,
+};
+
+enableUILPanelDrag(uilPanelState);
+setUILPanelVisibility(false);
+scene.userData.uilPanel = {
+  setVisible: (visible) => setUILPanelVisibility(visible),
+  isVisible: () => uilPanelState.visible,
+  toggle: () => setUILPanelVisibility(!uilPanelState.visible),
+};
+
+function setUILPanelVisibility(visible = true) {
+  if (!uilPanelState.root) return;
+  uilPanelState.visible = Boolean(visible);
+  const root = uilPanelState.root;
+  root.classList.toggle("uil-hidden", !uilPanelState.visible);
+  if (uilPanelState.visible && !uilPanelState.dragged) {
+    root.style.left = "2rem";
+    root.style.right = "auto";
+    root.style.top = "50%";
+    root.style.transform = "translateY(-50%)";
+  }
+}
+
+function enableUILPanelDrag(state) {
+  const root = state?.root;
+  if (!root) return;
+  root.classList.add("uil-panel");
+  state.dragged = false;
+  root.style.position = "absolute";
+  root.style.left = "2rem";
+  root.style.right = "auto";
+  root.style.top = "50%";
+  root.style.transform = "translateY(-50%)";
+  const handle = document.createElement("div");
+  handle.className = "uil-drag-handle";
+  handle.textContent = "Debugger Panel";
+  root.prepend(handle);
+
+  let pointerId = null;
+  const dragState = {
+    active: false,
+    offsetX: 0,
+    offsetY: 0,
+  };
+
+  const onPointerDown = (event) => {
+    if (event.button !== 0) return;
+    dragState.active = true;
+    pointerId = event.pointerId;
+    handle.setPointerCapture?.(pointerId);
+    const rect = root.getBoundingClientRect();
+    dragState.offsetX = event.clientX - rect.left;
+    dragState.offsetY = event.clientY - rect.top;
+    handle.classList.add("dragging");
+  };
+
+  const onPointerMove = (event) => {
+    if (!dragState.active) return;
+    if (!state.dragged) {
+      state.dragged = true;
+      root.style.transform = "none";
+    }
+    const availableWidth = window.innerWidth - root.offsetWidth - 24;
+    const availableHeight = window.innerHeight - root.offsetHeight - 24;
+    const targetLeft = Math.min(
+      Math.max(event.clientX - dragState.offsetX, 16),
+      Math.max(16, availableWidth),
+    );
+    const targetTop = Math.min(
+      Math.max(event.clientY - dragState.offsetY, 80),
+      Math.max(80, availableHeight),
+    );
+    root.style.left = `${targetLeft}px`;
+    root.style.top = `${targetTop}px`;
+    root.style.right = "auto";
+  };
+
+  const endDrag = () => {
+    if (!dragState.active) return;
+    dragState.active = false;
+    handle.classList.remove("dragging");
+    if (pointerId !== null) {
+      handle.releasePointerCapture?.(pointerId);
+      pointerId = null;
+    }
+  };
+
+  handle.addEventListener("pointerdown", onPointerDown);
+  handle.addEventListener("pointermove", onPointerMove);
+  handle.addEventListener("pointerup", endDrag);
+  handle.addEventListener("pointercancel", endDrag);
+}
 const viewHero = new ViewHero({
   mount: viewHeroRoot,
   eyebrow: "Smart Campus",
@@ -184,6 +285,31 @@ function initRoomSelectionController() {
   });
 }
 
+function registerWebGLModules() {
+  registerLightingControls({
+    controller: navigationController,
+    postFX: scene.userData.postFX,
+    setup,
+  });
+  registerSunSkyControls({
+    controller: navigationController,
+    sunDebug: scene.userData.sunDebug,
+  });
+}
+
+function registerWebGPUModules() {
+  console.info(
+    "[UIL] WebGPU renderer detected; registering WebGPU-specific controls only.",
+  );
+  if (!projectorControlsRegistered) {
+    registerProjectorControls({
+      controller: navigationController,
+      projectorProvider: () => scene.userData.projector,
+    });
+    projectorControlsRegistered = true;
+  }
+}
+
 // --- Setup 3D Environment ---
 const setup = new Setup(canvas, () => {
   if (postProcessor) {
@@ -192,6 +318,7 @@ const setup = new Setup(canvas, () => {
 });
 
 setup.setEnvMap("/hdri/night1k.hdr");
+materialRegistry.init({ renderer: setup.re });
 attachSetup(setup);
 const navigationController = uilController;
 navigationController.init({
@@ -213,16 +340,6 @@ whenReady("roomMeshes", (meshesMap) => {
     scene,
   });
 });
-
-registerLightingControls({
-  controller: navigationController,
-  postFX: scene.userData.postFX,
-  setup,
-});
-registerSunSkyControls({
-  controller: navigationController,
-  sunDebug: scene.userData.sunDebug,
-});
 whenReady("roundedRoomsGroup", (group) => {
   registerRoomLevelsControls({
     controller: navigationController,
@@ -237,74 +354,118 @@ whenReady("roundedRoomsGroup", (group) => {
     sunDebug: scene.userData.sunDebug,
     postFX: scene.userData.postFX,
     anchor: group,
+    debug: import.meta.env?.DEV ?? false,
   });
   canvasPanels.init();
+  if (import.meta.env?.DEV ?? false) {
+    window.canvasPanels = canvasPanels;
+    console.log("[CanvasUILPanels] Instance exposed on window.canvasPanels");
+  }
+  if (setup.usingWebGPU) {
+    webgpuProjector?.dispose?.();
+    webgpuProjector = new WebGPUProjector({
+      scene,
+      renderer: setup.re,
+      target: group,
+    });
+    scene.userData.projector = webgpuProjector;
+    window.dispatchEvent(new CustomEvent("projector-ready"));
+  }
 });
 
-postProcessor = new PostProcessor({
-  renderer: setup.re,
-  scene,
-  camera: setup.cam,
-});
-scene.userData.postFX = {
-  config: postProcessor.getConfig(),
-  setEnabled: (value) => {
-    postProcessor.setEnabled(value);
-    return postProcessor.isEnabled();
-  },
-  setBloomSettings: (settings) => postProcessor.setBloomSettings(settings),
-  captureSnapshot: ({
-    bloomEnabled,
-    size,
-    download = false,
-    filename = "scene-snapshot.png",
-  } = {}) => {
-    const renderer = setup.re;
-    if (!renderer) {
-      console.warn("[PostFX] Renderer unavailable; snapshot skipped.");
+if (!setup.usingWebGPU) {
+  postProcessor = new PostProcessor({
+    renderer: setup.re,
+    scene,
+    camera: setup.cam,
+  });
+  scene.userData.postFX = {
+    config: postProcessor.getConfig(),
+    setEnabled: (value) => {
+      postProcessor.setEnabled(value);
+      return postProcessor.isEnabled();
+    },
+    setBloomSettings: (settings) => postProcessor.setBloomSettings(settings),
+    captureSnapshot: ({
+      bloomEnabled,
+      size,
+      download = false,
+      filename = "scene-snapshot.png",
+    } = {}) => {
+      const renderer = setup.re;
+      if (!renderer) {
+        console.warn("[PostFX] Renderer unavailable; snapshot skipped.");
+        return null;
+      }
+
+      const prevEnabled = postProcessor.isEnabled();
+      if (typeof bloomEnabled === "boolean") {
+        postProcessor.setEnabled(bloomEnabled);
+      }
+
+      const previousSize = new THREE.Vector2();
+      renderer.getSize(previousSize);
+      const prevPixelRatio = renderer.getPixelRatio();
+
+      if (size?.width && size?.height) {
+        renderer.setPixelRatio(1);
+        renderer.setSize(size.width, size.height, false);
+        postProcessor.setSize(size.width, size.height);
+      }
+
+      postProcessor.updateCamera(setup.cam);
+      postProcessor.updateScene(scene);
+      postProcessor.render();
+
+      const dataUrl = renderer.domElement.toDataURL("image/png");
+
+      if (download && typeof window !== "undefined") {
+        const link = document.createElement("a");
+        link.href = dataUrl;
+        link.download = filename;
+        link.click();
+      }
+
+      if (size?.width && size?.height) {
+        renderer.setPixelRatio(prevPixelRatio);
+        renderer.setSize(previousSize.x, previousSize.y, false);
+        postProcessor.setSize(previousSize.x, previousSize.y);
+      }
+
+      postProcessor.setEnabled(prevEnabled);
+      return dataUrl;
+    },
+    instance: postProcessor,
+  };
+  postProcessor.setSize(canvas.clientWidth, canvas.clientHeight);
+} else {
+  console.info(
+    "[PostFX] Post-processing disabled in WebGPU mode until node-based passes are implemented.",
+  );
+  scene.userData.postFX = {
+    config: { enabled: false },
+    setEnabled: () => false,
+    setBloomSettings: () => {},
+    captureSnapshot: () => {
+      console.warn(
+        "[PostFX] Snapshot capture is unavailable while using the WebGPU renderer.",
+      );
       return null;
-    }
+    },
+  };
+}
 
-    const prevEnabled = postProcessor.isEnabled();
-    if (typeof bloomEnabled === "boolean") {
-      postProcessor.setEnabled(bloomEnabled);
-    }
-
-    const previousSize = new THREE.Vector2();
-    renderer.getSize(previousSize);
-    const prevPixelRatio = renderer.getPixelRatio();
-
-    if (size?.width && size?.height) {
-      renderer.setPixelRatio(1);
-      renderer.setSize(size.width, size.height, false);
-      postProcessor.setSize(size.width, size.height);
-    }
-
-    postProcessor.updateCamera(setup.cam);
-    postProcessor.updateScene(scene);
-    postProcessor.render();
-
-    const dataUrl = renderer.domElement.toDataURL("image/png");
-
-    if (download && typeof window !== "undefined") {
-      const link = document.createElement("a");
-      link.href = dataUrl;
-      link.download = filename;
-      link.click();
-    }
-
-    if (size?.width && size?.height) {
-      renderer.setPixelRatio(prevPixelRatio);
-      renderer.setSize(previousSize.x, previousSize.y, false);
-      postProcessor.setSize(previousSize.x, previousSize.y);
-    }
-
-    postProcessor.setEnabled(prevEnabled);
-    return dataUrl;
-  },
-  instance: postProcessor,
+scene.userData.capabilities = {
+  renderer: setup.usingWebGPU ? "webgpu" : "webgl",
+  projector: Boolean(setup.usingWebGPU),
+  postFX: !setup.usingWebGPU,
 };
-postProcessor.setSize(canvas.clientWidth, canvas.clientHeight);
+
+if (setup.usingWebGPU) {
+  registerWebGPUModules();
+} else {
+  registerWebGLModules();
+}
 
 hudManager = new CSSHudManager({
   scene,
@@ -404,6 +565,7 @@ function initializeToolbar(exportTarget = null) {
       labelManager,
       setupInstance: setup,
       exportTarget: target,
+      uilPanel: scene.userData.uilPanel,
     });
     console.log("✅ Toolbar initialized.");
   } catch (error) {
@@ -1272,6 +1434,8 @@ function loop() {
   // Request the next frame from the browser. This creates the recursive loop.
   requestAnimationFrame(loop);
 
+  const frameStart = performance?.now?.() ?? Date.now();
+
   // --- Update Time-Dependent Controls ---
   setup.update?.();
 
@@ -1302,9 +1466,26 @@ function loop() {
   } else {
     console.warn("Render loop: Renderer, scene, or camera not ready.");
   }
+
+  const frameDuration = (performance?.now?.() ?? Date.now()) - frameStart;
+  scene.userData?.performance?.tick?.(frameDuration);
 }
 
 // --- Start the Animation Loop ---
 // Call the loop function once to begin the animation cycle.
-console.log("🚀 Starting animation loop...");
-loop();
+function startAnimationLoop() {
+  console.log("🚀 Starting animation loop...");
+  loop();
+}
+
+if (setup.rendererReady?.then) {
+  setup.rendererReady.then(
+    () => startAnimationLoop(),
+    (error) => {
+      console.error("[Setup] Renderer init failed:", error);
+      startAnimationLoop();
+    },
+  );
+} else {
+  startAnimationLoop();
+}

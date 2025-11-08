@@ -31,6 +31,14 @@ const TOOL_ACTIONS = [
     label: "Labels",
     handler: () => showLabelInfoModal(),
   },
+  {
+    key: "toggle-uil",
+    icon: "toggle-left.svg",
+    label: "Debugger",
+    isToggle: true,
+    getState: (toolbar) => toolbar?.uilPanel?.isVisible?.() ?? true,
+    handler: (toolbar, nextState) => toolbar?.toggleUILPanel(nextState),
+  },
 ];
 
 const EXPORT_ACTIONS = [
@@ -62,6 +70,7 @@ export class Toolbar {
     labelManager,
     setupInstance,
     exportTarget = null,
+    uilPanel = null,
   } = {}) {
     this.root =
       typeof rootSelector === "string"
@@ -82,6 +91,8 @@ export class Toolbar {
     this.setup = setupInstance ?? null;
     this.exportTarget = exportTarget;
     this.exporter = new MeshExporter();
+    this.uilPanel = uilPanel;
+    this.toolStates = new Map();
 
     this.activeLayout = "svg-aligned";
     this.activeCategories = new Set(
@@ -121,9 +132,11 @@ export class Toolbar {
 
     fragment.appendChild(this.createSeparator());
 
-    fragment.appendChild(this.buildGroup("Tools", TOOL_ACTIONS, (action) =>
-      action.handler?.(),
-    ));
+    fragment.appendChild(
+      this.buildGroup("Tools", TOOL_ACTIONS, (action, state) =>
+        action.handler?.(this, state),
+      ),
+    );
 
     fragment.appendChild(this.createSeparator());
 
@@ -152,7 +165,17 @@ export class Toolbar {
 
     options.forEach((option) => {
       const button = this.createToolbarButton(option);
-      button.addEventListener("click", () => onSelect(option, button));
+      button.addEventListener("click", () => {
+        if (option.isToggle) {
+          const nextState = !button.classList.contains("active");
+          button.classList.toggle("active", nextState);
+          button.setAttribute("aria-pressed", String(nextState));
+          this.toolStates.set(option.key, nextState);
+          onSelect(option, nextState, button);
+        } else {
+          onSelect(option, button);
+        }
+      });
       group.appendChild(button);
     });
 
@@ -185,14 +208,20 @@ export class Toolbar {
     return group;
   }
 
-  createToolbarButton({ key, icon, label, count, isToggle = false }) {
+  createToolbarButton(option) {
+    const { key, icon, label, count, isToggle = false } = option;
     const button = document.createElement("button");
     button.type = "button";
     button.className = "toolbar__button";
     if (isToggle) {
       button.classList.add("toolbar__button--toggle");
-      button.setAttribute("aria-pressed", "true");
-      button.classList.add("active");
+      const initialState =
+        (typeof option.getState === "function"
+          ? option.getState(this)
+          : this.toolStates.get(key)) ?? true;
+      button.setAttribute("aria-pressed", String(initialState));
+      button.classList.toggle("active", initialState);
+      this.toolStates.set(key, initialState);
     }
     button.dataset.key = key;
     button.title = label;
@@ -298,5 +327,13 @@ export class Toolbar {
       }
     });
     return registry;
+  }
+
+  toggleUILPanel(nextState) {
+    if (!this.uilPanel) return;
+    if (typeof nextState !== "boolean") {
+      nextState = !this.uilPanel.isVisible?.();
+    }
+    this.uilPanel.setVisible?.(nextState);
   }
 }

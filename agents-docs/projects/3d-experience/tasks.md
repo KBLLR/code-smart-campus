@@ -20,6 +20,7 @@ Keep the table sorted by priority (top = highest). Reference session logs when m
 | FE-107 | Navigation & Orbit Enhancements        | Add camera bookmarks, keyboard shortcuts, and refined orbit damping.       | High     |      | Build on existing Setup/controls; coordinate with UI shell. |
 | FE-111 | Telemetry-driven gradient & env swap   | Bind body/canvas gradient + fog colors to Sun/Moon telemetry and prep HDRI day/night swap. | High | Codex | Build on `SunSkyDome` + `SunTelemetry` outputs. |
 | FE-112 | Room selection event bridge            | Emit structured events (roomKey, persona id) from `RoomSelectionController` so room views can subscribe. | High | | Coordinates with new room-views project. |
+| FE-113 | Renderer-specific UIL panels           | Split UIL debugger modules so WebGL builds keep lighting/postFX controls while WebGPU builds expose only WebGPU-ready modules (projector, node shaders, nav). | High | Codex | Avoids half-working controls in WebGPU mode. |
 
 ## In Progress
 | ID | Title | Started (YYYY-MM-DD) | Owner | Notes |
@@ -30,6 +31,7 @@ Keep the table sorted by priority (top = highest). Reference session logs when m
 | FE-103 | CSS HUD Labels | 2025-11-04 | | HUD badges & selection sync shipped; surface HUD by default + search/occlusion next. |
 | FE-107 | Navigation & Orbit Enhancements | 2025-11-03 | | Bookmark API, keyboard nav, focus/fly-to implemented; QA pending. Touch/trackpad constraints lifted. |
 | FE-102 | Material & Post FX Pass | 2025-11-03 | | Sky/material audit underway; target palette + PBR plan next. |
+| FE-113 | Renderer-specific UIL panels | 2025-11-07 | Codex | WebGL lighting/postFX modules now gated behind WebGL renderer; WebGPU dashboard follow-up pending. |
 
 ## Review / QA
 | ID | Title | PR / Branch | Reviewer | Notes |

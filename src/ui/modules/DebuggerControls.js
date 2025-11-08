@@ -72,10 +72,32 @@ export async function registerDebuggerControls({
     }
   };
 
-  await controller.registerModule({
+  const moduleRecord = await controller.registerModule({
     id: "debug",
     label: "Debugger",
+    open: false,
     controls: [
+      {
+        id: "perfSummary",
+        label: "Performance",
+        type: "text",
+        default: "FPS -- / ms --",
+        params: { w: 240 },
+      },
+      {
+        id: "perfGraph",
+        label: "Frame Graph",
+        type: "graph",
+        default: [0, 0],
+        params: {
+          w: 240,
+          h: 120,
+          multiplicator: 120,
+          precision: 1,
+          autoWidth: false,
+          line: true,
+        },
+      },
       {
         id: "roomPicker",
         label: "Room",
@@ -113,6 +135,44 @@ export async function registerDebuggerControls({
       },
     ],
   });
+
+  if (moduleRecord?.controls) {
+    const perfState =
+      scene.userData.performance ||
+      {
+        fps: 0,
+        ms: 0,
+        frames: 0,
+        lastStamp: performance?.now?.() ?? Date.now(),
+        lastFpsStamp: performance?.now?.() ?? Date.now(),
+      };
+
+    const perfTextHandle = moduleRecord.controls.get("perfSummary")?.handle;
+    const perfGraphHandle = moduleRecord.controls.get("perfGraph")?.handle;
+
+    perfState.handles = {
+      text: perfTextHandle,
+      graph: perfGraphHandle,
+    };
+    perfState.tick = (delta = 0) => {
+      const now = performance?.now?.() ?? Date.now();
+      perfState.frames += 1;
+      perfState.ms = delta;
+      if (now - perfState.lastFpsStamp >= 1000) {
+        perfState.fps =
+          (perfState.frames * 1000) / (now - perfState.lastFpsStamp || 1);
+        perfState.frames = 0;
+        perfState.lastFpsStamp = now;
+      }
+      const summary = `FPS ${perfState.fps.toFixed(0)} / ${perfState.ms.toFixed(1)}ms`;
+      perfTextHandle?.setValue(summary, { silent: true });
+      perfGraphHandle?.setValue?.(
+        [Math.min(120, perfState.fps), Math.min(60, perfState.ms)],
+        { silent: true },
+      );
+    };
+    scene.userData.performance = perfState;
+  }
 
   // Initial selection highlight
   selectMesh(selectedId);

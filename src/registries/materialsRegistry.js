@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { HDRLoader } from "three/examples/jsm/loaders/HDRLoader.js";
+import { buildRoomNodeMaterial } from "@three/materials/RoomNodeMaterial.js";
 
 const MATERIAL_PRESETS = {
   roomBase: {
@@ -68,6 +69,14 @@ const toColor = (value, fallback) => {
   }
 };
 
+const toColorString = (value, fallback = "#2dd4bf") => {
+  if (value instanceof THREE.Color) return `#${value.getHexString()}`;
+  if (typeof value === "number")
+    return `#${value.toString(16).padStart(6, "0")}`;
+  if (typeof value === "string") return value;
+  return fallback;
+};
+
 class MaterialRegistry {
   constructor() {
     this.envMap = null;
@@ -90,13 +99,15 @@ class MaterialRegistry {
       loader.load(
         "night1k.hdr",
         (texture) => {
-          if (this.renderer) {
+          let sourceTexture = texture;
+          if (this.renderer && !this.renderer.isWebGPURenderer) {
             try {
               this.pmremGenerator = new THREE.PMREMGenerator(this.renderer);
               this.pmremGenerator.compileEquirectangularShader();
               const envRT = this.pmremGenerator.fromEquirectangular(texture);
               this.envMap = envRT.texture;
               this.pmremGenerator.dispose();
+              sourceTexture.dispose?.();
             } catch (error) {
               console.warn(
                 "[MaterialRegistry] PMREM generation failed, using raw HDR as environment.",
@@ -109,7 +120,9 @@ class MaterialRegistry {
             texture.mapping = THREE.EquirectangularReflectionMapping;
             this.envMap = texture;
           }
-          texture.dispose?.();
+          if (sourceTexture !== this.envMap) {
+            sourceTexture.dispose?.();
+          }
           this._applyEnvMapToTracked();
           resolve(this.envMap);
         },
@@ -135,6 +148,32 @@ class MaterialRegistry {
     const preset = MATERIAL_PRESETS[key];
     if (!preset) {
       throw new Error(`[MaterialRegistry] Unknown material key: ${key}`);
+    }
+
+    if (key === "roomBase" && this.renderer?.isWebGPURenderer) {
+      const accentHex = toColorString(
+        overrides.color ?? preset.color,
+        preset.color,
+      );
+      try {
+        const nodeMaterial = buildRoomNodeMaterial({
+          baseBottom: overrides.gradientBottom ?? "#13172b",
+          baseTop: overrides.gradientTop ?? accentHex,
+          accentColor: overrides.accentColor ?? accentHex,
+          occupancy: overrides.occupancy ?? 0,
+          gradientHeight: overrides.gradientHeight ?? 260,
+          opacity: overrides.opacity ?? preset.opacity ?? 0.95,
+          roughness: overrides.roughness ?? preset.roughness ?? 0.5,
+          metalness: overrides.metalness ?? preset.metalness ?? 0.35,
+          roomKey: overrides.roomKey ?? null,
+        });
+        return this.register(nodeMaterial, key, overrides);
+      } catch (error) {
+        console.warn(
+          "[MaterialRegistry] Failed to create TSL room material, falling back to MeshStandardMaterial.",
+          error,
+        );
+      }
     }
 
     const baseParams = {
@@ -200,6 +239,9 @@ class MaterialRegistry {
 
     material.userData = material.userData || {};
     const preset = MATERIAL_PRESETS[key] || {};
+    if (overrides.roomKey && !material.userData.roomKey) {
+      material.userData.roomKey = overrides.roomKey;
+    }
     material.userData.__materialRegistry = {
       key,
       envMapIntensity:

@@ -14,15 +14,17 @@
  * @typedef {Object} UILControlDescriptor
  * @property {string} id
  * @property {string} [label]
- * @property {'number'|'slide'|'bool'|'color'|'list'|'selector'|'button'} [type]
+ * @property {'number'|'slide'|'bool'|'color'|'list'|'selector'|'button'|'knob'|'joystick'|'graph'|'fps'|'text'} [type]
  * @property {any} [default]
  * @property {number} [min]
  * @property {number} [max]
  * @property {number} [step]
  * @property {number} [precision]
  * @property {Array<any>} [options]
+ * @property {object} [params]
  * @property {{ get?: () => any, set?: (value:any) => void }} [bindings]
  * @property {(value:any, ctx:{moduleId:string, controlId:string, handle:any}) => void} [onChange]
+ * @property {(pane:any, ctx:{moduleId:string, controlId:string, handle:any}) => void} [onSetup]
  */
 
 export class UILController {
@@ -192,6 +194,23 @@ export class UILController {
           value: control.default ?? 0,
         });
         break;
+      case "graph":
+        pane = record.folder.add("graph", {
+          ...params,
+          value: control.default ?? control.value ?? [0],
+        });
+        break;
+      case "fps":
+        pane = record.folder.add("fps", {
+          ...params,
+        });
+        break;
+      case "text":
+        pane = record.folder.add("text", {
+          ...params,
+          value: control.default ?? "",
+        });
+        break;
       case "button":
         pane = record.folder.add("button", params);
         if (control.onChange) {
@@ -225,6 +244,7 @@ export class UILController {
       enable: () => pane.enable?.(),
       disable: () => pane.disable?.(),
       destroy: () => pane.remove?.(),
+      pane,
     };
 
     if (control.onChange && pane.onChange) {
@@ -244,6 +264,10 @@ export class UILController {
 
     record.controls.set(controlId, { control, pane, handle });
     this.controlIndex.set(key, handle);
+
+    if (typeof control.onSetup === "function") {
+      control.onSetup(pane, { moduleId, controlId, handle });
+    }
   }
 }
 

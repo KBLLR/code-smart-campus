@@ -14,7 +14,7 @@ export async function registerLightingControls({
     console.warn("[LightingControls] postFX controls unavailable.");
   }
 
-  await controller.registerModule({
+  const record = await controller.registerModule({
     id: "lighting",
     label: "Lighting / FX",
     controls: [
@@ -58,7 +58,7 @@ export async function registerLightingControls({
       {
         id: "bloomThreshold",
         label: "Bloom Threshold",
-        type: "slide",
+        type: "knob",
         min: 0,
         max: 1,
         step: 0.02,
@@ -84,4 +84,21 @@ export async function registerLightingControls({
       },
     ],
   });
+
+  try {
+    const knobIds = ["bloomStrength", "bloomRadius", "bloomThreshold"];
+    knobIds.forEach((id, index) => {
+      const ctrlRecord = record?.controls?.get(id);
+      const paneRoot = ctrlRecord?.pane?.c?.[0];
+      if (paneRoot) {
+        paneRoot.style.display = "inline-block";
+        paneRoot.style.width = "calc(33% - 6px)";
+        paneRoot.style.marginRight =
+          index === knobIds.length - 1 ? "0" : "6px";
+        paneRoot.style.verticalAlign = "top";
+      }
+    });
+  } catch (error) {
+    console.warn("[LightingControls] Failed to align knob row:", error);
+  }
 }

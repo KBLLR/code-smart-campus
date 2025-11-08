@@ -14,6 +14,7 @@ export class CanvasUILPanels {
     sunDebug,
     postFX,
     anchor,
+    debug = false,
   }) {
     this.scene = scene;
     this.camera = camera;
@@ -27,6 +28,14 @@ export class CanvasUILPanels {
     this.interactive.name = "CanvasUILPanels";
     this.anchor = anchor;
     this.scene.add(this.interactive);
+    this.panelPadding = 4;
+    this.debugHelpers = Boolean(debug);
+    this.anchorHelper = null;
+    this.fallbackHelper = null;
+    this.panelDebugMarkers = [];
+    this.hasAnchor = false;
+    this.cameraFallback = false;
+    this.visibilityBounds = { maxDistance: 220 };
     this.pointer = new THREE.Vector2();
     this.raycaster = new THREE.Raycaster();
     this.boundMove = (e) => this.onPointerMove(e);
@@ -47,6 +56,25 @@ export class CanvasUILPanels {
   dispose() {
     this.detachPointerListeners();
     this.scene.remove(this.interactive);
+    if (this.anchorHelper) {
+      this.scene.remove(this.anchorHelper);
+      this.anchorHelper.geometry?.dispose?.();
+      this.anchorHelper.material?.dispose?.();
+      this.anchorHelper = null;
+    }
+    if (this.fallbackHelper) {
+      this.scene.remove(this.fallbackHelper);
+      this.fallbackHelper.dispose?.();
+      this.fallbackHelper = null;
+    }
+    if (this.panelDebugMarkers.length) {
+      this.panelDebugMarkers.forEach((marker) => {
+        this.scene.remove(marker);
+        marker.geometry?.dispose?.();
+        marker.material?.dispose?.();
+      });
+      this.panelDebugMarkers.length = 0;
+    }
     this.panels.forEach((panel) => panel.gui?.clear?.());
     this.panels.length = 0;
   }
@@ -91,7 +119,7 @@ export class CanvasUILPanels {
     joystickControl.onChange = (value) => {
       this.applyJoystick(value);
     };
-    this.panels.push(this.createPanelMesh(gui, this.getAnchorPosition(-1)));
+    this.panels.push(this.createPanelMesh(gui, { side: -1 }));
   }
 
   createEnvironmentPanel() {
@@ -137,44 +165,193 @@ export class CanvasUILPanels {
       this.sunDebug.config.arcOpacity = value;
       this.sunDebug.apply();
     };
-    this.panels.push(this.createPanelMesh(gui, this.getAnchorPosition(1)));
+    this.panels.push(this.createPanelMesh(gui, { side: 1 }));
   }
 
   computeAnchorBounds() {
-    if (!this.anchor) return;
+    if (!this.anchor) {
+      this.enableCameraFallback("Anchor group missing.");
+      return;
+    }
     this.anchor.updateWorldMatrix(true, true);
     this.anchorBox = new THREE.Box3().setFromObject(this.anchor);
-    this.anchorCenter = this.anchorBox.getCenter(new THREE.Vector3());
-    this.anchorSize = this.anchorBox.getSize(new THREE.Vector3());
-    console.debug(
+    this.anchorCenter = this.anchorCenter || new THREE.Vector3();
+    this.anchorBox.getCenter(this.anchorCenter);
+    this.anchorSize = this.anchorSize || new THREE.Vector3();
+    this.anchorBox.getSize(this.anchorSize);
+    this.anchorSphere = this.anchorSphere || new THREE.Sphere();
+    this.anchorBox.getBoundingSphere(this.anchorSphere);
+    this.anchorRadius = this.anchorSphere.radius || 20;
+    console.log(
       "[CanvasUILPanels] Anchor center/size",
       this.anchorCenter,
       this.anchorSize,
     );
+    if (!isFinite(this.anchorSize.x) || !isFinite(this.anchorSize.z)) {
+      this.enableCameraFallback("Anchor bounds invalid.");
+      return;
+    }
+    this.hasAnchor = true;
+    this.cameraFallback = false;
+    if (this.debugHelpers) {
+      this.updateAnchorHelper();
+    }
+    this.refreshPanelPlacements();
   }
 
-  getAnchorPosition(direction = 1) {
-    const center = this.anchorCenter || new THREE.Vector3();
+  refreshPanelPlacements() {
+    if (!this.anchorCenter || !this.panels.length) return;
+    this.panels.forEach((panel) => {
+      if (!panel?.mesh) return;
+      this.updatePanelPlacement(panel.mesh, panel.slot);
+    });
+  }
+
+  updatePanelPlacement(mesh, slot) {
+    const transform = this.getPanelTransform(slot);
+    if (!transform) return;
+    const { position, rotation } = transform;
+    mesh.position.copy(position);
+    if (rotation) {
+      mesh.rotation.copy(rotation);
+    }
+  }
+
+  getPanelTransform(slot) {
+    const anchorTransform =
+      this.hasAnchor && this.anchorCenter
+        ? this.getAnchorPosition(slot)
+        : null;
+    return this.ensureVisiblePlacement(slot, anchorTransform);
+  }
+
+  getAnchorPosition(slot = 1) {
+    const config =
+      typeof slot === "number" ? { side: slot } : { ...(slot || {}) };
+    const center = this.anchorCenter
+      ? this.anchorCenter.clone()
+      : new THREE.Vector3();
     const size = this.anchorSize || new THREE.Vector3(20, 6, 20);
-    const halfWidth = size.x * 0.5;
-    const offsetX = Math.min(halfWidth + 6, 28);
-    const offsetY = size.y * 0.4 + 4;
-    const offsetZ = Math.min(size.z * 0.5 + 6, 18);
+    const side = Math.sign(config.side ?? 1) || 1;
+    const depthDir = Math.sign(config.front ?? config.depth ?? 1) || 1;
+    const verticalExtra = config.heightOffset ?? 0;
+    const halfWidth = Math.max(size.x * 0.5, 6);
+    const halfDepth = Math.max(size.z * 0.5, 6);
+    const halfHeight = Math.max(size.y * 0.5, 4);
+    const padding = this.panelPadding;
+
+    const targetPosition = new THREE.Vector3(
+      center.x + side * (halfWidth + padding),
+      center.y + halfHeight + verticalExtra + padding * 0.5,
+      center.z + depthDir * (halfDepth + padding),
+    );
+
+    const yaw = side > 0 ? -Math.PI / 10 : Math.PI / 10;
+
     return {
-      position: new THREE.Vector3(
-        center.x + direction * offsetX,
-        center.y + offsetY,
-        center.z + offsetZ,
-      ),
-      rotation: new THREE.Euler(
-        0,
-        direction > 0 ? -Math.PI / 12 : Math.PI / 12,
-        0,
-      ),
+      position: targetPosition,
+      rotation: new THREE.Euler(0, yaw, 0),
     };
   }
 
-  createPanelMesh(gui, { position, rotation }) {
+  ensureVisiblePlacement(slot, transform) {
+    if (!transform) {
+      console.warn(
+        "[CanvasUILPanels] Missing anchor transform; falling back to camera placement.",
+        { slot },
+      );
+      return this.getCameraFallbackPosition(slot);
+    }
+    if (!this.isPlacementVisible(transform.position)) {
+      console.warn(
+        "[CanvasUILPanels] Anchor placement out of view; switching to camera fallback.",
+        { slot, position: transform.position.toArray() },
+      );
+      return this.getCameraFallbackPosition(slot);
+    }
+    return transform;
+  }
+
+  isPlacementVisible(position) {
+    if (!position || !this.camera) return false;
+    const projected = position.clone().project(this.camera);
+    const withinFrustum =
+      projected.x >= -1 &&
+      projected.x <= 1 &&
+      projected.y >= -1 &&
+      projected.y <= 1 &&
+      projected.z >= -1 &&
+      projected.z <= 1;
+    const distance = position.distanceTo(this.camera.position);
+    return withinFrustum && distance <= this.visibilityBounds.maxDistance;
+  }
+
+  getCameraFallbackPosition(slot = 1) {
+    if (!this.cameraFallback) {
+      this.enableCameraFallback("Falling back to camera space positioning.");
+    }
+    const config =
+      typeof slot === "number" ? { side: slot } : { ...(slot || {}) };
+    const side = Math.sign(config.side ?? 1) || 1;
+    const order = config.order ?? 0;
+    const forward = new THREE.Vector3();
+    this.camera.getWorldDirection(forward);
+    if (forward.lengthSq() === 0) forward.set(0, 0, -1);
+    forward.normalize();
+    const right = new THREE.Vector3().crossVectors(forward, this.camera.up).normalize();
+    const up = this.camera.up.clone().normalize();
+    const anchorDistance = config.distance ?? 6;
+    const lateral = config.lateral ?? 2.2;
+    const verticalBase = config.heightOffset ?? 1.4;
+    const verticalStep = config.verticalStep ?? 0.7;
+
+    const base = this.camera.position.clone().addScaledVector(forward, anchorDistance);
+    base.addScaledVector(right, side * lateral);
+    base.addScaledVector(up, verticalBase + order * verticalStep);
+
+    const yaw = Math.atan2(right.x * side, right.z * side) || 0;
+    return {
+      position: base,
+      rotation: new THREE.Euler(0, yaw, 0),
+    };
+  }
+
+  updateAnchorHelper() {
+    if (!this.anchorBox) return;
+    if (!this.anchorHelper) {
+      this.anchorHelper = new THREE.Box3Helper(
+        this.anchorBox,
+        new THREE.Color(0x00ffff),
+      );
+      this.anchorHelper.renderOrder = 5;
+      this.scene.add(this.anchorHelper);
+    } else {
+      this.anchorHelper.box.copy(this.anchorBox);
+    }
+  }
+
+  enableCameraFallback(reason) {
+    if (this.cameraFallback) return;
+    this.cameraFallback = true;
+    this.hasAnchor = false;
+    console.warn("[CanvasUILPanels] Camera fallback enabled:", reason);
+    if (this.debugHelpers) {
+      this.addFallbackHelper();
+    }
+  }
+
+  addFallbackHelper() {
+    if (this.fallbackHelper) return;
+    this.fallbackHelper = new THREE.AxesHelper(2);
+    this.scene.add(this.fallbackHelper);
+    this.fallbackHelper.renderOrder = 50;
+  }
+
+  createPanelMesh(gui, slot = 1) {
+    const { position, rotation } = this.getPanelTransform(slot) ?? {
+      position: new THREE.Vector3(),
+      rotation: new THREE.Euler(),
+    };
     const texture = new THREE.Texture(gui.canvas);
     texture.minFilter = THREE.LinearFilter;
     const material = new THREE.MeshBasicMaterial({
@@ -190,16 +367,55 @@ export class CanvasUILPanels {
     mesh.position.copy(position);
     mesh.rotation.copy(rotation);
     mesh.renderOrder = 20;
-    mesh.userData.panel = { gui, texture };
+    mesh.userData.panel = { gui, texture, slot };
+    if (this.debugHelpers) {
+      this.addPanelMarker(mesh);
+    }
     gui.onDraw = () => {
       texture.needsUpdate = true;
       mesh.visible = true;
     };
     mesh.onBeforeRender = () => {
+      if (this.cameraFallback) {
+        const fallback = this.getCameraFallbackPosition(
+          mesh.userData.panel.slot,
+        );
+        if (fallback) {
+          mesh.position.copy(fallback.position);
+          mesh.rotation.copy(fallback.rotation);
+        }
+      }
       mesh.lookAt(this.camera.position);
+      if (this.debugHelpers && this.cameraFallback && this.fallbackHelper) {
+        this.fallbackHelper.position.copy(mesh.position);
+      }
     };
     this.interactive.add(mesh);
-    return { gui, mesh };
+    console.log("[CanvasUILPanels] Panel created", {
+      slot,
+      usingAnchor: this.hasAnchor,
+      cameraFallback: this.cameraFallback,
+      position: mesh.position.toArray(),
+    });
+    return { gui, mesh, slot };
+  }
+
+  addPanelMarker(mesh) {
+    const markerGeo = new THREE.SphereGeometry(0.06, 8, 8);
+    const markerMat = new THREE.MeshBasicMaterial({
+      color: 0xff00ff,
+      depthTest: false,
+      transparent: true,
+      opacity: 0.7,
+    });
+    const marker = new THREE.Mesh(markerGeo, markerMat);
+    marker.renderOrder = mesh.renderOrder + 1;
+    marker.userData.parentPanel = mesh;
+    marker.onBeforeRender = () => {
+      marker.position.copy(mesh.position);
+    };
+    this.scene.add(marker);
+    this.panelDebugMarkers.push(marker);
   }
 
   attachPointerListeners() {

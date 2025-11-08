@@ -57,19 +57,46 @@ canvas#canvas {
     z-index: 2;
 }
 
-.uil-root {
-    position: fixed;
-    top: 7rem;
+#uil-root {
+    position: absolute;
+    top: 50%;
     left: 2rem;
+    right: auto;
+    transform: translateY(-50%);
     z-index: 40;
     pointer-events: auto;
 }
 
-.uil-root .uil-js {
+#uil-root.uil-hidden {
+    display: none !important;
+}
+
+#uil-root .uil-js {
     position: relative;
     margin: 0;
     pointer-events: auto;
     transform: none !important;
+}
+
+.uil-drag-handle {
+    width: 100%;
+    padding: 0.35rem 0.75rem;
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(226, 232, 240, 0.8);
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    border-bottom: none;
+    border-radius: 10px 10px 0 0;
+    cursor: grab;
+    user-select: none;
+    text-align: center;
+}
+
+.uil-drag-handle.dragging {
+    cursor: grabbing;
+    background: rgba(15, 23, 42, 0.85);
 }
 
 #root,

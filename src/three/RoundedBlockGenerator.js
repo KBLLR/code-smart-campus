@@ -78,6 +78,7 @@ export async function generateRoundedBlocksFromSVG(
               opacity: 0.95,
               roughness: 0.5,
               metalness: 0.35,
+              roomKey: normId || rawId || null,
             });
 
             const geo = new RoundedBoxGeometry(size.x, size.y, height, 5, 6);

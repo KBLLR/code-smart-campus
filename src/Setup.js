@@ -6,6 +6,10 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { Reflector } from "three/examples/jsm/objects/Reflector.js";
 import { color, screenUV, vec2 } from "three/tsl";
 import { StatsGLPanel } from "@/debug/StatsGLPanel.js";
+import {
+  createRenderer,
+  shouldPreferWebGPU,
+} from "@three/createRenderer.js";
 
 const DEFAULT_TARGET_BOUNDS = {
   min: new THREE.Vector3(-220, -10, -220),
@@ -61,42 +65,46 @@ export default class Setup {
       sticky: false,
     };
 
+    this.webgpuMode =
+      (typeof import.meta !== "undefined" &&
+        import.meta.env?.VITE_WEBGPU_MODE) ||
+      "off";
+
+    const preferWebGPU = shouldPreferWebGPU(this.webgpuMode);
+
     const w = cnvs.clientWidth;
     const h = cnvs.clientHeight;
     const aspect = w > 0 && h > 0 ? w / h : 1; // Prevent aspect ratio of 0 or NaN
 
-    const webGpuAvailable =
-      typeof navigator !== "undefined" && typeof navigator.gpu !== "undefined";
-    if (webGpuAvailable) {
-      console.info("[Setup] WebGPU available; renderer will fall back to WebGL until post-processing supports it.");
-    }
-
-    // WebGPU support is tracked for future migration but we still rely on WebGL
-    // because EffectComposer-based post-processing is not WebGPU-ready yet.
-    this.usingWebGPU = false;
-    this.re = new THREE.WebGLRenderer({
+    const { renderer, usingWebGPU, initPromise } = createRenderer({
       canvas: cnvs,
-      antialias: true,
-      alpha: true,
-      powerPreference: "high-performance",
+      preferWebGPU,
     });
-    this.re.toneMapping = THREE.ACESFilmicToneMapping; // ACESFilmic is often preferred
-    this.re.outputColorSpace = THREE.SRGBColorSpace;
-    this.re.shadowMap.enabled = true;
-    this.re.shadowMap.type = THREE.PCFSoftShadowMap;
-    this.re.setClearColor(0x0b1224, 1);
 
-    // Initial size setting - consider removing the mobile check if full screen is always desired
-    if (this.isMobileDevice()) {
-      this.re.setSize(cnvs.clientWidth * 0.7, cnvs.clientHeight * 0.7, false);
-    } else {
-      this.re.setSize(cnvs.clientWidth, cnvs.clientHeight, false);
+    this.re = renderer;
+    this.usingWebGPU = usingWebGPU;
+    this.rendererReady = initPromise || Promise.resolve();
+
+    const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+    if (typeof this.re.setPixelRatio === "function") {
+      this.re.setPixelRatio(pixelRatio);
     }
-
-    // Default to full size, let resize handler manage updates
     this.re.setSize(w, h, false);
 
-    this.re.setPixelRatio(Math.min(window.devicePixelRatio, 1));
+    if (!this.usingWebGPU) {
+      this.re.toneMapping = THREE.ACESFilmicToneMapping;
+      this.re.outputColorSpace = THREE.SRGBColorSpace;
+      if (this.re.shadowMap) {
+        this.re.shadowMap.enabled = true;
+        this.re.shadowMap.type = THREE.PCFSoftShadowMap;
+      }
+      this.re.setClearColor(0x0b1224, 1);
+    } else {
+      this.re.toneMapping = THREE.NeutralToneMapping;
+      console.info(
+        "[Setup] WebGPU mode enabled. EffectComposer and certain helpers are temporarily disabled.",
+      );
+    }
 
     this.cam = new THREE.PerspectiveCamera(
       Setup.fov,
@@ -209,8 +217,12 @@ export default class Setup {
     };
     this.cnvs.addEventListener("wheel", this.handleWheel, { passive: true });
 
-    this.pmremGenerator = new THREE.PMREMGenerator(this.re);
-    this.pmremGenerator.compileEquirectangularShader();
+    if (!this.usingWebGPU) {
+      this.pmremGenerator = new THREE.PMREMGenerator(this.re);
+      this.pmremGenerator.compileEquirectangularShader();
+    } else {
+      this.pmremGenerator = null;
+    }
     this.hdrLoader = new HDRLoader();
     this.environmentRT = null;
 
@@ -724,6 +736,12 @@ export default class Setup {
     clipBias = 0.0025,
   } = {}) {
     if (!this.re) return;
+    if (this.usingWebGPU) {
+      console.info(
+        "[Setup] Reflector skipped (WebGPU render target support pending).",
+      );
+      return;
+    }
     if (this.reflector) {
       this.scene.remove(this.reflector);
       this.reflector.geometry?.dispose?.();
@@ -782,6 +800,12 @@ export default class Setup {
 
   setEnvMap(url) {
     if (!url) return;
+    if (!this.pmremGenerator) {
+      console.warn(
+        "[Setup] PMREM unavailable (likely WebGPU path); skipping environment map.",
+      );
+      return;
+    }
     this.hdrLoader.load(
       url,
       (texture) => {

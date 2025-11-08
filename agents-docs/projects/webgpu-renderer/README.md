@@ -7,7 +7,8 @@ Deliver a staged migration of the Smart Campus 3D experience from the legacy Web
 - Audit the current rendering pipeline (post-processing, materials, HUD) and document the WebGPU gaps.
 - Replace WebGL-specific systems (EffectComposer, shadow maps, stats panel) with WebGPU-compatible alternatives or shims.
 - Transition the campus experience entirely onto WebGPU, removing the legacy WebGL renderer once parity checks pass.
-- Capture learnings and migration steps so future features (global illumination, GPU particles) can be layered on quickly.
+- Capture learnings and migration steps so future features (global illumination, GPU particles, on-device ML inference) can be layered on quickly.
+- Research TSL shader techniques for room materials and lighting so the campus visuals are ready for WebGPU-first shading workflows.
 
 ## Stakeholders & Reviewers
 - **Product / Vision**: David Caballero  
@@ -17,6 +18,7 @@ Deliver a staged migration of the Smart Campus 3D experience from the legacy Web
 
 ## Key Dependencies
 - Three.js r0.181 WebGPU builds (`three/webgpu`, `three/tsl`)
+- TSL shader graphs for room materials, sun/sky gradients, and future ML-driven effects
 - Post-processing replacements (e.g. `postprocessing` WebGPU branch or custom TSL passes)
 - HUD and overlay managers (`CSSHudManager`, label registries)
 - Build tooling updates (Vite config, lint allowances for TSL syntax)
