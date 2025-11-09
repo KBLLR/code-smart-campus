@@ -44,7 +44,7 @@ export class CanvasUILPanels {
   }
 
   async init() {
-    const module = await import("@/vendor/uil.module.js");
+    const module = await import("uil");
     this.UIL = module.UIL || module.default || module;
     this.computeAnchorBounds();
     this.createNavigationPanel();

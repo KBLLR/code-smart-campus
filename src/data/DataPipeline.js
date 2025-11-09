@@ -244,7 +244,7 @@ export class DataPipeline extends EventTarget {
    */
   _normaliseEntity(entity, source) {
     const entityId = entity.entity_id;
-    const [domain = "", objectId = ""] = entityId.split(".");
+    const [domain = ""] = entityId.split(".");
     const attributes = entity.attributes || {};
     const deviceClass = attributes.device_class || attributes.deviceClass;
     const friendlyName =

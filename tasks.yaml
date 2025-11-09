@@ -1,0 +1,28 @@
+project:
+  id_prefix: CAMPUS
+  owner: "@smart-campus-core"
+  variant: HITL # HITL | SEMI | UNSUPERVISED
+  intent: "Maintain Type-1 workflow across Smart Campus deliverables"
+
+backlog:
+  - id: CAMPUS-201
+    title: "Adopt ANNEX workflow"
+    description: "Apply the Type-1 ritual (tasks→sessions→PR) across the repo."
+    priority: high
+    owner: "@maintainer"
+    research:
+      - "multi-agent workflows"
+      - "engineering playbooks"
+  - id: CAMPUS-202
+    title: "Wire CLI scaffolding"
+    description: "Provide scripts for new sessions, task export, and lint/test checks."
+    priority: high
+    owner: "@maintainer"
+    research:
+      - "node cli design"
+
+in_progress: []
+
+review: []
+
+done: []

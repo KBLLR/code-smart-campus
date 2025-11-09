@@ -1,6 +1,6 @@
 # UG-102 — UIL Control Schema Proposal
 
-> Research sources: vendored UIL module (`src/vendor/uil.module.js`), existing Tweakpane wiring (`src/debug/Debugger.js`, `src/main.js`), and the UG-107 control inventory doc. Live web search unavailable; leveraging in-repo docs + prior knowledge.
+> Research sources: UIL npm package (`import("uil")`), existing Tweakpane wiring (`src/debug/Debugger.js`, `src/main.js`), and the UG-107 control inventory doc. Live web search unavailable; leveraging in-repo docs + prior knowledge.
 
 ## 1. Goals
 - Provide a declarative way for modules (Navigation, Lighting, Sensors, PostFX) to register UIL controls without importing the vendor module directly.
@@ -10,7 +10,7 @@
 ## 2. Core Concepts
 ### 2.1 UILController (runtime service)
 Located at `src/ui/UILController.js`, responsible for:
-- Lazy-loading `UIL.Gui` from `src/vendor/uil.module.js`.
+- Lazy-loading `UIL.Gui` from the npm package (`import("uil")`).
 - Creating the root panel(s) and handling layout (tabs or stacked folders).
 - Registering module descriptors and instantiating controls via builder functions.
 - Exposing an event bus so modules subscribe to control changes.

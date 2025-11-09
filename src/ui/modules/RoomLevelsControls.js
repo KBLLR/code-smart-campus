@@ -1,4 +1,4 @@
-import { UILController } from "@ui/UILController.js";
+/** @typedef {import("@/types/uil.js").UILController} UILController */
 
 /**
  * Controls for adjusting level offsets/scale of the roundedRooms group.

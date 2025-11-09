@@ -1,6 +1,7 @@
 # FE-120 — UIL Control Surface Migration
 
-_Draft – 2025-11-04_
+_Draft – 2025-11-04_  
+_Update 2025-11-08: UIL now ships via the npm package (`import("uil")`). Prior vendor instructions remain for historical context but are no longer required._
 
 ## Goals
 - Replace the current Tweakpane-based debugger panels with a UIL-driven control surface that feels closer to the 3D playground showcased in [UIL’s examples](https://lo-th.github.io/uil/examples/uil_3d.html).
@@ -8,8 +9,8 @@ _Draft – 2025-11-04_
 - Provide a modular API so future feature teams can contribute additional folders without touching the core debugger code.
 
 ## Library Integration
-- Ship UIL as an ESM-friendly bundle under `src/vendor/uil/`. (The upstream repo exposes a `build/uil.js` UMD; we can wrap it in a simple export until npm access is confirmed.)
-- Lazy-load the library from `debug/UilPanel.js` so that the main scene boot path stays lean.
+- Depend on the published `uil` npm package (already added to `package.json`) and lazy-load it via dynamic `import("uil")` inside `UILController` to keep the boot path lean.
+- Ensure the wrapper (`src/ui/UILController.js`) owns theme overrides and DOM mounting instead of importing the vendor directly.
 - Expose a factory `createUIL()` that returns the global `UIL.Gui` instance and registers shared themes (dark base, accent colours pulled from `styles/main.css` CSS variables).
 
 ## Proposed Architecture
@@ -48,7 +49,7 @@ src/debug/
 ## Migration Steps
 1. **Branch Setup**  
    - Create `feat/ui-uil-gui` branch (ensure `.git/refs/heads` permissions allow branch creation in the CLI sandbox).  
-   - Copy UIL build into `src/vendor/uil/uil.js` and add a barrel that re-exports `UIL`.
+   - Confirm the `uil` dependency is installed (`pnpm install uil`) and remove any lingering vendor copies to avoid lint noise.
 
 2. **Scaffold DebugSurface**  
    - New module instantiates UIL, registers shared state, and replaces Tweakpane bindings for camera, sun, post FX, and history.  
@@ -75,7 +76,7 @@ src/debug/
 
 ---
 **Next Actions**
-- [ ] Vendor UIL library under `src/vendor/uil/`.  
+- [ ] Keep UIL sourced from npm and verify `UILController` lazy-load works in dev/build.  
 - [ ] Implement `DebugSurface.js` skeleton with UIL bootstrapping and camera panel parity.  
 - [ ] Remove Tweakpane imports and replace debugger wiring in `main.js`.  
 - [ ] QA pass to ensure toggle parity before expanding to sensor-specific panels.

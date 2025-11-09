@@ -3,8 +3,6 @@ import "./sensors.css";
 import { dataPipeline } from "@data/DataPipeline.js";
 import { SensorDashboard } from "@lib/SensorDashboard.js";
 import { WebSocketStatus } from "@network/WebSocketStatus.js";
-
-const statusContainer = document.getElementById("websocket-status");
 const summaryList = document.getElementById("category-summary");
 const refreshButton = document.getElementById("refresh-button");
 const categoryTitle = document.getElementById("category-title");
@@ -43,12 +41,12 @@ function renderSummary(dashboardInstance) {
       <span class="summary-card__label">${label}</span>
     `;
     item.addEventListener("click", () => {
-      setActiveCategory(key, label);
+      setActiveCategory(key);
     });
     item.addEventListener("keydown", (event) => {
       if (event.key === "Enter" || event.key === " ") {
         event.preventDefault();
-        setActiveCategory(key, label);
+        setActiveCategory(key);
       }
     });
     summaryList.appendChild(item);
@@ -93,7 +91,7 @@ function updateCategoryHeader(categoryKey) {
   });
 }
 
-function setActiveCategory(categoryKey, label) {
+function setActiveCategory(categoryKey) {
   activeCategory = categoryKey;
   updateDashboardCategory();
 }

@@ -1,5 +1,7 @@
 # Repository Guidelines
 
+> **Reminder:** This repo follows the Type-1 annex ritual described in `README.md`. Before touching code, make sure your task exists in `tasks.yaml`, log your work via `pnpm run new:session`, and run `pnpm run tasks:export && pnpm run check` before raising a PR.
+
 ## Project Structure & Module Organization
 The 3D campus experience lives in `src/`, split into targeted modules: `ui/` for panels and overlays, `animation/` for scene motion, `network/` and `home_assistant/` for live data, and `registries/` for generated lookup tables. Shared utilities sit under `lib/`, `utils/`, and `config/`. Workflow and import helpers reside in `src/tools/`. Static assets (GLB/STL models, floorplan SVGs) ship from `public/`, while stakeholder narratives sit in `docs/`. Vite entrypoints (`main.js`, `scene.js`, `Setup.js`) and TypeScript metadata (`src/tsconfig.json`, `vite.config.js`) anchor the build.
 
@@ -12,6 +14,18 @@ The 3D campus experience lives in `src/`, split into targeted modules: `ui/` for
 
 ## Task Research Prerequisite
 Before opening or working on any task, run a quick web search on the topic to gather current best practices, terminology, and known blockers. Capture the key links or takeaways in the task’s Notes column (or description) so downstream agents understand the reference context that informed the work.
+
+Recommended research loop:
+
+1. **Be specific** with search queries (technology + use case + “best practices”).
+2. **Verify source credibility**:
+   - Cross-reference multiple reputable sources.
+   - Prioritize official documentation or standards.
+   - Consult academic/industry papers when available.
+   - Assess community consensus (issues, forums, RFCs).
+3. **Document findings** in the task/session log.
+4. **Benchmark** against existing solutions and flag risks.
+5. **Generate follow-up tasks** if unexpected work emerges from research.
 
 ## Coding Style & Naming Conventions
 Follow the ESLint configuration in `eslint.config.js`, which enforces modern ECMAScript/TypeScript defaults with browser and Node globals. Use 2-space indentation, dangling commas only where they clarify multi-line literals, and prefer ES modules (`import`/`export`). Mirror existing names: PascalCase classes/components (`Setup.js`), camelCase helpers (`uiUpdater.js`), and kebab-case asset files. Keep configuration constants in `config/` and isolate side-effectful code in the relevant module rather than `utils/`.
@@ -27,3 +41,7 @@ Create a `.env.local` aligned with `dotenv` usage in `src/tools/` and `vite.conf
 
 ## UI Assets & Icons
 `public/icons/` houses a curated SVG set (e.g. `temperature.svg`, `occupancy.svg`, `badge-3d.svg`) exposed via `/icons/<name>.svg`. Reuse these when styling toolbar chips, dashboard cards, or sprite labels so the UI stays visually consistent. Add new icons using the same naming convention and keep them monochrome for easy theming.
+
+## Project Creation
+- **HITL or Semi-supervised projects must be created by the user.** Agents can only scaffold Unsupervised projects.
+- Always capture `variant` and `intent` inside `tasks.yaml` (`project` block) before logging any sessions.

@@ -49,7 +49,7 @@ export class UILController {
     this.options = { ...this.options, ...opts };
     this.mount = this.options.mount || document.body;
 
-    this.initialising = import("@/vendor/uil.module.js")
+    this.initialising = import("uil")
       .then((module) => {
         this.UIL = module.UIL || module.default || module;
         if (!this.UIL) throw new Error("[UILController] Failed to load UIL module.");

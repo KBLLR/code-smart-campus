@@ -1,6 +1,6 @@
 # UG-107 — UIL Control Inventory & Scene Mapping
 
-> Research sources: existing UIL demo (`src/vendor/uil.module.js` + https://lo-th.github.io/uil/examples/uil_3d.html) and prior experience; live web search is currently unavailable in this environment.
+> Research sources: UIL npm package (`import("uil")`), upstream demos (https://lo-th.github.io/uil/examples/uil_3d.html), and prior experience; live web search is currently unavailable in this environment.
 
 ## 1. Control Palette
 
@@ -45,7 +45,7 @@
 
 ## 3. Notes / Considerations
 - UIL supports custom theming by overriding CSS variables in `uil.css`; need to align with HUD glass aesthetic (dark background, cyan accents).
-- Vendor bundle (`src/vendor/uil.module.js`) exports `UIL.Gui`. We can build a wrapper module (e.g., `src/ui/UILController.js`) to abstract registration so modules don't import the vendor directly.
+- The npm `uil` package exposes `UIL.Gui`. Keep access behind our wrapper (`src/ui/UILController.js`) so modules don’t import the library directly.
 - Some UIL widgets (graph, joystick) depend on RAF; ensure they pause when the panel is hidden to save perf.
 - Accessibility: UIL focus handling is custom—will need to add ARIA labels mirroring our existing toolbar semantics.
 

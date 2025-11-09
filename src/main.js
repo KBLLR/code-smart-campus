@@ -24,7 +24,6 @@ import {
   clearRoomHighlightByKey,
   focusEntity,
 } from "@/scene.js";
-import { SensorDashboard } from "@lib/SensorDashboard.js";
 import { createPanelsFromData } from "@lib/PanelBuilder.js";
 import { WebSocketStatus } from "@network/WebSocketStatus.js";
 import { setHaStates, updateEntityState } from "@home_assistant/haState.js";
@@ -42,13 +41,18 @@ import { registerDebuggerControls } from "@ui/modules/DebuggerControls.js";
 import { registerOrbitDebugControls } from "@ui/modules/OrbitDebugControls.js";
 import { registerRoomLevelsControls } from "@ui/modules/RoomLevelsControls.js";
 import { CanvasUILPanels } from "@ui/modules/CanvasUILPanels.js";
-import { registerProjectorControls } from "@ui/modules/ProjectorControls.js";
+import { registerScreenControls } from "@ui/modules/ScreenControls.js";
 import { PostProcessor } from "@/postprocessing/PostProcessor.js";
 import { CSSHudManager } from "@hud/CSSHudManager.js";
 import { dataPipeline } from "@data/DataPipeline.js";
 import { RoomSelectionController } from "@interaction/RoomSelectionController.js";
-import { WebGPUProjector } from "@three/WebGPUProjector.js";
+import { WebGPUScreen } from "@three/WebGPUScreen.js";
 import { materialRegistry } from "@registries/materialsRegistry.js";
+import {
+  buildCapabilitiesSnapshot,
+  setSceneCapabilities,
+  updateSceneCapabilities,
+} from "@config/capabilities.js";
 
 // --- Global Variables / State ---
 
@@ -60,13 +64,34 @@ let toolbarInstance = null;
 let postProcessor = null;
 let hudManager = null;
 let roomSelectionController = null;
-let webgpuProjector = null;
-let projectorControlsRegistered = false;
+let webgpuScreen = null;
+let screenControlsRegistered = false;
 
-const hydrateSensorDashboard = (entities = []) => {
-  if (!sensorDashboardInstance || !Array.isArray(entities)) return;
-  entities.forEach((entity) => sensorDashboardInstance.update(entity));
-};
+function bootstrapScreen(target = null) {
+  if (!setup.usingWebGPU) return null;
+  try {
+    webgpuScreen?.dispose?.();
+    webgpuScreen = new WebGPUScreen({
+      scene,
+      renderer: setup.re,
+      target,
+    });
+    if (webgpuScreen) {
+      scene.userData.screen = webgpuScreen;
+      updateSceneCapabilities(scene, {
+        screen: {
+          supported: true,
+          mode: "webgpu-screen",
+        },
+      });
+      window.dispatchEvent(new CustomEvent("screen-ready"));
+    }
+    return webgpuScreen;
+  } catch (error) {
+    console.error("[WebGPUScreen] Failed to initialize:", error);
+    return null;
+  }
+}
 
 const normalizeRoomId = (value) =>
   typeof value === "string" ? value.toLowerCase().replace(/[^a-z0-9]/g, "") : null;
@@ -199,6 +224,24 @@ const viewHero = new ViewHero({
   },
 });
 
+// Append sensor toggle capsule next to telemetry status
+(() => {
+  const sensorToggleControl = document.createElement("button");
+  sensorToggleControl.type = "button";
+  sensorToggleControl.className = "view-hero__sensor-btn";
+  sensorToggleControl.setAttribute("aria-label", "Toggle sensor panels");
+  sensorToggleControl.innerHTML = `
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M10 20v-6H4v-4h6V4h4v6h6v4h-6v6h-4z"></path>
+    </svg>
+    <span>Sensors</span>
+  `;
+sensorToggleControl.addEventListener("click", () => {
+  toggleSensorPanelState();
+});
+  viewHero.addStatusControl(sensorToggleControl);
+})();
+
 panelShell?.classList.remove("is-open");
 contentArea?.classList.remove("is-open");
 panelIndicators?.classList.remove("is-open");
@@ -301,12 +344,12 @@ function registerWebGPUModules() {
   console.info(
     "[UIL] WebGPU renderer detected; registering WebGPU-specific controls only.",
   );
-  if (!projectorControlsRegistered) {
-    registerProjectorControls({
+  if (!screenControlsRegistered) {
+    registerScreenControls({
       controller: navigationController,
-      projectorProvider: () => scene.userData.projector,
+      screenProvider: () => scene.userData.screen,
     });
-    projectorControlsRegistered = true;
+    screenControlsRegistered = true;
   }
 }
 
@@ -332,12 +375,26 @@ registerOrbitDebugControls({
   controller: navigationController,
   setup,
 });
+
+if (setup.usingWebGPU) {
+  bootstrapScreen();
+}
 whenReady("roomMeshes", (meshesMap) => {
   registerDebuggerControls({
     controller: navigationController,
     roomMeshes: meshesMap,
     setup,
     scene,
+    extraEntries: scene.userData.screen?.screenMesh
+      ? [
+          {
+            id: "__screen__",
+            label: "Screen",
+            object: scene.userData.screen.screenMesh,
+            highlightable: false,
+          },
+        ]
+      : [],
   });
 });
 whenReady("roundedRoomsGroup", (group) => {
@@ -362,14 +419,8 @@ whenReady("roundedRoomsGroup", (group) => {
     console.log("[CanvasUILPanels] Instance exposed on window.canvasPanels");
   }
   if (setup.usingWebGPU) {
-    webgpuProjector?.dispose?.();
-    webgpuProjector = new WebGPUProjector({
-      scene,
-      renderer: setup.re,
-      target: group,
-    });
-    scene.userData.projector = webgpuProjector;
-    window.dispatchEvent(new CustomEvent("projector-ready"));
+    bootstrapScreen(group);
+    scene.userData.screen?.updateTarget?.(group);
   }
 });
 
@@ -455,11 +506,18 @@ if (!setup.usingWebGPU) {
   };
 }
 
-scene.userData.capabilities = {
-  renderer: setup.usingWebGPU ? "webgpu" : "webgl",
-  projector: Boolean(setup.usingWebGPU),
-  postFX: !setup.usingWebGPU,
-};
+setSceneCapabilities(
+  scene,
+  buildCapabilitiesSnapshot({
+    usingWebGPU: setup.usingWebGPU,
+    hasPostFX: Boolean(postProcessor),
+    supportsSnapshots: Boolean(postProcessor),
+    hasScreen: Boolean(webgpuScreen),
+    screenMode: setup.usingWebGPU ? "webgpu-screen" : null,
+    hudReady: false,
+    statsReady: Boolean(setup.stats),
+  }),
+);
 
 if (setup.usingWebGPU) {
   registerWebGPUModules();
@@ -475,6 +533,9 @@ hudManager = new CSSHudManager({
 scene.userData.hud = {
   manager: hudManager,
 };
+updateSceneCapabilities(scene, {
+  hud: { supported: true },
+});
 hudManager.sync(labelManager.getLabels());
 const hudInteractionState = {
   hoveredEntityId: null,
@@ -1118,18 +1179,7 @@ document.body.addEventListener("click", (event) => {
 });
 
 // Floating button toggle for panel visibility
-floatingBtn?.addEventListener("click", function () {
-  if (!panelShell || !contentArea || !panelIndicators || !floatingBtn) {
-    console.error("Floating button click: Required UI elements missing!");
-    return; // Prevent toggling if elements are missing
-  }
-
-  const willOpen = !panelShell.classList.contains("is-open");
-  panelShell.classList.toggle("is-open", willOpen);
-  contentArea.classList.toggle("is-open", willOpen);
-  panelIndicators.classList.toggle("is-open", willOpen);
-  floatingBtn.classList.toggle("active", willOpen);
-});
+floatingBtn?.addEventListener("click", () => toggleSensorPanelState());
 
 // Panel indicators scroll sync
 contentArea?.addEventListener(
@@ -1293,8 +1343,7 @@ window.addEventListener("DOMContentLoaded", () => {
   // This ensures the DOM is ready for UI elements like WebSocketStatus if needed
   console.log("[Init] DOMContentLoaded event fired.");
   try {
-    // Assumes the container #sensor-dashboard exists in the HTML now
-    sensorDashboardInstance = new SensorDashboard("sensor-dashboard");
+      sensorDashboardInstance = null;
     console.log("📊 SensorDashboard initialized.");
     initializeToolbar();
   } catch (error) {
@@ -1489,3 +1538,19 @@ if (setup.rendererReady?.then) {
 } else {
   startAnimationLoop();
 }
+function toggleSensorPanelState(forceState) {
+  if (!panelShell || !contentArea || !panelIndicators) {
+    console.warn("[Panels] Missing shell elements; cannot toggle.");
+    return;
+  }
+  const shouldOpen =
+    typeof forceState === "boolean"
+      ? forceState
+      : !panelShell.classList.contains("is-open");
+  panelShell.classList.toggle("is-open", shouldOpen);
+  contentArea.classList.toggle("is-open", shouldOpen);
+  panelIndicators.classList.toggle("is-open", shouldOpen);
+  floatingBtn?.classList.toggle("active", shouldOpen);
+}
+
+window.triggerSensorPanelToggle = toggleSensorPanelState;

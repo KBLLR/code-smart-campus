@@ -1,5 +1,6 @@
 import * as THREE from "three";
-import { UILController } from "@ui/UILController.js";
+
+/** @typedef {import("@/types/uil.js").UILController} UILController */
 
 function createHighlight(scene) {
   const geometry = new THREE.BoxGeometry(1, 1, 1);
@@ -41,32 +42,53 @@ function focusMesh(setup, mesh) {
 
 /**
  * Register debugger controls (room picker + highlight/focus) with UIL.
- * @param {{ controller: UILController, roomMeshes: Record<string,THREE.Object3D>, setup: import("@/Setup.js").default, scene: THREE.Scene }} params
+ * @param {{ controller: UILController, roomMeshes: Record<string,THREE.Object3D>, setup: import("@/Setup.js").default, scene: THREE.Scene, extraEntries?: Array<{ id: string, label: string, object: THREE.Object3D, highlightable?: boolean }> }} params
  */
 export async function registerDebuggerControls({
   controller,
   roomMeshes,
   setup,
   scene,
+  extraEntries = [],
 }) {
   if (!controller || !roomMeshes || !scene) return;
 
   const highlight = createHighlight(scene);
-  const meshEntries = Object.entries(roomMeshes).filter(
-    ([, mesh]) => mesh && (mesh.isMesh || mesh.isGroup),
-  );
-  if (meshEntries.length === 0) return;
-  const options = meshEntries.map(([id, mesh]) => ({
-    label: mesh.name || id,
-    value: id,
-  }));
+  const selectionEntries = [];
+  Object.entries(roomMeshes).forEach(([id, mesh]) => {
+    if (mesh && (mesh.isMesh || mesh.isGroup)) {
+      selectionEntries.push({
+        id,
+        label: mesh.name || id,
+        object: mesh,
+        highlightable: true,
+      });
+    }
+  });
+  extraEntries?.forEach?.((entry) => {
+    if (entry?.id && entry.object) {
+      selectionEntries.push({
+        id: entry.id,
+        label: entry.label || entry.id,
+        object: entry.object,
+        highlightable: Boolean(entry.highlightable),
+      });
+    }
+  });
+  if (!selectionEntries.length) return;
+
+  const selectionMap = new Map();
+  const options = selectionEntries.map((entry) => {
+    selectionMap.set(entry.id, entry);
+    return { label: entry.label, value: entry.id };
+  });
   let selectedId = options[0].value;
 
-  const selectMesh = (id) => {
+  const updateSelection = (id) => {
     selectedId = id;
-    const mesh = roomMeshes[id];
-    if (mesh) {
-      updateHighlightMesh(highlight, mesh);
+    const entry = selectionMap.get(id);
+    if (entry?.highlightable && entry.object) {
+      updateHighlightMesh(highlight, entry.object);
     } else {
       highlight.visible = false;
     }
@@ -107,7 +129,7 @@ export async function registerDebuggerControls({
           return acc;
         }, {}),
         default: selectedId,
-        onChange: (value) => selectMesh(value),
+        onChange: (value) => updateSelection(value),
       },
       {
         id: "highlightToggle",
@@ -115,22 +137,28 @@ export async function registerDebuggerControls({
         type: "bool",
         default: true,
         onChange: (value) => {
-          highlight.visible = value && Boolean(roomMeshes[selectedId]);
+          const entry = selectionMap.get(selectedId);
+          highlight.visible =
+            value && Boolean(entry?.highlightable && entry.object);
         },
       },
       {
         id: "focusRoom",
         label: "Focus Camera",
         type: "button",
-        onChange: () => focusMesh(setup, roomMeshes[selectedId]),
+        onChange: () => {
+          const entry = selectionMap.get(selectedId);
+          focusMesh(setup, entry?.object);
+        },
       },
       {
         id: "resetSelection",
         label: "Reset Selection",
         type: "button",
         onChange: () => {
-          selectMesh(options[0].value);
-          focusMesh(setup, roomMeshes[options[0].value]);
+          updateSelection(options[0].value);
+          const defaultEntry = selectionMap.get(options[0].value);
+          focusMesh(setup, defaultEntry?.object);
         },
       },
     ],
@@ -175,5 +203,5 @@ export async function registerDebuggerControls({
   }
 
   // Initial selection highlight
-  selectMesh(selectedId);
+  updateSelection(selectedId);
 }

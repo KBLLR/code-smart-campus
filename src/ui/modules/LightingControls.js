@@ -1,13 +1,12 @@
-import { UILController } from "@ui/UILController.js";
+/** @typedef {import("@/types/uil.js").UILController} UILController */
 
 /**
  * Registers lighting/post FX controls.
- * @param {{ controller: UILController, postFX: { config: object, setEnabled: Function, setBloomSettings: Function }, setup: import("@/Setup.js").default }} params
+ * @param {{ controller: UILController, postFX: { config: object, setEnabled: Function, setBloomSettings: Function } }} params
  */
 export async function registerLightingControls({
   controller,
   postFX,
-  setup,
 }) {
   if (!controller) throw new Error("[LightingControls] controller is required");
   if (!postFX) {

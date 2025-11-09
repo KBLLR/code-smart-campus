@@ -1,5 +1,5 @@
 // src/ui/components/organisms/Toolbar.js
-// Lightweight toolbar that wires layout controls, sensor category toggles, camera views, and export helpers.
+// Sliding bottom panel with tabbed sections for layouts, sensors, views, tools, and exports.
 
 import {
   labelCategories,
@@ -62,6 +62,126 @@ const EXPORT_ACTIONS = [
   },
 ];
 
+const TAB_CONFIG = [
+  {
+    id: "layouts",
+    label: "Layouts",
+    icon: "floorplan.svg",
+    eyebrow: "Spatial presets",
+    title: "Layout Modes",
+    subtitle: "Arrange how rooms and sensors cluster on the floor plan.",
+    description:
+      "Choose how rooms and sensor labels are grouped. Each mode highlights different navigation patterns across the campus.",
+    pages: { current: 1, total: 1 },
+    builder(toolbar, meta) {
+      return toolbar.buildLayoutsTab(meta);
+    },
+  },
+  {
+    id: "sensors",
+    label: "Sensors",
+    icon: "occupancy.svg",
+    eyebrow: "Sensor labels",
+    title: "Sensor Categories",
+    subtitle: "Toggle label groups and surface only what matters.",
+    description:
+      "Enable or hide sensor categories to keep the HUD focused on the data you need during walkthroughs.",
+    pages: { current: 1, total: 1 },
+    builder(toolbar, meta) {
+      return toolbar.buildSensorsTab(meta);
+    },
+  },
+  {
+    id: "views",
+    label: "Views",
+    icon: "perspective-view.svg",
+    eyebrow: "Camera presets",
+    title: "Camera Views",
+    subtitle: "Jump to saved perspectives for quick inspection.",
+    description:
+      "Quickly reposition the camera to curated bookmarks for orientation, daylight checks, or demo storytelling.",
+    pages: { current: 1, total: 1 },
+    builder(toolbar, meta) {
+      return toolbar.buildViewsTab(meta);
+    },
+  },
+  {
+    id: "tools",
+    label: "Tools",
+    icon: "info.svg",
+    eyebrow: "Utilities",
+    title: "Scene Tools",
+    subtitle: "Debugger toggles, label info, and future add-ons.",
+    description:
+      "Access debugging aids, label summaries, and other utilities that support ops and QA workflows.",
+    pages: { current: 1, total: 1 },
+    builder(toolbar, meta) {
+      return toolbar.buildToolsTab(meta);
+    },
+  },
+  {
+    id: "export",
+    label: "Export",
+    icon: "badge-3d.svg",
+    eyebrow: "Shareables",
+    title: "Export Scene",
+    subtitle: "Download GLB or STL snapshots of the current model.",
+    description:
+      "Capture the campus model for sharing or archival purposes. Choose the format that fits your downstream tools.",
+    pages: { current: 1, total: 1 },
+    builder(toolbar, meta) {
+      return toolbar.buildExportTab(meta);
+    },
+  },
+  {
+    id: "ai",
+    label: "AI",
+    icon: "ai.svg",
+    eyebrow: "Assistants",
+    title: "AI Companion",
+    subtitle: "Trigger campus-aware AI helpers.",
+    description:
+      "Access AI copilots for status summaries, anomaly detection, and guided tours.",
+    pages: { current: 1, total: 1 },
+    builder(toolbar, meta) {
+      return toolbar.buildAITab(meta);
+    },
+  },
+  {
+    id: "settings",
+    label: "Settings",
+    icon: "adjustments-code.svg",
+    eyebrow: "Preferences",
+    title: "Control Center",
+    subtitle: "Tune UI, notifications, and renderer modes.",
+    description:
+      "Adjust experience preferences, renderer choices, and notification channels.",
+    pages: { current: 1, total: 1 },
+    builder(toolbar, meta) {
+      return toolbar.buildSettingsTab(meta);
+    },
+  },
+  {
+    id: "news",
+    label: "News",
+    icon: "book.svg",
+    eyebrow: "Campus briefings",
+    title: "Latest Updates",
+    subtitle: "Stay informed on incidents and announcements.",
+    description:
+      "Review alerts, maintenance notices, and daily digest entries relevant to the campus.",
+    pages: { current: 1, total: 1 },
+    builder(toolbar, meta) {
+      return toolbar.buildNewsTab(meta);
+    },
+  },
+];
+
+const PANEL_LIMITS = {
+  min: 160,
+  maxRatio: 0.75,
+};
+
 export class Toolbar {
   constructor({
     rootSelector = "#toolbar-root",
@@ -78,12 +198,17 @@ export class Toolbar {
         : rootSelector;
 
     if (!this.root) {
-      this.root = document.createElement("header");
+      this.root = document.createElement("section");
       this.root.id = "toolbar-root";
       document.body.appendChild(this.root);
     }
 
-    this.root.classList.add("toolbar", "toolbar__container", "theme-scifi-glass");
+    this.root.classList.add(
+      "toolbar",
+      "toolbar__container",
+      "toolbar-panel",
+      "theme-scifi-glass",
+    );
 
     this.categories = categories ?? labelCategories;
     this.layoutManager = layoutManager ?? null;
@@ -92,14 +217,17 @@ export class Toolbar {
     this.exportTarget = exportTarget;
     this.exporter = new MeshExporter();
     this.uilPanel = uilPanel;
-    this.toolStates = new Map();
 
+    this.toolStates = new Map();
+    this.tabContentCache = new Map();
     this.activeLayout = "svg-aligned";
     this.activeCategories = new Set(
       (this.categories || []).map((category) => category.key),
     );
+    this.activeTab = TAB_CONFIG[0].id;
+    this.panelHeight = 260;
+    this.isCollapsed = false;
 
-    // If a label manager was provided, make sure the layout manager sees the same registry.
     if (this.layoutManager && this.labelManager) {
       this.layoutManager.labels = this.labelManager.getLabels();
     }
@@ -108,60 +236,218 @@ export class Toolbar {
   }
 
   render() {
-    this.root.innerHTML = "";
-
-    const fragment = document.createDocumentFragment();
-
-    fragment.appendChild(this.buildGroup("Layouts", LAYOUT_OPTIONS, (option) =>
-      this.handleLayoutChange(option.key),
-    ));
-
-    fragment.appendChild(this.createSeparator());
-
-    fragment.appendChild(
-      this.buildCategoryGroup(this.categories || [], (category, active) =>
-        this.handleCategoryToggle(category.key, active),
-      ),
-    );
-
-    fragment.appendChild(this.createSeparator());
-
-    fragment.appendChild(this.buildGroup("Views", VIEW_OPTIONS, (option) =>
-      this.handleViewChange(option.key),
-    ));
-
-    fragment.appendChild(this.createSeparator());
-
-    fragment.appendChild(
-      this.buildGroup("Tools", TOOL_ACTIONS, (action, state) =>
-        action.handler?.(this, state),
-      ),
-    );
-
-    fragment.appendChild(this.createSeparator());
-
-    fragment.appendChild(
-      this.buildGroup("Export", EXPORT_ACTIONS, (action) =>
-        action.handler?.(this.exporter, this.exportTarget),
-      ),
-    );
-
-    this.root.appendChild(fragment);
+    this.renderShell();
+    this.renderActiveTab();
     this.syncInitialStates();
   }
 
-  createSeparator() {
-    const span = document.createElement("span");
-    span.className = "toolbar__separator";
-    span.textContent = "|";
-    span.setAttribute("aria-hidden", "true");
-    return span;
+  renderShell() {
+    this.root.innerHTML = "";
+
+    this.panel = document.createElement("div");
+    this.panel.className = "toolbar-panel__surface";
+    this.panel.style.setProperty(
+      "--toolbar-panel-height",
+      `${this.panelHeight}px`,
+    );
+    this.panel.classList.toggle("is-collapsed", this.isCollapsed);
+
+    this.resizeHandle = document.createElement("div");
+    this.resizeHandle.className = "toolbar-panel__resize-handle";
+    this.resizeHandle.setAttribute("role", "separator");
+    this.resizeHandle.setAttribute("aria-label", "Resize toolbar panel");
+
+    this.header = document.createElement("header");
+    this.header.className = "toolbar-panel__header";
+
+    this.navContainer = document.createElement("div");
+    this.navContainer.className = "toolbar-page__nav";
+    this.header.append(this.navContainer);
+
+    this.body = document.createElement("div");
+    this.body.className = "toolbar-panel__body";
+
+    this.panel.append(this.resizeHandle, this.header, this.body);
+    this.root.appendChild(this.panel);
+
+    this.initResizeHandle();
   }
 
-  buildGroup(title, options, onSelect) {
+  setActiveTab(tabId) {
+    if (this.activeTab === tabId) return;
+    this.activeTab = tabId;
+    this.renderActiveTab();
+    if (this.navButtons) {
+      this.navButtons.forEach((button, id) => {
+        button.classList.toggle("is-active", id === tabId);
+      });
+    }
+  }
+
+  renderActiveTab() {
+    const currentTab = TAB_CONFIG.find((tab) => tab.id === this.activeTab);
+    if (!currentTab) return;
+
+    this.renderHeaderNav(currentTab);
+
+    let content = this.tabContentCache.get(currentTab.id);
+    if (!content) {
+      content = currentTab.builder(this, currentTab);
+      this.tabContentCache.set(currentTab.id, content);
+    }
+
+    const page = this.buildPageLayout(currentTab, content);
+    this.body.innerHTML = "";
+    this.body.appendChild(page);
+    this.afterTabRender(currentTab.id);
+  }
+
+  afterTabRender(tabId) {
+    if (tabId === "layouts" || tabId === "views") {
+      this.syncInitialStates();
+    }
+    if (tabId === "sensors") {
+      this.refreshCategoryCounts();
+    }
+  }
+
+  buildLayoutsTab() {
+    return this.buildGroup("layouts", LAYOUT_OPTIONS, (option) =>
+      this.handleLayoutChange(option.key),
+    );
+  }
+
+  buildSensorsTab() {
+    return this.buildCategoryGroup(this.categories || [], (category, active) =>
+      this.handleCategoryToggle(category.key, active),
+    );
+  }
+
+  buildViewsTab() {
+    return this.buildGroup("views", VIEW_OPTIONS, (option) =>
+      this.handleViewChange(option.key),
+    );
+  }
+
+  buildToolsTab() {
+    return this.buildGroup("tools", TOOL_ACTIONS, (action, state) =>
+      action.handler?.(this, state),
+    );
+  }
+
+  buildExportTab() {
+    return this.buildGroup("export", EXPORT_ACTIONS, (action) =>
+      action.handler?.(this.exporter, this.exportTarget),
+    );
+  }
+
+  buildAITab() {
+    return this.buildPlaceholder("AI assistants coming soon.");
+  }
+
+  buildSettingsTab() {
+    return this.buildPlaceholder("Settings panel under construction.");
+  }
+
+  buildNewsTab() {
+    return this.buildPlaceholder("News feed will surface alerts and updates.");
+  }
+
+  buildPlaceholder(text) {
+    const wrapper = document.createElement("div");
+    wrapper.className = "toolbar__group toolbar__group--placeholder";
+    const message = document.createElement("p");
+    message.textContent = text;
+    wrapper.appendChild(message);
+    return wrapper;
+  }
+
+  buildPageLayout(tabMeta, actionsNode) {
+    const page = document.createElement("div");
+    page.className = "toolbar-page";
+
+    const contentRow = document.createElement("div");
+    contentRow.className = "toolbar-page__content";
+    contentRow.append(
+      this.buildInfoColumn(tabMeta),
+      this.buildActionsColumn(actionsNode),
+    );
+
+    const footerRow = document.createElement("div");
+    footerRow.className = "toolbar-page__footer";
+    footerRow.textContent = "Footer actions coming soon.";
+
+    page.append(contentRow, footerRow);
+    return page;
+  }
+  
+  renderHeaderNav(currentTab) {
+    if (!this.navContainer) return;
+    this.navContainer.innerHTML = "";
+    this.navButtons = new Map();
+
+    const track = document.createElement("div");
+    track.className = "toolbar-page__nav-track";
+
+    TAB_CONFIG.forEach((tab, index) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "toolbar-page__nav-btn";
+      button.dataset.tab = tab.id;
+      button.setAttribute("aria-label", tab.label);
+      button.innerHTML = `<img src="/icons/${tab.icon}" alt="" width="28" height="28" />`;
+      if (tab.id === currentTab.id) {
+        button.classList.add("is-active");
+      }
+      button.addEventListener("click", () => this.setActiveTab(tab.id));
+      track.appendChild(button);
+      this.navButtons.set(tab.id, button);
+
+      if (index < TAB_CONFIG.length - 1) {
+        const sep = document.createElement("span");
+        sep.className = "toolbar-page__nav-separator";
+        sep.textContent = "|";
+        track.appendChild(sep);
+      }
+    });
+
+    this.navContainer.append(track);
+  }
+
+  buildInfoColumn(tabMeta) {
+    const column = document.createElement("div");
+    column.className = "toolbar-page__info";
+
+    const eyebrow = document.createElement("p");
+    eyebrow.className = "toolbar-section__eyebrow";
+    eyebrow.textContent = tabMeta.eyebrow || "";
+
+    const title = document.createElement("h3");
+    title.textContent = tabMeta.title || tabMeta.label || "Panel";
+
+    const subtitle = document.createElement("p");
+    subtitle.className = "toolbar-section__subtitle";
+    subtitle.textContent = tabMeta.subtitle || "";
+
+    const description = document.createElement("p");
+    description.className = "toolbar-page__description";
+    description.textContent = tabMeta.description || "";
+
+    column.append(eyebrow, title, subtitle, description);
+    return column;
+  }
+
+  buildActionsColumn(actionsNode) {
+    const column = document.createElement("div");
+    column.className = "toolbar-page__actions";
+    column.appendChild(actionsNode);
+    return column;
+  }
+
+  buildGroup(role, options, onSelect) {
     const group = document.createElement("div");
     group.className = "toolbar__group";
-    group.dataset.role = title.toLowerCase();
+    group.dataset.role = role;
 
     options.forEach((option) => {
       const button = this.createToolbarButton(option);
@@ -173,6 +459,7 @@ export class Toolbar {
           this.toolStates.set(option.key, nextState);
           onSelect(option, nextState, button);
         } else {
+          this.setActiveButton(button);
           onSelect(option, button);
         }
       });
@@ -181,6 +468,7 @@ export class Toolbar {
 
     return group;
   }
+
 
   buildCategoryGroup(categories, onToggle) {
     const group = document.createElement("div");
@@ -193,6 +481,7 @@ export class Toolbar {
         label: `${category.label}`,
         count: category.count,
         isToggle: true,
+        variant: "chip",
       });
       button.classList.add("toolbar__button--chip");
       button.dataset.category = category.key;
@@ -209,20 +498,24 @@ export class Toolbar {
   }
 
   createToolbarButton(option) {
-    const { key, icon, label, count, isToggle = false } = option;
+    const { key, icon, label, count, isToggle = false, variant = "tile" } =
+      option;
     const button = document.createElement("button");
     button.type = "button";
-    button.className = "toolbar__button";
+    button.className = `toolbar__button toolbar__button--${variant}`;
+
     if (isToggle) {
-      button.classList.add("toolbar__button--toggle");
       const initialState =
         (typeof option.getState === "function"
           ? option.getState(this)
           : this.toolStates.get(key)) ?? true;
-      button.setAttribute("aria-pressed", String(initialState));
       button.classList.toggle("active", initialState);
+      button.setAttribute("aria-pressed", String(initialState));
       this.toolStates.set(key, initialState);
+    } else {
+      button.setAttribute("aria-pressed", "false");
     }
+
     button.dataset.key = key;
     button.title = label;
     button.setAttribute("aria-label", label);
@@ -231,8 +524,8 @@ export class Toolbar {
       const iconEl = document.createElement("img");
       iconEl.src = icon.startsWith("/") ? icon : `/icons/${icon}`;
       iconEl.alt = "";
-      iconEl.width = 20;
-      iconEl.height = 20;
+      iconEl.width = 24;
+      iconEl.height = 24;
       iconEl.className = "toolbar__button-icon";
       button.appendChild(iconEl);
     }
@@ -252,8 +545,56 @@ export class Toolbar {
     return button;
   }
 
+  initResizeHandle() {
+    const handle = this.resizeHandle;
+    let pointerId = null;
+    let startY = 0;
+    let startHeight = this.panelHeight;
+
+    const onPointerMove = (event) => {
+      if (event.pointerId !== pointerId) return;
+      const delta = startY - event.clientY;
+      const targetHeight = Math.min(
+        Math.max(startHeight + delta, PANEL_LIMITS.min),
+        window.innerHeight * PANEL_LIMITS.maxRatio,
+      );
+      this.setPanelHeight(targetHeight);
+    };
+
+    const onPointerUp = (event) => {
+      if (event.pointerId !== pointerId) return;
+      pointerId = null;
+      window.removeEventListener("pointermove", onPointerMove);
+      window.removeEventListener("pointerup", onPointerUp);
+    };
+
+    handle.addEventListener("pointerdown", (event) => {
+      pointerId = event.pointerId;
+      startY = event.clientY;
+      startHeight = this.panelHeight;
+      window.addEventListener("pointermove", onPointerMove);
+      window.addEventListener("pointerup", onPointerUp);
+    });
+  }
+
+  setPanelHeight(height) {
+    this.panelHeight = height;
+    this.panel.style.setProperty(
+      "--toolbar-panel-height",
+      `${Math.round(height)}px`,
+    );
+  }
+
+  toggleCollapse() {
+    this.isCollapsed = !this.isCollapsed;
+    this.panel.classList.toggle("is-collapsed", this.isCollapsed);
+    this.collapseButton.setAttribute(
+      "aria-expanded",
+      String(!this.isCollapsed),
+    );
+  }
+
   syncInitialStates() {
-    // Apply initial layout button state
     const layoutButton = this.root.querySelector(
       `.toolbar__group[data-role="layouts"] button[data-key="${this.activeLayout}"]`,
     );
@@ -266,27 +607,20 @@ export class Toolbar {
     const group = button.closest(".toolbar__group");
     if (!group) return;
     group.querySelectorAll("button").forEach((btn) => {
-      btn.classList.toggle("active", btn === button);
-      btn.setAttribute("aria-pressed", String(btn === button));
+      const isActive = btn === button;
+      btn.classList.toggle("active", isActive);
+      btn.setAttribute("aria-pressed", String(isActive));
     });
   }
 
   handleLayoutChange(layoutKey) {
     this.activeLayout = layoutKey;
-    const button = this.root.querySelector(
-      `.toolbar__group[data-role="layouts"] button[data-key="${layoutKey}"]`,
-    );
-    if (button) this.setActiveButton(button);
     if (this.layoutManager?.setMode) {
       this.layoutManager.setMode(layoutKey);
     }
   }
 
   handleViewChange(viewKey) {
-    const button = this.root.querySelector(
-      `.toolbar__group[data-role="views"] button[data-key="${viewKey}"]`,
-    );
-    if (button) this.setActiveButton(button);
     if (this.setup?.setCameraView) {
       this.setup.setCameraView(viewKey);
     }

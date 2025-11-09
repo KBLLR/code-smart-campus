@@ -35,6 +35,20 @@ body {
     color: var(--light);
     overflow: hidden;
     position: relative;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+}
+
+input,
+textarea,
+[contenteditable="true"],
+.allow-text-selection {
+    -webkit-touch-callout: initial;
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    user-select: text;
 }
 
 canvas#canvas {
@@ -127,20 +141,28 @@ canvas#canvas {
     left: 2rem;
     z-index: 25;
     pointer-events: auto;
-    background: rgba(7, 12, 30, 0.85);
-    border: 1px solid rgba(148, 163, 184, 0.2);
+    background: transparent;
+    border: none;
     border-radius: 20px;
     padding: 1.25rem 1.5rem;
     min-width: 320px;
     max-width: 480px;
-    box-shadow: 0 25px 60px rgba(5, 11, 30, 0.65);
-    backdrop-filter: blur(18px);
+    box-shadow: none;
+    backdrop-filter: none;
 }
 
 .view-hero__content {
     display: flex;
     flex-direction: column;
     gap: 0.6rem;
+}
+
+.view-hero__status-wrap {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1rem;
 }
 
 .view-hero__eyebrow {
@@ -166,7 +188,7 @@ canvas#canvas {
 }
 
 .view-hero__status {
-    margin-top: 1rem;
+    margin-top: 0;
     align-self: flex-start;
     display: inline-flex;
     align-items: center;
@@ -212,6 +234,34 @@ canvas#canvas {
     background: rgba(59, 130, 246, 0.15);
     border-color: rgba(59, 130, 246, 0.65);
     color: rgba(129, 212, 250, 0.95);
+}
+
+.view-hero__sensor-btn {
+    border: none;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 999px;
+    padding: 0.45rem 1rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: rgba(248, 250, 252, 0.95);
+    font-size: 0.82rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.35);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.view-hero__sensor-btn svg {
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
+}
+
+.view-hero__sensor-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 18px 36px rgba(0, 0, 0, 0.4);
 }
 
 .sensor-dashboard-panel {
@@ -577,6 +627,7 @@ canvas {
     cursor: pointer;
     z-index: 30;
     transition: all 0.3s ease;
+    display: none;
 }
 
 .floating-btn:hover {
@@ -609,22 +660,25 @@ canvas {
     transform: rotate(45deg);
 }
 
+@media (max-width: 768px) {
+    .floating-btn {
+        display: flex;
+    }
+}
+
 .panel-shell {
     position: fixed;
-    left: 50%;
-    bottom: 4rem;
-    transform: translate(-50%, calc(100% + 32px));
-    width: min(92vw, 1040px);
-    pointer-events: none;
-    opacity: 0;
-    visibility: hidden;
+    inset: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.75rem;
-    z-index: 28;
+    justify-content: center;
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+    z-index: 1200;
+    gap: 0.85rem;
     transition:
-        transform 0.35s ease,
         opacity 0.35s ease,
         visibility 0s linear 0.35s;
 }
@@ -633,11 +687,18 @@ canvas {
     opacity: 1;
     pointer-events: auto;
     visibility: visible;
-    transform: translate(-50%, 0);
     transition:
-        transform 0.35s ease,
         opacity 0.35s ease,
         visibility 0s linear 0s;
+}
+
+.panel-strip {
+    position: relative;
+    transform: none;
+    width: min(1200px, 90vw);
+    justify-content: center;
+    pointer-events: auto;
+    z-index: 1;
 }
 
 #content-area {
@@ -645,29 +706,21 @@ canvas {
     gap: 1rem;
     overflow-x: auto;
     max-width: 100%;
-    max-height: 260px;
+    min-height: 260px;
+    height: auto;
     padding: 1.25rem 1.75rem;
     background: rgba(15, 23, 42, 0.78);
     border: 1px solid rgba(148, 163, 184, 0.22);
     border-radius: 24px;
     backdrop-filter: blur(18px);
     box-shadow: 0 28px 60px rgba(15, 23, 42, 0.35);
-    scrollbar-width: thin;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
     scroll-snap-type: x mandatory;
 }
 
 #content-area::-webkit-scrollbar {
-    height: 8px;
-}
-
-#content-area::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 4px;
-}
-
-#content-area::-webkit-scrollbar-thumb {
-    background: rgba(45, 212, 191, 0.4);
-    border-radius: 4px;
+    display: none;
 }
 
 .hui-panel {
@@ -705,6 +758,7 @@ canvas {
 .panel-indicators {
     display: flex;
     gap: 0.4rem;
+    justify-content: center;
 }
 
 .panel-indicator {
@@ -1097,178 +1151,328 @@ canvas {
 
 /* Theme specific variables (can be overridden by other themes) */
 .theme-scifi-glass {
-    --toolbar-bg: rgba(20, 20, 20, 0.75);
-    --toolbar-blur: 14px;
-    --toolbar-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
-    --toolbar-border-radius: 24px;
-    --toolbar-padding: 12px 20px;
-    --toolbar-gap: 16px;
-    --toolbar-top: 60px;
-    /* Position */
+    --toolbar-bg: rgba(12, 12, 18, 0.85);
+    --toolbar-blur: 18px;
+    --toolbar-shadow: 0 30px 50px rgba(0, 0, 0, 0.35);
+    --toolbar-border-radius: 32px 32px 0 0;
+    --toolbar-panel-max-width: min(1100px, calc(100% - 32px));
+    --toolbar-panel-height: 260px;
+    --toolbar-header-height: 64px;
     --toolbar-z-index: 999;
-
-    --toolbar-separator-color: #aaa;
-    --toolbar-separator-padding: 0 8px;
-
-    --toolbar-group-gap: 10px;
-    /* Default gap for groups */
-    --toolbar-utility-group-gap: 12px;
-    /* Specific gap for utility group */
-
-    --toolbar-button-bg: rgba(255, 255, 255, 0.1);
-    --toolbar-button-bg-hover: rgba(255, 255, 255, 0.2);
-    --toolbar-button-border-radius: 50%;
-    /* Default for toggles */
-    --toolbar-button-size: 36px;
-    /* Default for toggles */
-    --toolbar-button-padding: 0;
-    /* Default for icon-only */
-    --toolbar-button-border: 1px solid transparent;
-    --toolbar-button-focus-border: var(--primary,
-            #2dd4bf);
-    /* Use theme primary color */
+    --toolbar-group-gap: 12px;
+    --toolbar-button-bg: rgba(255, 255, 255, 0.08);
+    --toolbar-button-bg-hover: rgba(255, 255, 255, 0.16);
+    --toolbar-button-border: 1px solid rgba(255, 255, 255, 0.08);
+    --toolbar-button-focus-border: var(--primary, #2dd4bf);
     --toolbar-button-transition:
-        opacity 0.2s, background-color 0.2s, border-color 0.2s,
+        opacity 0.2s ease,
+        background-color 0.2s ease,
+        border-color 0.2s ease,
         transform 0.1s ease-out;
-
-    --toolbar-toggle-opacity: 1;
-    --toolbar-toggle-opacity-inactive: 0.4;
 }
 
-/* Base container style */
 .toolbar__container {
     position: fixed;
-    bottom: var(--toolbar-top);
-    left: 50%;
-    transform: translateX(-50%);
+    inset: auto 0 0 0;
     display: flex;
-    gap: var(--toolbar-gap);
-    padding: var(--toolbar-padding);
-    border-radius: var(--toolbar-border-radius);
+    justify-content: center;
+    z-index: var(--toolbar-z-index);
+    pointer-events: none;
+    padding: 0;
+}
+
+.toolbar-panel__surface {
+    pointer-events: auto;
+    width: var(--toolbar-panel-max-width);
     background: var(--toolbar-bg);
     backdrop-filter: blur(var(--toolbar-blur));
     box-shadow: var(--toolbar-shadow);
-    z-index: var(--toolbar-z-index);
-    align-items: center;
-    font-family: sans-serif;
-    /* Consider inheriting from body */
+    border-radius: var(--toolbar-border-radius);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    height: var(--toolbar-panel-height);
+    transition: height 0.2s ease, transform 0.25s ease;
+    padding: 16px;
+    box-sizing: border-box;
 }
 
-/* Separator */
-.toolbar__separator {
-    color: var(--toolbar-separator-color);
-    font-size: 16px;
-    /* Keep fixed or use relative units */
-    padding: var(--toolbar-separator-padding);
-    user-select: none;
+.toolbar-panel__surface.is-collapsed {
+    height: 36px;
+    padding: 2px 16px;
 }
 
-/* Groups */
-.toolbar__group {
+.toolbar-panel__surface.is-collapsed .toolbar-page__content,
+.toolbar-panel__surface.is-collapsed .toolbar-page__footer {
+    display: none;
+}
+
+.toolbar-panel__resize-handle {
+    height: 16px;
     display: flex;
     align-items: center;
-    /* Align items vertically */
+    justify-content: center;
+    cursor: ns-resize;
+}
+
+.toolbar-panel__resize-handle::before {
+    content: "";
+    width: 64px;
+    height: 4px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.toolbar-panel__header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    padding: 0 16px;
+    min-height: var(--toolbar-header-height);
+}
+
+.toolbar-page__nav {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+}
+
+.toolbar-page__nav-track {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    justify-content: center;
+    flex: 1;
+}
+
+.toolbar-page__nav-btn {
+    border: none;
+    background: transparent;
+    width: 56px;
+    height: 56px;
+    border-radius: 18px;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    transition:
+        background-color 0.2s ease,
+        transform 0.1s ease;
+}
+
+.toolbar-page__nav-btn img {
+    width: 34px;
+    height: 34px;
+    filter: invert(1) brightness(2);
+    opacity: 1;
+}
+
+.toolbar-page__nav-btn.is-active {
+    transform: translateY(-2px);
+}
+
+.toolbar-page__nav-separator {
+    opacity: 0.35;
+    font-size: 1.6rem;
+    line-height: 1;
+}
+
+.toolbar-panel__body {
+    flex: 1;
+    overflow: hidden;
+    padding: 0;
+}
+
+.toolbar-page {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    height: 100%;
+}
+
+.toolbar-page__header-row {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.toolbar-page__content {
+    display: grid;
+    grid-template-columns: minmax(0, 30%) minmax(0, 70%);
+    gap: 24px;
+    align-items: flex-start;
+    height: 100%;
+    padding: 8px 12px 24px;
+}
+
+@media (max-width: 900px) {
+    .toolbar-page__content {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+.toolbar-page__info {
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.toolbar-page__info h3 {
+    margin: 0;
+    font-size: clamp(1.4rem, 2.5vw, 1.9rem);
+    font-weight: 600;
+    letter-spacing: 0.01em;
+}
+
+.toolbar-section__eyebrow {
+    margin: 0;
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.toolbar-section__subtitle {
+    margin: 0;
+    font-size: 0.82rem;
+    color: rgba(255, 255, 255, 0.65);
+}
+
+.toolbar-page__description {
+    margin: 8px 0 0;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.toolbar-page__actions {
+    width: 100%;
+    min-height: 200px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.toolbar-page__actions .toolbar__group {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 16px;
+    width: 100%;
+}
+
+@media (max-width: 1100px) {
+    .toolbar-page__actions .toolbar__group {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    }
+}
+
+.toolbar-page__footer {
+    min-height: 32px;
+    font-size: 0.75rem;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.4);
+    letter-spacing: 0.08em;
+}
+
+/* legacy column helpers removed */
+
+/* legacy pagination styles removed */
+
+.toolbar__group {
+    display: flex;
+    flex-wrap: wrap;
     gap: var(--toolbar-group-gap);
 }
 
-/* Specific gap for utility group */
-.toolbar__group--utility {
-    gap: var(--toolbar-utility-group-gap);
+.toolbar__group--categories {
+    gap: 10px;
 }
 
-/* Base button style */
 .toolbar__button {
     display: inline-flex;
-    /* Use flex for centering content */
     align-items: center;
     justify-content: center;
-    padding: var(--toolbar-button-padding);
-    border-radius: var(--toolbar-button-border-radius);
     background: var(--toolbar-button-bg);
     border: var(--toolbar-button-border);
+    border-radius: 18px;
+    color: #fff;
     cursor: pointer;
     transition: var(--toolbar-button-transition);
-    width: var(--toolbar-button-size);
-    /* Default size */
-    height: var(--toolbar-button-size);
-    /* Default size */
-    flex-shrink: 0;
-    /* Prevent shrinking */
+    position: relative;
 }
 
-/* Hover effect for all buttons */
 .toolbar__button:hover {
     background: var(--toolbar-button-bg-hover);
 }
 
-/* Focus effect for accessibility */
-.toolbar__button:focus {
+.toolbar__button:focus-visible {
     outline: none;
-    /* Remove default outline */
     border-color: var(--toolbar-button-focus-border);
-    box-shadow: 0 0 0 2px rgba(var(--primary, 45, 212, 191), 0.5);
-    /* Optional focus ring */
+    box-shadow: 0 0 0 2px rgba(45, 212, 191, 0.35);
 }
 
-/* Active state (e.g., for toggles or pressed buttons) */
 .toolbar__button:active {
-    transform: scale(0.95);
-    /* Simple press effect */
+    transform: scale(0.97);
 }
 
-/* Icon style within buttons */
+.toolbar__button.active {
+    border-color: var(--primary, #2dd4bf);
+    box-shadow: 0 0 10px rgba(45, 212, 191, 0.35);
+}
+
+.toolbar__button--tile {
+    flex-direction: column;
+    width: 96px;
+    height: 96px;
+    border-radius: 20px;
+    gap: 6px;
+    text-align: center;
+    padding: 12px;
+}
+
+.toolbar__button--chip {
+    padding: 8px 14px;
+    border-radius: 999px;
+    gap: 8px;
+    flex-direction: row;
+    width: auto;
+    min-height: 44px;
+}
+
 .toolbar__button-icon {
-    /* You might not need specific styles if size is controlled by button padding/size */
     display: block;
-    /* Prevents extra space below image */
+    filter: brightness(1.4) saturate(0);
+    opacity: 0.92;
+}
+
+.toolbar__button--tile .toolbar__button-icon {
+    width: 32px;
+    height: 32px;
 }
 
 .toolbar__button-text {
+    font-size: 0.78rem;
+    line-height: 1.1;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.toolbar__button--chip .toolbar__button-text {
+    font-size: 0.85rem;
+}
+
+.toolbar__button-badge {
     position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
-}
-
-/* Specific styles/overrides for Toggle buttons */
-.toolbar__button--toggle {
-    /* Inherits most base styles */
-    opacity: var(--toolbar-toggle-opacity);
-    /* Controlled by 'active' class */
-}
-
-.toolbar__button--toggle:not(.active) {
-    opacity: var(--toolbar-toggle-opacity-inactive);
-}
-
-/* Specific styles/overrides for Layout buttons (if different) */
-.toolbar__button--layout {
-    /* Example: Maybe they are slightly larger or have different radius */
-    /* width: 40px; */
-    /* height: 40px; */
-    /* border-radius: 8px; */
-}
-
-/* Specific styles/overrides for Utility buttons (if different) */
-.toolbar__button--utility {
-    /* Example: Maybe different background or padding */
-    /* background: rgba(var(--primary, 45, 212, 191), 0.2); */
-}
-
-/* Style for the Toggle component provided by its own JS (if needed) */
-/* Example: If the Toggle component root element needs adjustments */
-.toolbar__toggle {
-    /* Adjustments specific to how the Toggle component renders */
-}
-
-.toolbar__button--view {
-    /* Example: Slightly different background or border? */
-    /* background-color: rgba(var(--secondary-rgb, 14, 165, 233), 0.2); */
+    top: 8px;
+    right: 8px;
+    background: rgba(45, 212, 191, 0.85);
+    color: #031b1b;
+    border-radius: 999px;
+    padding: 2px 6px;
+    font-size: 0.65rem;
+    font-weight: 600;
 }
 
 /* ======================================== */
@@ -1431,7 +1635,7 @@ canvas {
 }
 
 #toolbar-root {
-    display: inline-flex;
+    width: 100%;
 }
 
 .ui-shell__top {

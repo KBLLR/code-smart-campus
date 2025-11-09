@@ -1,5 +1,7 @@
 import * as THREE from "three";
-import { uilController, UILController } from "@ui/UILController.js";
+import { uilController } from "@ui/UILController.js";
+
+/** @typedef {import("@/types/uil.js").UILController} UILController */
 
 /**
  * Registers navigation-related UIL controls (camera FOV, orbit distance, auto-rotate).

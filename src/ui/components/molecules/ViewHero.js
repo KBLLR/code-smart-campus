@@ -49,8 +49,12 @@ export class ViewHero {
     this.statusLabel.className = "view-hero__status-label";
     this.statusEl.appendChild(this.statusLabel);
 
+    this.statusWrap = document.createElement("div");
+    this.statusWrap.className = "view-hero__status-wrap";
+
     this.root.appendChild(this.content);
-    this.root.appendChild(this.statusEl);
+    this.root.appendChild(this.statusWrap);
+    this.statusWrap.appendChild(this.statusEl);
 
     this.mountNode.appendChild(this.root);
 
@@ -91,5 +95,10 @@ export class ViewHero {
     const toneClass = STATUS_TONES.get(status.tone || "default");
     if (toneClass) this.statusEl.classList.add(toneClass);
     this.statusLabel.textContent = status.label;
+  }
+
+  addStatusControl(node) {
+    if (!node) return;
+    this.statusWrap.appendChild(node);
   }
 }

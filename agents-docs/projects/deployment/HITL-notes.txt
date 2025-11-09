@@ -1,0 +1,530 @@
+Vercel Deployment Timeline Project Overview
+
+This document aggregates all the necessary files for implementing a Vercel deployment timeline feature. This structure is intended to be used as a template for new projects within the agents-docs/templates/project-template directory.
+
+1. Project Context and Overview (project_context.md)
+
+This file contains the necessary API route, server-side fetching logic, and foundational frontend services (modal and event bus) required to implement a Vercel deployment timeline in the client application.
+
+The primary goal is to fetch a list of successful Vercel deployments, normalize the data, and expose it via a local API route (/api/vercel-deployments). This data can then be consumed by a component, such as the referenced src/History component, to build the visual timeline.
+
+This complete structure is templated for use within a larger project (e.g., in agents-docs/templates/project-template).
+
+2. Shared JSON Schema (src/shared/vercelDeploymentSchema.mjs)
+
+This module defines the JSON schema for a normalized Vercel deployment entry, ensuring type consistency across the API, server, and client.
+
+export const deploymentEntrySchema = {
+  $id: '[https://kbllr.graphics/schemas/vercel-deployment.json](https://kbllr.graphics/schemas/vercel-deployment.json)',
+  type: 'object',
+  required: [
+    'id',
+    'projectId',
+    'url',
+    'readyState',
+    'createdAt',
+    'git',
+    'links',
+    'metadata'
+  ],
+  properties: {
+    id: {
+      type: 'string',
+      description: 'Unique deployment identifier (uid).'
+    },
+    projectId: {
+      type: 'string',
+      description: 'Vercel project identifier associated with the deployment.'
+    },
+    url: {
+      type: 'string',
+      format: 'uri',
+      description: 'HTTPS URL of the deployed preview or production build.'
+    },
+    readyState: {
+      type: 'string',
+      enum: ['READY'],
+      description: 'Deployment readiness state (READY only, already filtered).'
+    },
+    createdAt: {
+      type: 'string',
+      format: 'date-time',
+      description: 'ISO timestamp (UTC) for when the deployment was created.'
+    },
+    git: {
+      type: 'object',
+      required: ['branch', 'commitSha'],
+      properties: {
+        provider: {
+          type: 'string',
+          description: 'Git provider extracted from the deployment metadata.'
+        },
+        branch: {
+          type: ['string', 'null'],
+          description: 'Git branch (commit ref) that triggered the deployment.'
+        },
+        commitSha: {
+          type: ['string', 'null'],
+          description: 'Full commit SHA associated with the deployment.'
+        },
+        commitMessage: {
+          type: ['string', 'null'],
+          description: 'Commit message provided by the Git provider.'
+        },
+        commitAuthorName: {
+          type: ['string', 'null'],
+          description: 'Commit author name.'
+        },
+        commitAuthorAvatar: {
+          type: ['string', 'null'],
+          description: 'Avatar URL for the commit author, if available.'
+        },
+        repository: {
+          type: ['string', 'null'],
+          description: 'Repository slug in provider/name format, if available.'
+        }
+      },
+      additionalProperties: false
+    },
+    links: {
+      type: 'object',
+      required: ['deployment', 'insights', 'gitCommit'],
+      properties: {
+        deployment: {
+          type: 'string',
+          format: 'uri',
+          description: 'Public URL for the deployment.'
+        },
+        insights: {
+          type: ['string', 'null'],
+          format: 'uri',
+          description: 'Vercel deployment insights/dashboard URL.'
+        },
+        gitCommit: {
+          type: ['string', 'null'],
+          format: 'uri',
+          description: 'Link to the Git commit in the source provider, if known.'
+        }
+      },
+      additionalProperties: false
+    },
+    metadata: {
+      type: 'object',
+      required: ['deploymentName', 'target', 'source'],
+      properties: {
+        deploymentName: {
+          type: 'string',
+          description: 'Internal deployment name (slug).'
+        },
+        target: {
+          type: ['string', 'null'],
+          description: 'Deployment target such as production or preview.'
+        },
+        source: {
+          type: ['string', 'null'],
+          description: 'Deployment source (e.g. git, import).'
+        }
+      },
+      additionalProperties: true
+    }
+  },
+  additionalProperties: false
+}
+
+
+3. Vercel Fetching Logic (server/fetchVercelDeployments.mjs)
+
+This server-side module handles interaction with the Vercel API, pagination, filtering for successful (READY) deployments, and normalizing the data format.
+
+import { deploymentEntrySchema } from '../src/shared/vercelDeploymentSchema.mjs';
+
+const API_BASE = '[https://api.vercel.com](https://api.vercel.com)';
+
+/**
+ * Fetch successful deployments from the Vercel API and normalise the payload for clients.
+ *
+ * Expected environment variables:
+ * - VERCEL_ACCESS_TOKEN (required)
+ * - VERCEL_PROJECT_ID (optional default project id)
+ * - VERCEL_TEAM_ID (optional team id if the project lives within a team)
+ *
+ * @param {Object} options - Options for fetching.
+ * @param {string} [options.projectId] - The Vercel project ID.
+ * @param {string} [options.teamId] - The Vercel team ID.
+ * @param {number} [options.limit] - Max number of deployments to fetch.
+ * @param {string} [options.readyState] - Filter deployments by state (default 'READY').
+ * @returns {Promise<Array<deploymentEntrySchema>>}
+ */
+export async function fetchVercelDeployments(options = {}) {
+  const {
+    projectId = process.env.VERCEL_PROJECT_ID,
+    teamId = process.env.VERCEL_TEAM_ID,
+    limit = Infinity,
+    readyState = 'READY'
+  } = options;
+
+  const accessToken = process.env.VERCEL_ACCESS_TOKEN;
+
+  if (!accessToken) {
+    throw Object.assign(new Error('VERCEL_ACCESS_TOKEN is not defined'), {
+      statusCode: 500
+    });
+  }
+
+  if (!projectId) {
+    throw Object.assign(new Error('A projectId must be provided via argument or VERCEL_PROJECT_ID'), {
+      statusCode: 400
+    });
+  }
+
+  const requestedLimit = Number.isFinite(limit) && limit > 0 ? limit : Infinity;
+  const accumulated = [];
+  let nextFrom = undefined;
+  let remaining = requestedLimit;
+
+  while (remaining > 0) {
+    const batchLimit = Number.isFinite(remaining) ? Math.min(remaining, 100) : 100;
+    const query = new URLSearchParams({
+      projectId,
+      limit: String(Math.max(1, Math.min(batchLimit, 100)))
+    });
+
+    if (readyState) {
+      query.set('state', readyState);
+    }
+
+    if (teamId) {
+      query.set('teamId', teamId);
+    }
+
+    if (nextFrom) {
+      query.set('from', nextFrom);
+    }
+
+    const response = await fetch(`${API_BASE}/v6/deployments?${query.toString()}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      const errorPayload = await safeJson(response);
+      const error = new Error(`Failed to fetch deployments: ${response.status} ${response.statusText}`);
+      error.statusCode = response.status;
+      error.details = errorPayload;
+      throw error;
+    }
+
+    const payload = await response.json();
+    const deployments = Array.isArray(payload.deployments) ? payload.deployments : [];
+    const readyDeployments = deployments.filter((deployment) => deployment.readyState === 'READY');
+
+    if (!readyDeployments.length) {
+      break;
+    }
+
+    accumulated.push(...readyDeployments.map((deployment) => mapDeployment(deployment)));
+
+    if (Number.isFinite(remaining)) {
+      remaining -= readyDeployments.length;
+      if (remaining <= 0) break;
+    }
+
+    const next = payload?.pagination?.next ?? null;
+    if (!next) {
+      break;
+    }
+    nextFrom = next;
+  }
+
+  return Number.isFinite(requestedLimit)
+    ? accumulated.slice(0, requestedLimit)
+    : accumulated;
+}
+
+/**
+ * Maps the raw Vercel deployment object to the normalized schema.
+ */
+function mapDeployment(deployment) {
+  const {
+    uid,
+    projectId,
+    url,
+    readyState,
+    createdAt,
+    meta = {},
+    target = null,
+    name = '',
+    source = null,
+    inspectorUrl = null
+  } = deployment;
+
+  const commitSha = meta.githubCommitSha || meta.gitlabCommitSha || meta.bitbucketCommitSha || null;
+  const repository = meta.githubRepo || meta.gitlabProject || meta.bitbucketRepoFullName || null;
+  const commitMessage =
+    meta.githubCommitMessage || meta.gitlabCommitMessage || meta.bitbucketCommitMessage || deployment.meta?.commitMessage || null;
+  const commitAuthorName =
+    meta.githubCommitAuthorName || meta.gitlabCommitAuthorName || meta.bitbucketCommitAuthorName || null;
+  const commitAuthorAvatar =
+    meta.githubCommitAuthorLogin
+      ? `https://avatars.githubusercontent.com/${meta.githubCommitAuthorLogin}`
+      : meta.githubCommitAuthorAvatar || null;
+
+  return {
+    id: uid,
+    projectId,
+    url: `https://${url}`,
+    readyState,
+    createdAt: new Date(createdAt).toISOString(),
+    git: {
+      provider: meta.githubCommitOrg
+        ? 'github'
+        : meta.gitlabProject
+        ? 'gitlab'
+        : meta.bitbucketRepoFullName
+        ? 'bitbucket'
+        : null,
+      branch: meta.githubCommitRef || meta.gitlabCommitRef || meta.bitbucketCommitRef || null,
+      commitSha,
+      commitMessage,
+      commitAuthorName,
+      commitAuthorAvatar,
+      repository
+    },
+    links: {
+      deployment: `https://${url}`,
+      insights: inspectorUrl,
+      gitCommit: commitSha && repository ? buildGitCommitUrl({ repository, provider: meta.githubCommitOrg ? 'github' : 'unknown', commitSha }) : null
+    },
+    metadata: {
+      deploymentName: name,
+      target,
+      source
+    }
+  };
+}
+
+/**
+ * Builds a link to the Git commit based on provider.
+ */
+function buildGitCommitUrl({ repository, provider, commitSha }) {
+  if (provider === 'github' && repository && commitSha) {
+    return `https://github.com/${repository}/commit/${commitSha}`;
+  }
+  return null;
+}
+
+/**
+ * Safely parses JSON response body.
+ */
+async function safeJson(response) {
+  try {
+    return await response.json();
+  } catch {
+    return null;
+  }
+}
+
+
+4. Vercel Deployments API Route (api/vercel-deployments.mjs)
+
+This file defines the API endpoint that the frontend application will call. It handles query parameters, method checking, and error formatting.
+
+import { fetchVercelDeployments } from '../server/fetchVercelDeployments.mjs';
+import { deploymentEntrySchema } from '../src/shared/vercelDeploymentSchema.mjs';
+
+export default async function handler(req, res) {
+  if (req.method && req.method !== 'GET') {
+    res.setHeader('Allow', 'GET');
+    res.status(405).json({ error: 'Method Not Allowed' });
+    return;
+  }
+
+  const { limit, projectId } = req.query ?? {};
+
+  try {
+    const deployments = await fetchVercelDeployments({
+      limit: limit ? Number(limit) : undefined,
+      projectId: projectId || undefined
+    });
+
+    res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate=300');
+    res.status(200).json({
+      schema: deploymentEntrySchema,
+      data: deployments
+    });
+  } catch (error) {
+    const statusCode = error.statusCode || 500;
+    res.status(statusCode).json({
+      error: error.message,
+      details: error.details ?? null
+    });
+  }
+}
+
+
+5. Simple Event Bus (src/services/EventBus.mjs)
+
+A foundational utility for component communication using publish-subscribe model.
+
+/**
+ * A simple Event Bus implementation for managing and dispatching events.
+ * Allows components to communicate without direct dependencies.
+ */
+export class EventBus {
+  constructor() {
+    /**
+     * @private
+     * @type {Object.<string, Function[]>}
+     */
+    this.listeners = {};
+  }
+
+  /**
+   * Subscribes a callback function to a specific event.
+   * @param {string} event - The name of the event to listen for.
+   * @param {Function} callback - The function to call when the event is emitted.
+   * @returns {Function} - A disposal function to remove the listener.
+   */
+  on(event, callback) {
+    if (typeof callback !== 'function') {
+      console.warn(`EventBus: Listener for event '${event}' is not a function.`, callback);
+      return () => {}; // Return no-op disposer
+    }
+    if (!this.listeners[event]) {
+      this.listeners[event] = [];
+    }
+    this.listeners[event].push(callback);
+    return () => this.off(event, callback);
+  }
+
+  /**
+   * Subscribes a callback function to a specific event, to be called only once.
+   * After the event is emitted and the callback is invoked, the listener is automatically removed.
+   * @param {string} event - The name of the event to listen for.
+   * @param {Function} callback - The function to call when the event is emitted.
+   */
+  once(event, callback) {
+    const onceCallback = (...args) => {
+      callback(...args);
+      this.off(event, onceCallback);
+    };
+    this.on(event, onceCallback);
+  }
+
+  /**
+   * Unsubscribes a callback function from a specific event.
+   * @param {string} event - The name of the event to stop listening for.
+   * @param {Function} callback - The function to remove.
+   */
+  off(event, callback) {
+    if (this.listeners[event]) {
+      this.listeners[event] = this.listeners[event].filter(listener => listener !== callback);
+    }
+  }
+
+  /**
+   * Emits an event, invoking all registered callback functions for that event.
+   * Each listener is called within a try-catch block to prevent one error from stopping others.
+   * @param {string} event - The name of the event to emit.
+   * @param {*} [data] - Optional data to pass to the event listeners.
+   */
+  emit(event, data) {
+    if (this.listeners[event]) {
+      // Create a shallow copy to prevent issues if listeners modify the array during iteration
+      [...this.listeners[event]].forEach(listener => {
+        try {
+          listener(data);
+        } catch (error) {
+          console.error(`EventBus: Error in listener for event '${event}':`, error);
+        }
+      });
+    }
+  }
+
+  /**
+   * Clears all listeners for a specific event, or all listeners for all events if no event is specified.
+   * @param {string} [event] - The optional name of the event for which to clear all listeners.
+   */
+  clear(event) {
+    if (event) {
+      delete this.listeners[event];
+    } else {
+      this.listeners = {};
+    }
+  }
+}
+
+
+6. Modal Service (src/services/modalService.mjs)
+
+A foundational utility for managing application-wide modal visibility using the EventBus.
+
+/**
+ * Initializes a service for managing modal visibility and focus.
+ * It listens for 'modal:open' and 'modal:close' events on the eventBus.
+ *
+ * @param {EventBus} eventBus - The event bus instance.
+ * @param {Object} [options] - Optional configurations.
+ * @param {Function} [options.focusCameraOnModal] - Callback to focus the camera/view when a modal opens.
+ * @param {Function} [options.resetCameraFromModal] - Callback to reset the camera/view when a modal closes.
+ * @param {Object} [options.registry] - Optional map of modal IDs to DOM elements.
+ * @returns {{openModal: Function, closeModal: Function, dispose: Function}}
+ */
+export function initModalService(eventBus, { focusCameraOnModal, resetCameraFromModal, registry } = {}) {
+  const modals = registry ?? {
+    info: document.getElementById('modal-info'),
+    tasks: document.getElementById('modal-tasks'),
+    scenes: document.getElementById('modal-scenes'),
+    music: document.getElementById('modal-music'),
+    ai: document.getElementById('modal-ai'),
+    data: document.getElementById('modal-data'),
+  };
+  let active = null;
+
+  function openModal(id, { focusTarget } = {}) {
+    const el = modals[id]; if (!el) return;
+    if (active && active !== id) closeModal();
+    active = id;
+    el.classList.add('visible');
+    el.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('modal-open');
+    focusCameraOnModal?.();
+    el.querySelector('.modal__surface')?.focus({ preventScroll: true });
+    if (focusTarget) requestAnimationFrame(() => {
+      el.querySelector(focusTarget)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
+  function closeModal() {
+    if (!active) return;
+    const el = modals[active];
+    el?.classList.remove('visible');
+    el?.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('modal-open');
+    active = null;
+    resetCameraFromModal?.();
+  }
+
+  // Setup event listeners for all known modals
+  Object.entries(modals).forEach(([id, el]) => {
+    if (!el) return;
+    // Initialize state
+    el.setAttribute('aria-hidden', 'true');
+    // Close button listeners
+    el.querySelectorAll('[data-modal-close]').forEach((btn) =>
+      btn.addEventListener('click', () => (active === id ? closeModal() : null), { passive: true })
+    );
+    // Backdrop click listener
+    el.addEventListener('pointerdown', (e) => { if (e.target === el && active === id) closeModal(); });
+  });
+
+  // Global escape key listener
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && active) closeModal(); });
+
+  // Event bus integration
+  const offOpen = eventBus.on('modal:open', (p) => openModal(p?.id, p));
+  const offClose = eventBus.on('modal:close', closeModal);
+
+  return { openModal, closeModal, dispose: () => { offOpen(); offClose(); } };
+}

@@ -5,9 +5,6 @@ Track every task for this project here. Keep the table sorted by priority (top =
 ## Backlog
 | ID | Title | Description | Priority | Owner | Notes |
 |----|-------|-------------|----------|-------|-------|
-| LD-101 | Core lint cleanup | Resolve `no-unused-vars` / legacy helpers blocking `npm run lint` (DataPipeline, main, sensors) so CI can re-enable linting. | High | Codex | Includes deleting unused functions or wiring them properly. |
-| LD-102 | UIL vendor lint strategy | Decide how to handle `src/vendor/uil.module.js` (global ignore vs per-rule disable) so lint stops flagging 40+ issues on every run. | High | Codex | Coordinate with UIL GUI project. |
-| LD-103 | Renderer capability flags | Ensure we expose capability metadata (`scene.userData.capabilities`) so UI checks don’t rely on ad-hoc conditions. | Medium | Codex | Follow-up to current renderer-aware split. |
 
 ## In Progress
 | ID | Title | Started | Owner | Notes |
@@ -20,5 +17,8 @@ Track every task for this project here. Keep the table sorted by priority (top =
 ## Done
 | ID | Title | Completed | Outcome |
 |----|-------|-----------|---------|
+| LD-101 | Core lint cleanup | 2025-11-08 | Removed unused vars/imports across pipeline, entry, sensors, UIL modules; `pnpm run lint` now passes cleanly. |
+| LD-102 | UIL vendor lint strategy | 2025-11-08 | Dropped vendored UIL file entirely, switched docs + controller to npm `uil`, and lint no longer sees third-party code. |
+| LD-103 | Renderer capability flags | 2025-11-08 | Added `@config/capabilities` helper so scene + UI derive a single capability snapshot (renderer/postFX/projector/HUD) instead of ad-hoc checks. |
 
 > Add or remove columns as needed, but keep the structure predictable so others can grok status fast.

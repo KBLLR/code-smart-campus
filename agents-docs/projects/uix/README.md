@@ -1,6 +1,6 @@
-# Toolbar Experience Project
+# UIX Experience Project
 
-Design and implement a reusable toolbar system that anchors every campus view (3D scene, dashboards, detail pages) with consistent controls, state indicators, and user affordances.
+Design and curate the shared UI/UX patterns for Smart Campus—starting with the toolbar/sliding control surface and expanding to any cross-cutting interface decisions (tabs, avatars, HUD shells, etc.).
 
 ## Why This Matters
 - Stakeholders need a single entry point for navigation, filters, and live HA status instead of scattered buttons.
@@ -8,8 +8,8 @@ Design and implement a reusable toolbar system that anchors every campus view (3
 
 ## Scope
 1. **Layout & Architecture**
-   - Responsive toolbar shell that slots into Vite views without fighting existing HUD/sensor panels.
-   - Left cluster for view breadcrumbs + page title, center for contextual filters/status, right cluster for avatar/actions.
+   - Define the sliding panel/toolbar shell (columns, tabs, pagination headers) and any shared UIX scaffolding the campus views need.
+   - Document responsive behavior so 3D + dashboard pages reuse the same template.
 2. **State & Data Wiring**
    - Hook into HA connection state, sensor summaries, and room-selection events.
    - Provide an action bus so other modules can register buttons, toggles, or dropdowns.
