@@ -12,6 +12,10 @@ const DEFAULT_CAPABILITIES = Object.freeze({
     supported: false,
     mode: null,
   },
+  projector: {
+    supported: false,
+    mode: null,
+  },
   hud: {
     supported: false,
   },
@@ -25,7 +29,7 @@ const DEFAULT_CAPABILITIES = Object.freeze({
 
 /**
  * Create a normalized capability snapshot for the current scene/runtime.
- * @param {{ usingWebGPU?: boolean, hasPostFX?: boolean, supportsSnapshots?: boolean, hasScreen?: boolean, screenMode?: string|null, hudReady?: boolean, statsReady?: boolean }} [options]
+ * @param {{ usingWebGPU?: boolean, hasPostFX?: boolean, supportsSnapshots?: boolean, hasScreen?: boolean, screenMode?: string|null, hasProjector?: boolean, projectorMode?: string|null, hudReady?: boolean, statsReady?: boolean }} [options]
  */
 export function buildCapabilitiesSnapshot({
   usingWebGPU = false,
@@ -33,6 +37,8 @@ export function buildCapabilitiesSnapshot({
   supportsSnapshots = false,
   hasScreen = false,
   screenMode = null,
+  hasProjector = false,
+  projectorMode = null,
   hudReady = false,
   statsReady = false,
 } = {}) {
@@ -49,6 +55,10 @@ export function buildCapabilitiesSnapshot({
     screen: {
       supported: Boolean(hasScreen),
       mode: hasScreen ? screenMode || (usingWebGPU ? "webgpu" : "webgl") : null,
+    },
+    projector: {
+      supported: Boolean(hasProjector),
+      mode: hasProjector ? projectorMode || (usingWebGPU ? "webgpu" : "webgl") : null,
     },
     hud: {
       supported: Boolean(hudReady),

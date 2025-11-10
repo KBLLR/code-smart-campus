@@ -42,11 +42,13 @@ import { registerOrbitDebugControls } from "@ui/modules/OrbitDebugControls.js";
 import { registerRoomLevelsControls } from "@ui/modules/RoomLevelsControls.js";
 import { CanvasUILPanels } from "@ui/modules/CanvasUILPanels.js";
 import { registerScreenControls } from "@ui/modules/ScreenControls.js";
+import { registerProjectorControls } from "@ui/modules/ProjectorControls.js";
 import { PostProcessor } from "@/postprocessing/PostProcessor.js";
 import { CSSHudManager } from "@hud/CSSHudManager.js";
 import { dataPipeline } from "@data/DataPipeline.js";
 import { RoomSelectionController } from "@interaction/RoomSelectionController.js";
 import { WebGPUScreen } from "@three/WebGPUScreen.js";
+import { WebGPUProjector } from "@three/WebGPUProjector.js";
 import { materialRegistry } from "@registries/materialsRegistry.js";
 import {
   buildCapabilitiesSnapshot,
@@ -66,6 +68,8 @@ let hudManager = null;
 let roomSelectionController = null;
 let webgpuScreen = null;
 let screenControlsRegistered = false;
+let webgpuProjector = null;
+let projectorControlsRegistered = false;
 
 function bootstrapScreen(target = null) {
   if (!setup.usingWebGPU) return null;
@@ -89,6 +93,32 @@ function bootstrapScreen(target = null) {
     return webgpuScreen;
   } catch (error) {
     console.error("[WebGPUScreen] Failed to initialize:", error);
+    return null;
+  }
+}
+
+function bootstrapProjector(target = null) {
+  if (!setup.usingWebGPU) return null;
+  try {
+    webgpuProjector?.dispose?.();
+    webgpuProjector = new WebGPUProjector({
+      scene,
+      renderer: setup.re,
+      target,
+    });
+    if (webgpuProjector) {
+      scene.userData.projector = webgpuProjector;
+      updateSceneCapabilities(scene, {
+        projector: {
+          supported: true,
+          mode: "webgpu-projector",
+        },
+      });
+      window.dispatchEvent(new CustomEvent("projector-ready"));
+    }
+    return webgpuProjector;
+  } catch (error) {
+    console.error("[WebGPUProjector] Failed to initialize:", error);
     return null;
   }
 }
@@ -351,6 +381,13 @@ function registerWebGPUModules() {
     });
     screenControlsRegistered = true;
   }
+  if (!projectorControlsRegistered) {
+    registerProjectorControls({
+      controller: navigationController,
+      projectorProvider: () => scene.userData.projector,
+    });
+    projectorControlsRegistered = true;
+  }
 }
 
 // --- Setup 3D Environment ---
@@ -378,23 +415,35 @@ registerOrbitDebugControls({
 
 if (setup.usingWebGPU) {
   bootstrapScreen();
+  bootstrapProjector();
 }
 whenReady("roomMeshes", (meshesMap) => {
+  const extraEntries = [];
+
+  if (scene.userData.screen?.screenMesh) {
+    extraEntries.push({
+      id: "__screen__",
+      label: "Screen",
+      object: scene.userData.screen.screenMesh,
+      highlightable: false,
+    });
+  }
+
+  if (scene.userData.projector?.projectorLight) {
+    extraEntries.push({
+      id: "__projector__",
+      label: "Projector Light",
+      object: scene.userData.projector.projectorLight,
+      highlightable: false,
+    });
+  }
+
   registerDebuggerControls({
     controller: navigationController,
     roomMeshes: meshesMap,
     setup,
     scene,
-    extraEntries: scene.userData.screen?.screenMesh
-      ? [
-          {
-            id: "__screen__",
-            label: "Screen",
-            object: scene.userData.screen.screenMesh,
-            highlightable: false,
-          },
-        ]
-      : [],
+    extraEntries,
   });
 });
 whenReady("roundedRoomsGroup", (group) => {
@@ -421,6 +470,8 @@ whenReady("roundedRoomsGroup", (group) => {
   if (setup.usingWebGPU) {
     bootstrapScreen(group);
     scene.userData.screen?.updateTarget?.(group);
+    bootstrapProjector(group);
+    scene.userData.projector?.updateTarget?.(group);
   }
 });
 
@@ -514,6 +565,8 @@ setSceneCapabilities(
     supportsSnapshots: Boolean(postProcessor),
     hasScreen: Boolean(webgpuScreen),
     screenMode: setup.usingWebGPU ? "webgpu-screen" : null,
+    hasProjector: Boolean(webgpuProjector),
+    projectorMode: setup.usingWebGPU ? "webgpu-projector" : null,
     hudReady: false,
     statsReady: Boolean(setup.stats),
   }),
