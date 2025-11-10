@@ -9,6 +9,7 @@ const MATERIAL_PRESETS = {
     roughness: 0.55,
     metalness: 0.15,
     envMapIntensity: 0.45,
+    receiveShadow: true,
   },
   roomHighlight: {
     type: "standard",

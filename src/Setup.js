@@ -101,8 +101,13 @@ export default class Setup {
       this.re.setClearColor(0x0b1224, 1);
     } else {
       this.re.toneMapping = THREE.NeutralToneMapping;
+      // Enable shadow mapping for WebGPU projector support
+      if (this.re.shadowMap) {
+        this.re.shadowMap.enabled = true;
+        this.re.shadowMap.type = THREE.PCFSoftShadowMap;
+      }
       console.info(
-        "[Setup] WebGPU mode enabled. EffectComposer and certain helpers are temporarily disabled.",
+        "[Setup] WebGPU mode enabled. Shadow mapping enabled for projector support.",
       );
     }
 

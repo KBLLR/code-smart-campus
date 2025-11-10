@@ -43,6 +43,7 @@ export function buildRoomNodeMaterial({
   material.depthWrite = false;
   material.roughness = roughness;
   material.metalness = metalness;
+  material.receiveShadow = true; // Enable shadow receiving for projector support
 
   const baseBottomColor = toColorString(baseBottom, "#13172b");
   const baseTopColor = toColorString(baseTop, "#311649");
