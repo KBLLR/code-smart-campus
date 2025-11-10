@@ -24,6 +24,7 @@ import { SunController } from './SunController.js';
 import { MoonController } from './MoonController.js';
 import { SunSkyDome } from './SunSkyDome.js';
 import { AtmosphereRenderer } from './AtmosphereRenderer.js';
+import { getSunPosition, getMoonPositionExtended } from '@utils/astronomy.js';
 
 /**
  * Default settings
@@ -148,7 +149,7 @@ export class GeospatialManager {
 
     // Update moon position & phase
     if (this.moonController) {
-      this.moonController.update(this.currentDate);
+      this.moonController.update({ date: this.currentDate });
     }
 
     // Update atmosphere color (tied to sun position)
@@ -165,23 +166,46 @@ export class GeospatialManager {
 
   /**
    * Calculate sun azimuth & elevation for given date/time
-   * Uses suncalc library (bundled via three-geospatial)
+   * Uses SunCalc (proven, lightweight ephemeris algorithm)
    *
    * @param {Date} date
    * @returns {Object} { azimuth, elevation } in degrees
    */
   _calculateSunPosition(date) {
-    // TODO: Integrate with three-geospatial's astronomy-engine
-    // For now, use stub calculation
-    const msPerDay = 86400000;
-    const dayOfYear = Math.floor((date - new Date(date.getFullYear(), 0, 0)) / msPerDay);
-    const dayFraction = (date.getHours() * 60 + date.getMinutes()) / 1440;
+    try {
+      return getSunPosition(date, this.location.latitude, this.location.longitude);
+    } catch (err) {
+      console.warn('[GeospatialManager] Sun position calculation failed, using fallback:', err);
+      // Rough fallback if calculation fails
+      const msPerDay = 86400000;
+      const dayOfYear = Math.floor((date - new Date(date.getFullYear(), 0, 0)) / msPerDay);
+      const dayFraction = (date.getHours() * 60 + date.getMinutes()) / 1440;
 
-    // Very rough approximation (replace with actual ephemeris)
-    const elevation = 45 * Math.sin((dayOfYear / 365) * Math.PI * 2 - Math.PI / 2);
-    const azimuth = (dayFraction * 360 + 180) % 360;
+      return {
+        azimuth: (dayFraction * 360 + 180) % 360,
+        elevation: 45 * Math.sin(((dayOfYear - 80) / 365) * Math.PI * 2 - Math.PI / 2),
+      };
+    }
+  }
 
-    return { azimuth, elevation };
+  /**
+   * Calculate moon position (azimuth, elevation, phase, illumination)
+   *
+   * @param {Date} date
+   * @returns {Object} { azimuth, elevation, phase, illumination }
+   */
+  _calculateMoonPosition(date) {
+    try {
+      return getMoonPositionExtended(date, this.location.latitude, this.location.longitude);
+    } catch (err) {
+      console.warn('[GeospatialManager] Moon position calculation failed:', err);
+      return {
+        azimuth: 270,
+        elevation: -45,
+        phase: 0.5,
+        illumination: 0.5,
+      };
+    }
   }
 
   /**

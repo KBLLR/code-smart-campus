@@ -118,3 +118,51 @@ export function normalizeAzimuthDegrees(radAzimuth) {
 export function toDegrees(rad) {
   return (rad * 180) / Math.PI;
 }
+
+/**
+ * Get sun position in degrees (azimuth & elevation)
+ * Uses SunCalc for fast, reliable calculations
+ * Suitable for most use cases
+ *
+ * @param {Date} date
+ * @param {number} latitude - degrees
+ * @param {number} longitude - degrees
+ * @returns {Object} { azimuth: degrees, elevation: degrees }
+ */
+export function getSunPosition(date, latitude, longitude) {
+  const lw = -(longitude * RAD);
+  const phi = latitude * RAD;
+  const d = toDays(date);
+
+  const c = sunCoords(d);
+  const H = siderealTime(d, lw) - c.ra;
+
+  const h = altitude(H, phi, c.dec);
+  const az = azimuth(H, phi, c.dec);
+
+  return {
+    azimuth: normalizeAzimuthDegrees(az),
+    elevation: toDegrees(h),
+  };
+}
+
+/**
+ * Get moon position in degrees (azimuth, elevation, phase, illumination)
+ * Combines getMoonPosition and getMoonIllumination for convenience
+ *
+ * @param {Date} date
+ * @param {number} latitude - degrees
+ * @param {number} longitude - degrees
+ * @returns {Object} { azimuth: degrees, elevation: degrees, phase: 0-1, illumination: 0-1 }
+ */
+export function getMoonPositionExtended(date, latitude, longitude) {
+  const pos = getMoonPosition(date, latitude, longitude);
+  const illum = getMoonIllumination(date);
+
+  return {
+    azimuth: normalizeAzimuthDegrees(pos.azimuth),
+    elevation: toDegrees(pos.altitude),
+    phase: illum.phase,
+    illumination: illum.fraction,
+  };
+}
