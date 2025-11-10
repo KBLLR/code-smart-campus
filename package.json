@@ -19,6 +19,7 @@
     "test:sun": "node --test tests/sunTelemetry.test.js"
   },
   "dependencies": {
+    "@takram/three-atmosphere": "^0.15.1",
     "@tweenjs/tween.js": "^25.0.0",
     "canvas": "^3.1.0",
     "dotenv": "^16.4.7",

@@ -23,6 +23,7 @@ import { LOCATION_CONFIG, getEffectiveLocation } from '@data/geospatial/location
 import { SunController } from './SunController.js';
 import { MoonController } from './MoonController.js';
 import { SunSkyDome } from './SunSkyDome.js';
+import { AtmosphereRenderer } from './AtmosphereRenderer.js';
 
 /**
  * Default settings
@@ -113,8 +114,17 @@ export class GeospatialManager {
     this.sunSkyDome = new SunSkyDome();
     this.group.add(this.sunSkyDome.mesh);
 
-    // Atmosphere & Clouds (stubs for now)
-    // TODO: Initialize @takram/three-atmosphere and @takram/three-clouds
+    // Atmosphere (@takram/three-atmosphere)
+    if (this.config.atmosphereEnabled) {
+      // AtmosphereRenderer initialization is async; will be ready after _init completes
+      this.atmosphereRenderer = new AtmosphereRenderer(
+        this.scene,
+        this.scene.camera || new THREE.PerspectiveCamera()
+      );
+    }
+
+    // Clouds (stub for now)
+    // TODO: Initialize @takram/three-clouds
   }
 
   /**
@@ -142,8 +152,9 @@ export class GeospatialManager {
     }
 
     // Update atmosphere color (tied to sun position)
-    if (this.atmosphereRenderer) {
-      this.atmosphereRenderer.update(this.currentDate);
+    if (this.atmosphereRenderer && this.atmosphereRenderer.ready) {
+      const sunPos = this._calculateSunPosition(this.currentDate);
+      this.atmosphereRenderer.update(sunPos.azimuth, sunPos.elevation);
     }
 
     // Update cloud coverage
