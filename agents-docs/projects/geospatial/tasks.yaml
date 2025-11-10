@@ -1,0 +1,168 @@
+project:
+  id_prefix: GEO
+  owner: "KBLLR"
+  variant: SEMI
+  intent: "Add photorealistic sun, moon, atmosphere, and cloud systems to Smart Campus 3D via three-geospatial"
+
+backlog:
+  # === DISCOVERY & SETUP ===
+  - id: GEO-101
+    title: "Audit three-geospatial monorepo & npm availability"
+    description: "Verify npm packages exist (@takram/three-atmosphere v0.15.1, @takram/three-clouds v0.5.2, @takram/three-geospatial v0.5.1). Document API surface, examples, and WebGPU roadmap."
+    priority: high
+    owner: "KBLLR"
+    status: "DONE"
+    research: ["https://github.com/takram-design-engineering/three-geospatial", "npm packages verified", "astronomy-engine included in three-atmosphere"]
+
+  - id: GEO-102
+    title: "Confirm campus location data & timezone"
+    description: "Extract lat/lon/timezone from existing config (roomRegistry or similar). Validate against Smart Campus physical location. Document in locationConfig.js template."
+    priority: high
+    owner: "KBLLR"
+    research: ["roomRegistry.js", "existing coordinate systems", "timezone handling in codebase"]
+
+  - id: GEO-103
+    title: "Design GeospatialManager orchestration layer"
+    description: "Sketch class hierarchy: GeospatialManager (root) → SunController, MoonController, AtmosphereRenderer, CloudSystem. Define lifecycle (init, update, destroy) and event bindings."
+    priority: high
+    owner: "KBLLR"
+    research: ["existing Manager patterns in world/managers", "Three.js light lifecycle"]
+
+  # === SUN & MOON CONTROLLERS ===
+  - id: GEO-201
+    title: "Implement SunController (time/location → light position)"
+    description: "Create src/world/managers/SunController.js. Bind astronomy-engine ephemeris to Three.js DirectionalLight. Expose time/lat/lon/timezone controls. Test smooth transitions."
+    priority: high
+    owner: "KBLLR"
+    depends_on: ["GEO-101", "GEO-102", "GEO-103"]
+
+  - id: GEO-202
+    title: "Implement MoonController (lunar positioning & phase)"
+    description: "Create src/world/managers/MoonController.js. Calculate moon position & illumination phase. Render via Point/Mesh or custom shader. Integrate with SunController for realistic relative positions."
+    priority: medium
+    owner: "KBLLR"
+    depends_on: ["GEO-201"]
+
+  - id: GEO-203
+    title: "Add time slider UI (manual sun/moon control)"
+    description: "Create glassy UI panel with date/time slider. Bind to SunController & MoonController. Update HUD / toolbar. QA: ensure responsive, no blocking orbit."
+    priority: medium
+    owner: "KBLLR"
+    depends_on: ["GEO-201", "GEO-202"]
+
+  # === ATMOSPHERE ===
+  - id: GEO-301
+    title: "Integrate @takram/three-atmosphere & precompute LUT"
+    description: "Import @takram/three-atmosphere. Generate Mie/Rayleigh LUT (lookup table) for scattering. Cache on disk or localStorage. Benchmark compile time on Metal/Intel."
+    priority: high
+    owner: "KBLLR"
+    depends_on: ["GEO-101"]
+    research: ["three-geospatial atmosphere docs", "LUT generation performance", "Metal/WebGPU compilation"]
+
+  - id: GEO-302
+    title: "Create AtmosphereRenderer & bind to SunController"
+    description: "Create src/world/managers/AtmosphereRenderer.js. Apply precomputed LUT to sky shader. Update sky color per sun position (dawn/dusk gradients). No console errors on WebGL fallback."
+    priority: high
+    owner: "KBLLR"
+    depends_on: ["GEO-201", "GEO-301"]
+
+  - id: GEO-303
+    title: "Optimize atmosphere for Intel & mobile"
+    description: "Profile atmosphere shader on Intel GPU (if available). Implement WebGPU fallback if needed. Ensure no FPS drops; cache LUT to avoid recompile."
+    priority: medium
+    owner: "KBLLR"
+    depends_on: ["GEO-302"]
+
+  # === CLOUDS ===
+  - id: GEO-401
+    title: "Integrate @takram/three-clouds & volumetric system"
+    description: "Import @takram/three-clouds. Set up volumetric cloud rendering. Bind to camera + sun direction. Test render quality vs. performance trade-off."
+    priority: medium
+    owner: "KBLLR"
+    depends_on: ["GEO-101", "GEO-302"]
+    research: ["three-geospatial clouds docs", "volumetric cloud optimization"]
+
+  - id: GEO-402
+    title: "Add cloud coverage control (slider + HA integration stub)"
+    description: "Create CloudSystem.js with coverage slider. Bind to atmosphere. Stub Home Assistant humidity sensor (future: live sync). Update UI panel."
+    priority: medium
+    owner: "KBLLR"
+    depends_on: ["GEO-401"]
+
+  - id: GEO-403
+    title: "Synchronize cloud color to sun & atmosphere"
+    description: "Ensure clouds reflect sun illumination and atmospheric scattering. No jarring color shifts. Test dawn/dusk/night transitions."
+    priority: medium
+    owner: "KBLLR"
+    depends_on: ["GEO-302", "GEO-402"]
+
+  # === LIGHTING & INTEGRATION ===
+  - id: GEO-501
+    title: "Review Three.js light architecture & Material compatibility"
+    description: "Audit existing lights in world (directional, point, etc.). Ensure SunController light doesn't conflict with campus geometry lights. Test material response (metallic, roughness) to dynamic sun."
+    priority: high
+    owner: "KBLLR"
+    depends_on: ["GEO-201"]
+    research: ["existing src/world/ light setup", "Three.js Material.map.lighting"]
+
+  - id: GEO-502
+    title: "Implement dynamic shadow updates (sun position)"
+    description: "Enable shadow map updates per sun position change. Benchmark performance. Implement LOD or deferred shadowing if needed on slower platforms."
+    priority: medium
+    owner: "KBLLR"
+    depends_on: ["GEO-501"]
+
+  - id: GEO-503
+    title: "Add nighttime mode (low light + stars)"
+    description: "Detect sun below horizon. Dim scene lighting. Render starfield or integrate star data. Create glassy night-mode UI."
+    priority: low
+    owner: "KBLLR"
+    depends_on: ["GEO-302"]
+
+  # === QA & OPTIMIZATION ===
+  - id: GEO-601
+    title: "QA checklist: sun/moon/atmosphere smooth transitions"
+    description: "Test smooth sun/moon movement over hours/days. No console errors. Atmosphere color gradients accurate. Cloud rendering stable. See qa/geospatial-qa-checklist.md."
+    priority: high
+    owner: "KBLLR"
+    depends_on: ["GEO-201", "GEO-202", "GEO-302", "GEO-401"]
+
+  - id: GEO-602
+    title: "Performance profiling: GPU load, FPS stability"
+    description: "Profile on MacBook Pro M3 (Metal), Intel (WebGL), mobile (if available). Target 60 FPS stable. Document baseline metrics. Implement LOD if needed."
+    priority: high
+    owner: "KBLLR"
+    depends_on: ["GEO-302", "GEO-403"]
+
+  - id: GEO-603
+    title: "Documentation: integration guide & examples"
+    description: "Write developer guide: how to instantiate GeospatialManager, customize location, use time slider. Provide code examples. Link to three-geospatial docs."
+    priority: medium
+    owner: "KBLLR"
+    depends_on: ["GEO-502"]
+
+  # === FUTURE (Deferred) ===
+  - id: GEO-701
+    title: "Moon surface rendering & crater detail"
+    description: "Render moon surface texture. Implement rim lighting. Add crater shadows. See future-features/moon-surface.md."
+    priority: low
+    owner: "KBLLR"
+    research: ["three-geospatial WebGPU roadmap", "moon texture sources"]
+
+  - id: GEO-702
+    title: "Lens glare & bloom effects (sun)"
+    description: "Implement bloom/glare shader when sun near camera. Integrate @geospatial/effects. See future-features/sun-glare.md."
+    priority: low
+    owner: "KBLLR"
+    depends_on: ["GEO-201"]
+
+  - id: GEO-703
+    title: "Real-time weather integration (Home Assistant)"
+    description: "Wire cloud coverage / atmospheric condition to HA sensor data. Update every 5–10 min. Stub for future phase."
+    priority: low
+    owner: "KBLLR"
+    research: ["HA WS entity queries", "weather entity standard"]
+
+in_progress: []
+review: []
+done: []
