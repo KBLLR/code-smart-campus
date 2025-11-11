@@ -9,13 +9,19 @@
 
 ## Overview
 
-Integrate real campus geometry data and geospatial components into the `GeospatialScene` stub. This task connects the Scene Factory architecture (T-01, T-03, T-04) with actual Smart Campus data sources.
+Integrate real campus geometry data and geospatial components into `GeospatialScene` and `BackdropScene`. This task connects the Scene Factory architecture (T-01, T-03, T-04, T-05, T-06) with actual Smart Campus data sources.
 
-**Goal:** Make `GeospatialScene` production-ready by loading:
-1. Campus floor geometry and room meshes
+**Goal:** Make both scenes production-ready by loading:
+1. Campus floor geometry and room meshes (shared across scenes)
 2. Label system for room identification
-3. Geospatial controllers (Sun, Moon, Atmosphere)
+3. Geospatial controllers (Sun, Moon, Atmosphere) — GeospatialScene only
 4. Material registry and rendering pipeline
+5. Stylized WebGPU backdrop rendering (BackdropScene)
+
+**Key Vision:**
+- **GeospatialScene:** Realistic campus with TSL shaders, sun/moon directional lights, atmosphere
+- **BackdropScene:** Same campus geometry, stylized rendering following https://github.com/mrdoob/three.js/blob/master/examples/webgpu_backdrop_area.html
+- **ProjectorLightScene:** White rough/smooth canvas for projection mapping (future)
 
 ---
 
@@ -25,8 +31,21 @@ Integrate real campus geometry data and geospatial components into the `Geospati
 - ✅ Lifecycle hooks implemented (init, activate, deactivate, dispose)
 - ✅ UI control schema defined (Sun/Sky, Lighting/FX)
 - ✅ Architecture ready for data integration
-- ❌ **TODO:** Real campus geometry loading
-- ❌ **TODO:** Geospatial controller integration
+- ❌ **TODO:** Real campus geometry loading (Floor + roomRegistry)
+- ❌ **TODO:** Geospatial controller integration (Sun, Moon, Atmosphere)
+- ❌ **TODO:** TSL shader materials for realistic rendering
+
+### BackdropScene (shared/scenes/backdrop/index.ts)
+- ✅ Lifecycle hooks implemented
+- ✅ Basic structure ready
+- ❌ **TODO:** Load same campus geometry (Floor + roomRegistry)
+- ❌ **TODO:** Apply WebGPU backdrop area light aesthetic
+- ❌ **TODO:** Material qualities from three.js example (tone mapping, etc.)
+
+### ProjectorLightScene (shared/scenes/projectorLight/index.ts)
+- ✅ Lifecycle hooks implemented
+- ✅ Test geometry created (placeholder)
+- ⏳ **TODO (Phase 2):** Replace with white rough/smooth canvas classroom materials
 
 ### Data Sources Available
 - `src/three/FloorGeometry.js` → Floor class with room geometry
@@ -41,52 +60,166 @@ Integrate real campus geometry data and geospatial components into the `Geospati
 
 ## Implementation Plan
 
-### Phase 1: Campus Geometry Loading (Week 1)
+**Architecture:** Shared geometry + per-scene visual treatment
 
-**File:** `shared/scenes/geospatial/index.ts` → `loadCampusGeometry()`
+Each scene uses the **same campus geometry** (Floor + roomRegistry) but applies different visual treatments via scene-specific configurables.
 
-**Tasks:**
+```
+Shared Campus Asset (loaded per-scene)
+├── Floor geometry + room meshes
+├── Room labels/data
+├── Camera baseline
+└── Scene-specific appearance
 
-1. **Import Floor geometry**
-   ```typescript
-   // Dynamic import to avoid circular dependencies
-   const { Floor } = await import("@three/FloorGeometry.js");
-   this.floor = new Floor();
-   this.campusGeometryGroup.add(this.floor.mesh);
-   ```
-
-2. **Load room registry and attach to scene**
-   ```typescript
-   const { roomRegistry } = await import("@registries/roomRegistry.js");
-   // Iterate roomRegistry and add room meshes to campusGeometryGroup
-   // Store reference to roomRegistry in this.roomRegistry for later use
-   ```
-
-3. **Initialize material registry**
-   ```typescript
-   const { materialRegistry } = await import("@registries/materialsRegistry.js");
-   // Initialize with renderer and assets
-   materialRegistry.init({ renderer: this.renderer });
-   this.materialRegistry = materialRegistry;
-   ```
-
-4. **Attach scene FOG and appearance**
-   ```typescript
-   // Copy fog/background from src/scene.js
-   const fogColor = new THREE.Color("#13243d");
-   const tempScene = new THREE.Scene();
-   tempScene.fog = new THREE.FogExp2(fogColor, 0.0009);
-   tempScene.background = new THREE.Color("#0f1419");
-   ```
-
-**Deliverables:**
-- Campus geometry visible in GeospatialScene
-- Rooms render with proper materials
-- No broken imports or circular dependencies
+Each Scene Applies:
+├── Material shaders (TSL realistic / WebGPU backdrop / Canvas white)
+├── Lighting approach (Sun/Moon/Atmosphere / Tone mapping / Projection)
+├── Visual mood/configurables
+└── UI controls
+```
 
 ---
 
-### Phase 2: Geospatial Controller Integration (Week 1-2)
+### Phase 0: Shared Campus Geometry Loader
+
+**Create:** `shared/scenes/_shared/campusGeometryLoader.ts`
+
+**Purpose:** Utility to load Floor + roomRegistry, reusable across scenes
+
+```typescript
+export interface CampusAsset {
+  floor: THREE.Group;
+  roomRegistry: Record<string, any>;
+  materialRegistry: any;
+  sceneConfig: {
+    fogColor: THREE.Color;
+    fogDensity: number;
+    backgroundColor: THREE.Color;
+  };
+}
+
+export async function loadCampusAsset(): Promise<CampusAsset> {
+  const { Floor } = await import("@three/FloorGeometry.js");
+  const { roomRegistry } = await import("@registries/roomRegistry.js");
+  const { materialRegistry } = await import("@registries/materialsRegistry.js");
+
+  return {
+    floor: new Floor(),
+    roomRegistry,
+    materialRegistry,
+    sceneConfig: {
+      fogColor: new THREE.Color("#13243d"),
+      fogDensity: 0.0009,
+      backgroundColor: new THREE.Color("#0f1419"),
+    },
+  };
+}
+```
+
+**Estimated effort:** 1-2 hours
+
+---
+
+### Phase 1a: Complete GeospatialScene
+
+**File:** `shared/scenes/geospatial/index.ts`
+
+**Scope:** Full implementation with realistic TSL shaders + sun/moon + atmosphere
+
+**Tasks:**
+1. Load shared campus asset
+2. Apply TSL shaders to room materials (realistic, sun-responsive)
+3. Integrate GeospatialManager (Sun, Moon, Atmosphere)
+4. Setup sun/moon directional lights (NOT area lights)
+5. Configure room labels via LabelLayoutManager
+6. Full UI control bindings (Sun/Sky, Lighting, Time)
+7. Memory management + disposal
+
+**Config-driven properties:**
+- Material detail (normal maps, roughness, metalness)
+- Lighting intensity curves
+- Fog density
+- Camera FOV/position
+- UI control schemas
+
+**Deliverables:**
+- ✅ Campus renders with realistic lighting
+- ✅ Sun/moon position + movement correct
+- ✅ Atmosphere responds to sun angle
+- ✅ Room labels readable
+- ✅ All UI controls functional & responsive
+- ✅ Proper resource cleanup
+
+**Estimated effort:** 6-8 hours
+
+---
+
+### Phase 1b: Complete BackdropScene
+
+**File:** `shared/scenes/backdrop/index.ts`
+
+**Scope:** Full implementation with WebGPU backdrop aesthetic
+
+**Tasks:**
+1. Load same shared campus asset
+2. Apply WebGPU backdrop aesthetic (tone mapping, material qualities)
+3. Follow https://github.com/mrdoob/three.js/blob/master/examples/webgpu_backdrop_area.html pattern
+4. Configure room labels
+5. Setup stylized lighting mood
+6. Full UI control bindings (backdrop-specific)
+7. Memory management + disposal
+
+**Config-driven properties:**
+- Tone mapping (exposure, contrast)
+- Material aesthetic (glossiness, surface finish)
+- Lighting mood/color temperature
+- Camera framing
+- Backdrop UI controls
+
+**Deliverables:**
+- ✅ Campus renders with stylized aesthetic
+- ✅ WebGPU backdrop look achieved
+- ✅ Room labels visible
+- ✅ All UI controls functional
+- ✅ Proper resource cleanup
+
+**Estimated effort:** 4-6 hours
+
+---
+
+### Phase 1c: Complete ProjectorLightScene
+
+**File:** `shared/scenes/projectorLight/index.ts`
+
+**Scope:** Full implementation with white canvas materials for projection
+
+**Tasks:**
+1. Load same shared campus asset
+2. Replace classroom materials with white canvas (rough/smooth variants)
+3. Setup projection-optimized camera/lighting
+4. Configure room selector/highlighter
+5. Full UI control bindings (projection-specific)
+6. Memory management + disposal
+
+**Config-driven properties:**
+- Canvas roughness/smoothness per room
+- Projection brightness/contrast
+- Camera angle for projection
+- Room selection mapping
+- Projection UI controls
+
+**Deliverables:**
+- ✅ Classrooms as white projection canvas
+- ✅ Projection mapping ready
+- ✅ Room selection system functional
+- ✅ All UI controls functional
+- ✅ Proper resource cleanup
+
+**Estimated effort:** 3-4 hours
+
+---
+
+### Phase 2: Testing & Optimization
 
 **File:** `shared/scenes/geospatial/index.ts` → `initializeGeospatialComponents()`
 

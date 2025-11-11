@@ -17,14 +17,23 @@
 | T-05    | Implement BackdropScene                 | T-03       | ✅ Done   | f3f9a2e | Sky dome visualization, minimal footprint |
 | T-06    | Implement ProjectorLightScene           | T-03       | ✅ Done   | f3f9a2e | Spotlight + shadows, test geometry |
 
-## Remaining Tasks (⏳ In Backlog)
+## Data Integration Tasks (In Progress)
 
-| ID   | Title                                         | Depends On   | Status | Priority | Notes |
-|------|-----------------------------------------------|--------------|--------|----------|-------|
-| T-07 | Create UI panels for scene switching & config | T-01         | Todo   | High     | Scene switcher + config panels (stubs exist) |
-| T-08 | Implement disposal/memory cleanup testing     | T-02, T-04    | Todo   | Medium   | Stress test, ref counting validation |
-| T-09 | Write documentation: how-to-use scene factory | T-03         | Todo   | Medium   | User guide + integration examples |
-| SF-DI-001 | Integrate real campus geometry data      | T-04, T-05, T-06 | Todo | High     | Load Floor, roomRegistry, geospatial managers |
+| ID        | Title                                    | Depends On | Status  | Priority | Effort | Notes |
+|-----------|------------------------------------------|-----------|---------|----------|--------|-------|
+| SF-DI-P0  | Create shared campus geometry loader     | —         | Todo    | High     | 1-2h   | Utility to load Floor + roomRegistry once |
+| SF-DI-1a  | Complete GeospatialScene implementation | SF-DI-P0  | Todo    | High     | 6-8h   | TSL shaders, Sun/Moon, Atmosphere, labels |
+| SF-DI-1b  | Complete BackdropScene implementation   | SF-DI-P0  | Todo    | High     | 4-6h   | WebGPU backdrop aesthetic, tone mapping |
+| SF-DI-1c  | Complete ProjectorLightScene implementation | SF-DI-P0 | Todo    | High     | 3-4h   | White canvas, projection-ready |
+| SF-DI-P2  | Testing & optimization                   | All 1a-1c | Todo    | Medium   | 2-3h   | Memory, visual, performance validation |
+
+## Remaining Tasks (⏳ In Backlog - Post Data Integration)
+
+| ID   | Title                                         | Depends On       | Status | Priority | Notes |
+|------|-----------------------------------------------|------------------|--------|----------|-------|
+| T-07 | Create UIL panels (scene switcher + config)  | SF-DI-1a/1b/1c  | Todo   | High     | Wire SceneFactory to UIL |
+| T-08 | Memory cleanup testing                       | SF-DI-P2        | Todo   | Medium   | Stress test ref counting |
+| T-09 | How-to documentation (scene factory usage)   | T-07            | Todo   | Medium   | User guide + examples |
 
 ---
 
@@ -134,3 +143,41 @@ Each Scene:
 **Status Date:** 2025-11-11 EOD
 **Architecture Complete:** Yes ✅
 **Production Ready:** Pending data integration (SF-DI-001)
+
+---
+
+## Session: 2025-11-11 (Evening - Data Integration Planning)
+
+**Clarification:** All scenes share same campus geometry, differ only in visual treatment
+
+### Vision Confirmed
+
+- **Shared:** Floor geometry, room meshes, room labels, camera baseline, data
+- **Per-scene:** Material shaders, lighting approach, visual mood, configurables
+
+### New Structure (SF-DI-001 Updated)
+
+**Phase 0:** Shared campus geometry loader (1-2h)
+- Create `campusGeometryLoader.ts` utility
+- Load Floor + roomRegistry once, reusable across scenes
+
+**Phase 1a:** GeospatialScene (6-8h)
+- TSL shaders (realistic, sun-responsive)
+- Sun/Moon directional lights + Atmosphere
+- Full UI controls + labels
+
+**Phase 1b:** BackdropScene (4-6h)
+- WebGPU backdrop aesthetic (tone mapping, etc.)
+- Follow three.js webgpu_backdrop_area.html pattern
+- Full UI controls + labels
+
+**Phase 1c:** ProjectorLightScene (3-4h)
+- White canvas materials (rough/smooth)
+- Projection mapping ready
+- Full UI controls + labels
+
+**Phase 2:** Testing & optimization (2-3h)
+
+### Next Action
+
+Start with Phase 0 + Phase 1a (GeospatialScene implementation)
