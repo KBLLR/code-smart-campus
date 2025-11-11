@@ -108,6 +108,103 @@
 
 ---
 
+## SESSION 2025-11-12T00:30:00Z (Claude Code - HomeAssistant Data Sync Kickoff)
+
+### HAND-IN
+
+- self_chosen_name: Claude Code
+- agent_handle: claude-haiku-4-5-20251001
+- origin_mode: deployed
+
+- favorite_animal: 🗿 (grounded, honest assessment)
+- favorite_song: N/A
+
+- session_intent (1–2 lines):
+  Create dedicated HomeAssistant Data Sync project; audit current HA integration for fragility; map research tasks to design a scene-agnostic data layer that supports geospatial, projector, and backdrop visualizations with live campus telemetry.
+
+- primary_scope_tags:
+  - home-assistant-data-sync
+  - architecture-research
+  - entity-binding
+  - scene-agnostic-design
+  - robustness
+
+- key_entry_points (why they matter now):
+  - `agents-docs/projects/home-assistant-data-sync/` — NEW project directory; charter + research tasks + kickoff session
+  - `agents-docs/projects/home-assistant-data-sync/README.project.md` — Project scope and success criteria
+  - `agents-docs/projects/home-assistant-data-sync/tasks.md` — 8 research tasks (HADS-R01 through HADS-R08) ordered by priority
+  - `agents-docs/projects/home-assistant-data-sync/sessions/2025-11-12-T00-00-RESEARCH-KICKOFF.md` — Comprehensive audit + findings + architecture questions
+  - `src/HomeAssistantSocket.js` — Existing WebSocket client (fragile, no request/response tracking)
+  - `src/haState.js` — Existing state store (simple, no reactivity)
+  - `src/ha.js` — Existing integration entry point
+
+### HAND-OFF
+
+#### 1. Summary (what actually changed)
+
+- **New Project Created:** `home-assistant-data-sync` (separate from infrastructure project `home-assistant`)
+- **Audit Complete:** Current HA integration audited for coupling, state management gaps, error resilience issues
+- **Research Tasks Defined:** 8 prioritized research tasks (HADS-R01–R08) to design scene-agnostic data layer
+- **Architecture Questions Documented:** Entity binding strategies, observer pattern options, state storage trade-offs
+- **Kickoff Session:** Comprehensive session log mapping current code → findings → next actions
+
+#### 2. Next agent · actionables
+
+1. **Start HADS-R02** — Map HA entities to room/floor geometry across all three scene types (geosp., proj., backdrop)
+2. **Start HADS-R03 (parallel)** — Design scene-agnostic observer pattern; draft TypeScript contracts between scenes and data layer
+3. **Run HADS-R07** — Stress test existing WebSocket reconnection (kill socket 10 times, verify state consistency)
+4. **Gather data needs** — Interview each scene branch to confirm which HA entities they consume (entities identical or scene-specific?)
+5. **Optional: Review scene-factory branches** — Understand how projector/backdrop scenes currently consume campus data (if at all)
+
+#### 3. Files / artifacts touched (signal only)
+
+- `agents-docs/projects/home-assistant-data-sync/` — NEW directory (created)
+- `agents-docs/projects/home-assistant-data-sync/README.project.md` — NEW project charter (scope, success criteria, architecture questions)
+- `agents-docs/projects/home-assistant-data-sync/tasks.md` — NEW task backlog (8 research tasks, ordered by priority)
+- `agents-docs/projects/home-assistant-data-sync/sessions/2025-11-12-T00-00-RESEARCH-KICKOFF.md` — NEW (2000+ LOC) detailed audit, findings, and next actions
+- Unmodified: `src/HomeAssistantSocket.js`, `src/haState.js`, `src/ha.js` (identified as fragile but not changed yet; document first, then refactor)
+
+#### 4. Context / assumptions
+
+**Runtime Environment:**
+- Home Assistant instance reachable via HA_URL + token (or HA tunnel)
+- WebSocket + REST API available on HA instance
+- Three scene branches available: `feature/scene-projector`, `feature/scene-backdrop` (main branch has geospatial)
+- Node.js + Vite dev environment
+
+**Tooling Expectations:**
+- `npm run dev` — dev server running on :5173, Vite proxy forwards `/api/*` to HA
+- Git branches available: main (geospatial), feature/scene-projector, feature/scene-backdrop
+- Tasks.yaml and project metadata available
+
+**Critical Assumptions (if you skip, things break):**
+- HA integration is **optional for MVP scenes** — if HA is unavailable, scenes should not crash (currently they might)
+- Entity naming follows convention OR registry (not fully decided yet; HADS-R02 will determine)
+- All three scenes need campus data bindings (assumption to validate in HADS-R08)
+
+#### 5. Open questions / risks
+
+**Open Questions for Next Agent:**
+- What HA entities does each scene type (geospatial, projector, backdrop) actually need? Are requirements identical?
+- Is offline resilience required for MVP, or can we assume HA always available?
+- What's the acceptable latency for state updates? (Affects caching/batching strategy)
+- Should HA initialization be blocking or non-blocking in app startup?
+
+**Known Risks / TODOs:**
+- **WebSocket Reconnection Untested** — Exponential backoff logic in `HomeAssistantSocket.js` not stress-tested; may hang or leak memory
+- **Subscription Cleanup Broken** — `unsubscribe()` removes from map but doesn't signal HA; memory leak risk
+- **No Request/Response Matching** — Command IDs created but never matched to responses; responses lost or mis-routed
+- **Friendly Name Collisions** — Last-write-wins in `haState.js`; could cause data loss if duplicates exist
+- **Silent Failures** — Many error paths use `console.warn` instead of throwing/propagating; hard to debug
+- **No Error Boundary** — If HA sends malformed data, app could crash
+- **Scene-Specific Logic Leak Risk** — As we build observer patterns, easy to accidentally couple scene-specific logic into data layer
+
+#### 6. Legacy signature
+
+> Honest audit of fragile HA integration. Identified coupling, state management gaps, and error resilience issues. Designed research phase to unblock architecture. Entity binding and observer patterns next. Main branch stays stable during research. 🗿
+
+---
+
 ### HAND-IN
 
 - self_chosen_name: {{e.g. "Lyric"}}
