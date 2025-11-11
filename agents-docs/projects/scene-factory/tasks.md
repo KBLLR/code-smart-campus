@@ -298,25 +298,152 @@ Each Scene:
   - UI control matrix
   - Test scenarios and deployment readiness
 
-### Next Steps (Ready for T-07)
+---
 
-The Scene Factory core architecture is now complete and validated:
+## Session: 2025-11-11 (Late Evening - Scene Switcher UI & Architecture Review)
 
-1. **T-07**: Create UIL panels (scene switcher + config)
-   - Wire SceneFactory to UI controller
-   - Build scene switcher dropdown
-   - Dynamic control panel generation per scene
-   - Real-time bindings to scene UI methods
+**Branch:** main
+**Status:** Scene switcher UI implemented + architecture assessment
+**Decision:** Defer scene switching integration, pursue parallel branch strategy
 
-2. **T-08**: Memory cleanup stress testing (optional, based on load)
-   - Rapid scene switching validation
-   - Heap snapshot analysis
-   - Long-running stability tests
+### Completed: T-07 (Partial)
 
-3. **T-09**: User documentation
-   - Scene Factory usage guide
-   - Configuration examples
-   - Custom scene creation template
+✅ **Scene Switcher Component UI** (Commit: b5714dd)
+- New component: `src/ui/components/molecules/SceneSwitcher.js`
+- 3 buttons in header status row: Geospatial | Projector | Backdrop
+- Matches existing UI styling (no emojis, pill-shaped, teal highlights)
+- Layout: [Telemetry Status] [Sensors] [Geospatial] [Projector] [Backdrop]
+- Component ready for factory integration (accepts sceneFactory prop)
+
+✅ **Scene Manager Coordinator** (Commit: 6ee9b67)
+- New: `shared/ui/SceneManager.ts`
+- Singleton pattern for scene factory management
+- Registers all 3 scene classes on init
+- Deferred initialization (after app loads)
+- Clean factory interface
+
+✅ **Infrastructure Improvements**
+- Fixed SceneFactory renderer handling (accepts Setup.re)
+- Dynamic lazy-loading for AtmosphereRenderer
+- Build passing with zero errors
+
+### Decision: Defer Full Scene Integration
+
+After architectural review, identified critical incompatibilities that would break existing features if forced:
+
+**Why Scene Switching Can't Be Integrated Now:**
+
+1. **Dual Scene Systems** - Old `src/scene.js` vs. new SceneFactory scenes are incompatible
+2. **Tightly Coupled Dependencies** - labelManager, hudManager, postProcessor, controls all tied to old scene
+3. **Resource Loading** - 3x memory cost (load all scenes upfront)
+4. **Camera & Controls** - Setup.js single camera/controls, SceneFactory scenes have own
+5. **UI Binding** - UIL panels hardwired to old scene properties
+6. **Post-Processing** - Only works with original scene
+
+**Proper Integration Would Require:**
+- Major refactor of src/scene.js to use SceneFactory internally
+- Consolidation of resource loading
+- Dynamic UI panel rewiring per scene
+- Post-processing system redesign
+- Multi-camera controls system
+- Estimated: 3-4 hours careful work
+
+**Decision:** Keep UI visible as **placeholder** rather than force integration now.
+
+### New Strategy: Parallel Branch Development
+
+Instead of forcing integration, develop scenes independently in parallel branches:
+
+1. **main** (production, current)
+   - Keep geospatial scene stable + complete
+   - Scene switcher UI visible (placeholder buttons)
+   - Finish geospatial view + app preparations
+   - Build remains passing
+
+2. **scene:backdrop** (new branch)
+   - Independent backdrop scene development
+   - Refinements + optimizations
+   - Ready for integration when refactor happens
+
+3. **scene:projector** (new branch)
+   - Independent projector scene development
+   - Refinements + optimizations
+   - Ready for integration when refactor happens
+
+**Integration Task:** Future T-10 (major refactor)
+- Consolidate scene systems
+- Enable multi-scene switching
+- Full factory integration
+
+### Files This Session
+
+- `src/ui/components/molecules/SceneSwitcher.js` (NEW - 190 LOC)
+- `shared/ui/SceneManager.ts` (NEW - 122 LOC)
+- `shared/engine/SceneFactory.ts` (MODIFIED - cleaner renderer handling)
+- `src/main.js` (MODIFIED - deferred SceneManager init)
+- `src/lib/AtmosphereRenderer.js` (MODIFIED - lazy imports)
+- `agents-docs/projects/scene-factory/SESSION-2025-11-11-EVENING-SCENE-SWITCHER.md` (NEW - 300+ LOC)
+
+### Commits This Session
+
+1. `b5714dd` - feat: T-07 - Add temporary scene switcher UI in header
+2. `6ee9b67` - feat: T-07 - Integrate scene switcher with SceneFactory
+3. `dd5ec7f` - fix: Handle missing Atmosphere export gracefully
+4. `2591eaa` - fix: Defer SceneManager initialization and fix initialization order
+
+### Build Status
+
+✓ Build passing
+✓ Zero TypeScript errors
+✓ App loads without hanging
+✓ Scene buttons visible and functional (UI only)
+
+### Next Steps
+
+**Immediate (main branch):**
+
+1. ✅ Document T-07 as "UI Placeholder - Switching Deferred"
+2. ⏳ Finish geospatial scene view refinements
+3. ⏳ Prepare app for T-09 (memory safety + next projects)
+
+**Near-term (branching):**
+
+1. Create `scene:backdrop` branch
+   - Optimize backdrop scene
+   - Add refinements independent of main
+   - Ready for future integration
+
+2. Create `scene:projector` branch
+   - Optimize projector scene
+   - Add refinements independent of main
+   - Ready for future integration
+
+**Future (T-10 Integration Task):**
+
+- Plan major refactor for scene switching integration
+- Consolidate old scene.js with SceneFactory
+- Enable multi-scene functionality in app
+
+### Architectural Notes
+
+**What Worked Well:**
+- SceneFactory pattern is clean and extensible
+- Config-driven scenes
+- Lazy initialization pattern
+- Dynamic imports for library issues
+
+**What We Learned:**
+- Don't force integration early
+- Architectural coupling is the real cost
+- Honest assessment > optimistic timelines
+- Placeholder > broken feature
+
+**Decision Rationale:**
+- Preserve app stability
+- No technical debt from partial integration
+- Infrastructure in place for future work
+- Allows parallel scene development
+- Clear path forward for proper integration
 
 ### Summary
 
