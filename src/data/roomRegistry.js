@@ -1,5 +1,5 @@
 // roomRegistry.js
-// Auto-generated from floorplan.svg on 2025-11-11T14:25:48.419Z
+// Auto-generated from floorplan.svg on 2025-11-11T14:27:12.021Z
 // Contains center coordinates for rooms defined in the SVG.
 
 export const roomRegistry = {

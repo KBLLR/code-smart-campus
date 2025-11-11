@@ -244,42 +244,6 @@ sensorToggleControl.addEventListener("click", () => {
   viewHero.addStatusControl(sensorToggleControl);
 })();
 
-// Initialize Scene Switcher in header with SceneManager integration
-(() => {
-  let sceneManager = null;
-
-  // Initialize SceneManager asynchronously
-  SceneManager.initialize(canvas, setup.re)
-    .then((manager) => {
-      sceneManager = manager;
-      const sceneFactory = manager.getSceneFactory();
-
-      // Create SceneSwitcher with factory integration
-      const sceneSwitcher = new SceneSwitcher({
-        sceneFactory: sceneFactory,
-        onSceneChange: async (sceneKey) => {
-          try {
-            await sceneFactory.activate(sceneKey);
-            console.log(`[Main] Scene switched to: ${sceneKey}`);
-          } catch (err) {
-            console.error(`[Main] Failed to switch scene:`, err);
-          }
-        },
-      });
-
-      // Mount scene switcher buttons directly to status wrap
-      sceneSwitcher.mount(viewHero.statusWrap);
-      window.sceneSwitcher = sceneSwitcher;
-      window.sceneFactory = sceneFactory;
-      window.sceneManager = sceneManager;
-
-      console.log("[Main] Scene Switcher initialized with SceneFactory integration");
-    })
-    .catch((err) => {
-      console.error("[Main] Failed to initialize SceneManager:", err);
-    });
-})();
-
 panelShell?.classList.remove("is-open");
 contentArea?.classList.remove("is-open");
 panelIndicators?.classList.remove("is-open");
@@ -413,6 +377,47 @@ registerOrbitDebugControls({
   controller: navigationController,
   setup,
 });
+
+// Initialize Scene Switcher UI in header
+(() => {
+  // Create SceneSwitcher UI (buttons only, without factory integration initially)
+  const sceneSwitcher = new SceneSwitcher({
+    sceneFactory: null,
+    onSceneChange: (sceneKey) => {
+      console.log(`[Main] Scene button clicked: ${sceneKey} (switching deferred)`);
+    },
+  });
+
+  // Mount scene switcher buttons directly to status wrap
+  sceneSwitcher.mount(viewHero.statusWrap);
+  window.sceneSwitcher = sceneSwitcher;
+
+  console.log("[Main] Scene Switcher UI initialized");
+
+  // Initialize SceneManager asynchronously after app loads
+  whenReady("roundedRoomsGroup", async () => {
+    try {
+      const sceneManager = await SceneManager.initialize(canvas, setup.re);
+      window.sceneFactory = sceneManager.getSceneFactory();
+      window.sceneManager = sceneManager;
+
+      // Wire scene switcher to factory
+      sceneSwitcher.sceneFactory = sceneManager.getSceneFactory();
+      sceneSwitcher.onSceneChange = async (sceneKey) => {
+        try {
+          await sceneManager.activateScene(sceneKey);
+          console.log(`[Main] Scene switched to: ${sceneKey}`);
+        } catch (err) {
+          console.error(`[Main] Failed to switch scene:`, err);
+        }
+      };
+
+      console.log("[Main] SceneFactory ready for scene switching");
+    } catch (err) {
+      console.error("[Main] Failed to initialize SceneManager:", err);
+    }
+  });
+})();
 
 if (setup.usingWebGPU) {
   bootstrapScreen();
