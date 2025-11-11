@@ -14,6 +14,7 @@ Keep the table ordered by priority. Reference session logs when moving cards bet
 | HADS-R06 | Type-safe entity binding proposal | Design TypeScript interfaces/types for room, device, sensor bindings. Should prevent scenes from requesting invalid entities. | Medium | | Type-driven architecture. |
 | HADS-R07 | Test current WebSocket reconnection | Does `HomeAssistantSocket.js` reconnect correctly? Stress test: kill socket 10 times, verify state consistency. | Medium | | Identify reliability gaps before scaling. |
 | HADS-R08 | Assess geospatial/projector/backdrop data needs | What campus entities does each scene type need? Are requirements identical or scene-specific? | Medium | | Ensure abstraction covers all three. |
+| HADS-R09 | Research WebGPU raycaster for classroom selection | WebGPU renderer lost raycaster capability; research Three.js WebGPU alternatives for picking classrooms and triggering sensor data display. Propose picking strategy (compute shader, readPixels, hit test). | **Critical** | | **Blocker for user interaction.** Needed to highlight classrooms and show sensor overlay. |
 
 ## In Progress
 
