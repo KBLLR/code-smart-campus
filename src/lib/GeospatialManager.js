@@ -98,6 +98,13 @@ export class GeospatialManager {
     if (this.config.sunEnabled) {
       this.sunController = new SunController();
       this.group.add(this.sunController.group);
+
+      // IMPORTANT: Disable SunController's DirectionalLight
+      // AtmosphereRenderer provides a superior, atmosphere-aware sun light
+      // Keeping both would cause double-illumination artifacts
+      if (this.sunController.light) {
+        this.sunController.light.intensity = 0; // Disabled; use AtmosphereRenderer.sunLight instead
+      }
     }
 
     // Moon

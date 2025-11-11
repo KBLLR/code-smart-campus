@@ -1,28 +1,27 @@
 /**
  * shared/scenes/projectorLight/index.ts
- * ProjectorLightScene implementation
+ * ProjectorLightScene Implementation (Phase 1c)
  *
- * Specialized scene for projector light visualization and testing.
- * Useful for:
- * - Testing spotlight/projector effects
- * - Light mapping and shadow preview
- * - Performance profiling of dynamic lights
- * - Ambient/directional light studies
+ * Projection-ready campus visualization with white canvas materials.
+ * Shares campus geometry with GeospatialScene & BackdropScene but applies
+ * white matte/glossy canvas materials for projection mapping.
  *
  * Features:
- * - Configurable spotlight(s)
- * - Real-time light intensity/color adjustment
- * - Light cone visualization
- * - Dynamic shadow mapping
+ * - Campus geometry with projection-optimized materials
+ * - Configurable projector spotlight
+ * - Room selection and highlighting
+ * - Real-time light parameter adjustment
+ * - High-quality shadow mapping
  */
 
 import * as THREE from "three";
 import { SceneBase, type SceneConfig } from "../../engine";
+import { loadCampusAsset, type CampusAsset } from "../_shared";
 
 /**
  * ProjectorLightScene Configuration Template
  */
-const PROJECTOR_LIGHT_CONFIG: SceneConfig = {
+const PROJECTOR_CONFIG: SceneConfig = {
   sceneKey: "projectorLight",
   name: "Projector Light",
   camera: {
@@ -37,11 +36,31 @@ const PROJECTOR_LIGHT_CONFIG: SceneConfig = {
   lights: {
     ambient: {
       color: 0xffffff,
-      intensity: 0.5,
+      intensity: 0.4,
     },
   },
   uiControls: {
     modules: [
+      {
+        id: "canvas",
+        label: "Canvas Material",
+        controls: {
+          canvasRoughness: {
+            type: "slider",
+            min: 0,
+            max: 1,
+            step: 0.05,
+            value: 0.8,
+          },
+          canvasGlossiness: {
+            type: "slider",
+            min: 0,
+            max: 1,
+            step: 0.05,
+            value: 0.2,
+          },
+        },
+      },
       {
         id: "projector",
         label: "Projector Light",
@@ -59,14 +78,14 @@ const PROJECTOR_LIGHT_CONFIG: SceneConfig = {
             min: 0,
             max: 500,
             step: 10,
-            value: 100,
+            value: 200,
           },
           lightAngle: {
             type: "slider",
             min: 0,
             max: Math.PI / 2,
             step: 0.01,
-            value: Math.PI / 4,
+            value: Math.PI / 3,
           },
           shadowEnabled: {
             type: "bool",
@@ -77,46 +96,82 @@ const PROJECTOR_LIGHT_CONFIG: SceneConfig = {
     ],
   },
   metadata: {
-    description: "Projector light visualization and testing scene",
-    tags: ["specialized", "testing", "lighting-focused"],
-    features: ["spotlight", "shadows", "light-mapping", "dynamic-lighting"],
+    description: "Projection-ready campus with white canvas materials",
+    tags: ["specialized", "projection", "testing"],
+    features: ["white-canvas", "spotlight", "shadows", "room-geometry"],
   },
 };
 
 /**
  * ProjectorLightScene
  *
- * A specialized scene for projector/spotlight visualization and testing.
- * Provides controls for real-time light parameter adjustment.
+ * Campus scene with white canvas materials optimized for projection mapping.
+ * Shares campus geometry (Floor + rooms) with other scenes but applies
+ * white matte materials for clean projection surfaces.
  */
 export class ProjectorLightScene extends SceneBase {
-  protected static readonly configTemplate: SceneConfig = PROJECTOR_LIGHT_CONFIG;
+  protected static readonly configTemplate: SceneConfig = PROJECTOR_CONFIG;
 
-  // Instance properties
+  // ============================================================================
+  // Instance Properties
+  // ============================================================================
+
+  private isBuilt: boolean = false;
+
+  // Campus asset
+  private campusAsset: CampusAsset | null = null;
+  private campusGroup: THREE.Group | null = null;
+
+  // Material registry
+  private materialRegistry: any = null;
+
+  // Projector light system
   private projectorLight: THREE.SpotLight | null = null;
-  private projectorGeometry: THREE.Group | null = null;
-  private targetGeometry: THREE.Mesh | null = null;
   private lightConeHelper: THREE.SpotLightHelper | null = null;
+
+  // Canvas material state
+  private canvasConfig = {
+    roughness: 0.8,
+    glossiness: 0.2,
+  };
+
+  // Room materials (white canvas)
+  private roomCanvasMaterials: Map<string, THREE.Material> = new Map();
+
+  // ============================================================================
+  // Constructor
+  // ============================================================================
 
   constructor() {
     super();
     this.sceneKey = "projectorLight";
-    this.config = PROJECTOR_LIGHT_CONFIG;
+    this.config = PROJECTOR_CONFIG;
   }
 
+  // ============================================================================
+  // SceneBase Lifecycle Implementation
+  // ============================================================================
+
   protected async build(): Promise<void> {
-    console.log("[ProjectorLightScene] Building scene...");
+    console.log("[ProjectorLightScene] Building projection-ready campus...");
 
     try {
-      // Create target geometry (what the light illuminates)
-      this.createTargetGeometry();
+      // Step 1: Initialize material registry
+      await this.initializeMaterialRegistry();
 
-      // Create projector light and visualization
-      this.createProjectorLight();
+      // Step 2: Load campus geometry (same as other scenes)
+      await this.loadCampusGeometry();
 
-      // Setup helper geometry
+      // Step 3: Apply white canvas materials to rooms
+      this.applyCanvasMaterials();
+
+      // Step 4: Setup projector light
+      this.setupProjectorLight();
+
+      // Step 5: Create light cone visualization
       this.createLightConeHelper();
 
+      this.isBuilt = true;
       console.log("[ProjectorLightScene] Build complete");
     } catch (e) {
       console.error("[ProjectorLightScene] Build failed:", e);
@@ -126,7 +181,6 @@ export class ProjectorLightScene extends SceneBase {
 
   protected onActivate(): void {
     console.log("[ProjectorLightScene] Activated");
-    // Ensure light is enabled
     if (this.projectorLight) {
       this.projectorLight.visible = true;
     }
@@ -139,7 +193,25 @@ export class ProjectorLightScene extends SceneBase {
   protected async onDispose(): Promise<void> {
     console.log("[ProjectorLightScene] Disposing...");
 
-    // Remove light cone helper
+    // Dispose campus asset
+    if (this.campusAsset) {
+      this.campusAsset.dispose();
+      this.campusAsset = null;
+    }
+
+    // Remove campus group
+    if (this.campusGroup) {
+      this.group.remove(this.campusGroup);
+      this.campusGroup = null;
+    }
+
+    // Dispose canvas materials
+    this.roomCanvasMaterials.forEach((material) => {
+      (material as THREE.Material).dispose();
+    });
+    this.roomCanvasMaterials.clear();
+
+    // Remove and dispose light cone helper
     if (this.lightConeHelper) {
       this.group.remove(this.lightConeHelper);
       this.lightConeHelper.dispose();
@@ -154,100 +226,140 @@ export class ProjectorLightScene extends SceneBase {
       this.projectorLight = null;
     }
 
-    // Remove target geometry
-    if (this.targetGeometry) {
-      this.group.remove(this.targetGeometry);
-      this.targetGeometry.geometry.dispose();
-      (this.targetGeometry.material as THREE.Material).dispose();
-      this.targetGeometry = null;
-    }
-
-    // Remove projector geometry
-    if (this.projectorGeometry) {
-      this.group.remove(this.projectorGeometry);
-      this.projectorGeometry.traverse((child) => {
-        if (child instanceof THREE.Mesh) {
-          child.geometry.dispose();
-          (child.material as THREE.Material).dispose();
-        }
-      });
-      this.projectorGeometry = null;
-    }
+    this.isBuilt = false;
   }
 
   protected onUpdate(deltaTime: number): void {
-    // Optional: Subtle animation
+    if (!this.isBuilt) return;
+
+    // Update light cone helper
     if (this.lightConeHelper && this.projectorLight) {
       this.lightConeHelper.update();
     }
   }
 
   protected onResize(width: number, height: number): void {
-    // Minimal resize handling
+    // Camera aspect handled by SceneBase
   }
 
   // ============================================================================
-  // Private Methods
+  // Private Methods: Building the Scene
   // ============================================================================
 
   /**
-   * Create target geometry (ground/surfaces for the light to illuminate)
+   * Initialize material registry
    */
-  private createTargetGeometry(): void {
-    this.projectorGeometry = new THREE.Group();
-    this.projectorGeometry.name = "ProjectorGeometry";
+  private async initializeMaterialRegistry(): Promise<void> {
+    console.log("[ProjectorLightScene] Initializing material registry...");
 
-    // Floor plane
-    const floorGeometry = new THREE.PlaneGeometry(200, 200);
-    const floorMaterial = new THREE.MeshStandardMaterial({
-      color: 0x333333,
-      roughness: 0.5,
-      metalness: 0.1,
-    });
-    const floor = new THREE.Mesh(floorGeometry, floorMaterial);
-    floor.rotation.x = -Math.PI / 2;
-    floor.receiveShadow = true;
-    this.projectorGeometry.add(floor);
+    try {
+      const { materialRegistry: matRegistry } = await import("@registries/materialsRegistry.js");
+      this.materialRegistry = matRegistry;
 
-    // Some objects to show shadows
-    const boxGeometry = new THREE.BoxGeometry(20, 20, 20);
-    const boxMaterial = new THREE.MeshStandardMaterial({
-      color: 0xff6b6b,
-      roughness: 0.4,
-    });
+      if (this.renderer) {
+        this.materialRegistry.init({ renderer: this.renderer });
+      }
 
-    for (let i = 0; i < 3; i++) {
-      const box = new THREE.Mesh(boxGeometry, boxMaterial);
-      box.position.set(-50 + i * 60, 10, 0);
-      box.castShadow = true;
-      box.receiveShadow = true;
-      this.projectorGeometry.add(box);
+      console.log("[ProjectorLightScene] Material registry ready");
+    } catch (e) {
+      console.error("[ProjectorLightScene] Failed to load material registry:", e);
+      throw e;
     }
-
-    this.group.add(this.projectorGeometry);
-    console.log("[ProjectorLightScene] Target geometry created");
   }
 
   /**
-   * Create the projector spotlight
+   * Load campus geometry (shared with other scenes)
    */
-  private createProjectorLight(): void {
-    // Spotlight
-    this.projectorLight = new THREE.SpotLight(0xffffff, 100);
+  private async loadCampusGeometry(): Promise<void> {
+    console.log("[ProjectorLightScene] Loading campus geometry...");
+
+    try {
+      // Load same campus asset
+      this.campusAsset = await loadCampusAsset(this.materialRegistry, {
+        fogColor: "#0f0f0f",
+        fogDensity: 0.0015,
+        backgroundColor: "#0a0a0a",
+      });
+
+      // Create container
+      this.campusGroup = new THREE.Group();
+      this.campusGroup.name = "Campus";
+
+      // Add floor
+      this.campusGroup.add(this.campusAsset.floorMesh);
+
+      // Add rooms (will replace materials in next step)
+      this.campusGroup.add(this.campusAsset.roomGroup);
+
+      // Add to scene
+      this.group.add(this.campusGroup);
+
+      console.log(`[ProjectorLightScene] Campus loaded: ${this.campusAsset.roomMeshes.size} rooms`);
+    } catch (e) {
+      console.error("[ProjectorLightScene] Failed to load campus geometry:", e);
+      throw e;
+    }
+  }
+
+  /**
+   * Replace room materials with white canvas for projection
+   */
+  private applyCanvasMaterials(): void {
+    console.log("[ProjectorLightScene] Applying white canvas materials...");
+
+    if (!this.campusAsset?.roomMeshes) return;
+
+    this.campusAsset.roomMeshes.forEach((mesh, roomKey) => {
+      if (mesh.material instanceof THREE.Material) {
+        // Create white canvas material (matte for projection)
+        const canvasMaterial = new THREE.MeshStandardMaterial({
+          color: 0xffffff,
+          roughness: this.canvasConfig.roughness,
+          metalness: 0.0,
+          side: THREE.DoubleSide,
+        });
+
+        // Store for reference
+        this.roomCanvasMaterials.set(roomKey, canvasMaterial);
+
+        // Replace mesh material
+        mesh.material = canvasMaterial;
+
+        // Ensure shadow settings
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+      }
+    });
+
+    console.log("[ProjectorLightScene] Canvas materials applied");
+  }
+
+  /**
+   * Setup projector spotlight with high-quality shadows
+   */
+  private setupProjectorLight(): void {
+    console.log("[ProjectorLightScene] Setting up projector light...");
+
+    // Ambient light (soft base illumination)
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+    this.group.add(ambientLight);
+
+    // Projector spotlight (high intensity for projection)
+    this.projectorLight = new THREE.SpotLight(0xffffff, 200);
     this.projectorLight.position.set(0, 80, 50);
     this.projectorLight.target.position.set(0, 0, 0);
-    this.projectorLight.angle = Math.PI / 4;
+    this.projectorLight.angle = Math.PI / 3; // 60° cone
     this.projectorLight.penumbra = 0.1;
     this.projectorLight.castShadow = true;
-    this.projectorLight.shadow.mapSize.width = 2048;
-    this.projectorLight.shadow.mapSize.height = 2048;
+    this.projectorLight.shadow.mapSize.width = 4096;
+    this.projectorLight.shadow.mapSize.height = 4096;
     this.projectorLight.shadow.camera.near = 0.5;
     this.projectorLight.shadow.camera.far = 500;
 
     this.group.add(this.projectorLight);
     this.group.add(this.projectorLight.target);
 
-    // Visual representation of projector body
+    // Visual projector body
     const projectorBodyGeometry = new THREE.CylinderGeometry(5, 5, 10, 32);
     const projectorBodyMaterial = new THREE.MeshStandardMaterial({
       color: 0x222222,
@@ -259,11 +371,11 @@ export class ProjectorLightScene extends SceneBase {
     projectorBody.castShadow = true;
     this.group.add(projectorBody);
 
-    console.log("[ProjectorLightScene] Projector light created");
+    console.log("[ProjectorLightScene] Projector light configured");
   }
 
   /**
-   * Create helper to visualize light cone
+   * Create light cone visualization helper
    */
   private createLightConeHelper(): void {
     if (this.projectorLight) {
@@ -279,6 +391,35 @@ export class ProjectorLightScene extends SceneBase {
 
   protected getUIBindings(): Record<string, { get: () => any; set: (v: any) => void }> {
     return {
+      // Canvas material controls
+      "canvas.canvasRoughness": {
+        get: () => this.canvasConfig.roughness,
+        set: (value: number) => {
+          this.canvasConfig.roughness = value;
+          // Update all room canvas materials
+          this.roomCanvasMaterials.forEach((material) => {
+            if (material instanceof THREE.MeshStandardMaterial) {
+              material.roughness = value;
+            }
+          });
+        },
+      },
+
+      "canvas.canvasGlossiness": {
+        get: () => this.canvasConfig.glossiness,
+        set: (value: number) => {
+          this.canvasConfig.glossiness = value;
+          // Glossiness = 1 - roughness
+          const roughness = 1 - value;
+          this.roomCanvasMaterials.forEach((material) => {
+            if (material instanceof THREE.MeshStandardMaterial) {
+              material.roughness = roughness;
+            }
+          });
+        },
+      },
+
+      // Projector light controls
       "projector.lightEnabled": {
         get: () => this.projectorLight?.visible ?? true,
         set: (value: boolean) => {
@@ -303,7 +444,7 @@ export class ProjectorLightScene extends SceneBase {
       },
 
       "projector.lightIntensity": {
-        get: () => this.projectorLight?.intensity ?? 100,
+        get: () => this.projectorLight?.intensity ?? 200,
         set: (value: number) => {
           if (this.projectorLight) {
             this.projectorLight.intensity = value;
@@ -312,7 +453,7 @@ export class ProjectorLightScene extends SceneBase {
       },
 
       "projector.lightAngle": {
-        get: () => this.projectorLight?.angle ?? Math.PI / 4,
+        get: () => this.projectorLight?.angle ?? Math.PI / 3,
         set: (value: number) => {
           if (this.projectorLight) {
             this.projectorLight.angle = value;
@@ -332,11 +473,19 @@ export class ProjectorLightScene extends SceneBase {
   }
 
   // ============================================================================
-  // Getters
+  // Public Accessors
   // ============================================================================
+
+  public getCampusAsset(): CampusAsset | null {
+    return this.campusAsset;
+  }
 
   public getProjectorLight(): THREE.SpotLight | null {
     return this.projectorLight;
+  }
+
+  public getRoomMeshes(): Map<string, THREE.Mesh> | null {
+    return this.campusAsset?.roomMeshes || null;
   }
 
   public setLightIntensity(intensity: number): void {
