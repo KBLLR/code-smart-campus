@@ -15,6 +15,7 @@
     "baseUrl": "../",
     "paths": {
       "@/*": ["./*"],
+      "@shared/*": ["./shared/*"],
       "@components/*": ["./ui/components/*"],
       "@molecules/*": ["./ui/components/molecules/*"],
       "@atoms/*": ["./ui/components/atoms/*"],
