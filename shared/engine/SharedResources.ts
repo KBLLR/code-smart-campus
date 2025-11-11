@@ -4,21 +4,23 @@
  */
 
 import * as THREE from "three";
-import { WebGPURenderer } from "three/examples/jsm/renderers/webgpu/WebGPURenderer";
+
+// Generic renderer type - accepts WebGLRenderer or WebGPURenderer at runtime
+type Renderer = THREE.WebGLRenderer | (any & { isWebGPURenderer?: boolean });
 
 export interface ISharedResources {
-  renderer: WebGPURenderer | THREE.WebGLRenderer;
+  renderer: Renderer;
   assetManager: any; // Will be AssetManager type
   canvas: HTMLCanvasElement;
 }
 
 export class SharedResources implements ISharedResources {
-  renderer: WebGPURenderer | THREE.WebGLRenderer;
+  renderer: Renderer;
   assetManager: any;
   canvas: HTMLCanvasElement;
 
   constructor(
-    renderer: WebGPURenderer | THREE.WebGLRenderer,
+    renderer: Renderer,
     assetManager: any,
     canvas: HTMLCanvasElement
   ) {

@@ -14,7 +14,6 @@ export interface SceneConfigPanelConfig {
 export class SceneConfigPanel {
   private sceneFactory: SceneFactory;
   private uilController: any;
-  private currentSceneModuleId: string = "";
   private registeredModules: Set<string> = new Set();
 
   constructor(config: SceneConfigPanelConfig) {
@@ -56,7 +55,7 @@ export class SceneConfigPanel {
    * Register a UIL module for scene config
    */
   private registerModule(
-    scene: SceneBase,
+    _scene: SceneBase,
     moduleId: string,
     label: string,
     controlsSchema: Record<string, any>

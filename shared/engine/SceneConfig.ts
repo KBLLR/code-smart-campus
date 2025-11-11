@@ -3,8 +3,6 @@
  * Configuration schema for scenes
  */
 
-import * as THREE from "three";
-
 export interface CameraConfig {
   type: "perspective" | "orthographic";
   fov?: number;

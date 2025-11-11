@@ -4,18 +4,20 @@
  */
 
 import * as THREE from "three";
-import { WebGPURenderer } from "three/examples/jsm/renderers/webgpu/WebGPURenderer";
 import { SceneBase } from "./SceneBase";
 import { AssetManager } from "./AssetManager";
 
+// Generic renderer type - accepts WebGLRenderer or WebGPURenderer at runtime
+type Renderer = THREE.WebGLRenderer | (any & { isWebGPURenderer?: boolean });
+
 export interface ISceneFactory {
-  register(sceneKey: string, SceneClass: typeof SceneBase): void;
+  register(sceneKey: string, sceneInstance: SceneBase): void;
   activate(sceneKey: string): Promise<void>;
   getActive(): SceneBase | null;
   getScene(sceneKey: string): SceneBase | null;
   listScenes(): string[];
   dispose(): Promise<void>;
-  readonly renderer: WebGPURenderer | THREE.WebGLRenderer;
+  readonly renderer: Renderer;
   readonly assetManager: AssetManager;
 }
 
@@ -24,14 +26,14 @@ export class SceneFactory implements ISceneFactory {
 
   private activeScene: SceneBase | null = null;
   private scenes: Map<string, SceneBase> = new Map();
-  private renderer!: WebGPURenderer | THREE.WebGLRenderer;
-  private assetManager: AssetManager = new AssetManager();
+  private _renderer!: Renderer;
+  private _assetManager: AssetManager = new AssetManager();
   private canvas: HTMLCanvasElement;
 
-  private constructor(canvas: HTMLCanvasElement, renderer?: WebGPURenderer | THREE.WebGLRenderer) {
+  private constructor(canvas: HTMLCanvasElement, renderer?: Renderer) {
     this.canvas = canvas;
     if (renderer) {
-      this.renderer = renderer;
+      this._renderer = renderer;
     } else {
       // Default: try WebGPU, fall back to WebGL
       this.initRenderer();
@@ -43,7 +45,7 @@ export class SceneFactory implements ISceneFactory {
    */
   static getInstance(
     canvas?: HTMLCanvasElement,
-    renderer?: WebGPURenderer | THREE.WebGLRenderer
+    renderer?: Renderer
   ): SceneFactory {
     if (!SceneFactory.instance) {
       if (!canvas) {
@@ -55,15 +57,14 @@ export class SceneFactory implements ISceneFactory {
   }
 
   /**
-   * Register a scene class with unique key
+   * Register a scene instance with unique key
    */
-  register(sceneKey: string, SceneClass: typeof SceneBase): void {
+  register(sceneKey: string, sceneInstance: SceneBase): void {
     if (this.scenes.has(sceneKey)) {
       console.warn(`[SceneFactory] Scene "${sceneKey}" already registered`);
       return;
     }
-    const instance = new SceneClass();
-    this.scenes.set(sceneKey, instance);
+    this.scenes.set(sceneKey, sceneInstance);
     console.log(`[SceneFactory] Registered scene: ${sceneKey}`);
   }
 
@@ -92,7 +93,7 @@ export class SceneFactory implements ISceneFactory {
     // Initialize new scene (if not already done)
     if (!nextScene.isInitialized) {
       console.log(`[SceneFactory] Initializing scene: ${sceneKey}`);
-      await nextScene.init(this.renderer, this.assetManager);
+      await nextScene.init(this._renderer, this._assetManager);
     }
 
     // Activate new scene
@@ -139,8 +140,8 @@ export class SceneFactory implements ISceneFactory {
       await scene.dispose();
     }
 
-    this.assetManager.dispose();
-    this.renderer.dispose();
+    this._assetManager.dispose();
+    this._renderer.dispose();
 
     console.log("[SceneFactory] Disposed");
   }
@@ -154,8 +155,8 @@ export class SceneFactory implements ISceneFactory {
     }
 
     // Resize renderer
-    if (this.renderer instanceof WebGPURenderer || "setSize" in this.renderer) {
-      (this.renderer as any).setSize(width, height);
+    if ("setSize" in this._renderer) {
+      (this._renderer as any).setSize(width, height);
     }
   }
 
@@ -175,8 +176,8 @@ export class SceneFactory implements ISceneFactory {
     if (this.activeScene) {
       const activeSceneGroup = (this.activeScene as any).group;
       const camera = activeSceneGroup.children.find((c: THREE.Object3D) => c instanceof THREE.Camera);
-      if (camera && this.renderer) {
-        this.renderer.render(activeSceneGroup, camera as THREE.Camera);
+      if (camera && this._renderer) {
+        this._renderer.render(activeSceneGroup, camera as THREE.Camera);
       }
     }
   }
@@ -185,31 +186,33 @@ export class SceneFactory implements ISceneFactory {
   // Public getters
   // ============================================================================
 
-  get renderer(): WebGPURenderer | THREE.WebGLRenderer {
-    return this.renderer;
+  get renderer(): Renderer {
+    return this._renderer;
   }
 
   get assetManager(): AssetManager {
-    return this.assetManager;
+    return this._assetManager;
   }
 
   // ============================================================================
   // Private methods
   // ============================================================================
 
-  private initRenderer(): void {
+  private async initRenderer(): Promise<void> {
     // Try WebGPU first, fall back to WebGL
     try {
-      this.renderer = new WebGPURenderer({ canvas: this.canvas });
+      // @ts-ignore - dynamic import handled at runtime
+      const { WebGPURenderer } = await import("three/examples/jsm/renderers/webgpu/WebGPURenderer");
+      this._renderer = new WebGPURenderer({ canvas: this.canvas });
       console.log("[SceneFactory] Using WebGPU renderer");
     } catch (e) {
       console.warn("[SceneFactory] WebGPU not available, falling back to WebGL", e);
-      this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas });
+      this._renderer = new THREE.WebGLRenderer({ canvas: this.canvas });
     }
 
     // Basic renderer settings
-    this.renderer.setSize(window.innerWidth, window.innerHeight);
-    this.renderer.setPixelRatio(window.devicePixelRatio);
+    this._renderer.setSize(window.innerWidth, window.innerHeight);
+    this._renderer.setPixelRatio(window.devicePixelRatio);
   }
 
   private onSceneActivated(sceneKey: string): void {

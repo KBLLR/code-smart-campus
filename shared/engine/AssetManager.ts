@@ -4,7 +4,14 @@
  */
 
 import * as THREE from "three";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
+
+// GLTFLoader will be loaded dynamically to avoid circular dependencies
+// Type declaration for GLTFLoader
+interface GLTFLoaderClass {
+  new (): {
+    loadAsync(url: string): Promise<{ scene: THREE.Group; [key: string]: any }>;
+  };
+}
 
 interface AssetEntry {
   asset: THREE.Texture | THREE.BufferGeometry | THREE.Group | any;
@@ -27,10 +34,27 @@ export interface IAssetManager {
 
 export class AssetManager implements IAssetManager {
   private cache: Map<string, AssetEntry> = new Map();
+  private gltfLoader: InstanceType<GLTFLoaderClass> | null = null;
   private loaders = {
     texture: new THREE.TextureLoader(),
-    gltf: new GLTFLoader(),
   };
+
+  constructor() {
+    // Lazy load GLTFLoader to avoid import issues
+    this.initGLTFLoader();
+  }
+
+  private async initGLTFLoader(): Promise<void> {
+    if (!this.gltfLoader) {
+      try {
+        // @ts-ignore - dynamic import handled at runtime
+        const { GLTFLoader } = await import("three/examples/jsm/loaders/GLTFLoader");
+        this.gltfLoader = new GLTFLoader();
+      } catch (e) {
+        console.warn("[AssetManager] GLTFLoader not available:", e);
+      }
+    }
+  }
 
   async getTexture(key: string, url?: string): Promise<THREE.Texture> {
     let entry = this.cache.get(key);
@@ -84,7 +108,13 @@ export class AssetManager implements IAssetManager {
 
     if (!entry) {
       try {
-        const gltf = await this.loaders.gltf.loadAsync(url);
+        if (!this.gltfLoader) {
+          await this.initGLTFLoader();
+        }
+        if (!this.gltfLoader) {
+          throw new Error("GLTFLoader not initialized");
+        }
+        const gltf = await this.gltfLoader.loadAsync(url);
         entry = { asset: gltf.scene, refCount: 0, type: "model", url };
         this.cache.set(key, entry);
         console.log(`[AssetManager] Loaded model: ${key}`);
@@ -122,13 +152,13 @@ export class AssetManager implements IAssetManager {
     if (!this.cache.has(key)) {
       try {
         if (type === "texture") {
-          const tex = await this.getTexture(key, url);
+          await this.getTexture(key, url);
           this.release(key); // Preload adds ref, so release it
         } else if (type === "geometry") {
-          const geo = await this.getGeometry(key, url);
+          await this.getGeometry(key, url);
           this.release(key);
         } else if (type === "model") {
-          const model = await this.getModel(key, url);
+          await this.getModel(key, url);
           this.release(key);
         }
         console.log(`[AssetManager] Preloaded ${type}: ${key}`);
@@ -185,8 +215,9 @@ export class AssetManager implements IAssetManager {
     for (const entry of this.cache.values()) {
       if (entry.type === "texture") {
         const tex = entry.asset as THREE.Texture;
-        const w = tex.image?.width || 0;
-        const h = tex.image?.height || 0;
+        const image = tex.image as HTMLImageElement | HTMLCanvasElement | OffscreenCanvas | null;
+        const w = (image && "width" in image ? image.width : 0) || 0;
+        const h = (image && "height" in image ? image.height : 0) || 0;
         total += w * h * 4; // RGBA, 1 byte per channel
       } else if (entry.type === "geometry") {
         const geo = entry.asset as THREE.BufferGeometry;

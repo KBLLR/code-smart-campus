@@ -4,8 +4,10 @@
  */
 
 import * as THREE from "three";
-import { WebGPURenderer } from "three/examples/jsm/renderers/webgpu/WebGPURenderer";
 import type { SceneConfig, CameraConfig, LightConfig, EnvironmentConfig } from "./SceneConfig";
+
+// Generic renderer type - accepts WebGLRenderer or WebGPURenderer at runtime
+type Renderer = THREE.WebGLRenderer | (any & { isWebGPURenderer?: boolean });
 
 export interface ISceneBase {
   readonly sceneKey: string;
@@ -14,7 +16,7 @@ export interface ISceneBase {
   readonly isActive: boolean;
   readonly isInitialized: boolean;
 
-  init(renderer: WebGPURenderer | THREE.WebGLRenderer, assetManager: any): Promise<void>;
+  init(renderer: Renderer, assetManager: any): Promise<void>;
   activate(): void;
   deactivate(): void;
   dispose(): Promise<void>;
@@ -23,15 +25,15 @@ export interface ISceneBase {
 }
 
 export abstract class SceneBase implements ISceneBase {
-  protected sceneKey: string = "";
-  protected config: SceneConfig = { sceneKey: "", name: "", camera: { type: "perspective", near: 0.1, far: 10000, position: [0, 0, 0], lookAt: [0, 0, 0] } };
-  protected group: THREE.Group = new THREE.Group();
-  protected isActive: boolean = false;
-  protected isInitialized: boolean = false;
+  sceneKey: string = "";
+  config: SceneConfig = { sceneKey: "", name: "", camera: { type: "perspective", near: 0.1, far: 10000, position: [0, 0, 0], lookAt: [0, 0, 0] } };
+  group: THREE.Group = new THREE.Group();
+  isActive: boolean = false;
+  isInitialized: boolean = false;
   protected camera: THREE.Camera | null = null;
 
   // Protected access to factory resources
-  protected renderer!: WebGPURenderer | THREE.WebGLRenderer;
+  protected renderer!: Renderer;
   protected assetManager!: any;
 
   constructor() {
@@ -39,7 +41,7 @@ export abstract class SceneBase implements ISceneBase {
   }
 
   async init(
-    renderer: WebGPURenderer | THREE.WebGLRenderer,
+    renderer: Renderer,
     assetManager: any
   ): Promise<void> {
     this.renderer = renderer;
@@ -194,7 +196,7 @@ export abstract class SceneBase implements ISceneBase {
   protected async setupEnvironment(envConfig: EnvironmentConfig): Promise<void> {
     // Load environment map via assetManager
     try {
-      const envMap = await this.assetManager.getTexture(envConfig.mapAsset);
+      await this.assetManager.getTexture(envConfig.mapAsset);
       // Note: Actual integration with renderer depends on renderer type
       // This is a placeholder
       console.log(`Loaded environment map: ${envConfig.mapAsset}`);
