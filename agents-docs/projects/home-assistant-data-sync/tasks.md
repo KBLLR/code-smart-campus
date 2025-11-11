@@ -6,8 +6,8 @@ Keep the table ordered by priority. Reference session logs when moving cards bet
 
 | ID | Title | Description | Priority | Owner | Research Notes |
 |----|-------|-------------|----------|-------|---|
-| HADS-R01 | Audit current HA integration code | Assess `HomeAssistantSocket.js`, `haState.js`, `ha.js`, and `HomeAssistantSocket.js` for coupling, test coverage, and gaps. Document findings. | Critical | | Understand what works, what's fragile. |
-| HADS-R02 | Map HA entities to room/floor geometry | Research how sensor names (e.g., `sensor.room_101_temp`) relate to spatial objects in each scene. Design entity ID → scene object mapping. | Critical | | Blueprint for entity binding abstraction. |
+| HADS-R01 | Audit current HA integration code | Assess `HomeAssistantSocket.js`, `haState.js`, `ha.js`, and `HomeAssistantSocket.js` for coupling, test coverage, and gaps. Document findings. | Critical | ✅ Done | Session 2025-11-12 identified 6 major fragility issues. |
+| HADS-R02 | Map HA entities to room/floor geometry & support device mobility | Research how sensor names relate to spatial objects. Design entity ID → location mapping with support for fixed + mobile devices. | Critical | 🔄 In Progress | HADS-R02-DEVICE-MOBILITY-ARCHITECTURE.md drafted with 3 binding strategies (convention, registry, hybrid) and mobility phases. |
 | HADS-R03 | Design scene-agnostic observer pattern | Compare pull vs. push strategies for state sync. Propose how scenes should consume campus data without scene-specific HA logic. | High | | Event bus vs. query-on-demand. Document trade-offs. |
 | HADS-R04 | Evaluate state storage options | Should campus state live in volatile memory, IndexedDB, or hybrid? Assess for offline resilience, cross-tab sync, and performance. | High | | Compare localStorage → IndexedDB → Service Worker caching. |
 | HADS-R05 | Document error scenarios & recovery | Identify failure modes: HA tunnel down, token expired, WebSocket drop, malformed entities. Propose retry / fallback strategies. | High | | Create runbook for each scenario. |
