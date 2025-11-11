@@ -161,9 +161,6 @@ export class GeospatialScene extends SceneBase {
   // Material registry
   private materialRegistry: any = null;
 
-  // Labels
-  private labelManager: any = null;
-
   // Time state
   private currentTime = { hour: 12, minute: 0 };
 
@@ -247,13 +244,10 @@ export class GeospatialScene extends SceneBase {
     this.sunLight = null;
     this.moonLight = null;
 
-    // Dispose labels
-    this.labelManager = null;
-
     this.isBuilt = false;
   }
 
-  protected onUpdate(deltaTime: number): void {
+  protected onUpdate(_deltaTime: number): void {
     if (!this.isBuilt) return;
 
     // Update geospatial systems per frame
@@ -262,7 +256,7 @@ export class GeospatialScene extends SceneBase {
     }
   }
 
-  protected onResize(width: number, height: number): void {
+  protected onResize(_width: number, _height: number): void {
     // Camera aspect handled by SceneBase
   }
 
@@ -420,7 +414,7 @@ export class GeospatialScene extends SceneBase {
     console.log("[GeospatialScene] Configuring scene appearance...");
 
     if (this.campusAsset) {
-      const { fogColor, fogDensity, backgroundColor } = this.campusAsset.sceneConfig;
+      const { fogColor, fogDensity } = this.campusAsset.sceneConfig;
 
       // Note: Fog/background applied per-scene in renderer context
       // This is metadata for now; actual fog/bg set by renderer

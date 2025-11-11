@@ -229,7 +229,7 @@ export class ProjectorLightScene extends SceneBase {
     this.isBuilt = false;
   }
 
-  protected onUpdate(deltaTime: number): void {
+  protected onUpdate(_deltaTime: number): void {
     if (!this.isBuilt) return;
 
     // Update light cone helper
@@ -238,7 +238,7 @@ export class ProjectorLightScene extends SceneBase {
     }
   }
 
-  protected onResize(width: number, height: number): void {
+  protected onResize(_width: number, _height: number): void {
     // Camera aspect handled by SceneBase
   }
 

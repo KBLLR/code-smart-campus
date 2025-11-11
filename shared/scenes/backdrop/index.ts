@@ -110,8 +110,6 @@ export class BackdropScene extends SceneBase {
   // Instance Properties
   // ============================================================================
 
-  private isBuilt: boolean = false;
-
   // Campus asset
   private campusAsset: CampusAsset | null = null;
   private campusGroup: THREE.Group | null = null;
@@ -166,7 +164,6 @@ export class BackdropScene extends SceneBase {
       // Step 4: Configure scene appearance
       this.setupSceneAppearance();
 
-      this.isBuilt = true;
       console.log("[BackdropScene] Build complete");
     } catch (e) {
       console.error("[BackdropScene] Build failed:", e);
@@ -200,16 +197,14 @@ export class BackdropScene extends SceneBase {
     // Dispose lights
     this.ambientLight = null;
     this.areaLight = null;
-
-    this.isBuilt = false;
   }
 
-  protected onUpdate(deltaTime: number): void {
+  protected onUpdate(_deltaTime: number): void {
     // Optional: Subtle animations or mood transitions
     // For now, static scene
   }
 
-  protected onResize(width: number, height: number): void {
+  protected onResize(_width: number, _height: number): void {
     // Camera aspect handled by SceneBase
   }
 
