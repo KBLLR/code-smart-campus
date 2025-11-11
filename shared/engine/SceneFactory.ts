@@ -34,9 +34,13 @@ export class SceneFactory implements ISceneFactory {
     this.canvas = canvas;
     if (renderer) {
       this._renderer = renderer;
+      console.log("[SceneFactory] Using provided renderer");
     } else {
-      // Default: try WebGPU, fall back to WebGL
-      this.initRenderer();
+      // Default: use WebGL
+      this._renderer = new THREE.WebGLRenderer({ canvas: this.canvas });
+      this._renderer.setSize(window.innerWidth, window.innerHeight);
+      this._renderer.setPixelRatio(window.devicePixelRatio);
+      console.log("[SceneFactory] Created default WebGL renderer");
     }
   }
 
@@ -197,23 +201,6 @@ export class SceneFactory implements ISceneFactory {
   // ============================================================================
   // Private methods
   // ============================================================================
-
-  private async initRenderer(): Promise<void> {
-    // Try WebGPU first, fall back to WebGL
-    try {
-      // @ts-ignore - dynamic import handled at runtime
-      const { WebGPURenderer } = await import("three/examples/jsm/renderers/webgpu/WebGPURenderer");
-      this._renderer = new WebGPURenderer({ canvas: this.canvas });
-      console.log("[SceneFactory] Using WebGPU renderer");
-    } catch (e) {
-      console.warn("[SceneFactory] WebGPU not available, falling back to WebGL", e);
-      this._renderer = new THREE.WebGLRenderer({ canvas: this.canvas });
-    }
-
-    // Basic renderer settings
-    this._renderer.setSize(window.innerWidth, window.innerHeight);
-    this._renderer.setPixelRatio(window.devicePixelRatio);
-  }
 
   private onSceneActivated(sceneKey: string): void {
     // Emit custom event for UI or logging

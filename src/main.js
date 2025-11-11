@@ -34,6 +34,7 @@ import {
 } from "@home_assistant/haClient.js";
 import { ViewHero } from "@molecules/ViewHero.js";
 import { SceneSwitcher } from "@molecules/SceneSwitcher.js";
+import { SceneManager } from "@shared/ui/SceneManager";
 import { uilController } from "@ui/UILController.js";
 import { registerNavigationControls } from "@ui/modules/NavigationControls.js";
 import { registerLightingControls } from "@ui/modules/LightingControls.js";
@@ -243,20 +244,40 @@ sensorToggleControl.addEventListener("click", () => {
   viewHero.addStatusControl(sensorToggleControl);
 })();
 
-// Initialize Scene Switcher in header
+// Initialize Scene Switcher in header with SceneManager integration
 (() => {
-  const sceneSwitcher = new SceneSwitcher({
-    sceneFactory: null, // Will be integrated with SceneFactory later
-    onSceneChange: (sceneKey) => {
-      console.log(`[Main] Scene changed to: ${sceneKey}`);
-      // TODO: Integrate with SceneFactory for actual scene switching
-    },
-  });
+  let sceneManager = null;
 
-  // Mount scene switcher buttons directly to status wrap (same row as Sensors button)
-  sceneSwitcher.mount(viewHero.statusWrap);
-  window.sceneSwitcher = sceneSwitcher;
-  console.log("[Main] Scene Switcher initialized in header");
+  // Initialize SceneManager asynchronously
+  SceneManager.initialize(canvas, setup.re)
+    .then((manager) => {
+      sceneManager = manager;
+      const sceneFactory = manager.getSceneFactory();
+
+      // Create SceneSwitcher with factory integration
+      const sceneSwitcher = new SceneSwitcher({
+        sceneFactory: sceneFactory,
+        onSceneChange: async (sceneKey) => {
+          try {
+            await sceneFactory.activate(sceneKey);
+            console.log(`[Main] Scene switched to: ${sceneKey}`);
+          } catch (err) {
+            console.error(`[Main] Failed to switch scene:`, err);
+          }
+        },
+      });
+
+      // Mount scene switcher buttons directly to status wrap
+      sceneSwitcher.mount(viewHero.statusWrap);
+      window.sceneSwitcher = sceneSwitcher;
+      window.sceneFactory = sceneFactory;
+      window.sceneManager = sceneManager;
+
+      console.log("[Main] Scene Switcher initialized with SceneFactory integration");
+    })
+    .catch((err) => {
+      console.error("[Main] Failed to initialize SceneManager:", err);
+    });
 })();
 
 panelShell?.classList.remove("is-open");
