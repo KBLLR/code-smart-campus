@@ -15,13 +15,33 @@
  */
 
 import * as THREE from 'three';
-import {
-  Atmosphere,
-  SkyMaterial,
-  SunDirectionalLight,
-  PrecomputedTexturesLoader,
-  AtmosphereParameters,
-} from '@takram/three-atmosphere';
+
+// Lazy-load atmosphere to handle import errors
+let Atmosphere, SkyMaterial, SunDirectionalLight, PrecomputedTexturesLoader, AtmosphereParameters;
+let atmosphereLoaded = false;
+let atmosphereLoadError = null;
+
+async function loadAtmosphere() {
+  if (atmosphereLoaded || atmosphereLoadError) return;
+
+  try {
+    const imports = await import('@takram/three-atmosphere');
+    Atmosphere = imports.Atmosphere || imports.default?.Atmosphere;
+    SkyMaterial = imports.SkyMaterial || imports.default?.SkyMaterial;
+    SunDirectionalLight = imports.SunDirectionalLight || imports.default?.SunDirectionalLight;
+    PrecomputedTexturesLoader = imports.PrecomputedTexturesLoader || imports.default?.PrecomputedTexturesLoader;
+    AtmosphereParameters = imports.AtmosphereParameters || imports.default?.AtmosphereParameters;
+
+    if (!Atmosphere) {
+      throw new Error('Atmosphere class not found in module exports');
+    }
+    atmosphereLoaded = true;
+    console.log('[AtmosphereRenderer] Atmosphere module loaded successfully');
+  } catch (err) {
+    atmosphereLoadError = err;
+    console.warn('[AtmosphereRenderer] Failed to load Atmosphere module:', err.message);
+  }
+}
 
 /**
  * Default atmosphere parameters
@@ -79,6 +99,17 @@ export class AtmosphereRenderer {
    */
   async _init() {
     try {
+      // Load atmosphere module first
+      await loadAtmosphere();
+
+      if (atmosphereLoadError) {
+        throw atmosphereLoadError;
+      }
+
+      if (!Atmosphere) {
+        throw new Error('Atmosphere module could not be loaded');
+      }
+
       // Create Atmosphere instance
       const params = new AtmosphereParameters({
         rayleighScatteringCoefficient: this.params.rayleighScatteringCoefficient,
@@ -104,7 +135,8 @@ export class AtmosphereRenderer {
       console.log('[AtmosphereRenderer] Initialized successfully');
     } catch (err) {
       console.error('[AtmosphereRenderer] Initialization failed:', err);
-      throw err;
+      this.ready = false;
+      // Don't throw - allow graceful degradation if atmosphere fails
     }
   }
 
