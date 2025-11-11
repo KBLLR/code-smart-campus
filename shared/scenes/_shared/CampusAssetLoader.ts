@@ -163,7 +163,7 @@ export class CampusAssetLoader {
         (svgData) => {
           try {
             svgData.paths.forEach((path) => {
-              const rawId = path.userData.node?.getAttribute("id");
+              const rawId = path.userData?.node?.getAttribute("id");
               const normId = rawId?.toLowerCase().replace(/[^a-z0-9]/g, "");
               const shapes = path.toShapes(true);
 
