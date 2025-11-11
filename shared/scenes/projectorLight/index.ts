@@ -253,6 +253,7 @@ export class ProjectorLightScene extends SceneBase {
     console.log("[ProjectorLightScene] Initializing material registry...");
 
     try {
+      // @ts-ignore - dynamic import resolved at runtime
       const { materialRegistry: matRegistry } = await import("@registries/materialsRegistry.js");
       this.materialRegistry = matRegistry;
 

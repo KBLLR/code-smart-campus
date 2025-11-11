@@ -219,6 +219,7 @@ export class BackdropScene extends SceneBase {
     console.log("[BackdropScene] Initializing material registry...");
 
     try {
+      // @ts-ignore - dynamic import resolved at runtime
       const { materialRegistry: matRegistry } = await import("@registries/materialsRegistry.js");
       this.materialRegistry = matRegistry;
 

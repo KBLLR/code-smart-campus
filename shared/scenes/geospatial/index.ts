@@ -161,7 +161,8 @@ export class GeospatialScene extends SceneBase {
   // Material registry
   private materialRegistry: any = null;
 
-  // Labels (optional)
+  // Labels (optional) - assigned for side effects
+  // @ts-ignore - created for side effects, value not directly used
   private labelManager: any = null;
 
   // Time state
@@ -278,6 +279,7 @@ export class GeospatialScene extends SceneBase {
 
     // Dynamic import to avoid circular dependencies
     try {
+      // @ts-ignore - dynamic import resolved at runtime
       const { materialRegistry: matRegistry } = await import("@registries/materialsRegistry.js");
       this.materialRegistry = matRegistry;
 
@@ -361,7 +363,8 @@ export class GeospatialScene extends SceneBase {
     console.log("[GeospatialScene] Initializing geospatial components...");
 
     try {
-      // Dynamic import
+      // Dynamic import to avoid circular dependencies
+      // @ts-ignore - dynamic import resolved at runtime
       const { GeospatialManager } = await import("@lib/GeospatialManager.js");
 
       // Create geospatial manager
@@ -396,7 +399,8 @@ export class GeospatialScene extends SceneBase {
     console.log("[GeospatialScene] Setting up room labels...");
 
     try {
-      // Dynamic import
+      // Dynamic import to avoid circular dependencies
+      // @ts-ignore - dynamic import resolved at runtime
       const { LabelLayoutManager } = await import("@utils/LabelLayoutManager.js");
 
       // Create label manager

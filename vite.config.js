@@ -22,6 +22,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "src"),
+      "@shared": path.resolve(__dirname, "./shared"),
       "@components": path.resolve(__dirname, "./src/ui/components"),
       "@molecules": path.resolve(__dirname, "./src/ui/components/molecules"),
       "@atoms": path.resolve(__dirname, "./src/ui/components/atoms"),
