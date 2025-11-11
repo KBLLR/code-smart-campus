@@ -33,6 +33,7 @@ import {
   isHaApiConfigured,
 } from "@home_assistant/haClient.js";
 import { ViewHero } from "@molecules/ViewHero.js";
+import { SceneSwitcher } from "@molecules/SceneSwitcher.js";
 import { uilController } from "@ui/UILController.js";
 import { registerNavigationControls } from "@ui/modules/NavigationControls.js";
 import { registerLightingControls } from "@ui/modules/LightingControls.js";
@@ -240,6 +241,22 @@ sensorToggleControl.addEventListener("click", () => {
   toggleSensorPanelState();
 });
   viewHero.addStatusControl(sensorToggleControl);
+})();
+
+// Initialize Scene Switcher in header
+(() => {
+  const sceneSwitcher = new SceneSwitcher({
+    sceneFactory: null, // Will be integrated with SceneFactory later
+    onSceneChange: (sceneKey) => {
+      console.log(`[Main] Scene changed to: ${sceneKey}`);
+      // TODO: Integrate with SceneFactory for actual scene switching
+    },
+  });
+
+  // Mount scene switcher buttons directly to status wrap (same row as Sensors button)
+  sceneSwitcher.mount(viewHero.statusWrap);
+  window.sceneSwitcher = sceneSwitcher;
+  console.log("[Main] Scene Switcher initialized in header");
 })();
 
 panelShell?.classList.remove("is-open");
