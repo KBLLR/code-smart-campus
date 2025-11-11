@@ -161,6 +161,9 @@ export class GeospatialScene extends SceneBase {
   // Material registry
   private materialRegistry: any = null;
 
+  // Labels (optional)
+  private labelManager: any = null;
+
   // Time state
   private currentTime = { hour: 12, minute: 0 };
 
@@ -243,6 +246,9 @@ export class GeospatialScene extends SceneBase {
     // Dispose lights (materials auto-dispose with scene)
     this.sunLight = null;
     this.moonLight = null;
+
+    // Dispose labels
+    this.labelManager = null;
 
     this.isBuilt = false;
   }
