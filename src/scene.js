@@ -2,9 +2,7 @@
 
 import * as THREE from "three";
 import { roomRegistry } from "@registries/roomRegistry.js";
-import { cleanedLabelRegistry } from "@data/labelCollections.js";
 import { LabelLayoutManager } from "@utils/LabelLayoutManager.js";
-import { LabelManager } from "@lib/LabelManager.js";
 import { Floor } from "@three/FloorGeometry.js";
 import { SunController } from "@lib/SunController.js";
 import { SunTelemetry } from "@lib/SunTelemetry.js";
@@ -13,9 +11,7 @@ import { SunPathArc } from "@lib/SunPathArc.js";
 import { MoonController } from "@lib/MoonController.js";
 import { SITE_COORDINATES } from "@utils/location.js";
 import { materialRegistry } from "@registries/materialsRegistry.js";
-import { createRoomMeshes, disposeRoomMeshes } from "@utils/RoomMeshGenerator.js";
-import { PickingService } from "@shared/services/picking-service.ts";
-import entityLocations from "@data/entityLocations.json";
+import { RoomsManager } from "@/modules/RoomsManager.js";
 
 // 🔧 Globals
 
@@ -32,41 +28,50 @@ scene.fog = new THREE.FogExp2(
 const fogScratchColor = new THREE.Color();
 const layoutManager = new LabelLayoutManager(scene, {}, roomRegistry);
 
-// ✅ HADS-R09: Picking Service Setup
-let roomMeshes = [];
-let picking = null;
+// ✅ RoomsManager: Unified room, picking, and label management
+let roomsManager = null;
 
-function initializeRoomMeshesAndPicking(camera) {
-  // Create room mesh shells for picking
-  roomMeshes = createRoomMeshes(roomRegistry, entityLocations);
-  console.log(`[Picking] Created ${roomMeshes.length} room meshes from registry`);
-  if (roomMeshes.length > 0) {
-    console.log(`[Picking] Sample mesh: ${roomMeshes[0].userData.roomId} at position:`, roomMeshes[0].position.toArray());
-  }
+async function initializeRoomMeshesAndPicking(camera) {
+  console.log('[Scene] Initializing RoomsManager...');
 
-  // Add meshes to scene (invisible, for raycasting only)
-  roomMeshes.forEach(mesh => scene.add(mesh));
-  console.log(`[Picking] Added all meshes to scene`);
+  roomsManager = new RoomsManager(scene, camera, {
+    labelsEnabled: true,
+    useSprites: false,
+    pickingEnabled: true,
+    entityBindingEnabled: true,
+    debugMode: false,
+  });
 
-  // Initialize picking service with camera and room meshes
-  picking = new PickingService(camera, roomMeshes);
-  console.log(`[Picking] PickingService initialized with camera at:`, camera.position.toArray(), `and ${roomMeshes.length} meshes`);
+  await roomsManager.initialize();
+
+  // Populate layoutManager with label anchors
+  layoutManager.labels = roomsManager.getLabelAnchors();
+
+  console.log('[Scene] RoomsManager initialized successfully');
+
+  // For backward compatibility, assign module-level exports
+  roomMeshes = roomsManager.roomMeshes;
+  picking = roomsManager.pickingService;
 
   return { roomMeshes, picking };
 }
 
 function cleanupRoomMeshesAndPicking() {
-  disposeRoomMeshes(roomMeshes);
-  roomMeshes.forEach(mesh => scene.remove(mesh));
-  roomMeshes = [];
-  picking = null;
+  if (roomsManager) {
+    roomsManager.dispose();
+    roomsManager = null;
+  }
 }
-const labelManager = new LabelManager(
-  scene,
-  cleanedLabelRegistry,
-  roomRegistry,
-  { useSprites: false },
-);
+
+// Backward compatibility: labelManager proxy
+const labelManager = {
+  getLabels: () => roomsManager?.labelManager?.getLabels() || {},
+  getAnchors: () => roomsManager?.labelManager?.getAnchors() || {},
+  getAnchor: (entityId) => roomsManager?.getLabelAnchor(entityId) || null,
+  updateLabel: (entityId, value) => roomsManager?.updateLabel(entityId, value),
+  useSprites: false,
+  updateLabelPositions: () => {}, // No-op for anchor-based labels
+};
 const sunController = new SunController();
 const sunTelemetry = new SunTelemetry();
 const sunSkyDome = new SunSkyDome();
@@ -377,12 +382,9 @@ function updateMoon(date = new Date()) {
   }
 }
 
-try {
-  labelManager.injectLabels(); // Inject labels early as before
-} catch (error) {
-  console.error("❌ Error injecting labels:", error);
-}
-layoutManager.labels = labelManager.getAnchors();
+// NOTE: Label injection now handled by RoomsManager.initialize()
+// Labels will be available after initializeRoomMeshesAndPicking() is called
+// layoutManager.labels will be populated when RoomsManager initializes
 
 const floor = new Floor(); // Add floor
 scene.add(floor.mesh);
@@ -527,10 +529,16 @@ function updateMoonFromEntity(entity) {
 
 // ✅ Export API
 const labels = labelManager.getLabels();
+
+// Backward compatibility getters for roomMeshes and picking
+// These are populated after initializeRoomMeshesAndPicking() is called
+let roomMeshes = [];
+let picking = null;
+
 export {
   scene,
   layoutManager,
-  labelManager,
+  labelManager, // Backward-compatible proxy
   sunController,
   moonController,
   labels,
@@ -545,9 +553,11 @@ export {
   highlightRoomByKey,
   clearRoomHighlightByKey,
   focusEntity,
-  // HADS-R09: Picking Service
+  // RoomsManager: Unified room management
+  roomsManager,
   initializeRoomMeshesAndPicking,
   cleanupRoomMeshesAndPicking,
+  // Backward compatibility: populated after initialization
   roomMeshes,
   picking,
 };

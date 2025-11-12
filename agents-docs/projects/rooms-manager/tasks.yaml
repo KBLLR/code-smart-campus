@@ -1,0 +1,55 @@
+project:
+  id_prefix: RM
+  owner: "@KBLLR"
+  variant: HITL
+  intent: "Integrate LabelManager and raycasting into RoomsManager for unified room interaction"
+
+backlog:
+  - id: RM-105
+    title: "Add comprehensive tests"
+    description: "Test label initialization, updates, picking events, disposal, and edge cases"
+    priority: high
+    owner: "@KBLLR"
+    research: ["three.js testing", "jest mocking"]
+
+  - id: RM-106
+    title: "Clean up redundant code"
+    description: "Remove or deprecate standalone LabelManager usage patterns across codebase"
+    priority: low
+    owner: "@KBLLR"
+    research: ["code archaeology", "deprecation strategies"]
+
+in_progress: []
+
+review: []
+
+done:
+  - id: RM-100
+    title: "Research existing label and raycaster systems"
+    description: "Analyzed LabelManager, RaycasterHandler, PickingService, and current RoomsManager architecture"
+    completed: "2025-11-12"
+    outcome: "Identified clear integration path - Option 1 (integrated) preferred over Option 2 (separate + events)"
+
+  - id: RM-101
+    title: "Integrate LabelManager into RoomsManager"
+    description: "Add label system as optional feature in RoomsManager with config flag (labelsEnabled). Import and initialize LabelManager, expose API methods."
+    completed: "2025-11-12"
+    outcome: "Successfully integrated - RoomsManager now manages labels, picking, and room meshes uniformly"
+
+  - id: RM-102
+    title: "Add label API methods to RoomsManager"
+    description: "Implement showLabels(), hideLabels(), updateLabel(entityId, value), getLabelAnchors() methods"
+    completed: "2025-11-12"
+    outcome: "All API methods implemented with proper null checks and backward compatibility"
+
+  - id: RM-103
+    title: "Migrate scene.js to use RoomsManager"
+    description: "Replace standalone LabelManager and PickingService initialization with RoomsManager"
+    completed: "2025-11-12"
+    outcome: "scene.js now uses RoomsManager exclusively, backward compatibility maintained via proxy pattern"
+
+  - id: RM-104
+    title: "Fix lint errors from integration"
+    description: "Clean up unused imports in scene.js and main.js after integration"
+    completed: "2025-11-12"
+    outcome: "All integration-related lint errors resolved - 0 new errors introduced"

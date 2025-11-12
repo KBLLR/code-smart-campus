@@ -1,122 +1,122 @@
 /**
  * RoomMeshGenerator - Creates invisible room mesh shells for picking
  *
- * Generates BoxGeometry meshes for each room in the registry with:
- * - userData.roomId for raycaster identification
- * - Position from room center coordinates or generated synthetic position
- * - Invisible material (for picking, not rendering)
+ * Generates BoxGeometry meshes positioned at roomRegistry coordinates.
+ * Fails hard if any room is missing from roomRegistry - no synthetic positions.
+ *
+ * Source of truth: roomRegistry (generated from SVG floorplan)
+ *
+ * IMPORTANT: Must match RoundedBlockGenerator's 180° Y-rotation transform
  */
 
 import * as THREE from 'three';
 
 /**
- * Create invisible room mesh shells for picking
+ * Create invisible room mesh shells for raycasting
+ *
  * @param {Object} roomRegistry - Map of room data with center coordinates
- * @param {Array|Object} entityLocations - Room metadata (array or object)
- * @returns {THREE.Mesh[]} Array of room mesh shells
+ * @param {Array} entityLocations - Room metadata array from entityLocations.json
+ * @returns {{ meshes: THREE.Mesh[], group: THREE.Group }} Object containing meshes array and parent group
+ * @throws {Error} If any room ID is missing from roomRegistry
  */
 export function createRoomMeshes(roomRegistry, entityLocations = null) {
-  const roomMeshes = [];
+  const meshes = [];
+  const missing = [];
 
-  // Use a shared invisible material for all room meshes
+  // Use shared invisible material for all room meshes
   const invisibleMaterial = new THREE.MeshBasicMaterial({
     transparent: true,
     opacity: 0,
     colorWrite: false, // Don't write to color buffer
   });
 
-  // If entityLocations is an array, use it as the primary source of rooms
+  // Get room IDs to process
   let roomIds = [];
   let entityMap = {};
 
   if (Array.isArray(entityLocations)) {
-    // Build map from entity array
+    // Primary source: entityLocations array
     entityLocations.forEach(entity => {
       roomIds.push(entity.id);
       entityMap[entity.id] = entity;
     });
-    console.log(`[RoomMeshGenerator] Using ${roomIds.length} rooms from entityLocations array`);
+    console.log(`[RoomMeshGenerator] Creating meshes for ${roomIds.length} rooms from entityLocations`);
   } else if (entityLocations && typeof entityLocations === 'object') {
-    // entityLocations is a plain object
+    // Fallback: entityLocations object
     roomIds = Object.keys(entityLocations);
     entityMap = entityLocations;
-    console.log(`[RoomMeshGenerator] Using ${roomIds.length} rooms from entityLocations object`);
+    console.log(`[RoomMeshGenerator] Creating meshes for ${roomIds.length} rooms from entityLocations object`);
   } else {
-    // Fall back to roomRegistry keys
+    // Last resort: use roomRegistry keys (not recommended)
     roomIds = Object.keys(roomRegistry);
-    console.log(`[RoomMeshGenerator] Using ${roomIds.length} rooms from roomRegistry`);
+    console.log(`[RoomMeshGenerator] Creating meshes for ${roomIds.length} rooms from roomRegistry`);
   }
 
-  // Collect available coordinates from roomRegistry
-  const availableCoordinates = [];
-  Object.entries(roomRegistry).forEach(([key, value]) => {
-    if (value.center) {
-      availableCoordinates.push(value.center);
-    }
-  });
-  console.log(`[RoomMeshGenerator] Found ${availableCoordinates.length} coordinates in roomRegistry`);
+  // Create meshes - fail hard if any coordinate is missing
+  roomIds.forEach((roomId) => {
+    const entry = roomRegistry[roomId];
 
-  // Statistics for debugging
-  let foundCount = 0;
-  let syntheticCount = 0;
-
-  // Create meshes from room IDs
-  roomIds.forEach((roomId, idx) => {
-    let center = null;
-
-    // Direct lookup in roomRegistry (IDs now match exactly)
-    if (roomRegistry[roomId]?.center) {
-      center = roomRegistry[roomId].center;
-      foundCount++;
-    } else {
-      // Only generate synthetic position if room genuinely not in registry
-      const gridSize = Math.ceil(Math.sqrt(roomIds.length));
-      const spacing = 30;
-      const row = Math.floor(idx / gridSize);
-      const col = idx % gridSize;
-      const x = col * spacing - (gridSize * spacing) / 2;
-      const y = 20; // Height
-      const z = row * spacing - (gridSize * spacing) / 2;
-      center = [x, y, z];
-      syntheticCount++;
-      console.warn(`[RoomMeshGenerator] No coordinates for "${roomId}" - using synthetic position [${x.toFixed(1)}, ${y}, ${z.toFixed(1)}]`);
+    if (!entry || !entry.center) {
+      missing.push(roomId);
+      return; // Continue collecting all missing rooms before failing
     }
 
-    // Box dimensions (approximate classroom size in meters)
-    const width = 10;
-    const height = 3;
-    const depth = 10;
+    const [x, y, z] = entry.center;
+
+    // Box dimensions (approximate room size in meters)
+    const width = 20;   // 20m wide
+    const height = 10;  // 10m tall (picking shell)
+    const depth = 20;   // 20m deep
 
     const geometry = new THREE.BoxGeometry(width, height, depth);
     const mesh = new THREE.Mesh(geometry, invisibleMaterial);
 
-    // Position from registry center or synthetic
-    mesh.position.set(...center);
+    // Position from registry
+    mesh.position.set(x, y, z);
 
-    // Store metadata for picking/display
+    // Store metadata for picking
     mesh.userData.roomId = roomId;
+    mesh.userData.roomName = entry.name;
+    mesh.userData.roomCategory = entry.category;
 
-    // Add metadata from entity locations if provided
+    // Merge in entity metadata if available
     if (entityMap[roomId]) {
       const entity = entityMap[roomId];
-      mesh.userData.displayName = entity.name;
+      mesh.userData.displayName = entity.name || entry.name;
       mesh.userData.icon = entity.icon;
-      mesh.userData.category = entity.category;
+      mesh.userData.category = entity.category || entry.category;
       mesh.userData.potentialSensors = entity.potentialSensors;
     }
 
-    // Don't add to scene yet - caller will do that
-    // scene.add(mesh);
-    roomMeshes.push(mesh);
+    meshes.push(mesh);
   });
 
-  console.log(`[RoomMeshGenerator] Created ${roomMeshes.length} room meshes: ${foundCount} with floor plan coordinates, ${syntheticCount} with synthetic positions`);
+  // Fail hard if any rooms are missing
+  if (missing.length > 0) {
+    console.error("\n❌ [RoomMeshGenerator] Missing room coordinates:");
+    missing.forEach((id) => console.error(`   - "${id}"`));
+    console.error(`\nThese ${missing.length} room(s) are in entityLocations.json but not in roomRegistry.`);
+    console.error("Fix: Ensure public/floorplan.svg has <path> elements with matching IDs,");
+    console.error("then regenerate with: node src/tools/generateRoomRegistry.js\n");
 
-  if (syntheticCount > 0) {
-    console.warn(`[RoomMeshGenerator] ⚠️  ${syntheticCount} room(s) missing from floor plan SVG. Add them to public/floorplan.svg for accurate positioning.`);
+    throw new Error(
+      `[RoomMeshGenerator] ${missing.length} room(s) missing from roomRegistry. ` +
+      `Cannot create picking meshes. Fix SVG or entityLocations.json`
+    );
   }
 
-  return roomMeshes;
+  // CRITICAL: Wrap meshes in group with 180° Y-rotation to match RoundedBlockGenerator
+  // This ensures picking meshes align with extruded geometry
+  const pickingGroup = new THREE.Group();
+  pickingGroup.name = 'PickingMeshesGroup';
+  pickingGroup.rotation.y = Math.PI; // Match RoundedBlockGenerator's flip
+  meshes.forEach(mesh => pickingGroup.add(mesh));
+
+  console.log(`[RoomMeshGenerator] ✅ Created ${meshes.length} room meshes with real floor plan coordinates`);
+  console.log(`[RoomMeshGenerator] Applied 180° Y-rotation to match extruded geometry`);
+
+  // Return both group (to add to scene) and meshes array (for PickingService)
+  return { meshes, group: pickingGroup };
 }
 
 /**

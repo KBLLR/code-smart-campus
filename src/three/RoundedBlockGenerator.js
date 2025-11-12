@@ -4,6 +4,7 @@ import { SVGLoader } from "three/examples/jsm/loaders/SVGLoader.js";
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
 import GenColor from "@utils/GenColor.js";
 import { materialRegistry } from "@registries/materialsRegistry.js";
+import { FLOORPLAN_SCALE, FLOORPLAN_ROTATION_X } from "@config/floorplanTransform.js";
 
 const ROOM_COLOR_PALETTE =
   GenColor.getPalette("cool") ??
@@ -85,7 +86,7 @@ export async function generateRoundedBlocksFromSVG(
             const mesh = new THREE.Mesh(geo, material);
 
             mesh.position.set(center.x, height / 2, center.y); // y = height
-            mesh.rotation.x = -Math.PI / 2; // Align to floor
+            mesh.rotation.x = FLOORPLAN_ROTATION_X; // Align SVG Y-axis to World Z-axis
             mesh.castShadow = true;
             mesh.receiveShadow = true;
             mesh.userData = {
@@ -103,9 +104,9 @@ export async function generateRoundedBlocksFromSVG(
           });
         });
 
-        // Match SVG scene transform
-        group.scale.set(0.1, 0.1, 0.1); // downscale
-        group.rotation.y = Math.PI; // flip
+        // Apply SVG → World coordinate transform (from floorplanTransform.js)
+        group.scale.set(FLOORPLAN_SCALE, FLOORPLAN_SCALE, FLOORPLAN_SCALE);
+        group.rotation.y = Math.PI; // 180° flip to match scene orientation
 
         // Center group origin
         const bbox = new THREE.Box3().setFromObject(group);

@@ -23,16 +23,15 @@ import {
   highlightRoomByKey,
   clearRoomHighlightByKey,
   focusEntity,
-  // HADS-R09: Picking Service
+  // HADS-R09: Picking Service & RoomsManager
+  roomsManager,
   initializeRoomMeshesAndPicking,
-  cleanupRoomMeshesAndPicking,
-  roomMeshes,
-  picking,
 } from "@/scene.js";
-import { showSensorPanel, hideSensorPanel, disposeSensorPanel } from "@molecules/SensorPanel.js";
-import { highlightRoomMesh, clearHighlight, disposeHighlight } from "@ui/interactions/RoomHighlight.js";
+import { showSensorPanel, hideSensorPanel } from "@molecules/SensorPanel.js";
+import { highlightRoomMesh, clearHighlight } from "@ui/interactions/RoomHighlight.js";
 import { entityBindingRegistry } from "@shared/services/entity-binding-registry.ts";
 import { getEntities, getEntityState } from "@/ha.js";
+import { SVGCoordinateDebugger } from "@debug/SVGCoordinateDebugger.js";
 import { createPanelsFromData } from "@lib/PanelBuilder.js";
 import { WebSocketStatus } from "@network/WebSocketStatus.js";
 import { setHaStates, updateEntityState } from "@home_assistant/haState.js";
@@ -77,6 +76,8 @@ let hudManager = null;
 let roomSelectionController = null;
 let webgpuScreen = null;
 let screenControlsRegistered = false;
+let svgDebugger = null;
+let debugMode = false;
 
 function bootstrapScreen(target = null) {
   if (!setup.usingWebGPU) return null;
@@ -375,15 +376,51 @@ setup.setEnvMap("/hdri/night1k.hdr");
 materialRegistry.init({ renderer: setup.re });
 attachSetup(setup);
 
-// HADS-R09: Initialize picking service
-try {
-  const { roomMeshes: generatedRoomMeshes, picking: pickingService } = initializeRoomMeshesAndPicking(setup.cam);
-  window.picking = pickingService;
-  window.roomMeshesForPicking = generatedRoomMeshes;
-  console.log('[Main] Picking service initialized successfully');
-} catch (error) {
-  console.warn('[Main] Failed to initialize picking service:', error);
-}
+// HADS-R09: Initialize picking service (async)
+(async () => {
+  try {
+    const { roomMeshes: generatedRoomMeshes, picking: pickingService } = await initializeRoomMeshesAndPicking(setup.cam);
+    window.picking = pickingService;
+    window.roomMeshesForPicking = generatedRoomMeshes;
+    console.log('[Main] Picking service initialized successfully');
+    console.log(`  ✓ ${generatedRoomMeshes.length} room meshes created`);
+    console.log('  ✓ Labels injected via RoomsManager');
+
+    // Mark resources as ready for loader
+    window.roomMeshes = {}; // Legacy for compatibility
+    markReady("roomMeshes", window.roomMeshes);
+
+    // Get the extruded group from RoomsManager
+    if (roomsManager && roomsManager.extrudedGroup) {
+      window.roundedRoomsGroup = roomsManager.extrudedGroup;
+      markReady("roundedRoomsGroup", roomsManager.extrudedGroup);
+      console.log('  ✓ Marked roundedRoomsGroup as ready');
+    }
+
+    // Wait for HUD manager to be created, then sync
+    const waitForHud = setInterval(() => {
+      if (hudManager) {
+        clearInterval(waitForHud);
+        hudManager.sync(labelManager.getLabels());
+        console.log('  ✓ HUD synced with labels');
+
+        // Hide all label categories by default
+        ['generic', 'calendar', 'occupancy'].forEach(category => {
+          hudManager.setCategoryVisibility(category, false);
+        });
+        console.log('  ✓ Labels hidden by default (use toolbar to show)');
+
+        // Wire picking events AFTER everything is ready
+        if (typeof wirePickingPointerEvents === 'function') {
+          wirePickingPointerEvents();
+          console.log('  ✓ Picking pointer events wired');
+        }
+      }
+    }, 100);
+  } catch (error) {
+    console.error('[Main] Failed to initialize picking service:', error);
+  }
+})();
 
 // HADS-R02: Initialize entity binding registry
 try {
@@ -614,7 +651,7 @@ scene.userData.hud = {
 updateSceneCapabilities(scene, {
   hud: { supported: true },
 });
-hudManager.sync(labelManager.getLabels());
+// NOTE: HUD sync happens after RoomsManager initialization completes (see async block above)
 const hudInteractionState = {
   hoveredEntityId: null,
   selectedEntityId: null,
@@ -1364,44 +1401,11 @@ initialStatesProcessedSignal.promise.then(
 // --- End promise logging ---
 
 // --- 1. Load Rounded Blocks (Async Operation) ---
-const svgURL = "/floorplan.svg";
-loader.updateText("Loading floorplan..."); // Update status before starting
-console.log("[Init] Starting floorplan generation...");
-
-generateRoundedBlocksFromSVG(svgURL, scene, window.roomMeshes) // Pass the main scene
-  .then((group) => {
-    console.log("[Init] generateRoundedBlocksFromSVG finished.");
-    if (group instanceof THREE.Group) {
-      scene.add(group); // Add the generated group to the main scene
-      console.log(
-        `✅ Rounded blocks group added to the main scene (${group.children.length} meshes).`,
-      );
-
-      // --- Mark resources as ready ---
-      // Mark the mesh registry ready (for Debugger object picker)
-      markReady("roomMeshes", window.roomMeshes);
-      window.roundedRoomsGroup = group;
-      // ** CRITICAL: Mark the group itself ready to resolve roomsReadyPromise **
-      markReady("roundedRoomsGroup", group);
-      console.log(
-        "[Init] 'roundedRoomsGroup' and 'roomMeshes' marked as ready.",
-      );
-      // --- End mark ready ---
-    } else {
-      console.error(
-        "❌ generateRoundedBlocksFromSVG did not return a valid Group.",
-      );
-      // How to signal failure to Promise.all? Currently, roomsReadyPromise will just never resolve.
-      // Consider modifying generateRoundedBlocksFromSVG to return a rejecting promise on failure.
-      loader.updateText("Error: Invalid floorplan data!");
-    }
-  })
-  .catch((error) => {
-    console.error("❌ Failed to generate rounded blocks:", error);
-    loader.updateText("Error loading floorplan!");
-    // Rejecting the signal here might hide the loader too early if HA connects successfully.
-    // Better to let the roomsReadyPromise hang and potentially handle timeout later if needed.
-  });
+// NOTE: Now handled by RoomsManager.initialize() in async block above (line 380)
+// The old generateRoundedBlocksFromSVG call has been replaced with RoomsManager
+// which handles SVG loading, picking mesh generation, and label injection in one place
+loader.updateText("Loading floorplan...");
+console.log("[Init] Floorplan generation handled by RoomsManager (see async block above)");
 
 roomsReadyPromise.then(() => {
   initRoomSelectionController();
@@ -1559,6 +1563,7 @@ whenReady("labels", (labelsData) => {
 let pickCount = 0;
 let pickDurations = [];
 const PICK_PERFORMANCE_INTERVAL = 100; // Log stats every N picks
+let currentlyHighlightedRoom = null; // Track which room is highlighted
 
 function wirePickingPointerEvents() {
   if (!canvas || !window.picking) {
@@ -1586,8 +1591,12 @@ function wirePickingPointerEvents() {
       debugLogged = true;
     }
 
-    // Handle miss
+    // Handle miss - clear previous highlight
     if (!result.hit || !result.roomId) {
+      if (currentlyHighlightedRoom && roomsManager) {
+        roomsManager.highlightRoom(currentlyHighlightedRoom, false);
+        currentlyHighlightedRoom = null;
+      }
       clearHighlight();
       hideSensorPanel();
       return;
@@ -1595,11 +1604,26 @@ function wirePickingPointerEvents() {
 
     console.log('[Picking] Hit room:', result.roomId);
 
-    // Found a room - highlight it
+    // Clear previous highlight if hovering a different room
+    if (currentlyHighlightedRoom && currentlyHighlightedRoom !== result.roomId && roomsManager) {
+      roomsManager.highlightRoom(currentlyHighlightedRoom, false);
+    }
+
+    // Highlight the extruded geometry (visual block) instead of picking mesh
+    if (roomsManager) {
+      roomsManager.highlightRoom(result.roomId, true);
+      currentlyHighlightedRoom = result.roomId;
+    } else {
+      // Fallback to old method if RoomsManager not ready
+      const pickedMesh = window.roomMeshesForPicking?.find(m => m.userData.roomId === result.roomId);
+      if (pickedMesh) {
+        highlightRoomMesh(pickedMesh);
+      }
+    }
+
+    // Get room data for sensor panel
     const pickedMesh = window.roomMeshesForPicking?.find(m => m.userData.roomId === result.roomId);
-    console.log('[Picking] Found mesh for room:', pickedMesh?.userData.roomId || 'NOT FOUND');
     if (pickedMesh) {
-      highlightRoomMesh(pickedMesh);
 
       // Show sensor panel with room info
       const roomData = {
@@ -1658,6 +1682,10 @@ function wirePickingPointerEvents() {
 
   // pointerleave event - clear highlights when leaving canvas
   canvas.addEventListener('pointerleave', () => {
+    if (currentlyHighlightedRoom && roomsManager) {
+      roomsManager.highlightRoom(currentlyHighlightedRoom, false);
+      currentlyHighlightedRoom = null;
+    }
     clearHighlight();
     hideSensorPanel();
   });
@@ -1694,7 +1722,10 @@ function loop() {
   // Add other per-frame updates here if needed (e.g., animations).
 
   // --- Render the Scene ---
-  if (postProcessor) {
+  if (debugMode && svgDebugger?.views) {
+    // Use split view rendering when debug mode is active
+    svgDebugger.renderSplitViews();
+  } else if (postProcessor) {
     postProcessor.updateCamera(setup.cam);
     postProcessor.updateScene(scene);
     if (postProcessor.isEnabled()) {
@@ -1712,17 +1743,103 @@ function loop() {
   scene.userData?.performance?.tick?.(frameDuration);
 }
 
+// --- SVG Coordinate Debug Mode ---
+async function toggleDebugMode() {
+  debugMode = !debugMode;
+
+  if (debugMode && !svgDebugger) {
+    console.log('[Debug] Initializing SVG coordinate debugger...');
+
+    try {
+      // Import room registry
+      const { roomRegistry } = await import('@data/roomRegistry.js');
+
+      // Create debugger instance
+      svgDebugger = new SVGCoordinateDebugger(scene, setup.cam, setup.re);
+
+      // Setup views
+      svgDebugger.setupOrthographicViews();
+
+      // Add reference helpers
+      svgDebugger.createAxisHelper(100);
+
+      // Load SVG overlays at 3 heights
+      await svgDebugger.loadSVGOverlays('/dbug/dbugmap-1.svg');
+
+      // Add picking mesh markers
+      svgDebugger.createPickingMarkers(roomRegistry);
+
+      // Print diagnostics
+      svgDebugger.printDiagnostics(roomRegistry);
+
+      // Expose to window
+      window.svgDebugger = svgDebugger;
+
+      console.log('[Debug] ✅ SVG coordinate debugger active');
+      console.log('[Debug] Controls:');
+      console.log('  - D: Toggle debug mode on/off');
+      console.log('  - 1,2,3: Toggle overlays (Red Y=0, Green Y=20, Blue Y=40)');
+      console.log('  - M: Toggle markers');
+      console.log('  - svgDebugger available in console');
+
+    } catch (error) {
+      console.error('[Debug] Failed to initialize debugger:', error);
+      debugMode = false;
+    }
+  } else if (!debugMode && svgDebugger) {
+    console.log('[Debug] Disabling debug mode...');
+    svgDebugger.dispose();
+    svgDebugger = null;
+    window.svgDebugger = null;
+  }
+
+  return debugMode;
+}
+
+// Keyboard shortcuts for debug mode
+window.addEventListener('keydown', (event) => {
+  // Alt/Option + D for debug mode
+  if (event.altKey && event.key === 'd') {
+    event.preventDefault();
+    toggleDebugMode().then(isActive => {
+      console.log(`[Debug] Mode: ${isActive ? 'ON' : 'OFF'}`);
+    });
+  }
+
+  // Debug controls (only when active)
+  if (debugMode && svgDebugger) {
+    switch(event.key) {
+      case '1':
+        svgDebugger.toggleOverlay(0);
+        break;
+      case '2':
+        svgDebugger.toggleOverlay(1);
+        break;
+      case '3':
+        svgDebugger.toggleOverlay(2);
+        break;
+      case 'm':
+      case 'M':
+        const markers = scene.getObjectByName('PickingMarkers');
+        if (markers) {
+          markers.visible = !markers.visible;
+          console.log(`[Debug] Markers: ${markers.visible ? 'visible' : 'hidden'}`);
+        }
+        break;
+    }
+  }
+});
+
+// Expose toggle function
+window.toggleDebugMode = toggleDebugMode;
+
 // --- Start the Animation Loop ---
 // Call the loop function once to begin the animation cycle.
 function startAnimationLoop() {
   console.log("🚀 Starting animation loop...");
 
-  // Wire up picking interactions
-  try {
-    wirePickingPointerEvents();
-  } catch (error) {
-    console.warn('[Main] Failed to wire picking events:', error);
-  }
+  // NOTE: Picking events are now wired AFTER RoomsManager initialization completes
+  // (see async block above that waits for hudManager and labels to be ready)
 
   loop();
 }
@@ -1754,3 +1871,18 @@ function toggleSensorPanelState(forceState) {
 }
 
 window.triggerSensorPanelToggle = toggleSensorPanelState;
+
+// Click outside to close sensor panel
+document.addEventListener("click", (event) => {
+  if (!panelShell?.classList.contains("is-open")) return;
+
+  // Check if click is outside the panel area
+  const isClickInside =
+    panelShell.contains(event.target) ||
+    floatingBtn?.contains(event.target) ||
+    event.target.closest(".view-hero__sensor-btn");
+
+  if (!isClickInside) {
+    toggleSensorPanelState(false);
+  }
+});

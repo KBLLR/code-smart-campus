@@ -1,0 +1,84 @@
+project:
+  id_prefix: UIR
+  owner: "@ui-agent"
+  variant: HITL
+  intent: "Modernize and bulletproof the UI layer with focus on HTML/CSS architecture, responsive design, and component consistency"
+
+backlog:
+  - id: UIR-101
+    title: "Audit and improve sensors.html dashboard"
+    description: |
+      Review http://localhost:5173/sensors.html for data presentation improvements:
+      - Enhance sensor data display beyond basic state values (add context, descriptions, locations)
+      - Improve category organization and visual hierarchy (currently: scheduling, occupancy, environment, lighting, energy, people, global)
+      - Add search/filter functionality for sensor discovery
+      - Improve data formatting (timestamps, boolean states, units)
+      - Consider room/floor grouping in addition to category filtering
+      - Test responsive layout on mobile/tablet
+      - Add loading states and error handling UI
+      Files: sensors.html, src/pages/sensors/main.js, src/pages/sensors/sensors.css, src/lib/SensorDashboard.js
+    priority: high
+    owner: "@ui-agent"
+    research: ["sensor dashboard patterns", "data visualization best practices", "category organization"]
+
+  - id: UIR-102
+    title: "Audit .hui-panel styles for responsive breakpoints"
+    description: |
+      Review all .hui-panel, .panel-strip, and sensor panel cards for responsive behavior.
+      Test on mobile (320-480px), tablet (768-1024px), desktop (1280px+).
+      Fix horizontal scroll issues, card overflow, panel indicator alignment.
+      Files: src/styles/main.css, src/lib/PanelBuilder.js
+    priority: high
+    owner: "@ui-agent"
+    research: ["responsive design patterns", "CSS Grid/Flexbox debugging"]
+
+  - id: UIR-103
+    title: "Create CSS design tokens and variables"
+    description: |
+      Establish design system with CSS variables for:
+      - Color palette (bg, surface, text, accent, error, success)
+      - Spacing scale (4px, 8px, 12px, 16px, 24px, 32px)
+      - Typography scale (h1-h6, body, monospace)
+      - Component tokens (borders, shadows, radii)
+      Consolidate duplicate values across main.css.
+    priority: high
+    owner: "@ui-agent"
+    research: ["CSS custom properties", "design system tokens"]
+
+  - id: UIR-104
+    title: "Add Escape key to close sensor panel"
+    description: |
+      Sensor panel currently closes on click-outside (✅ fixed in main.js:1875-1888).
+      Add Escape key listener for accessibility.
+      Ensure keyboard navigation works for panel controls.
+    priority: medium
+    owner: "@ui-agent"
+    research: ["keyboard accessibility", "ARIA patterns"]
+
+  - id: UIR-105
+    title: "Document component library patterns"
+    description: |
+      Audit and document:
+      - Button variants (primary, secondary, ghost)
+      - Card styles (elevated, flat, outlined)
+      - Input fields (text, select, checkbox)
+      - Modal/panel patterns
+      Identify inconsistencies (hui-panel vs panel-shell naming).
+      Create component catalog.
+    priority: medium
+    owner: "@ui-agent"
+    research: ["component documentation", "style guide patterns"]
+
+  - id: UIR-106
+    title: "Fix card layout overflow issues"
+    description: |
+      Investigate and fix any layout breaks in sensor panel cards.
+      Ensure proper wrapping, no text overflow, consistent spacing.
+      Test with various sensor value lengths.
+    priority: medium
+    owner: "@ui-agent"
+    research: ["CSS overflow handling", "flexbox debugging"]
+
+in_progress: []
+review: []
+done: []

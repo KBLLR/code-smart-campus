@@ -76,16 +76,23 @@ class EntityBindingRegistry {
    *
    * @param entities Array of HA entity IDs
    * @param entityStates Optional map of entity states for validation (reserved for future use)
+   * @param normalizeRoomId Optional function to normalize room ID (e.g., "b3" → "b.3")
    */
   auto_discover(
     entities: string[],
-    _entityStates?: Record<string, any>
+    _entityStates?: Record<string, any>,
+    normalizeRoomId?: (rawId: string) => string
   ) {
     const discovered = new Map<string, string[]>();
 
     entities.forEach((entityId) => {
-      const roomId = this.extractRoomIdFromEntityName(entityId);
+      let roomId = this.extractRoomIdFromEntityName(entityId);
       if (!roomId) return;
+
+      // Apply normalization if provided
+      if (normalizeRoomId) {
+        roomId = normalizeRoomId(roomId);
+      }
 
       if (!discovered.has(roomId)) {
         discovered.set(roomId, []);
@@ -221,6 +228,64 @@ class EntityBindingRegistry {
   }
 
   /**
+   * Get the room ID for a given entity ID (reverse lookup)
+   *
+   * @param entityId - Home Assistant entity ID
+   * @returns Room ID or null if not found
+   */
+  getRoomForEntity(entityId: string): string | null {
+    const binding = this.entityMap.get(entityId);
+    return binding?.location_id || null;
+  }
+
+  /**
+   * Get statistics about bindings
+   */
+  getStats(): {
+    roomCount: number;
+    entityCount: number;
+    averageEntitiesPerRoom: number;
+  } {
+    const roomCount = this.bindings.size;
+    const entityCount = this.entityMap.size;
+    const averageEntitiesPerRoom =
+      roomCount > 0 ? entityCount / roomCount : 0;
+
+    return {
+      roomCount,
+      entityCount,
+      averageEntitiesPerRoom: Number(averageEntitiesPerRoom.toFixed(2)),
+    };
+  }
+
+  /**
+   * Print diagnostics to console
+   */
+  printDiagnostics(): void {
+    const stats = this.getStats();
+
+    console.group("[EntityBindingRegistry] Diagnostics");
+    console.log(`Rooms with entities: ${stats.roomCount}`);
+    console.log(`Total entities bound: ${stats.entityCount}`);
+    console.log(`Average entities per room: ${stats.averageEntitiesPerRoom}`);
+
+    // Sample bindings
+    const sample = Array.from(this.bindings.entries()).slice(0, 5);
+    if (sample.length > 0) {
+      console.log("\nSample bindings:");
+      sample.forEach(([roomId, bindings]) => {
+        console.log(`  "${roomId}": ${bindings.length} entities`);
+        bindings.slice(0, 3).forEach((b) => console.log(`    - ${b.entity_id}`));
+        if (bindings.length > 3) {
+          console.log(`    ... and ${bindings.length - 3} more`);
+        }
+      });
+    }
+
+    console.groupEnd();
+  }
+
+  /**
    * Reset registry
    */
   reset() {
@@ -231,3 +296,30 @@ class EntityBindingRegistry {
 
 // Export singleton instance
 export const entityBindingRegistry = new EntityBindingRegistry();
+
+/**
+ * Room ID normalization for TUM campus
+ * Converts entity naming conventions to floorplan SVG IDs
+ *
+ * Examples:
+ * - "b3" → "b.3"
+ * - "a12" → "a.12"
+ * - "a11_a12" → "a.11" (combined rooms use first ID)
+ * - "kitchen" → "kitchen" (unchanged)
+ */
+export function normalizeTUMRoomId(rawId: string): string {
+  // Pattern: letter + digits → letter + "." + digits
+  const match = rawId.match(/^([a-z])(\d+)$/i);
+  if (match) {
+    return `${match[1].toLowerCase()}.${match[2]}`;
+  }
+
+  // Handle special cases like "a11_a12" → "a.11"
+  const rangeMatch = rawId.match(/^([a-z])(\d+)_[a-z]\d+$/i);
+  if (rangeMatch) {
+    return `${rangeMatch[1].toLowerCase()}.${rangeMatch[2]}`;
+  }
+
+  // Return as-is for non-standard IDs (kitchen, library, etc.)
+  return rawId.toLowerCase();
+}

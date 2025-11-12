@@ -1,60 +1,62 @@
-// src/tools/generateRoomRegistry.js
+/**
+ * generateRoomRegistry.js
+ *
+ * Strict SVG → roomRegistry generator with validation.
+ * Enforces single source of truth: SVG floorplan.
+ *
+ * Validates:
+ * - All entityLocations IDs must exist in SVG
+ * - All SVG room IDs should be referenced in entityLocations
+ * - No synthetic coordinates - fails hard if center cannot be computed
+ *
+ * Run: node src/tools/generateRoomRegistry.js
+ */
+
 import fs from "fs";
 import path from "path";
-import { fileURLToPath } from "url"; // To get __dirname in ES modules
-import { parse } from "node-html-parser"; // SVG parsing library
+import { fileURLToPath } from "url";
+import { parse } from "node-html-parser";
+import { svgToWorldCenter } from "../config/floorplanTransform.js";
 
 // --- Configuration ---
-const SVG_FILENAME = "floorplan.svg"; // Name of the SVG file in the public directory
-const OUTPUT_FILENAME = "roomRegistry.js"; // Name of the generated registry file
-const TARGET_SVG_GROUP_ID = "rooms"; // The ID of the <g> element containing room paths in the SVG
-const SVG_SCALE = 0.1; // Scale factor applied during SVG processing/import elsewhere
-const ROOM_Y_POSITION = 20; // Desired Y position for the room center in 3D space
+const SVG_FILENAME = "floorplan.svg";
+const OUTPUT_FILENAME = "roomRegistry.js";
+const ENTITY_LOCATIONS_FILE = "src/data/entityLocations.json";
+const TARGET_SVG_GROUP_ID = "rooms";
 
 // --- Path Setup ---
-// ES Module equivalent of __dirname
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const PROJECT_ROOT = path.resolve(__dirname, "../..");
 
-// Resolve paths relative to the project root (assuming tools/ is in src/ which is sibling to public/ and contains data/)
-const PROJECT_ROOT = path.resolve(__dirname, "../.."); // Move up two levels from src/tools/
 const svgPath = path.resolve(PROJECT_ROOT, "public", SVG_FILENAME);
-const outputDir = path.resolve(PROJECT_ROOT, "src", "data");
-const outputPath = path.resolve(outputDir, OUTPUT_FILENAME);
+const outputPath = path.resolve(PROJECT_ROOT, "src", "data", OUTPUT_FILENAME);
+const entityLocationsPath = path.resolve(PROJECT_ROOT, ENTITY_LOCATIONS_FILE);
 
 /**
  * Extracts center coordinates from an SVG path 'd' attribute.
- * Calculates the bounding box of the path points and finds its center.
- * Applies scaling and sets a fixed Y position for 3D space.
+ * Calculates bounding box and returns center point.
  *
- * @param {string} dAttr - The 'd' attribute string from an SVG path.
- * @param {number} svgScale - The scaling factor to apply to coordinates.
- * @param {number} yPosition - The fixed Y coordinate for the 3D center.
- * @returns {Array<number>|null} An array [x, y, z] representing the center, or null if calculation fails.
+ * @param {string} dAttr - SVG path 'd' attribute
+ * @returns {[number, number]|null} SVG center [x, y] or null if failed
  */
-function extractCenter(dAttr, svgScale = 0.1, yPosition = 20) {
+function extractSvgCenter(dAttr) {
   if (!dAttr || typeof dAttr !== "string") {
-    console.warn("Invalid 'd' attribute provided for center extraction.");
     return null;
   }
-  // Regex to find numbers (including scientific notation) in the path data
+
+  // Extract all numbers from path data
   const nums = dAttr
     .match(/[-+]?\.?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?/g)
     ?.map(Number);
 
   if (!nums || nums.length < 2 || nums.some(isNaN)) {
-    // Check for NaN as well
-    console.warn(
-      `Could not extract valid numbers from path d attribute: "${dAttr.substring(0, 50)}..."`,
-    );
     return null;
   }
 
-  // Calculate bounding box from extracted points (assumes points are sequential x,y)
-  let minX = Infinity,
-    minY = Infinity,
-    maxX = -Infinity,
-    maxY = -Infinity;
+  // Calculate bounding box
+  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+
   for (let i = 0; i < nums.length; i += 2) {
     if (i + 1 < nums.length) {
       const x = nums[i];
@@ -66,187 +68,199 @@ function extractCenter(dAttr, svgScale = 0.1, yPosition = 20) {
     }
   }
 
-  // Check if bounding box calculation was successful
-  if (
-    !isFinite(minX) ||
-    !isFinite(minY) ||
-    !isFinite(maxX) ||
-    !isFinite(maxY)
-  ) {
-    console.warn(
-      `Could not determine finite bounding box from path d attribute: "${dAttr.substring(0, 50)}..."`,
-    );
+  if (!isFinite(minX) || !isFinite(minY) || !isFinite(maxX) || !isFinite(maxY)) {
     return null;
   }
 
-  // Calculate center in SVG coordinates
+  // Return SVG center coordinates (not yet transformed)
   const svgCx = (minX + maxX) / 2;
   const svgCy = (minY + maxY) / 2;
 
-  // Apply scale and map to 3D coordinates (SVG Y maps to 3D Z)
-  const worldCx = svgCx * svgScale;
-  const worldCy = yPosition; // Fixed Y position
-  const worldCz = svgCy * svgScale; // Map SVG Y to World Z
-
-  // Return formatted coordinates, ensuring they are numbers
-  return [
-    parseFloat(worldCx.toFixed(2)),
-    worldCy,
-    parseFloat(worldCz.toFixed(2)),
-  ];
+  return [svgCx, svgCy];
 }
 
 /**
- * Generates the roomRegistry.js file by parsing an SVG file.
- * Reads room path data, calculates center points, and writes a JavaScript module.
- * @returns {object|null} The generated registry object or null on failure.
+ * Parses SVG and extracts room data
+ *
+ * @param {string} svgContent - Raw SVG file content
+ * @returns {Array<{id: string, name: string, category: string, svgCenter: [number, number]}>}
  */
-export function generate() {
-  console.log(`🔄 Starting room registry generation...`);
-  console.log(`  [*] Reading SVG from: ${svgPath}`);
-  let svgContent;
-  try {
-    if (!fs.existsSync(svgPath)) {
-      throw new Error(`SVG file not found at ${svgPath}`);
-    }
-    svgContent = fs.readFileSync(svgPath, "utf-8");
-  } catch (error) {
-    console.error(`❌ Error reading SVG file:`, error.message);
-    return null; // Stop if SVG cannot be read
-  }
-
-  let root;
-  try {
-    root = parse(svgContent);
-  } catch (error) {
-    console.error(`❌ Error parsing SVG content:`, error.message);
-    return null;
-  }
-
-  // Select paths within the specified group ID
+function parseSvgRooms(svgContent) {
+  const root = parse(svgContent);
   const selector = `g#${TARGET_SVG_GROUP_ID} path`;
   const paths = root.querySelectorAll(selector);
 
   if (paths.length === 0) {
-    console.warn(
-      `⚠️ No paths found using selector '${selector}'. Please ensure the group ID and path structure in '${SVG_FILENAME}' are correct.`,
+    throw new Error(
+      `No paths found using selector '${selector}'. Check SVG structure.`
     );
-    // Optional: Add fallback selector if needed
-    // console.warn("Trying fallback selector 'path'...");
-    // paths = root.querySelectorAll("path");
-    if (paths.length === 0) return null; // Exit if still no paths
   }
 
-  console.log(
-    `  [*] Found ${paths.length} path elements within group '#${TARGET_SVG_GROUP_ID}' to process.`,
-  );
-  const registry = {};
-  let processedCount = 0;
+  console.log(`  [*] Found ${paths.length} path elements in group '#${TARGET_SVG_GROUP_ID}'`);
+
+  const rooms = [];
   let skippedCount = 0;
 
-  paths.forEach((pathNode, index) => {
+  paths.forEach((pathNode) => {
     const id = pathNode.getAttribute("id");
-    // Prefer inkscape:label, then name, fallback to id
-    const name =
-      pathNode.getAttribute("inkscape:label") || pathNode.getAttribute("name");
-    const d = pathNode.getAttribute("d");
+    const dAttr = pathNode.getAttribute("d");
+    const dataName = pathNode.getAttribute("data-name");
+    const dataCategory = pathNode.getAttribute("data-category");
 
-    if (id && d) {
-      const center = extractCenter(d, SVG_SCALE, ROOM_Y_POSITION);
-      if (center) {
-        // Use lowercase ID as key for consistency
-        const key = id.toLowerCase();
-        const entry = {
-          name: name || id, // Use ID as name if specific name is missing
-          center,
-        };
-        registry[key] = entry;
-
-        const aliasCandidates = [
-          key.split(/[-_\s]+/).pop(),
-          name ? name.toLowerCase() : null,
-        ].filter(Boolean);
-
-        aliasCandidates.forEach((alias) => {
-          if (!alias || alias === key) return;
-          const normalizedAlias = alias.trim();
-          if (!normalizedAlias || registry[normalizedAlias]) return;
-          registry[normalizedAlias] = entry;
-        });
-        processedCount++;
-      } else {
-        console.warn(
-          `  [!] Skipping path ID '${id}': Could not calculate valid center.`,
-        );
-        skippedCount++;
-      }
-    } else {
-      // Log paths skipped due to missing critical attributes
-      console.warn(
-        `  [!] Skipping path #${index + 1}: Missing required attribute (id='${id || "undefined"}', d='${d ? "present" : "missing"}').`,
-      );
+    if (!id) {
+      console.warn(`  [!] Skipping path without 'id' attribute`);
       skippedCount++;
+      return;
     }
+
+    if (!dAttr) {
+      console.warn(`  [!] Skipping path id='${id}': missing 'd' attribute`);
+      skippedCount++;
+      return;
+    }
+
+    const svgCenter = extractSvgCenter(dAttr);
+    if (!svgCenter) {
+      console.warn(`  [!] Skipping path id='${id}': could not compute center`);
+      skippedCount++;
+      return;
+    }
+
+    rooms.push({
+      id: id,
+      name: dataName || id,
+      category: dataCategory || "Unknown",
+      svgCenter: svgCenter,
+    });
   });
 
-  if (processedCount === 0) {
-    console.error("❌ No valid room data could be processed from the SVG.");
-    return null;
+  if (skippedCount > 0) {
+    console.log(`  [*] Skipped ${skippedCount} paths due to missing data`);
   }
 
-  // Prepare output content
-  const outputContent =
-    `// ${path.basename(outputPath)}\n` +
-    `// Auto-generated from ${SVG_FILENAME} on ${new Date().toISOString()}\n` +
-    `// Contains center coordinates for rooms defined in the SVG.\n\n` +
-    `export const roomRegistry = ${JSON.stringify(registry, null, 2)};\n`; // Pretty print JSON
+  return rooms;
+}
 
-  try {
-    // Ensure output directory exists
-    if (!fs.existsSync(outputDir)) {
-      fs.mkdirSync(outputDir, { recursive: true });
-      console.log(`  [*] Created output directory: ${outputDir}`);
-    }
-    // Write the file
-    fs.writeFileSync(outputPath, outputContent);
-    console.log(
-      `✅ Successfully generated ${path.basename(outputPath)} with ${processedCount} entries.`,
+/**
+ * Validates SVG rooms against entityLocations.json
+ * Ensures all entity IDs exist in SVG and vice versa
+ *
+ * @param {Array} rooms - Rooms parsed from SVG
+ * @param {Array} entityLocations - Entity location definitions
+ * @throws {Error} If validation fails
+ */
+function validateRoomsAgainstEntities(rooms, entityLocations) {
+  const svgIds = new Set(rooms.map((r) => r.id));
+  const entityIds = new Set(entityLocations.map((e) => e.id));
+
+  // Check for entity IDs missing in SVG (HARD ERROR)
+  const missingInSvg = [...entityIds].filter((id) => !svgIds.has(id));
+  if (missingInSvg.length > 0) {
+    console.error("\n❌ VALIDATION FAILED: entityLocations IDs missing in SVG:");
+    missingInSvg.forEach((id) => console.error(`   - "${id}"`));
+    throw new Error(
+      `${missingInSvg.length} room(s) in entityLocations.json have no matching SVG path. ` +
+      `Fix your SVG or remove these entries from entityLocations.json`
     );
-    if (skippedCount > 0) {
-      console.log(
-        `  [*] Skipped ${skippedCount} path elements due to missing data or errors.`,
-      );
-    }
-  } catch (error) {
-    console.error(
-      `❌ Error writing roomRegistry.js to ${outputPath}:`,
-      error.message,
-    );
-    return null; // Indicate failure
   }
 
-  return registry; // Return the generated registry object
+  // Check for SVG IDs not referenced in entityLocations (WARNING)
+  const unusedInEntities = [...svgIds].filter((id) => !entityIds.has(id));
+  if (unusedInEntities.length > 0) {
+    console.warn("\n⚠️  SVG rooms not referenced in entityLocations.json:");
+    unusedInEntities.forEach((id) => console.warn(`   - "${id}"`));
+    console.warn("These rooms will be included in roomRegistry but have no sensor bindings.\n");
+  }
+
+  console.log("  [✓] Validation passed: All entity IDs exist in SVG");
+}
+
+/**
+ * Generates roomRegistry.js from SVG with strict validation
+ */
+export function generate() {
+  console.log("🔄 Starting strict room registry generation...");
+  console.log(`  [*] SVG source: ${path.relative(PROJECT_ROOT, svgPath)}`);
+  console.log(`  [*] Entity locations: ${path.relative(PROJECT_ROOT, entityLocationsPath)}`);
+
+  // Read SVG
+  if (!fs.existsSync(svgPath)) {
+    throw new Error(`SVG file not found: ${svgPath}`);
+  }
+  const svgContent = fs.readFileSync(svgPath, "utf-8");
+
+  // Read entityLocations
+  if (!fs.existsSync(entityLocationsPath)) {
+    throw new Error(`entityLocations.json not found: ${entityLocationsPath}`);
+  }
+  const entityLocations = JSON.parse(fs.readFileSync(entityLocationsPath, "utf-8"));
+
+  // Parse SVG
+  const rooms = parseSvgRooms(svgContent);
+  console.log(`  [*] Parsed ${rooms.length} rooms from SVG`);
+
+  // Validate against entityLocations
+  validateRoomsAgainstEntities(rooms, entityLocations);
+
+  // Generate registry with world coordinates
+  const registry = {};
+  rooms.forEach((room) => {
+    const [svgX, svgY] = room.svgCenter;
+    const worldCenter = svgToWorldCenter(svgX, svgY);
+
+    registry[room.id] = {
+      id: room.id,
+      name: room.name,
+      category: room.category,
+      center: worldCenter,
+    };
+  });
+
+  // Write output
+  const outputContent = `// AUTO-GENERATED from ${SVG_FILENAME}
+// Generated: ${new Date().toISOString()}
+// Do NOT edit by hand - regenerate with: node src/tools/generateRoomRegistry.js
+//
+// Source of truth: public/floorplan.svg
+// Transform: src/config/floorplanTransform.js
+
+export const roomRegistry = ${JSON.stringify(registry, null, 2)};
+`;
+
+  const outputDir = path.dirname(outputPath);
+  if (!fs.existsSync(outputDir)) {
+    fs.mkdirSync(outputDir, { recursive: true });
+  }
+
+  fs.writeFileSync(outputPath, outputContent, "utf-8");
+
+  console.log(`\n✅ Successfully generated roomRegistry.js`);
+  console.log(`   ${Object.keys(registry).length} rooms with validated coordinates`);
+  console.log(`   Output: ${path.relative(PROJECT_ROOT, outputPath)}`);
+
+  return registry;
 }
 
 // --- CLI Execution ---
-// Check if the script is being run directly via Node.js
 if (import.meta.url === `file://${process.argv[1]}`) {
   console.log("=========================================");
-  console.log("  Running Room Registry Generation Tool  ");
-  console.log("=========================================");
-  const startTime = Date.now();
-  const generatedRegistry = generate();
-  const duration = (Date.now() - startTime) / 1000;
+  console.log("  Room Registry Generator (Strict)");
+  console.log("=========================================\n");
 
-  if (generatedRegistry) {
-    console.log(
-      `\n🏁 Generation finished in ${duration.toFixed(2)}s. ${Object.keys(generatedRegistry).length} rooms added.`,
-    );
-  } else {
-    console.log(
-      `\n🏁 Generation failed or produced no output after ${duration.toFixed(2)}s.`,
-    );
-    process.exitCode = 1; // Set exit code to indicate failure
+  const startTime = Date.now();
+
+  try {
+    const registry = generate();
+    const duration = (Date.now() - startTime) / 1000;
+
+    console.log(`\n🏁 Generation completed in ${duration.toFixed(2)}s`);
+    console.log("=========================================");
+  } catch (error) {
+    const duration = (Date.now() - startTime) / 1000;
+
+    console.error(`\n❌ Generation failed after ${duration.toFixed(2)}s:`);
+    console.error(`   ${error.message}`);
+    console.log("=========================================");
+    process.exitCode = 1;
   }
-  console.log("=========================================");
 }

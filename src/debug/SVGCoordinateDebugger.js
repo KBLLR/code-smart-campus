@@ -333,34 +333,34 @@ export class SVGCoordinateDebugger {
 export async function setupDebugVisualization(scene, camera, renderer, roomRegistry) {
   console.log('=== SVG Coordinate Debugger ===');
 
-  const debugger = new SVGCoordinateDebugger(scene, camera, renderer);
+  const dbg = new SVGCoordinateDebugger(scene, camera, renderer);
 
   // Setup views
-  debugger.setupOrthographicViews();
-  debugger.addViewLabels();
+  dbg.setupOrthographicViews();
+  dbg.addViewLabels();
 
   // Add reference helpers
-  debugger.createAxisHelper(100);
+  dbg.createAxisHelper(100);
 
   // Load SVG overlays at 3 heights
-  await debugger.loadSVGOverlays();
+  await dbg.loadSVGOverlays();
 
   // Add picking mesh markers
-  debugger.createPickingMarkers(roomRegistry);
+  dbg.createPickingMarkers(roomRegistry);
 
   // Print diagnostics
-  debugger.printDiagnostics(roomRegistry);
+  dbg.printDiagnostics(roomRegistry);
 
   console.log('\n=== Controls ===');
-  console.log('Toggle overlays: debugger.toggleOverlay(0|1|2)');
-  console.log('Render views: debugger.renderSplitViews()');
+  console.log('Toggle overlays: dbg.toggleOverlay(0|1|2)');
+  console.log('Render views: dbg.renderSplitViews()');
   console.log('  - Red overlay: Y=0 (ground)');
   console.log('  - Green overlay: Y=20 (picking height)');
   console.log('  - Blue overlay: Y=40 (top of blocks)');
   console.log('  - Yellow spheres: Picking mesh centers');
 
   // Expose to window for console access
-  window.svgDebugger = debugger;
+  window.svgDebugger = dbg;
 
-  return debugger;
+  return dbg;
 }

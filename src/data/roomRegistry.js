@@ -1,294 +1,349 @@
-// roomRegistry.js
-// Auto-generated from floorplan.svg on 2025-11-12T03:23:19.240Z
-// Contains center coordinates for rooms defined in the SVG.
+// AUTO-GENERATED from floorplan.svg
+// Generated: 2025-11-12T16:19:34.942Z
+// Do NOT edit by hand - regenerate with: node src/tools/generateRoomRegistry.js
+//
+// Source of truth: public/floorplan.svg
+// Transform: src/config/floorplanTransform.js
 
 export const roomRegistry = {
-  "restrooms_exits_01": {
+  "Restrooms_exits_01": {
+    "id": "Restrooms_exits_01",
     "name": "Restrooms_exits_01",
+    "category": "Unknown",
     "center": [
       61,
       20,
       61
     ]
   },
-  "01": {
-    "name": "Restrooms_exits_01",
-    "center": [
-      61,
-      20,
-      61
-    ]
-  },
-  "restrooms_exits_02": {
+  "Restrooms_exits_02": {
+    "id": "Restrooms_exits_02",
     "name": "Restrooms_exits_02",
+    "category": "Unknown",
     "center": [
-      121.39,
+      121.38850000000001,
       20,
-      121.39
+      121.38850000000001
     ]
   },
-  "02": {
-    "name": "Restrooms_exits_02",
-    "center": [
-      121.39,
-      20,
-      121.39
-    ]
-  },
-  "oxygen": {
+  "Oxygen": {
+    "id": "Oxygen",
     "name": "Oxygen",
+    "category": "Unknown",
     "center": [
-      37.3,
+      37.3000005,
       20,
-      37.3
+      37.300000000000004
     ]
   },
-  "lifts": {
+  "Lifts": {
+    "id": "Lifts",
     "name": "Lifts",
+    "category": "Unknown",
     "center": [
-      108.22,
+      108.21900000000001,
       20,
-      108.22
+      108.21900000000001
     ]
   },
   "hydrogen": {
-    "name": "hydrogen",
+    "id": "hydrogen",
+    "name": "Hydrogen Lab",
+    "category": "Lab",
     "center": [
-      53.51,
+      53.51050000000001,
       20,
-      53.51
+      53.51050000000001
     ]
   },
   "kitchen": {
-    "name": "kitchen",
+    "id": "kitchen",
+    "name": "Cantina Kitchen",
+    "category": "Service",
     "center": [
-      37.3,
+      37.300000000000004,
       20,
-      37.3
+      37.300000000000004
     ]
   },
   "library": {
-    "name": "library",
+    "id": "library",
+    "name": "Alexandria Library",
+    "category": "Common",
     "center": [
-      79.98,
+      79.9805,
       20,
-      79.98
+      79.9805
     ]
   },
   "b.23": {
-    "name": "b.23",
+    "id": "b.23",
+    "name": "Pluto Family Room",
+    "category": "Common",
     "center": [
-      96.97,
+      96.9697,
       20,
-      96.97
+      96.9697
     ]
   },
   "b.22": {
-    "name": "b.22",
+    "id": "b.22",
+    "name": "Artemis Student Service Desk",
+    "category": "Service",
     "center": [
-      104.72,
+      104.72270000000002,
       20,
-      104.72
+      104.72270000000002
     ]
   },
   "b.19": {
-    "name": "b.19",
+    "id": "b.19",
+    "name": "Classroom B.19",
+    "category": "Classroom",
     "center": [
-      89.41,
+      89.41155,
       20,
-      89.41
+      89.41155
     ]
   },
   "b.18": {
-    "name": "b.18",
+    "id": "b.18",
+    "name": "Classroom B.18",
+    "category": "Classroom",
     "center": [
-      81.93,
+      81.93220000000001,
       20,
-      81.93
+      81.93220000000001
     ]
   },
   "b.17": {
-    "name": "b.17",
+    "id": "b.17",
+    "name": "Classroom B.17",
+    "category": "Classroom",
     "center": [
-      74.79,
+      74.79225000000001,
       20,
-      74.79
+      74.79225000000001
     ]
   },
   "b.16": {
-    "name": "b.16",
+    "id": "b.16",
+    "name": "Otter Space",
+    "category": "Classroom",
     "center": [
-      62.38,
+      62.37705,
       20,
-      62.38
+      62.37705
     ]
   },
   "b.15": {
-    "name": "b.15",
+    "id": "b.15",
+    "name": "Cape Canaveral",
+    "category": "Classroom",
     "center": [
-      55.61,
+      55.606899999999996,
       20,
-      55.61
+      55.606899999999996
     ]
   },
   "b.14": {
-    "name": "b.14",
+    "id": "b.14",
+    "name": "Dark Matter",
+    "category": "Classroom",
     "center": [
-      67.93,
+      67.92555,
       20,
-      67.93
+      67.92555
     ]
   },
   "b.12": {
-    "name": "b.12",
+    "id": "b.12",
+    "name": "Hans Zimmer",
+    "category": "Classroom",
     "center": [
-      86.43,
+      86.4255,
       20,
-      86.43
+      86.4255
     ]
   },
   "b.10": {
-    "name": "b.10",
+    "id": "b.10",
+    "name": "MF Room",
+    "category": "Classroom",
     "center": [
-      93.93,
+      93.9255,
       20,
-      93.93
+      93.9255
     ]
   },
   "b.7": {
-    "name": "b.7",
+    "id": "b.7",
+    "name": "W Room",
+    "category": "Classroom",
     "center": [
-      106.17,
+      106.17200000000001,
       20,
-      106.17
+      106.17200000000001
     ]
   },
   "b.6": {
-    "name": "b.6",
+    "id": "b.6",
+    "name": "After",
+    "category": "Classroom",
     "center": [
-      109.26,
+      109.264,
       20,
-      109.26
+      109.264
     ]
   },
   "b.5": {
-    "name": "b.5",
+    "id": "b.5",
+    "name": "Present",
+    "category": "Classroom",
     "center": [
-      114.87,
+      114.87150000000003,
       20,
-      114.87
+      114.87150000000003
     ]
   },
   "b.4": {
-    "name": "b.4",
+    "id": "b.4",
+    "name": "Classroom B4",
+    "category": "Classroom",
     "center": [
-      122.53,
+      122.52550000000002,
       20,
-      122.53
+      122.52550000000002
     ]
   },
   "b.3": {
-    "name": "b.3",
+    "id": "b.3",
+    "name": "Peace",
+    "category": "Classroom",
     "center": [
-      129.53,
+      129.52550000000002,
       20,
-      129.53
+      129.52550000000002
     ]
   },
   "b.2": {
-    "name": "b.2",
+    "id": "b.2",
+    "name": "Aang",
+    "category": "Classroom",
     "center": [
-      122.94,
+      122.93510000000002,
       20,
-      123.32
+      123.32010000000001
     ]
   },
   "a.26": {
-    "name": "a.26",
+    "id": "a.26",
+    "name": "Classroom A.26",
+    "category": "Classroom",
     "center": [
-      122.47,
+      122.47355,
       20,
-      122.47
+      122.47355
     ]
   },
   "a.25": {
-    "name": "a.25",
+    "id": "a.25",
+    "name": "Classroom A.25",
+    "category": "Classroom",
     "center": [
-      111.83,
+      111.83425,
       20,
-      111.83
+      111.83425
     ]
   },
   "a.24": {
-    "name": "a.24",
+    "id": "a.24",
+    "name": "Pandora",
+    "category": "Conceptual Realm",
     "center": [
-      101.29,
+      101.289546,
       20,
-      101.29
+      101.289546
     ]
   },
   "a.23": {
-    "name": "a.23",
+    "id": "a.23",
+    "name": "Lecture Hall",
+    "category": "Lab",
     "center": [
-      98.58,
+      98.57555,
       20,
-      98.58
+      98.57555
     ]
   },
   "a.14": {
-    "name": "a.14",
+    "id": "a.14",
+    "name": "Houston",
+    "category": "Lab",
     "center": [
-      56.73,
+      56.7256,
       20,
-      56.73
+      56.7256
     ]
   },
   "a.11": {
-    "name": "a.11",
+    "id": "a.11",
+    "name": "A11 (TET and RIS)",
+    "category": "Lab",
     "center": [
-      95.93,
+      95.9255,
       20,
-      95.93
+      95.9255
     ]
   },
   "a.6": {
-    "name": "a.6",
+    "id": "a.6",
+    "name": "Muted",
+    "category": "Conceptual Realm",
     "center": [
-      141.98,
+      141.9795,
       20,
-      141.98
+      141.9795
     ]
   },
   "makerspace": {
-    "name": "makerspace",
+    "id": "makerspace",
+    "name": "Makers Space",
+    "category": "Lab",
     "center": [
-      148.75,
+      148.751,
       20,
-      148.75
+      148.751
     ]
   },
   "a.3": {
-    "name": "a.3",
+    "id": "a.3",
+    "name": "Hive",
+    "category": "Conceptual Realm",
     "center": [
-      159.93,
+      159.92550000000003,
       20,
-      159.93
+      159.92550000000003
     ]
   },
   "a.2": {
-    "name": "a.2",
+    "id": "a.2",
+    "name": "Jungle",
+    "category": "Conceptual Realm",
     "center": [
-      143.18,
+      143.1824,
       20,
-      143.18
+      143.1824
     ]
   },
   "a.1": {
-    "name": "a.1",
+    "id": "a.1",
+    "name": "Babylon",
+    "category": "Conceptual Realm",
     "center": [
-      133.33,
+      133.32715000000002,
       20,
-      133.33
+      133.32715000000002
     ]
   }
 };
