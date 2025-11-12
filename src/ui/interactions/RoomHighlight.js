@@ -30,17 +30,22 @@ export function applyHighlightToMesh(mesh) {
   // Create highlight material based on original
   if (originalMaterial instanceof THREE.MeshStandardMaterial) {
     highlightMaterial = new THREE.MeshStandardMaterial({
-      color: originalMaterial.color || 0xffffff,
+      color: 0xffffff,
       emissive: highlightColor,
       emissiveIntensity: highlightEmissiveIntensity,
-      metalness: originalMaterial.metalness || 0,
-      roughness: originalMaterial.roughness || 0.5,
+      metalness: 0,
+      roughness: 0.3,
+      transparent: false,
+      opacity: 1,
     });
   } else if (originalMaterial instanceof THREE.MeshBasicMaterial) {
     highlightMaterial = new THREE.MeshBasicMaterial({
-      color: originalMaterial.color || 0xffffff,
+      color: 0xffffff,
       emissive: highlightColor,
       emissiveIntensity: highlightEmissiveIntensity,
+      transparent: false,
+      opacity: 1,
+      colorWrite: true, // Make sure we render to color buffer
     });
   } else {
     // Fallback for other material types
@@ -48,6 +53,8 @@ export function applyHighlightToMesh(mesh) {
       color: 0xffffff,
       emissive: highlightColor,
       emissiveIntensity: highlightEmissiveIntensity,
+      transparent: false,
+      opacity: 1,
     });
   }
 
