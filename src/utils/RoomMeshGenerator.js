@@ -3,7 +3,7 @@
  *
  * Generates BoxGeometry meshes for each room in the registry with:
  * - userData.roomId for raycaster identification
- * - Position from room center coordinates
+ * - Position from room center coordinates or generated synthetic position
  * - Invisible material (for picking, not rendering)
  */
 
@@ -26,7 +26,6 @@ export function createRoomMeshes(roomRegistry, entityLocations = null) {
   });
 
   // If entityLocations is an array, use it as the primary source of rooms
-  // Otherwise fall back to roomRegistry
   let roomIds = [];
   let entityMap = {};
 
@@ -43,16 +42,26 @@ export function createRoomMeshes(roomRegistry, entityLocations = null) {
     entityMap = entityLocations;
     console.log(`[RoomMeshGenerator] Using ${roomIds.length} rooms from entityLocations object`);
   } else {
-    // Fall back to roomRegistry keys (less ideal, but works for debugging)
+    // Fall back to roomRegistry keys
     roomIds = Object.keys(roomRegistry);
     console.log(`[RoomMeshGenerator] Using ${roomIds.length} rooms from roomRegistry`);
   }
 
+  // Collect available coordinates from roomRegistry
+  const availableCoordinates = [];
+  Object.entries(roomRegistry).forEach(([key, value]) => {
+    if (value.center) {
+      availableCoordinates.push(value.center);
+    }
+  });
+  console.log(`[RoomMeshGenerator] Found ${availableCoordinates.length} coordinates in roomRegistry`);
+
   // Create meshes from room IDs
-  roomIds.forEach(roomId => {
-    // Try to find center coordinates in roomRegistry
+  let coordinateIndex = 0;
+  roomIds.forEach((roomId, idx) => {
     let center = null;
 
+    // Try to find center coordinates in roomRegistry
     // First check roomRegistry with exact key
     if (roomRegistry[roomId]?.center) {
       center = roomRegistry[roomId].center;
@@ -61,9 +70,8 @@ export function createRoomMeshes(roomRegistry, entityLocations = null) {
     else if (roomRegistry[roomId.replace(/\./g, '')]?.center) {
       center = roomRegistry[roomId.replace(/\./g, '')].center;
     }
-    // Try other common patterns
+    // Try search through roomRegistry
     else {
-      // Search through roomRegistry for any matching key
       for (const [key, value] of Object.entries(roomRegistry)) {
         if (value.center && (
           key.toLowerCase() === roomId.toLowerCase() ||
@@ -75,10 +83,18 @@ export function createRoomMeshes(roomRegistry, entityLocations = null) {
       }
     }
 
-    // Skip if no coordinates found
+    // If no coordinates found, generate synthetic position in a grid
     if (!center) {
-      console.warn(`[RoomMeshGenerator] No coordinates found for room: ${roomId}, skipping`);
-      return;
+      // Create a grid of positions spread across the campus
+      const gridSize = Math.ceil(Math.sqrt(roomIds.length));
+      const spacing = 30;
+      const row = Math.floor(idx / gridSize);
+      const col = idx % gridSize;
+      const x = col * spacing - (gridSize * spacing) / 2;
+      const y = 20; // Height
+      const z = row * spacing - (gridSize * spacing) / 2;
+      center = [x, y, z];
+      console.log(`[RoomMeshGenerator] Generated synthetic coordinates for ${roomId}: [${x}, ${y}, ${z}]`);
     }
 
     // Box dimensions (approximate classroom size in meters)
@@ -89,7 +105,7 @@ export function createRoomMeshes(roomRegistry, entityLocations = null) {
     const geometry = new THREE.BoxGeometry(width, height, depth);
     const mesh = new THREE.Mesh(geometry, invisibleMaterial);
 
-    // Position from registry center
+    // Position from registry center or synthetic
     mesh.position.set(...center);
 
     // Store metadata for picking/display
