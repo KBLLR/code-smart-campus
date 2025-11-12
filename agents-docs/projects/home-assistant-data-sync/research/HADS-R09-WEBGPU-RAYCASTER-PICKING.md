@@ -120,6 +120,8 @@ window.addEventListener('pointermove', (event) => {
 - Requires GPU → CPU readback (slight latency)
 - More code complexity than Tier 1
 
+**⚠️ Implementation Note (Caveat):** The GPU code examples in this doc (e.g., readPixels snippets) are written in WebGL idiom for clarity. When implementing Tier 2 with WebGPU, translate these patterns to WebGPU's compute pipelines and texture readback APIs. See WebGPU spec links in References section.
+
 **Implementation:**
 ```javascript
 // Create offscreen target for picking
