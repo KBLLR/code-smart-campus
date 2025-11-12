@@ -13,6 +13,9 @@ import { SunPathArc } from "@lib/SunPathArc.js";
 import { MoonController } from "@lib/MoonController.js";
 import { SITE_COORDINATES } from "@utils/location.js";
 import { materialRegistry } from "@registries/materialsRegistry.js";
+import { createRoomMeshes, disposeRoomMeshes } from "@utils/RoomMeshGenerator.js";
+import { PickingService } from "@shared/services/picking-service.ts";
+import entityLocations from "@data/entityLocations.json";
 
 // 🔧 Globals
 
@@ -28,6 +31,32 @@ scene.fog = new THREE.FogExp2(
 );
 const fogScratchColor = new THREE.Color();
 const layoutManager = new LabelLayoutManager(scene, {}, roomRegistry);
+
+// ✅ HADS-R09: Picking Service Setup
+let roomMeshes = [];
+let picking = null;
+
+function initializeRoomMeshesAndPicking(camera) {
+  // Create room mesh shells for picking
+  roomMeshes = createRoomMeshes(roomRegistry, entityLocations);
+
+  // Add meshes to scene (invisible, for raycasting only)
+  roomMeshes.forEach(mesh => scene.add(mesh));
+
+  // Initialize picking service with camera and room meshes
+  picking = new PickingService(camera, roomMeshes);
+
+  console.log(`[Picking] Initialized with ${roomMeshes.length} room meshes`);
+
+  return { roomMeshes, picking };
+}
+
+function cleanupRoomMeshesAndPicking() {
+  disposeRoomMeshes(roomMeshes);
+  roomMeshes.forEach(mesh => scene.remove(mesh));
+  roomMeshes = [];
+  picking = null;
+}
 const labelManager = new LabelManager(
   scene,
   cleanedLabelRegistry,
@@ -512,6 +541,11 @@ export {
   highlightRoomByKey,
   clearRoomHighlightByKey,
   focusEntity,
+  // HADS-R09: Picking Service
+  initializeRoomMeshesAndPicking,
+  cleanupRoomMeshesAndPicking,
+  roomMeshes,
+  picking,
 };
 
 // --- END OF FILE scene.js (Modified) ---

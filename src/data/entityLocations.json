@@ -1,0 +1,404 @@
+[
+  {
+    "id": "hydrogen",
+    "name": "Hydrogen",
+    "category": "Elemental Forces",
+    "avatar": "Spark",
+    "icon": "✨",
+    "potentialSensors": [
+      "humidity",
+      "illumination",
+      "occupancy",
+      "temperature"
+    ]
+  },
+  {
+    "id": "kitchen",
+    "name": "Cantina",
+    "category": "Community Hubs",
+    "avatar": "E",
+    "icon": "🌮",
+    "potentialSensors": [
+      "air_quality",
+      "co2",
+      "humidity",
+      "illumination",
+      "occupancy",
+      "temperature"
+    ]
+  },
+  {
+    "id": "library",
+    "name": "Alexandria",
+    "category": "Community Hubs",
+    "avatar": "The Archivist",
+    "icon": "📜",
+    "potentialSensors": [
+      "air_quality",
+      "co2",
+      "humidity",
+      "illumination",
+      "occupancy",
+      "temperature"
+    ]
+  },
+  {
+    "id": "b.23",
+    "name": "Pluto Family Room",
+    "category": "Mythos & Media",
+    "avatar": "Pluto",
+    "icon": "🪐",
+    "potentialSensors": [
+      "humidity",
+      "illumination",
+      "occupancy",
+      "temperature"
+    ]
+  },
+  {
+    "id": "b.22",
+    "name": "Artemis-Student SErvice DEsk",
+    "category": "Mythos & Media",
+    "avatar": "Artemis",
+    "icon": "🏹",
+    "potentialSensors": [
+      "humidity",
+      "illumination",
+      "occupancy",
+      "temperature"
+    ]
+  },
+  {
+    "id": "b.19",
+    "name": "B.19",
+    "category": "Data Core",
+    "avatar": "B.19 (The Analyst)",
+    "icon": "📊",
+    "potentialSensors": [
+      "humidity",
+      "illumination",
+      "occupancy",
+      "temperature"
+    ]
+  },
+  {
+    "id": "b.18",
+    "name": "B.18",
+    "category": "Data Core",
+    "avatar": "B.18 (The Archivist)",
+    "icon": "🗄️",
+    "potentialSensors": [
+      "humidity",
+      "illumination",
+      "occupancy",
+      "temperature"
+    ]
+  },
+  {
+    "id": "b.17",
+    "name": "B.17",
+    "category": "Data Core",
+    "avatar": "B.17 (The Strategist)",
+    "icon": "📈",
+    "potentialSensors": [
+      "humidity",
+      "illumination",
+      "occupancy",
+      "temperature"
+    ]
+  },
+  {
+    "id": "b.16",
+    "name": "Otter Space",
+    "category": "Innovation & Discovery",
+    "avatar": "Cosmo",
+    "icon": "🦦",
+    "potentialSensors": [
+      "humidity",
+      "illumination",
+      "occupancy",
+      "temperature"
+    ]
+  },
+  {
+    "id": "b.15",
+    "name": "Cape Canaveral",
+    "category": "Innovation & Discovery",
+    "avatar": "Launch Director",
+    "icon": "🚀",
+    "potentialSensors": [
+      "humidity",
+      "illumination",
+      "occupancy",
+      "temperature"
+    ]
+  },
+  {
+    "id": "b.14",
+    "name": "Dark Matter",
+    "category": "Elemental Forces",
+    "avatar": "The Unseen",
+    "icon": "⚫",
+    "potentialSensors": [
+      "humidity",
+      "illumination",
+      "occupancy",
+      "temperature"
+    ]
+  },
+  {
+    "id": "b.12",
+    "name": "Hans Zimmer",
+    "category": "Conceptual Realms",
+    "avatar": "Maestro",
+    "icon": "🎼",
+    "potentialSensors": [
+      "humidity",
+      "illumination",
+      "occupancy",
+      "temperature"
+    ]
+  },
+  {
+    "id": "b.10",
+    "name": "MF Room",
+    "category": "Conceptual Realms",
+    "avatar": "Resonance",
+    "icon": "〰️",
+    "potentialSensors": [
+      "humidity",
+      "illumination",
+      "occupancy",
+      "temperature"
+    ]
+  },
+  {
+    "id": "b.7",
+    "name": "W(room)",
+    "category": "Conceptual Realms",
+    "avatar": "Momentum",
+    "icon": "🏎️",
+    "potentialSensors": [
+      "humidity",
+      "illumination",
+      "occupancy",
+      "temperature"
+    ]
+  },
+  {
+    "id": "b.6",
+    "name": "After",
+    "category": "Conceptual Realms",
+    "avatar": "Hindsight",
+    "icon": "⏪",
+    "potentialSensors": [
+      "humidity",
+      "illumination",
+      "occupancy",
+      "temperature"
+    ]
+  },
+  {
+    "id": "b.5",
+    "name": "Present",
+    "category": "Conceptual Realms",
+    "avatar": "Kairos",
+    "icon": "🧘",
+    "potentialSensors": [
+      "humidity",
+      "illumination",
+      "occupancy",
+      "temperature"
+    ]
+  },
+  {
+    "id": "b.4",
+    "name": "B4",
+    "category": "Conceptual Realms",
+    "avatar": "Foresight",
+    "icon": "⏩",
+    "potentialSensors": [
+      "humidity",
+      "illumination",
+      "occupancy",
+      "temperature"
+    ]
+  },
+  {
+    "id": "b.3",
+    "name": "Peace",
+    "category": "Conceptual Realms",
+    "avatar": "Pax",
+    "icon": "🕊️",
+    "potentialSensors": [
+      "humidity",
+      "illumination",
+      "occupancy",
+      "temperature"
+    ]
+  },
+  {
+    "id": "b.2",
+    "name": "Aang",
+    "category": "Mythos & Media",
+    "avatar": "Aang",
+    "icon": "🌬️",
+    "potentialSensors": [
+      "humidity",
+      "illumination",
+      "occupancy",
+      "temperature"
+    ]
+  },
+  {
+    "id": "a.26",
+    "name": "A.26",
+    "category": "Creative Core",
+    "avatar": "A.26 (Form)",
+    "icon": "🎨",
+    "potentialSensors": [
+      "humidity",
+      "illumination",
+      "occupancy",
+      "temperature"
+    ]
+  },
+  {
+    "id": "a.25",
+    "name": "A.25",
+    "category": "Creative Core",
+    "avatar": "A.25 (Harmony)",
+    "icon": "🎶",
+    "potentialSensors": [
+      "humidity",
+      "illumination",
+      "occupancy",
+      "temperature"
+    ]
+  },
+  {
+    "id": "a.24",
+    "name": "Pandora",
+    "category": "Mythos & Media",
+    "avatar": "Pandora",
+    "icon": "🎁",
+    "potentialSensors": [
+      "humidity",
+      "illumination",
+      "occupancy",
+      "temperature"
+    ]
+  },
+  {
+    "id": "a.23",
+    "name": "A.23",
+    "category": "Creative Core",
+    "avatar": "A.23 (Narrative)",
+    "icon": "✍️",
+    "potentialSensors": [
+      "humidity",
+      "illumination",
+      "occupancy",
+      "temperature"
+    ]
+  },
+  {
+    "id": "a.14",
+    "name": "Houston",
+    "category": "Innovation & Discovery",
+    "avatar": "Mission Control",
+    "icon": "📡",
+    "potentialSensors": [
+      "humidity",
+      "illumination",
+      "occupancy",
+      "temperature"
+    ]
+  },
+  {
+    "id": "a.11-a.12",
+    "name": "TETandRIS",
+    "category": "Innovation & Discovery",
+    "avatar": "The Architect",
+    "icon": "🧩",
+    "potentialSensors": [
+      "humidity",
+      "illumination",
+      "occupancy",
+      "temperature"
+    ]
+  },
+  {
+    "id": "a.6",
+    "name": "Muted",
+    "category": "Conceptual Realms",
+    "avatar": "Sanctuary",
+    "icon": "🤫",
+    "potentialSensors": [
+      "humidity",
+      "illumination",
+      "occupancy",
+      "temperature"
+    ]
+  },
+  {
+    "id": "a.5",
+    "name": "Makers Space",
+    "category": "Community Hubs",
+    "avatar": "The Tinkerer",
+    "icon": "🛠️",
+    "potentialSensors": [
+      "air_quality",
+      "co2",
+      "humidity",
+      "illumination",
+      "occupancy",
+      "temperature"
+    ]
+  },
+  {
+    "id": "a.3",
+    "name": "Hive",
+    "category": "Community Hubs",
+    "avatar": "The Collective",
+    "icon": "🐝",
+    "potentialSensors": [
+      "air_quality",
+      "co2",
+      "humidity",
+      "illumination",
+      "occupancy",
+      "temperature"
+    ]
+  },
+  {
+    "id": "a.2",
+    "name": "Jungle",
+    "category": "Community Hubs",
+    "avatar": "The Wilds",
+    "icon": "🌿",
+    "potentialSensors": [
+      "air_quality",
+      "co2",
+      "humidity",
+      "illumination",
+      "occupancy",
+      "temperature"
+    ]
+  },
+  {
+    "id": "a.1",
+    "name": "Babylon",
+    "category": "Community Hubs",
+    "avatar": "The Gardener King",
+    "icon": "🏛️",
+    "potentialSensors": [
+      "air_quality",
+      "co2",
+      "humidity",
+      "illumination",
+      "occupancy",
+      "temperature"
+    ]
+  }
+]

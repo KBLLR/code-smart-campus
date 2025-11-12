@@ -23,7 +23,14 @@ import {
   highlightRoomByKey,
   clearRoomHighlightByKey,
   focusEntity,
+  // HADS-R09: Picking Service
+  initializeRoomMeshesAndPicking,
+  cleanupRoomMeshesAndPicking,
+  roomMeshes,
+  picking,
 } from "@/scene.js";
+import { showSensorPanel, hideSensorPanel, disposeSensorPanel } from "@molecules/SensorPanel.js";
+import { highlightRoomMesh, clearHighlight, disposeHighlight } from "@ui/interactions/RoomHighlight.js";
 import { createPanelsFromData } from "@lib/PanelBuilder.js";
 import { WebSocketStatus } from "@network/WebSocketStatus.js";
 import { setHaStates, updateEntityState } from "@home_assistant/haState.js";
@@ -365,6 +372,17 @@ const setup = new Setup(canvas, () => {
 setup.setEnvMap("/hdri/night1k.hdr");
 materialRegistry.init({ renderer: setup.re });
 attachSetup(setup);
+
+// HADS-R09: Initialize picking service
+try {
+  const { roomMeshes: generatedRoomMeshes, picking: pickingService } = initializeRoomMeshesAndPicking(setup.cam);
+  window.picking = pickingService;
+  window.roomMeshesForPicking = generatedRoomMeshes;
+  console.log('[Main] Picking service initialized successfully');
+} catch (error) {
+  console.warn('[Main] Failed to initialize picking service:', error);
+}
+
 const navigationController = uilController;
 navigationController.init({
   mount: uilRoot,
@@ -1518,6 +1536,84 @@ whenReady("labels", (labelsData) => {
 
 // --- END of Toolbar UI initialization section in main.js ---
 
+// --- START of HADS-R09 Picking Integration ---
+
+// Picking performance tracking
+let pickCount = 0;
+let pickDurations = [];
+const PICK_PERFORMANCE_INTERVAL = 100; // Log stats every N picks
+
+function wirePickingPointerEvents() {
+  if (!canvas || !window.picking) {
+    console.warn('[Picking] Canvas or picking service not ready');
+    return;
+  }
+
+  // pointermove event - hover over rooms
+  canvas.addEventListener('pointermove', async (event) => {
+    const startTime = performance.now();
+
+    // Perform picking at mouse coordinates
+    const result = window.picking.pick(event.clientX, event.clientY);
+
+    // Handle miss
+    if (!result.hit || !result.roomId) {
+      clearHighlight();
+      hideSensorPanel();
+      return;
+    }
+
+    // Found a room - highlight it
+    const pickedMesh = window.roomMeshesForPicking?.find(m => m.userData.roomId === result.roomId);
+    if (pickedMesh) {
+      highlightRoomMesh(pickedMesh);
+
+      // Show sensor panel with room info
+      const roomData = {
+        displayName: pickedMesh.userData.displayName || pickedMesh.userData.roomName,
+        icon: pickedMesh.userData.icon,
+        category: pickedMesh.userData.category,
+      };
+
+      // TODO: Fetch sensor data from Home Assistant
+      // For now, show empty panel
+      showSensorPanel(result.roomId, roomData, {});
+    }
+
+    // Performance tracking
+    const duration = performance.now() - startTime;
+    pickDurations.push(duration);
+    pickCount++;
+
+    if (pickCount % PICK_PERFORMANCE_INTERVAL === 0) {
+      const avg = pickDurations.reduce((a, b) => a + b, 0) / pickDurations.length;
+      const max = Math.max(...pickDurations);
+      const min = Math.min(...pickDurations);
+      console.log(`[Picking] ${PICK_PERFORMANCE_INTERVAL} picks: avg ${avg.toFixed(3)}ms, max ${max.toFixed(3)}ms, min ${min.toFixed(3)}ms`);
+      pickDurations = [];
+    }
+  });
+
+  // click event - select room
+  canvas.addEventListener('click', async (event) => {
+    const result = window.picking.pick(event.clientX, event.clientY);
+    if (result.hit && result.roomId) {
+      console.log(`[Picking] Clicked room: ${result.roomId}`);
+      // TODO: Lock sensor panel, trigger actions, etc.
+    }
+  });
+
+  // pointerleave event - clear highlights when leaving canvas
+  canvas.addEventListener('pointerleave', () => {
+    clearHighlight();
+    hideSensorPanel();
+  });
+
+  console.log('[Picking] Pointer event listeners wired successfully');
+}
+
+// --- END of HADS-R09 Picking Integration ---
+
 // --- START of Animation Loop section in main.js ---
 
 // 🎥 Animation Loop
@@ -1567,6 +1663,14 @@ function loop() {
 // Call the loop function once to begin the animation cycle.
 function startAnimationLoop() {
   console.log("🚀 Starting animation loop...");
+
+  // Wire up picking interactions
+  try {
+    wirePickingPointerEvents();
+  } catch (error) {
+    console.warn('[Main] Failed to wire picking events:', error);
+  }
+
   loop();
 }
 
