@@ -1,414 +1,294 @@
 // roomRegistry.js
-// Auto-generated from floorplan.svg on 2025-11-12T01:01:39.135Z
+// Auto-generated from floorplan.svg on 2025-11-12T02:52:13.368Z
 // Contains center coordinates for rooms defined in the SVG.
 
 export const roomRegistry = {
-  "2": {
-    "name": "Vector_2",
+  "restrooms_exits_01": {
+    "name": "Restrooms_exits_01",
     "center": [
-      60.9,
+      61,
       20,
-      60.9
+      61
     ]
   },
-  "3": {
-    "name": "Vector_3",
+  "01": {
+    "name": "Restrooms_exits_01",
     "center": [
-      67.4,
+      61,
       20,
-      67.4
+      61
     ]
   },
-  "4": {
-    "name": "Vector_4",
+  "restrooms_exits_02": {
+    "name": "Restrooms_exits_02",
     "center": [
-      107.15,
+      121.39,
       20,
-      107.15
+      121.39
     ]
   },
-  "vector": {
-    "name": "Vector",
+  "02": {
+    "name": "Restrooms_exits_02",
     "center": [
-      113.35,
+      121.39,
       20,
-      113.35
+      121.39
     ]
   },
-  "vector_2": {
-    "name": "Vector_2",
+  "oxygen": {
+    "name": "Oxygen",
     "center": [
-      60.9,
+      37.3,
       20,
-      60.9
-    ]
-  },
-  "vector_3": {
-    "name": "Vector_3",
-    "center": [
-      67.4,
-      20,
-      67.4
-    ]
-  },
-  "vector_4": {
-    "name": "Vector_4",
-    "center": [
-      107.15,
-      20,
-      107.15
-    ]
-  },
-  "houston_a.14": {
-    "name": "Houston_A.14",
-    "center": [
-      54.75,
-      20,
-      54.75
-    ]
-  },
-  "a.14": {
-    "name": "Houston_A.14",
-    "center": [
-      54.75,
-      20,
-      54.75
-    ]
-  },
-  "bathrooms and exits": {
-    "name": "Bathrooms and Exits",
-    "center": [
-      63.6,
-      20,
-      63.6
-    ]
-  },
-  "exits": {
-    "name": "Bathrooms and Exits",
-    "center": [
-      63.6,
-      20,
-      63.6
-    ]
-  },
-  "bathrooms and exits_2": {
-    "name": "Bathrooms and Exits_2",
-    "center": [
-      124.4,
-      20,
-      124.4
-    ]
-  },
-  "kitchen": {
-    "name": "Kitchen",
-    "center": [
-      54.8,
-      20,
-      54.8
-    ]
-  },
-  "dark matter-b.14": {
-    "name": "Dark Matter-B.14",
-    "center": [
-      73.1,
-      20,
-      73.1
-    ]
-  },
-  "b.14": {
-    "name": "Dark Matter-B.14",
-    "center": [
-      73.1,
-      20,
-      73.1
-    ]
-  },
-  "library": {
-    "name": "Library",
-    "center": [
-      85.25,
-      20,
-      85.25
-    ]
-  },
-  "tet_ris_a.11_a.12": {
-    "name": "Tet_Ris_A.11_A.12",
-    "center": [
-      94.35,
-      20,
-      95.75
-    ]
-  },
-  "a.12": {
-    "name": "Tet_Ris_A.11_A.12",
-    "center": [
-      94.35,
-      20,
-      95.75
-    ]
-  },
-  "muted-a.6": {
-    "name": "Muted-A.6",
-    "center": [
-      142,
-      20,
-      142
-    ]
-  },
-  "a.6": {
-    "name": "Muted-A.6",
-    "center": [
-      142,
-      20,
-      142
-    ]
-  },
-  "jungle-a.2": {
-    "name": "Jungle-A.2",
-    "center": [
-      146.3,
-      20,
-      146.3
-    ]
-  },
-  "a.2": {
-    "name": "Jungle-A.2",
-    "center": [
-      146.3,
-      20,
-      146.3
-    ]
-  },
-  "babylon-a.1": {
-    "name": "Babylon-A.1",
-    "center": [
-      136.75,
-      20,
-      136.75
-    ]
-  },
-  "a.1": {
-    "name": "Babylon-A.1",
-    "center": [
-      136.75,
-      20,
-      136.75
-    ]
-  },
-  "a.26": {
-    "name": "A.26",
-    "center": [
-      126.15,
-      20,
-      126.15
-    ]
-  },
-  "a.25": {
-    "name": "A.25",
-    "center": [
-      115.7,
-      20,
-      115.7
-    ]
-  },
-  "a.24": {
-    "name": "A.24",
-    "center": [
-      105,
-      20,
-      105
-    ]
-  },
-  "a.23": {
-    "name": "A.23",
-    "center": [
-      88.6,
-      20,
-      88.6
-    ]
-  },
-  "b.20": {
-    "name": "B.20",
-    "center": [
-      101.1,
-      20,
-      101.1
-    ]
-  },
-  "b.19": {
-    "name": "B.19",
-    "center": [
-      94.5,
-      20,
-      94.5
-    ]
-  },
-  "b.18": {
-    "name": "B.18",
-    "center": [
-      86.75,
-      20,
-      86.75
-    ]
-  },
-  "b.17": {
-    "name": "B.17",
-    "center": [
-      79.4,
-      20,
-      79.4
-    ]
-  },
-  "desk": {
-    "name": "Desk",
-    "center": [
-      114.15,
-      20,
-      114.15
+      37.3
     ]
   },
   "lifts": {
     "name": "Lifts",
     "center": [
-      116.55,
+      108.22,
       20,
-      116.55
+      108.22
     ]
   },
-  "balcony_no_smoke": {
-    "name": "Balcony_no_smoke",
+  "hydrogen": {
+    "name": "hydrogen",
     "center": [
-      44,
+      53.51,
       20,
-      44
+      53.51
     ]
   },
-  "smoke": {
-    "name": "Balcony_no_smoke",
+  "kitchen": {
+    "name": "kitchen",
     "center": [
-      44,
+      37.3,
       20,
-      44
+      37.3
     ]
   },
-  "balcony_smokers": {
-    "name": "Balcony_smokers",
+  "library": {
+    "name": "library",
     "center": [
-      52.25,
+      79.98,
       20,
-      52.25
+      79.98
     ]
   },
-  "smokers": {
-    "name": "Balcony_smokers",
+  "b.23": {
+    "name": "b.23",
     "center": [
-      52.25,
+      96.97,
       20,
-      52.25
+      96.97
     ]
   },
-  "b.3": {
-    "name": "B.3",
+  "b.22": {
+    "name": "b.22",
     "center": [
-      139.05,
+      104.72,
       20,
-      139.05
+      104.72
     ]
   },
-  "b.4": {
-    "name": "B.4",
+  "b.19": {
+    "name": "b.19",
     "center": [
-      132.05,
+      89.41,
       20,
-      132.05
+      89.41
     ]
   },
-  "b.5": {
-    "name": "B.5",
+  "b.18": {
+    "name": "b.18",
     "center": [
-      125.4,
+      81.93,
       20,
-      125.4
+      81.93
     ]
   },
-  "b.2": {
-    "name": "B.2",
+  "b.17": {
+    "name": "b.17",
     "center": [
-      129.8,
+      74.79,
       20,
-      129.8
+      74.79
     ]
   },
-  "b.6": {
-    "name": "B.6",
+  "b.16": {
+    "name": "b.16",
     "center": [
-      123.52,
+      62.38,
       20,
-      119.85
+      62.38
     ]
   },
-  "b.7": {
-    "name": "B.7",
+  "b.15": {
+    "name": "b.15",
     "center": [
-      116.2,
+      55.61,
       20,
-      116.2
+      55.61
     ]
   },
-  "b.10": {
-    "name": "B.10",
+  "b.14": {
+    "name": "b.14",
     "center": [
-      98.35,
+      67.93,
       20,
-      98.35
+      67.93
     ]
   },
   "b.12": {
-    "name": "B.12",
+    "name": "b.12",
     "center": [
-      90.8,
+      86.43,
       20,
-      90.8
+      86.43
     ]
   },
-  "b.21": {
-    "name": "B.21",
+  "b.10": {
+    "name": "b.10",
     "center": [
-      108.3,
+      93.93,
       20,
-      108.3
+      93.93
     ]
   },
-  "maker space-a.5": {
-    "name": "Maker space-A.5",
+  "b.7": {
+    "name": "b.7",
     "center": [
-      148.4,
+      106.17,
       20,
-      148.4
+      106.17
     ]
   },
-  "a.5": {
-    "name": "Maker space-A.5",
+  "b.6": {
+    "name": "b.6",
     "center": [
-      148.4,
+      109.26,
       20,
-      148.4
+      109.26
     ]
   },
-  "hive-a.3": {
-    "name": "Hive-A.3",
+  "b.5": {
+    "name": "b.5",
     "center": [
-      162.6,
+      114.87,
       20,
-      162.6
+      114.87
+    ]
+  },
+  "b.4": {
+    "name": "b.4",
+    "center": [
+      122.53,
+      20,
+      122.53
+    ]
+  },
+  "b.3": {
+    "name": "b.3",
+    "center": [
+      129.53,
+      20,
+      129.53
+    ]
+  },
+  "b.2": {
+    "name": "b.2",
+    "center": [
+      122.94,
+      20,
+      123.32
+    ]
+  },
+  "a.26": {
+    "name": "a.26",
+    "center": [
+      122.47,
+      20,
+      122.47
+    ]
+  },
+  "a.25": {
+    "name": "a.25",
+    "center": [
+      111.83,
+      20,
+      111.83
+    ]
+  },
+  "a.24": {
+    "name": "a.24",
+    "center": [
+      101.29,
+      20,
+      101.29
+    ]
+  },
+  "a.23": {
+    "name": "a.23",
+    "center": [
+      98.58,
+      20,
+      98.58
+    ]
+  },
+  "a.14": {
+    "name": "a.14",
+    "center": [
+      56.73,
+      20,
+      56.73
+    ]
+  },
+  "a.11": {
+    "name": "a.11",
+    "center": [
+      95.93,
+      20,
+      95.93
+    ]
+  },
+  "a.6": {
+    "name": "a.6",
+    "center": [
+      141.98,
+      20,
+      141.98
+    ]
+  },
+  "makerspace": {
+    "name": "makerspace",
+    "center": [
+      148.75,
+      20,
+      148.75
     ]
   },
   "a.3": {
-    "name": "Hive-A.3",
+    "name": "a.3",
     "center": [
-      162.6,
+      159.93,
       20,
-      162.6
+      159.93
+    ]
+  },
+  "a.2": {
+    "name": "a.2",
+    "center": [
+      143.18,
+      20,
+      143.18
+    ]
+  },
+  "a.1": {
+    "name": "a.1",
+    "center": [
+      133.33,
+      20,
+      133.33
     ]
   }
 };
