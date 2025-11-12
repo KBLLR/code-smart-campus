@@ -44,6 +44,9 @@ describe('PickingService Performance', () => {
    */
   describe('Single pick latency', () => {
     it('PERF-3.1: performs single pick in < 1ms', () => {
+      // Warmup: exclude cold-start overhead (Node.js JIT)
+      picking.pick(512, 384);
+
       const start = performance.now();
       const result = picking.pick(512, 384);
       const duration = performance.now() - start;
