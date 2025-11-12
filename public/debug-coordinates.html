@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVG Coordinate Debug - Floor Plan Overlay Test</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #000;
+            font-family: monospace;
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        #info {
+            position: absolute;
+            top: 80px;
+            left: 20px;
+            color: #fff;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            line-height: 1.6;
+            max-width: 400px;
+        }
+        #controls {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            color: #fff;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 16px;
+            border-radius: 8px;
+        }
+        button {
+            background: #0ea5e9;
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            margin: 4px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        button:hover {
+            background: #0284c7;
+        }
+        button:active {
+            background: #0369a1;
+        }
+        .legend {
+            margin-top: 12px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 4px 0;
+        }
+        .color-box {
+            width: 20px;
+            height: 20px;
+            margin-right: 8px;
+            border: 1px solid #fff;
+        }
+    </style>
+</head>
+<body>
+    <div id="info">
+        <h3 style="margin-top:0">🔍 SVG Coordinate Debugger</h3>
+        <p><strong>Purpose:</strong> Verify SVG → 3D coordinate mapping</p>
+        <div class="legend">
+            <div class="legend-item">
+                <div class="color-box" style="background: #ff0000;"></div>
+                <span>Red SVG overlay (Y=0, ground)</span>
+            </div>
+            <div class="legend-item">
+                <div class="color-box" style="background: #00ff00;"></div>
+                <span>Green SVG overlay (Y=20, picking height)</span>
+            </div>
+            <div class="legend-item">
+                <div class="color-box" style="background: #0000ff;"></div>
+                <span>Blue SVG overlay (Y=40, top)</span>
+            </div>
+            <div class="legend-item">
+                <div class="color-box" style="background: #ffff00;"></div>
+                <span>Yellow spheres (picking mesh centers)</span>
+            </div>
+        </div>
+        <p style="margin-top:12px;"><strong>Views:</strong> Top | Front | Isometric</p>
+    </div>
+
+    <div id="controls">
+        <div>
+            <button onclick="toggleOverlay(0)">Toggle Red (Y=0)</button>
+            <button onclick="toggleOverlay(1)">Toggle Green (Y=20)</button>
+            <button onclick="toggleOverlay(2)">Toggle Blue (Y=40)</button>
+        </div>
+        <div style="margin-top:8px;">
+            <button onclick="toggleMarkers()">Toggle Markers</button>
+            <button onclick="toggleGrids()">Toggle Grids</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import * as THREE from '/node_modules/three/build/three.module.js';
+        import { OrbitControls } from '/node_modules/three/examples/jsm/controls/OrbitControls.js';
+        import { SVGCoordinateDebugger, setupDebugVisualization } from '/src/debug/SVGCoordinateDebugger.js';
+
+        // Scene setup
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x1a1a1a);
+        scene.fog = new THREE.FogExp2(0x1a1a1a, 0.002);
+
+        // Camera
+        const camera = new THREE.PerspectiveCamera(
+            60,
+            window.innerWidth / window.innerHeight,
+            0.1,
+            2000
+        );
+        camera.position.set(150, 100, 150);
+        camera.lookAt(0, 0, 0);
+
+        // Renderer
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        document.body.appendChild(renderer.domElement);
+
+        // Controls
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.maxPolarAngle = Math.PI / 2;
+
+        // Load room registry
+        let debugger, markers;
+
+        async function init() {
+            try {
+                // Fetch room registry
+                const registryModule = await import('/src/data/roomRegistry.js');
+                const roomRegistry = registryModule.roomRegistry;
+
+                console.log('Room Registry loaded:', Object.keys(roomRegistry).length, 'entries');
+
+                // Setup debug visualization
+                debugger = await setupDebugVisualization(
+                    scene,
+                    camera,
+                    renderer,
+                    roomRegistry
+                );
+
+                // Store references for controls
+                window.svgDebugger = debugger;
+                window.markersVisible = true;
+                window.gridsVisible = true;
+
+                console.log('✅ Debug visualization ready');
+                console.log('Use buttons to toggle overlays');
+
+            } catch (error) {
+                console.error('Failed to initialize:', error);
+                document.getElementById('info').innerHTML +=
+                    `<p style="color:#ff4444;margin-top:12px;">❌ Error: ${error.message}</p>`;
+            }
+        }
+
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+
+            // Use split view if debugger is ready
+            if (window.svgDebugger?.views) {
+                window.svgDebugger.renderSplitViews();
+            } else {
+                renderer.render(scene, camera);
+            }
+        }
+
+        // Window controls
+        window.toggleOverlay = (index) => {
+            if (window.svgDebugger) {
+                window.svgDebugger.toggleOverlay(index);
+            }
+        };
+
+        window.toggleMarkers = () => {
+            const markers = scene.getObjectByName('PickingMarkers');
+            if (markers) {
+                markers.visible = !markers.visible;
+                window.markersVisible = markers.visible;
+                console.log('Markers:', markers.visible ? 'visible' : 'hidden');
+            }
+        };
+
+        window.toggleGrids = () => {
+            scene.traverse(obj => {
+                if (obj.name.includes('Grid')) {
+                    obj.visible = !window.gridsVisible;
+                }
+            });
+            window.gridsVisible = !window.gridsVisible;
+            console.log('Grids:', window.gridsVisible ? 'visible' : 'hidden');
+        };
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+
+            // Update orthographic cameras
+            if (window.svgDebugger?.views) {
+                const aspect = window.innerWidth / window.innerHeight;
+                Object.values(window.svgDebugger.views).forEach(view => {
+                    if (view.isOrthographicCamera) {
+                        view.left = -100 * aspect;
+                        view.right = 100 * aspect;
+                        view.updateProjectionMatrix();
+                    }
+                });
+            }
+        });
+
+        // Keyboard shortcuts
+        window.addEventListener('keydown', (e) => {
+            switch(e.key) {
+                case '1': toggleOverlay(0); break;
+                case '2': toggleOverlay(1); break;
+                case '3': toggleOverlay(2); break;
+                case 'm': toggleMarkers(); break;
+                case 'g': toggleGrids(); break;
+            }
+        });
+
+        // Start
+        init();
+        animate();
+    </script>
+</body>
+</html>

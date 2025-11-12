@@ -56,36 +56,20 @@ export function createRoomMeshes(roomRegistry, entityLocations = null) {
   });
   console.log(`[RoomMeshGenerator] Found ${availableCoordinates.length} coordinates in roomRegistry`);
 
+  // Statistics for debugging
+  let foundCount = 0;
+  let syntheticCount = 0;
+
   // Create meshes from room IDs
-  let coordinateIndex = 0;
   roomIds.forEach((roomId, idx) => {
     let center = null;
 
-    // Try to find center coordinates in roomRegistry
-    // First check roomRegistry with exact key
+    // Direct lookup in roomRegistry (IDs now match exactly)
     if (roomRegistry[roomId]?.center) {
       center = roomRegistry[roomId].center;
-    }
-    // Try common variations (b.3 -> b3)
-    else if (roomRegistry[roomId.replace(/\./g, '')]?.center) {
-      center = roomRegistry[roomId.replace(/\./g, '')].center;
-    }
-    // Try search through roomRegistry
-    else {
-      for (const [key, value] of Object.entries(roomRegistry)) {
-        if (value.center && (
-          key.toLowerCase() === roomId.toLowerCase() ||
-          key.replace(/\./g, '').toLowerCase() === roomId.replace(/\./g, '').toLowerCase()
-        )) {
-          center = value.center;
-          break;
-        }
-      }
-    }
-
-    // If no coordinates found, generate synthetic position in a grid
-    if (!center) {
-      // Create a grid of positions spread across the campus
+      foundCount++;
+    } else {
+      // Only generate synthetic position if room genuinely not in registry
       const gridSize = Math.ceil(Math.sqrt(roomIds.length));
       const spacing = 30;
       const row = Math.floor(idx / gridSize);
@@ -94,7 +78,8 @@ export function createRoomMeshes(roomRegistry, entityLocations = null) {
       const y = 20; // Height
       const z = row * spacing - (gridSize * spacing) / 2;
       center = [x, y, z];
-      console.log(`[RoomMeshGenerator] Generated synthetic coordinates for ${roomId}: [${x}, ${y}, ${z}]`);
+      syntheticCount++;
+      console.warn(`[RoomMeshGenerator] No coordinates for "${roomId}" - using synthetic position [${x.toFixed(1)}, ${y}, ${z.toFixed(1)}]`);
     }
 
     // Box dimensions (approximate classroom size in meters)
@@ -125,7 +110,12 @@ export function createRoomMeshes(roomRegistry, entityLocations = null) {
     roomMeshes.push(mesh);
   });
 
-  console.log(`[RoomMeshGenerator] Created ${roomMeshes.length} room meshes out of ${roomIds.length} requested`);
+  console.log(`[RoomMeshGenerator] Created ${roomMeshes.length} room meshes: ${foundCount} with floor plan coordinates, ${syntheticCount} with synthetic positions`);
+
+  if (syntheticCount > 0) {
+    console.warn(`[RoomMeshGenerator] ⚠️  ${syntheticCount} room(s) missing from floor plan SVG. Add them to public/floorplan.svg for accurate positioning.`);
+  }
+
   return roomMeshes;
 }
 
