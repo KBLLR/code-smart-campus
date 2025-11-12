@@ -31,6 +31,8 @@ import {
 } from "@/scene.js";
 import { showSensorPanel, hideSensorPanel, disposeSensorPanel } from "@molecules/SensorPanel.js";
 import { highlightRoomMesh, clearHighlight, disposeHighlight } from "@ui/interactions/RoomHighlight.js";
+import { entityBindingRegistry } from "@shared/services/entity-binding-registry.ts";
+import { getEntities, getEntityState } from "@/ha.js";
 import { createPanelsFromData } from "@lib/PanelBuilder.js";
 import { WebSocketStatus } from "@network/WebSocketStatus.js";
 import { setHaStates, updateEntityState } from "@home_assistant/haState.js";
@@ -381,6 +383,21 @@ try {
   console.log('[Main] Picking service initialized successfully');
 } catch (error) {
   console.warn('[Main] Failed to initialize picking service:', error);
+}
+
+// HADS-R02: Initialize entity binding registry
+try {
+  const haEntities = getEntities();
+  if (haEntities && Object.keys(haEntities).length > 0) {
+    const entityIds = Object.keys(haEntities);
+    entityBindingRegistry.auto_discover(entityIds);
+    window.entityBindingRegistry = entityBindingRegistry;
+    console.log('[Main] Entity binding registry initialized with auto-discovery');
+  } else {
+    console.info('[Main] No HA entities available yet; entity binding will be initialized on first HA connection');
+  }
+} catch (error) {
+  console.warn('[Main] Entity binding initialization encountered warning:', error);
 }
 
 const navigationController = uilController;
@@ -1575,9 +1592,29 @@ function wirePickingPointerEvents() {
         category: pickedMesh.userData.category,
       };
 
-      // TODO: Fetch sensor data from Home Assistant
-      // For now, show empty panel
-      showSensorPanel(result.roomId, roomData, {});
+      // HADS-R02: Fetch sensor data from Home Assistant via entity binding
+      try {
+        const entityIds = window.entityBindingRegistry?.getEntitiesForLocation(result.roomId) || [];
+
+        if (entityIds.length > 0) {
+          // Fetch states for all entities in this room
+          const sensorData = {};
+          entityIds.forEach((entityId) => {
+            const state = getEntityState(entityId);
+            if (state) {
+              sensorData[entityId] = state;
+            }
+          });
+
+          showSensorPanel(result.roomId, roomData, sensorData);
+        } else {
+          // No entities found for this room
+          showSensorPanel(result.roomId, roomData, {});
+        }
+      } catch (error) {
+        console.warn(`[Picking] Failed to fetch sensor data for ${result.roomId}:`, error);
+        showSensorPanel(result.roomId, roomData, {});
+      }
     }
 
     // Performance tracking
