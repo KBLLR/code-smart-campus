@@ -1566,12 +1566,25 @@ function wirePickingPointerEvents() {
     return;
   }
 
+  let debugLogged = false;
+
   // pointermove event - hover over rooms
   canvas.addEventListener('pointermove', async (event) => {
     const startTime = performance.now();
 
     // Perform picking at mouse coordinates
     const result = window.picking.pick(event.clientX, event.clientY);
+
+    // Debug: Log first pick
+    if (!debugLogged) {
+      console.log('[Picking] First pick event:', {
+        clientX: event.clientX,
+        clientY: event.clientY,
+        result,
+        meshesAvailable: window.roomMeshesForPicking?.length
+      });
+      debugLogged = true;
+    }
 
     // Handle miss
     if (!result.hit || !result.roomId) {
@@ -1580,8 +1593,11 @@ function wirePickingPointerEvents() {
       return;
     }
 
+    console.log('[Picking] Hit room:', result.roomId);
+
     // Found a room - highlight it
     const pickedMesh = window.roomMeshesForPicking?.find(m => m.userData.roomId === result.roomId);
+    console.log('[Picking] Found mesh for room:', pickedMesh?.userData.roomId || 'NOT FOUND');
     if (pickedMesh) {
       highlightRoomMesh(pickedMesh);
 

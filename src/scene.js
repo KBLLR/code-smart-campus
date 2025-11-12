@@ -39,14 +39,18 @@ let picking = null;
 function initializeRoomMeshesAndPicking(camera) {
   // Create room mesh shells for picking
   roomMeshes = createRoomMeshes(roomRegistry, entityLocations);
+  console.log(`[Picking] Created ${roomMeshes.length} room meshes from registry`);
+  if (roomMeshes.length > 0) {
+    console.log(`[Picking] Sample mesh: ${roomMeshes[0].userData.roomId} at position:`, roomMeshes[0].position.toArray());
+  }
 
   // Add meshes to scene (invisible, for raycasting only)
   roomMeshes.forEach(mesh => scene.add(mesh));
+  console.log(`[Picking] Added all meshes to scene`);
 
   // Initialize picking service with camera and room meshes
   picking = new PickingService(camera, roomMeshes);
-
-  console.log(`[Picking] Initialized with ${roomMeshes.length} room meshes`);
+  console.log(`[Picking] PickingService initialized with camera at:`, camera.position.toArray(), `and ${roomMeshes.length} meshes`);
 
   return { roomMeshes, picking };
 }
