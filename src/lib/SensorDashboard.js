@@ -130,20 +130,38 @@ export class SensorDashboard {
       item.className = "sensor-dashboard__item";
       item.dataset.entityId = entityId;
 
+      const header = document.createElement("div");
+      header.className = "sensor-dashboard__item-header";
+
       const name = document.createElement("span");
       name.className = "sensor-dashboard__item-label";
       name.textContent = entry.label;
+
+      const room = document.createElement("span");
+      room.className = "sensor-dashboard__item-room";
+      room.textContent = entry.room ? `Room ${entry.room.toUpperCase()}` : "";
+
+      header.append(name, room);
+
+      const body = document.createElement("div");
+      body.className = "sensor-dashboard__item-body";
 
       const valueSpan = document.createElement("span");
       valueSpan.className = "sensor-dashboard__item-value";
       valueSpan.textContent = "—";
 
-      item.append(name, valueSpan);
+      const timestamp = document.createElement("span");
+      timestamp.className = "sensor-dashboard__item-timestamp";
+      timestamp.textContent = "—";
+
+      body.append(valueSpan, timestamp);
+      item.append(header, body);
       section.list.appendChild(item);
 
       this.sensors[entityId] = {
         element: item,
         valueSpan,
+        timestamp,
         category,
       };
     });
@@ -183,6 +201,37 @@ export class SensorDashboard {
     const unit = entity.attributes?.unit_of_measurement || "";
     const displayValue = `${value} ${unit}`.trim();
     sensorRef.valueSpan.textContent = displayValue;
+
+    // Update timestamp
+    if (sensorRef.timestamp) {
+      const lastUpdated = entity.last_updated || entity.last_changed;
+      if (lastUpdated) {
+        try {
+          const date = new Date(lastUpdated);
+          const now = new Date();
+          const diffMs = now - date;
+          const diffMins = Math.floor(diffMs / 60000);
+
+          let timeText;
+          if (diffMins < 1) {
+            timeText = "Just now";
+          } else if (diffMins < 60) {
+            timeText = `${diffMins}m ago`;
+          } else if (diffMins < 1440) {
+            const hours = Math.floor(diffMins / 60);
+            timeText = `${hours}h ago`;
+          } else {
+            timeText = date.toLocaleDateString();
+          }
+          sensorRef.timestamp.textContent = timeText;
+        } catch (e) {
+          sensorRef.timestamp.textContent = "—";
+        }
+      } else {
+        sensorRef.timestamp.textContent = "—";
+      }
+    }
+
     sensorRef.element.classList.add("updated");
     setTimeout(() => {
       sensorRef.element?.classList.remove("updated");
@@ -193,6 +242,62 @@ export class SensorDashboard {
     const normalizedKey = categoryKey || null;
     Object.values(this.sensors).forEach(({ element, category }) => {
       const shouldShow = !normalizedKey || category === normalizedKey;
+      element.style.display = shouldShow ? "flex" : "none";
+    });
+  }
+
+  filterBySearch(searchText) {
+    const query = (searchText || "").toLowerCase().trim();
+
+    Object.entries(this.sensors).forEach(([entityId, { element }]) => {
+      // Skip if already hidden by category filter
+      if (element.style.display === "none") return;
+
+      const entry = this.registry[entityId];
+      if (!entry) {
+        element.style.display = "none";
+        return;
+      }
+
+      const label = entry.label?.toLowerCase() || "";
+      const room = entry.room?.toLowerCase() || "";
+      const id = entityId.toLowerCase();
+
+      const matches =
+        !query ||
+        label.includes(query) ||
+        room.includes(query) ||
+        id.includes(query);
+
+      element.style.display = matches ? "flex" : "none";
+    });
+  }
+
+  applyFilters(categoryKey, searchText) {
+    const normalizedCategory = categoryKey || null;
+    const query = (searchText || "").toLowerCase().trim();
+
+    Object.entries(this.sensors).forEach(([entityId, { element, category }]) => {
+      const entry = this.registry[entityId];
+      if (!entry) {
+        element.style.display = "none";
+        return;
+      }
+
+      // Check category filter
+      const categoryMatches = !normalizedCategory || category === normalizedCategory;
+
+      // Check search filter
+      const label = entry.label?.toLowerCase() || "";
+      const room = entry.room?.toLowerCase() || "";
+      const id = entityId.toLowerCase();
+      const searchMatches =
+        !query ||
+        label.includes(query) ||
+        room.includes(query) ||
+        id.includes(query);
+
+      const shouldShow = categoryMatches && searchMatches;
       element.style.display = shouldShow ? "flex" : "none";
     });
   }

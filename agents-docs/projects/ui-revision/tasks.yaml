@@ -81,4 +81,11 @@ backlog:
 
 in_progress: []
 review: []
-done: []
+done:
+  - id: UIR-101
+    title: "Audit and improve sensors.html dashboard"
+    completed: 2025-11-19
+    summary: |
+      Enhanced sensors dashboard with search functionality, room location badges,
+      relative timestamps, improved visual hierarchy, and comprehensive responsive design.
+      Session log: sessions/2025-11-19-sensors-dashboard-enhancement.md

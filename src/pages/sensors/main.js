@@ -8,10 +8,12 @@ const refreshButton = document.getElementById("refresh-button");
 const categoryTitle = document.getElementById("category-title");
 const categorySubtitle = document.getElementById("category-subtitle");
 const dashboardContainer = document.getElementById("sensor-dashboard");
+const searchInput = document.getElementById("sensor-search");
 
 let wsWidget = null;
 let dashboard = null;
 let activeCategory = null;
+let searchQuery = "";
 
 function renderSummary(dashboardInstance) {
   if (!summaryList || !dashboardInstance) return;
@@ -71,7 +73,7 @@ function ensureDashboard() {
 
 function updateDashboardCategory() {
   if (!dashboard || !dashboardContainer) return;
-  dashboard.filterByCategory(activeCategory);
+  dashboard.applyFilters(activeCategory, searchQuery);
   updateCategoryHeader(activeCategory);
 }
 
@@ -139,16 +141,24 @@ function bindPipelineEvents() {
 }
 
 function bindControls() {
-  if (!refreshButton) return;
-  refreshButton.addEventListener("click", () => {
-    const snapshot = dataPipeline.getEntities();
-    const raw = snapshot
-      .map((entity) => dataPipeline.getRawEntity(entity.entityId))
-      .filter(Boolean);
-    applyInitialStates(raw);
-    refreshButton.classList.add("is-active");
-    setTimeout(() => refreshButton.classList.remove("is-active"), 300);
-  });
+  if (refreshButton) {
+    refreshButton.addEventListener("click", () => {
+      const snapshot = dataPipeline.getEntities();
+      const raw = snapshot
+        .map((entity) => dataPipeline.getRawEntity(entity.entityId))
+        .filter(Boolean);
+      applyInitialStates(raw);
+      refreshButton.classList.add("is-active");
+      setTimeout(() => refreshButton.classList.remove("is-active"), 300);
+    });
+  }
+
+  if (searchInput) {
+    searchInput.addEventListener("input", (event) => {
+      searchQuery = event.target.value;
+      updateDashboardCategory();
+    });
+  }
 }
 
 function init() {
