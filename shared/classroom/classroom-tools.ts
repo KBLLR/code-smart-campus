@@ -10,7 +10,6 @@
 import { readFileSync, readdirSync } from 'fs';
 import { join } from 'path';
 import {
-  validateClassroomDefinition,
   validateClassroomEvent,
   safeValidateClassroom,
 } from './classroom-schema';

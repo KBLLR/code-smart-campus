@@ -15,7 +15,6 @@ interface HistorySectionProps {
 }
 
 export const HistorySection: React.FC<HistorySectionProps> = ({
-  classroom,
   events,
 }) => {
   const sorted = [...events].sort(

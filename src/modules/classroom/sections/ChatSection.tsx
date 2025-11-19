@@ -129,7 +129,7 @@ export const ChatSection: React.FC<ChatSectionProps> = ({
     setIsLoading(true);
 
     try {
-      const response = await fetch(`/api/classrooms/${classroom.classroomId}/chat`, {
+      const response = await fetch(`/api/classrooms/${classroom.id}/chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

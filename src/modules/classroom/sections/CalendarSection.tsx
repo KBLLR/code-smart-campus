@@ -36,7 +36,7 @@ export const CalendarSection: React.FC<CalendarSectionProps> = ({ classroom }) =
         setIsLoading(true);
         setError(null);
 
-        const response = await fetch(`/api/classrooms/${classroom.classroomId}/calendar`);
+        const response = await fetch(`/api/classrooms/${classroom.id}/calendar`);
         if (!response.ok) {
           throw new Error(`Failed to load calendar: ${response.statusText}`);
         }
@@ -60,7 +60,7 @@ export const CalendarSection: React.FC<CalendarSectionProps> = ({ classroom }) =
     return () => {
       cancelled = true;
     };
-  }, [classroom.classroomId]);
+  }, [classroom.id]);
 
   const formatDate = (isoString: string) => {
     const date = new Date(isoString);
