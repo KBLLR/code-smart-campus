@@ -1,0 +1,92 @@
+{
+  "room_id": "b.3",
+  "layout": {
+    "template": "lounge",
+    "grid": {
+      "areas": [
+        "header header header",
+        "chat sensors presence",
+        "chat calendar history",
+        "integrations integrations integrations"
+      ],
+      "columns": "2fr 1fr 1fr",
+      "rows": "auto 2fr 1fr auto"
+    },
+    "responsive_breakpoints": {
+      "mobile": "1fr",
+      "tablet": "1fr 1fr",
+      "desktop": "2fr 1fr 1fr"
+    }
+  },
+  "sections": {
+    "header": {
+      "visible": true,
+      "show_room_icon": true,
+      "show_avatar": true,
+      "show_status_badge": true,
+      "custom_title": null
+    },
+    "presence": {
+      "visible": true,
+      "show_avatars": true,
+      "max_visible_users": 12,
+      "update_interval_ms": 5000
+    },
+    "chat": {
+      "visible": true,
+      "canvas_config": {
+        "type": "shader_ball",
+        "position": {
+          "x": 0,
+          "y": 1.5,
+          "z": 0
+        },
+        "scale": 1.2,
+        "shader_params": {
+          "shader_type": "mood_reactive",
+          "color_palette": ["#E8F4F8", "#B8E0D2", "#95C8D8", "#D4A5A5"],
+          "animation_speed": 0.6,
+          "reaction_sensitivity": 0.5
+        },
+        "avatar_params": null
+      },
+      "message_history_limit": 100,
+      "enable_voice": true,
+      "enable_room_personality": true
+    },
+    "sensors": {
+      "visible": true,
+      "display_mode": "detailed",
+      "show_historical": true,
+      "chart_time_range": "24h"
+    },
+    "calendar": {
+      "visible": true,
+      "view_mode": "week",
+      "show_upcoming_events": true,
+      "enable_quick_reserve": true
+    },
+    "history": {
+      "visible": true,
+      "display_mode": "timeline",
+      "time_range": "week",
+      "event_types": ["classes", "workshops", "study_sessions", "chats", "resources"]
+    },
+    "integrations": {
+      "visible": true,
+      "enabled_mcps": ["notion", "slack"]
+    }
+  },
+  "theme": {
+    "primary_color": "#95C8D8",
+    "accent_color": "#B8E0D2",
+    "background": "#F8FAFB",
+    "room_personality_override": true
+  },
+  "permissions": {
+    "can_chat": true,
+    "can_view_sensors": true,
+    "can_reserve": true,
+    "can_view_history": true
+  }
+}

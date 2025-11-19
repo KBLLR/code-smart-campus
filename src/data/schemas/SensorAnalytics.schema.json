@@ -1,0 +1,311 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://smart-campus.edu/schemas/sensor-analytics.json",
+  "title": "Sensor Data & Analytics",
+  "description": "Real-time sensor data, historical analysis, and room comfort metrics",
+  "type": "object",
+  "definitions": {
+    "SensorReading": {
+      "type": "object",
+      "description": "Individual sensor reading",
+      "required": ["sensor_id", "sensor_type", "value", "timestamp"],
+      "properties": {
+        "sensor_id": {
+          "type": "string",
+          "description": "Home Assistant entity ID or unique sensor identifier"
+        },
+        "sensor_type": {
+          "type": "string",
+          "enum": [
+            "temperature",
+            "humidity",
+            "co2",
+            "air_quality",
+            "voc",
+            "pm25",
+            "pm10",
+            "illumination",
+            "occupancy",
+            "noise",
+            "pressure"
+          ]
+        },
+        "value": {
+          "oneOf": [
+            { "type": "number" },
+            { "type": "string" },
+            { "type": "boolean" }
+          ],
+          "description": "Sensor reading value"
+        },
+        "unit": {
+          "type": "string",
+          "description": "Unit of measurement (°C, %, ppm, lux, dB, etc.)",
+          "examples": ["°C", "°F", "%", "ppm", "lux", "dB", "µg/m³", "hPa"]
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Reading timestamp (ISO 8601)"
+        },
+        "quality": {
+          "type": "string",
+          "enum": ["excellent", "good", "fair", "poor", "unknown"],
+          "description": "Data quality indicator"
+        }
+      }
+    },
+    "RoomSensorSnapshot": {
+      "type": "object",
+      "description": "Current sensor state for a room",
+      "required": ["room_id", "timestamp", "readings"],
+      "properties": {
+        "room_id": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "readings": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/SensorReading" }
+        },
+        "comfort_score": {
+          "type": "object",
+          "description": "Derived comfort metrics",
+          "properties": {
+            "overall": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100,
+              "description": "Overall comfort score (0-100)"
+            },
+            "temperature_comfort": { "type": "number", "minimum": 0, "maximum": 100 },
+            "air_quality_comfort": { "type": "number", "minimum": 0, "maximum": 100 },
+            "lighting_comfort": { "type": "number", "minimum": 0, "maximum": 100 },
+            "noise_comfort": { "type": "number", "minimum": 0, "maximum": 100 }
+          }
+        },
+        "alerts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "severity": {
+                "type": "string",
+                "enum": ["info", "warning", "critical"]
+              },
+              "sensor_type": { "type": "string" },
+              "message": { "type": "string" },
+              "threshold_exceeded": { "type": "boolean" }
+            }
+          }
+        }
+      }
+    },
+    "HistoricalDataRequest": {
+      "type": "object",
+      "description": "Request for historical sensor data",
+      "required": ["room_id", "time_range"],
+      "properties": {
+        "room_id": { "type": "string" },
+        "sensor_types": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Filter by specific sensor types (empty = all)"
+        },
+        "time_range": {
+          "type": "object",
+          "required": ["start", "end"],
+          "properties": {
+            "start": { "type": "string", "format": "date-time" },
+            "end": { "type": "string", "format": "date-time" }
+          }
+        },
+        "aggregation": {
+          "type": "string",
+          "enum": ["raw", "1min", "5min", "15min", "1hour", "1day"],
+          "default": "5min",
+          "description": "Data aggregation interval"
+        },
+        "statistics": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["min", "max", "avg", "median", "stddev", "count"]
+          },
+          "description": "Statistical aggregations to compute"
+        }
+      }
+    },
+    "HistoricalDataResponse": {
+      "type": "object",
+      "properties": {
+        "room_id": { "type": "string" },
+        "time_range": {
+          "type": "object",
+          "properties": {
+            "start": { "type": "string", "format": "date-time" },
+            "end": { "type": "string", "format": "date-time" }
+          }
+        },
+        "series": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "sensor_type": { "type": "string" },
+              "sensor_id": { "type": "string" },
+              "unit": { "type": "string" },
+              "data_points": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "timestamp": { "type": "string", "format": "date-time" },
+                    "value": { "type": "number" },
+                    "min": { "type": "number" },
+                    "max": { "type": "number" },
+                    "avg": { "type": "number" },
+                    "median": { "type": "number" },
+                    "stddev": { "type": "number" },
+                    "count": { "type": "integer" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "UsageAnalytics": {
+      "type": "object",
+      "description": "Room usage patterns and statistics",
+      "required": ["room_id", "analysis_period"],
+      "properties": {
+        "room_id": { "type": "string" },
+        "analysis_period": {
+          "type": "object",
+          "properties": {
+            "start": { "type": "string", "format": "date-time" },
+            "end": { "type": "string", "format": "date-time" }
+          }
+        },
+        "occupancy_statistics": {
+          "type": "object",
+          "properties": {
+            "total_hours_occupied": { "type": "number" },
+            "total_hours_available": { "type": "number" },
+            "utilization_rate": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100,
+              "description": "Percentage of time room was occupied"
+            },
+            "peak_occupancy_time": { "type": "string", "pattern": "^([01]?[0-9]|2[0-3]):[0-5][0-9]$" },
+            "average_session_duration_minutes": { "type": "number" }
+          }
+        },
+        "occupancy_heatmap": {
+          "type": "object",
+          "description": "Occupancy by day of week and hour",
+          "patternProperties": {
+            "^(monday|tuesday|wednesday|thursday|friday|saturday|sunday)$": {
+              "type": "array",
+              "items": { "type": "number" },
+              "minItems": 24,
+              "maxItems": 24,
+              "description": "Occupancy probability per hour (0-100)"
+            }
+          }
+        },
+        "comfort_trends": {
+          "type": "object",
+          "properties": {
+            "average_temperature": { "type": "number" },
+            "average_humidity": { "type": "number" },
+            "average_co2": { "type": "number" },
+            "average_air_quality_score": { "type": "number" },
+            "comfort_violations": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "metric": { "type": "string" },
+                  "count": { "type": "integer" },
+                  "total_duration_minutes": { "type": "number" }
+                }
+              }
+            }
+          }
+        },
+        "typical_activity_profile": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "time_of_day": {
+                "type": "string",
+                "enum": ["early_morning", "morning", "midday", "afternoon", "evening", "night"]
+              },
+              "typical_occupancy": {
+                "type": "string",
+                "enum": ["empty", "low", "medium", "high", "full"]
+              },
+              "typical_activity": { "type": "string" },
+              "average_duration_minutes": { "type": "number" }
+            }
+          }
+        }
+      }
+    },
+    "SensorDashboardConfig": {
+      "type": "object",
+      "description": "Configuration for sensor data visualization in classroom view",
+      "properties": {
+        "display_mode": {
+          "type": "string",
+          "enum": ["compact", "detailed", "chart", "grid"],
+          "default": "detailed"
+        },
+        "visible_sensors": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Which sensor types to display"
+        },
+        "chart_config": {
+          "type": "object",
+          "properties": {
+            "time_range": {
+              "type": "string",
+              "enum": ["1h", "6h", "24h", "7d", "30d"],
+              "default": "24h"
+            },
+            "chart_type": {
+              "type": "string",
+              "enum": ["line", "area", "bar", "scatter"],
+              "default": "line"
+            },
+            "show_thresholds": { "type": "boolean", "default": true },
+            "show_comfort_zones": { "type": "boolean", "default": true }
+          }
+        },
+        "alert_thresholds": {
+          "type": "object",
+          "description": "Custom alert thresholds for this room",
+          "properties": {
+            "temperature_max": { "type": "number" },
+            "temperature_min": { "type": "number" },
+            "humidity_max": { "type": "number" },
+            "co2_warning": { "type": "number" },
+            "co2_critical": { "type": "number" },
+            "noise_max": { "type": "number" }
+          }
+        },
+        "update_interval_seconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 300,
+          "default": 30,
+          "description": "How often to refresh sensor data"
+        }
+      }
+    }
+  }
+}

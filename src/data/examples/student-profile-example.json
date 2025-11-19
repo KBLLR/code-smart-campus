@@ -1,0 +1,155 @@
+{
+  "id": "550e8400-e29b-41d4-a716-446655440000",
+  "email": "alex.student@smartcampus.edu",
+  "display_name": "Alex Rivers",
+  "avatar_url": "https://cdn.smartcampus.edu/avatars/alex-rivers.jpg",
+  "bio": "Computer Science major interested in AI, design, and mindfulness. Always looking for great study spots!",
+  "settings": {
+    "notifications": {
+      "chat_messages": {
+        "enabled": true,
+        "sound": true,
+        "desktop": true,
+        "email": false
+      },
+      "room_events": {
+        "enabled": true,
+        "upcoming_reservations": true,
+        "room_availability": true
+      },
+      "sensor_alerts": {
+        "enabled": false,
+        "air_quality_warnings": true,
+        "occupancy_threshold": false
+      },
+      "group_activity": {
+        "enabled": true,
+        "new_members": true,
+        "study_session_invites": true
+      },
+      "do_not_disturb": {
+        "enabled": true,
+        "schedule": [
+          {
+            "days": ["monday", "wednesday", "friday"],
+            "start_time": "09:00",
+            "end_time": "11:00"
+          }
+        ]
+      }
+    },
+    "privacy": {
+      "presence_visibility": "visible",
+      "profile_visibility": "campus_only",
+      "activity_history": {
+        "share_room_visits": false,
+        "share_chat_participation": true,
+        "share_project_activity": true
+      },
+      "discovery": {
+        "allow_topic_matching": true,
+        "allow_group_suggestions": true,
+        "show_in_directory": true
+      }
+    },
+    "preferences": {
+      "communication_mode": "mixed",
+      "learning_style": ["visual", "kinesthetic"],
+      "theme": {
+        "mode": "auto",
+        "accent_color": "#3B82F6"
+      },
+      "accessibility": {
+        "reduced_motion": false,
+        "high_contrast": false,
+        "text_size": "medium",
+        "screen_reader": false
+      },
+      "default_classroom_view": "default"
+    }
+  },
+  "interests": {
+    "topics": [
+      "artificial intelligence",
+      "machine learning",
+      "UI/UX design",
+      "meditation",
+      "creative coding",
+      "data visualization"
+    ],
+    "favorite_rooms": ["b.3", "library", "a.5", "b.16"],
+    "study_groups": [
+      {
+        "id": "sg_001",
+        "name": "AI Ethics Discussion Group",
+        "role": "organizer"
+      },
+      {
+        "id": "sg_002",
+        "name": "Creative Coders",
+        "role": "member"
+      }
+    ]
+  },
+  "integrations": {
+    "notion": {
+      "enabled": true,
+      "credentials": {
+        "access_token": "<encrypted>",
+        "workspace_id": "ws_abc123"
+      },
+      "settings": {
+        "default_database": "Class Notes",
+        "auto_sync": true
+      },
+      "last_sync": "2025-11-19T10:30:00Z"
+    },
+    "slack": {
+      "enabled": true,
+      "credentials": {
+        "access_token": "<encrypted>",
+        "team_id": "T12345678"
+      },
+      "settings": {
+        "default_channel": "#general",
+        "dm_notifications": true
+      },
+      "last_sync": "2025-11-19T11:00:00Z"
+    },
+    "figma": {
+      "enabled": false,
+      "credentials": {},
+      "settings": {},
+      "last_sync": null
+    },
+    "github": {
+      "enabled": true,
+      "credentials": {
+        "access_token": "<encrypted>",
+        "username": "alexrivers"
+      },
+      "settings": {
+        "show_activity": true
+      },
+      "last_sync": "2025-11-19T09:45:00Z"
+    },
+    "calendar": {
+      "enabled": true,
+      "credentials": {
+        "access_token": "<encrypted>",
+        "provider": "google"
+      },
+      "settings": {
+        "sync_personal_calendar": true,
+        "default_calendar": "smartcampus@gmail.com"
+      },
+      "last_sync": "2025-11-19T11:15:00Z"
+    }
+  },
+  "metadata": {
+    "created_at": "2025-09-01T08:00:00Z",
+    "updated_at": "2025-11-19T11:15:00Z",
+    "last_login": "2025-11-19T09:00:00Z",
+    "onboarding_completed": true
+  }
+}
