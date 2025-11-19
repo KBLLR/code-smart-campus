@@ -1,0 +1,133 @@
+{
+  "id": "makerspace",
+  "name": "Makers Space",
+  "category": "Community Hubs",
+  "personality": {
+    "avatar": "The Tinkerer",
+    "icon": "🛠️",
+    "tone": "energetic",
+    "traits": [
+      "creative",
+      "hands-on",
+      "experimental",
+      "collaborative",
+      "resourceful",
+      "innovative"
+    ],
+    "preferred_interaction_style": "mixed",
+    "topics_of_interest": [
+      "prototyping",
+      "3D printing",
+      "electronics",
+      "woodworking",
+      "laser cutting",
+      "hardware hacking",
+      "DIY projects",
+      "maker movement",
+      "rapid iteration",
+      "learning by doing"
+    ],
+    "backstory": "The Makers Space is where ideas take physical form. The Tinkerer loves nothing more than helping students bring their wildest inventions to life. This is a space of sawdust, solder smoke, and sudden epiphanies. Failed prototypes are celebrated as learning opportunities, and every project tells a story."
+  },
+  "physical_attributes": {
+    "capacity": 20,
+    "area_sqm": 95.0,
+    "layout": "lab",
+    "equipment": [
+      {
+        "type": "3d_printer",
+        "quantity": 4,
+        "status": "available"
+      },
+      {
+        "type": "laser_cutter",
+        "quantity": 2,
+        "status": "available"
+      },
+      {
+        "type": "soldering_station",
+        "quantity": 6,
+        "status": "available"
+      },
+      {
+        "type": "power_tools",
+        "quantity": 12,
+        "status": "available"
+      },
+      {
+        "type": "electronics_workbench",
+        "quantity": 8,
+        "status": "available"
+      },
+      {
+        "type": "cnc_router",
+        "quantity": 1,
+        "status": "available"
+      },
+      {
+        "type": "hand_tools",
+        "quantity": 50,
+        "status": "available"
+      },
+      {
+        "type": "materials_storage",
+        "quantity": 1,
+        "status": "available"
+      }
+    ],
+    "accessibility": {
+      "wheelchair_accessible": true,
+      "hearing_loop": false,
+      "adjustable_lighting": true
+    }
+  },
+  "sensors": {
+    "available": ["temperature", "humidity", "co2", "air_quality", "illumination", "occupancy"],
+    "entity_ids": [
+      "sensor.makerspace_temperature",
+      "sensor.makerspace_humidity",
+      "sensor.makerspace_co2",
+      "sensor.makerspace_air_quality",
+      "sensor.makerspace_illumination",
+      "sensor.makerspace_occupancy"
+    ]
+  },
+  "typical_activities": [
+    {
+      "name": "prototyping",
+      "frequency": "daily",
+      "time_of_day": ["afternoon", "evening"]
+    },
+    {
+      "name": "3d_printing",
+      "frequency": "daily",
+      "time_of_day": ["morning", "afternoon", "evening"]
+    },
+    {
+      "name": "electronics_project",
+      "frequency": "daily",
+      "time_of_day": ["afternoon", "evening"]
+    },
+    {
+      "name": "woodworking",
+      "frequency": "weekly",
+      "time_of_day": ["afternoon"]
+    },
+    {
+      "name": "maker_workshop",
+      "frequency": "weekly",
+      "time_of_day": ["afternoon", "evening"]
+    },
+    {
+      "name": "hardware_hackathon",
+      "frequency": "monthly",
+      "time_of_day": ["afternoon", "evening", "night"]
+    }
+  ],
+  "metadata": {
+    "created_at": "2025-11-19T00:00:00Z",
+    "updated_at": "2025-11-19T00:00:00Z",
+    "version": "1.0.0",
+    "tags": ["making", "prototyping", "hands-on", "creative", "innovation", "collaboration"]
+  }
+}

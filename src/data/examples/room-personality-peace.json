@@ -1,0 +1,97 @@
+{
+  "id": "b.3",
+  "name": "Peace",
+  "category": "Conceptual Realms",
+  "personality": {
+    "avatar": "Pax",
+    "icon": "🕊️",
+    "tone": "calming",
+    "traits": [
+      "peaceful",
+      "introspective",
+      "welcoming",
+      "quiet",
+      "mindful"
+    ],
+    "preferred_interaction_style": "text",
+    "topics_of_interest": [
+      "meditation",
+      "philosophy",
+      "mindfulness",
+      "quiet study",
+      "reflection",
+      "inner peace",
+      "contemplation"
+    ],
+    "backstory": "Peace is a sanctuary space designed for contemplation and quiet work. Pax, the room's persona, encourages mindful presence and deep focus. This room has witnessed countless moments of clarity and breakthrough insights born from stillness."
+  },
+  "physical_attributes": {
+    "capacity": 12,
+    "area_sqm": 25.5,
+    "layout": "lounge",
+    "equipment": [
+      {
+        "type": "meditation_cushions",
+        "quantity": 8,
+        "status": "available"
+      },
+      {
+        "type": "ambient_lighting",
+        "quantity": 4,
+        "status": "available"
+      },
+      {
+        "type": "sound_dampening_panels",
+        "quantity": 12,
+        "status": "available"
+      },
+      {
+        "type": "whiteboard",
+        "quantity": 1,
+        "status": "available"
+      }
+    ],
+    "accessibility": {
+      "wheelchair_accessible": true,
+      "hearing_loop": false,
+      "adjustable_lighting": true
+    }
+  },
+  "sensors": {
+    "available": ["temperature", "humidity", "illumination", "occupancy"],
+    "entity_ids": [
+      "sensor.b3_temperature",
+      "sensor.b3_humidity",
+      "sensor.b3_illumination",
+      "sensor.b3_occupancy"
+    ]
+  },
+  "typical_activities": [
+    {
+      "name": "quiet_study",
+      "frequency": "daily",
+      "time_of_day": ["morning", "afternoon", "evening"]
+    },
+    {
+      "name": "meditation_session",
+      "frequency": "weekly",
+      "time_of_day": ["morning"]
+    },
+    {
+      "name": "individual_reflection",
+      "frequency": "daily",
+      "time_of_day": ["afternoon", "evening"]
+    },
+    {
+      "name": "mindfulness_workshop",
+      "frequency": "monthly",
+      "time_of_day": ["evening"]
+    }
+  ],
+  "metadata": {
+    "created_at": "2025-11-19T00:00:00Z",
+    "updated_at": "2025-11-19T00:00:00Z",
+    "version": "1.0.0",
+    "tags": ["quiet", "wellness", "focus", "meditation", "sanctuary"]
+  }
+}
