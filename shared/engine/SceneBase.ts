@@ -235,4 +235,13 @@ export abstract class SceneBase implements ISceneBase {
     // Subclasses override this
     return {};
   }
+
+  /**
+   * Get room meshes for picking/interaction (optional, implemented by scenes with rooms)
+   * @returns Map of room key to mesh, or null if scene has no rooms
+   */
+  getRoomMeshes(): Map<string, THREE.Mesh> | null {
+    // Subclasses can override this if they have room meshes
+    return null;
+  }
 }

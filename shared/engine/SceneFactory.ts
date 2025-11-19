@@ -104,6 +104,9 @@ export class SceneFactory implements ISceneFactory {
     nextScene.activate();
     this.activeScene = nextScene;
 
+    // Update picking service with scene's room meshes (if available)
+    this.updatePickingService(nextScene);
+
     // Emit scene-activated event
     this.onSceneActivated(sceneKey);
   }
@@ -207,5 +210,36 @@ export class SceneFactory implements ISceneFactory {
     const event = new CustomEvent("scene-activated", { detail: { sceneKey } });
     document.dispatchEvent(event);
     console.log(`[SceneFactory] Scene activated event dispatched: ${sceneKey}`);
+  }
+
+  /**
+   * Update picking service with room meshes from the newly activated scene
+   */
+  private updatePickingService(scene: SceneBase): void {
+    // Check if picking service exists on window
+    const picking = (window as any).picking;
+    if (!picking || typeof picking.setRoomMeshes !== 'function') {
+      console.log('[SceneFactory] Picking service not available, skipping mesh update');
+      return;
+    }
+
+    // Get room meshes from scene (if scene has them)
+    const roomMeshes = scene.getRoomMeshes();
+
+    if (roomMeshes && roomMeshes.size > 0) {
+      // Convert Map to Array for picking service
+      const meshArray = Array.from(roomMeshes.values());
+      picking.setRoomMeshes(meshArray);
+      console.log(`[SceneFactory] Updated picking service with ${meshArray.length} room meshes from ${scene.sceneKey}`);
+    } else {
+      // Scene has no room meshes, fall back to legacy meshes
+      const legacyMeshes = (window as any).roomMeshesForPicking;
+      if (legacyMeshes) {
+        picking.setRoomMeshes(legacyMeshes);
+        console.log(`[SceneFactory] Scene has no room meshes, using legacy meshes`);
+      } else {
+        console.log(`[SceneFactory] No room meshes available for picking`);
+      }
+    }
   }
 }
