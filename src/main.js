@@ -66,6 +66,9 @@ import {
 
 // --- Global Variables / State ---
 
+// Clock for scene factory delta time
+const clock = new THREE.Clock();
+
 let initialStatesReceived = false;
 const initialStatesProcessedSignal = createSignal(); // Signal for when initial states are done
 window.roomMeshes = {};
@@ -375,6 +378,22 @@ const setup = new Setup(canvas, () => {
 setup.setEnvMap("/hdri/night1k.hdr");
 materialRegistry.init({ renderer: setup.re });
 attachSetup(setup);
+
+// Window resize handler for scene factory
+window.addEventListener('resize', () => {
+  const width = window.innerWidth;
+  const height = window.innerHeight;
+
+  // Existing resize logic (handled by Setup, but we ensure camera aspect is updated)
+  setup.re.setSize(width, height);
+  setup.cam.aspect = width / height;
+  setup.cam.updateProjectionMatrix();
+
+  // Resize scene factory if active
+  if (window.sceneFactory) {
+    window.sceneFactory.onWindowResize(width, height);
+  }
+});
 
 // HADS-R09: Initialize picking service (async)
 (async () => {
@@ -1705,6 +1724,9 @@ function loop() {
 
   const frameStart = performance?.now?.() ?? Date.now();
 
+  // Calculate delta time for scene factory
+  const deltaTime = clock.getDelta();
+
   // --- Update Time-Dependent Controls ---
   setup.update?.();
 
@@ -1712,19 +1734,30 @@ function loop() {
   // Update the Stats.js panel (FPS, ms, etc.).
   setup.stats?.update();
 
-  // --- Update Dynamic Scene Elements ---
-  // Example: Update label positions/scaling relative to the camera.
-  // Check if labelManager exists and has the update method.
-  if (labelManager?.useSprites) {
-    labelManager.updateLabelPositions(setup.cam);
+  // --- Update Scene Factory ---
+  // Update active scene if scene factory exists
+  if (window.sceneFactory) {
+    window.sceneFactory.update(deltaTime);
   }
-  hudManager?.update(setup.cam);
+
+  // --- Update Dynamic Scene Elements ---
+  // Use active scene camera if available, otherwise fall back to setup.cam
+  const activeCamera = window.sceneFactory?.getActive()?.camera || setup.cam;
+
+  // Update label positions/scaling relative to the active camera
+  if (labelManager?.useSprites) {
+    labelManager.updateLabelPositions(activeCamera);
+  }
+  hudManager?.update(activeCamera);
   // Add other per-frame updates here if needed (e.g., animations).
 
   // --- Render the Scene ---
   if (debugMode && svgDebugger?.views) {
     // Use split view rendering when debug mode is active
     svgDebugger.renderSplitViews();
+  } else if (window.sceneFactory && window.sceneFactory.getActive()) {
+    // Render scene factory's active scene
+    window.sceneFactory.render();
   } else if (postProcessor) {
     postProcessor.updateCamera(setup.cam);
     postProcessor.updateScene(scene);

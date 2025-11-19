@@ -139,6 +139,15 @@ export abstract class SceneBase implements ISceneBase {
   // ============================================================================
 
   protected setupCamera(cameraConfig: CameraConfig): void {
+    // Check if external camera provided (e.g., setup.cam from main.js)
+    // This allows scenes to share the main camera and OrbitControls
+    if ((window as any).setup?.cam) {
+      this.camera = (window as any).setup.cam;
+      console.log(`[${this.sceneKey}] Using shared camera from setup.cam`);
+      return;
+    }
+
+    // Fallback: create scene-specific camera
     let camera: THREE.Camera;
 
     if (cameraConfig.type === "perspective") {
@@ -165,6 +174,8 @@ export abstract class SceneBase implements ISceneBase {
     camera.lookAt(...cameraConfig.lookAt);
     this.camera = camera;
     this.group.add(camera);
+
+    console.log(`[${this.sceneKey}] Created scene-specific camera`);
   }
 
   protected setupLights(lightsConfig: LightConfig): void {
@@ -223,5 +234,14 @@ export abstract class SceneBase implements ISceneBase {
   > {
     // Subclasses override this
     return {};
+  }
+
+  /**
+   * Get room meshes for picking/interaction (optional, implemented by scenes with rooms)
+   * @returns Map of room key to mesh, or null if scene has no rooms
+   */
+  getRoomMeshes(): Map<string, THREE.Mesh> | null {
+    // Subclasses can override this if they have room meshes
+    return null;
   }
 }
