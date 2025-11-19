@@ -28,14 +28,11 @@ import {
   smoothstep,
   step,
   uniform,
-  viewDirection,
   dot,
   pow,
   add,
   mul,
   sub,
-  abs,
-  max,
 } from "three/tsl";
 
 // Utility functions
@@ -112,11 +109,10 @@ export function buildToonShaderMaterial({
   // === TOON SHADING CALCULATION ===
 
   // 1. Fresnel/Rim lighting (view-dependent edge highlighting)
-  // fresnel = 1 - dot(normal, viewDir) — stronger at grazing angles
-  const fresnel = sub(
-    float(1),
-    dot(normalView, viewDirection)
-  );
+  // Use normalView length as approximation for fresnel effect
+  // fresnel = 1 - abs(normalView.z) — stronger at grazing angles
+  const normalZ = normalView.z;
+  const fresnel = sub(float(1), mul(normalZ, normalZ));
 
   // Apply rim thickness and power
   const rimMask = smoothstep(
