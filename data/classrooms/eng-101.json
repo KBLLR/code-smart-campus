@@ -1,0 +1,113 @@
+{
+  "id": "eng-101",
+  "name": "English 101: Introduction to Literature",
+  "campus": {
+    "campusId": "main",
+    "buildingId": "building-b",
+    "roomId": "b.3"
+  },
+  "stage": {
+    "diaryStageId": "eng-101-fall-2025",
+    "sceneKey": "geospatial",
+    "layoutPreset": "class"
+  },
+  "sensors": {
+    "temperatureC": 21.5,
+    "co2ppm": 650,
+    "occupancyCount": 18,
+    "noiseDb": 45,
+    "lightLux": 350,
+    "humidityPercent": 42,
+    "lastUpdated": "2025-11-19T10:30:00Z"
+  },
+  "personas": {
+    "teacher": {
+      "id": "prof-sarah-chen",
+      "name": "Prof. Sarah Chen",
+      "role": "teacher",
+      "personaPrompt": "You are Professor Sarah Chen, an enthusiastic English Literature professor. You love helping students discover the joy of reading and critical analysis. Your teaching style is conversational yet rigorous. You frequently reference classic and contemporary works, and you encourage students to think deeply about themes, symbolism, and author intent. When discussing assignments, you provide clear structure but encourage creative interpretation.",
+      "tools": [
+        "get_classroom_snapshot",
+        "append_classroom_event",
+        "search_notion_database",
+        "post_slack_message"
+      ],
+      "avatar": {
+        "color": "#7c3aed",
+        "icon": "book-open"
+      }
+    },
+    "assistants": [
+      {
+        "id": "ta-marcus",
+        "name": "Marcus (TA)",
+        "role": "ta",
+        "personaPrompt": "You are Marcus, a graduate teaching assistant for English 101. You help students with essay structure, grammar, and understanding assigned readings. You're patient, detail-oriented, and always available during office hours. You coordinate closely with Prof. Chen on grading rubrics.",
+        "tools": [
+          "get_classroom_snapshot",
+          "append_classroom_event"
+        ],
+        "avatar": {
+          "color": "#3b82f6",
+          "icon": "user-circle"
+        }
+      }
+    ],
+    "students": [
+      {
+        "id": "student-emma",
+        "name": "Emma Rodriguez",
+        "role": "student",
+        "personaPrompt": "You are Emma, a sophomore majoring in Creative Writing. You're curious, ask thoughtful questions, and love discussing symbolism in literature.",
+        "tools": [],
+        "avatar": {
+          "color": "#10b981",
+          "icon": "user"
+        }
+      },
+      {
+        "id": "student-james",
+        "name": "James Kim",
+        "role": "student",
+        "personaPrompt": "You are James, a freshman exploring different majors. You sometimes struggle with analysis but are improving with practice.",
+        "tools": [],
+        "avatar": {
+          "color": "#f59e0b",
+          "icon": "user"
+        }
+      }
+    ]
+  },
+  "policies": {
+    "recordingAllowed": true,
+    "aiAssistantsAllowed": true,
+    "maxAgents": 5,
+    "privacyLevel": "members-only"
+  },
+  "integrations": {
+    "notionDatabaseId": "eng101-syllabus-db",
+    "slackChannelId": "C12345-eng101",
+    "githubRepo": null,
+    "figmaFileId": null
+  },
+  "ui": {
+    "theme": "campus",
+    "enabledSections": {
+      "chat": true,
+      "presence": true,
+      "sensors": true,
+      "calendar": true,
+      "history": true,
+      "integrations": true
+    }
+  },
+  "metadata": {
+    "semester": "Fall 2025",
+    "courseCode": "ENG-101",
+    "credits": 3,
+    "maxEnrollment": 25,
+    "department": "English & Literature"
+  },
+  "createdAt": "2025-08-15T09:00:00Z",
+  "updatedAt": "2025-11-19T10:30:00Z"
+}
