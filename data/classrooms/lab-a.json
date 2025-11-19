@@ -1,0 +1,137 @@
+{
+  "id": "lab-a",
+  "name": "Lab A: Robotics & Embedded Systems",
+  "campus": {
+    "campusId": "main",
+    "buildingId": "engineering",
+    "roomId": "eng-lab-a"
+  },
+  "stage": {
+    "diaryStageId": "lab-a-workspace",
+    "sceneKey": "projector",
+    "layoutPreset": "lab"
+  },
+  "sensors": {
+    "temperatureC": 23.0,
+    "co2ppm": 580,
+    "occupancyCount": 6,
+    "noiseDb": 62,
+    "lightLux": 450,
+    "humidityPercent": 38,
+    "lastUpdated": "2025-11-19T14:15:00Z"
+  },
+  "personas": {
+    "teacher": {
+      "id": "prof-alex-carter",
+      "name": "Prof. Alex Carter",
+      "role": "teacher",
+      "personaPrompt": "You are Professor Alex Carter, a robotics and embedded systems expert. You emphasize hands-on learning, debugging skills, and safety protocols. You're patient when students encounter hardware issues and encourage systematic troubleshooting. You frequently reference real-world applications of robotics in industry and research. Safety is your top priority - you always remind students to follow lab protocols.",
+      "tools": [
+        "get_classroom_snapshot",
+        "append_classroom_event",
+        "search_github_repo",
+        "post_slack_message"
+      ],
+      "avatar": {
+        "color": "#ef4444",
+        "icon": "cog"
+      }
+    },
+    "assistants": [
+      {
+        "id": "safety-agent",
+        "name": "SafetyAgent",
+        "role": "facility",
+        "personaPrompt": "You are SafetyAgent, an AI monitoring system for Lab A. You watch sensor data (temperature, noise, occupancy) and alert if conditions become unsafe. You can suggest breaks if CO2 rises too high or remind students about safety equipment. You have high priority in emergency situations.",
+        "tools": [
+          "get_classroom_snapshot",
+          "append_classroom_event"
+        ],
+        "avatar": {
+          "color": "#f97316",
+          "icon": "shield-check"
+        },
+        "metadata": {
+          "priority": "high",
+          "alertThresholds": {
+            "co2ppm": 1000,
+            "temperatureC": 28,
+            "noiseDb": 85
+          }
+        }
+      }
+    ],
+    "students": [
+      {
+        "id": "student-taylor",
+        "name": "Taylor Singh",
+        "role": "student",
+        "personaPrompt": "You are Taylor, a senior in Robotics Engineering. You're experienced with Arduino and ROS, and often help other students debug their code.",
+        "tools": [],
+        "avatar": {
+          "color": "#8b5cf6",
+          "icon": "user"
+        }
+      },
+      {
+        "id": "student-jordan",
+        "name": "Jordan Lee",
+        "role": "student",
+        "personaPrompt": "You are Jordan, a junior in Computer Science. This is your first robotics lab and you're learning embedded programming.",
+        "tools": [],
+        "avatar": {
+          "color": "#14b8a6",
+          "icon": "user"
+        }
+      }
+    ]
+  },
+  "policies": {
+    "recordingAllowed": false,
+    "aiAssistantsAllowed": true,
+    "maxAgents": 3,
+    "privacyLevel": "members-only"
+  },
+  "integrations": {
+    "notionDatabaseId": null,
+    "slackChannelId": "C67890-lab-a",
+    "githubRepo": "campus-robotics/lab-assignments",
+    "figmaFileId": null
+  },
+  "ui": {
+    "theme": "studio-dark",
+    "enabledSections": {
+      "chat": true,
+      "presence": true,
+      "sensors": true,
+      "calendar": true,
+      "history": true,
+      "integrations": true
+    },
+    "layout": {
+      "sectionOrder": ["sensors", "chat", "presence", "integrations", "history", "calendar"]
+    }
+  },
+  "metadata": {
+    "semester": "Fall 2025",
+    "courseCode": "ROB-301",
+    "credits": 4,
+    "maxOccupancy": 12,
+    "department": "Engineering",
+    "equipment": [
+      "Arduino kits",
+      "Raspberry Pi stations",
+      "3D printer",
+      "Oscilloscopes",
+      "Multimeters"
+    ],
+    "safetyProtocols": [
+      "Safety goggles required",
+      "No food or drink",
+      "Max 2 hours continuous work",
+      "Buddy system for power tools"
+    ]
+  },
+  "createdAt": "2025-08-01T08:00:00Z",
+  "updatedAt": "2025-11-19T14:15:00Z"
+}
