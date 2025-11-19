@@ -3,6 +3,7 @@ import tailwindcss from "@tailwindcss/vite";
 import path from "path";
 import dotenv from "dotenv";
 import labelRegistryDevPlugin from "./vite.server.js";
+import classroomApiPlugin from "./vite.classroom-api.js";
 
 dotenv.config();
 
@@ -64,7 +65,7 @@ export default defineConfig({
       },
     },
   },
-  plugins: [labelRegistryDevPlugin(), tailwindcss()],
+  plugins: [labelRegistryDevPlugin(), classroomApiPlugin(), tailwindcss()],
   experimental: {
     renderBuiltUrl(filename) {
       // Handle WASM files properly in production builds

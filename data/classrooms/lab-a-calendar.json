@@ -1,0 +1,57 @@
+[
+  {
+    "id": "evt-lab-001",
+    "title": "Chemistry Lab: Titration",
+    "startTime": "2025-11-19T10:00:00Z",
+    "endTime": "2025-11-19T12:00:00Z",
+    "type": "lab",
+    "location": "LAB-A",
+    "instructor": "Dr. Maria Rodriguez",
+    "description": "Acid-base titration experiment",
+    "safetyLevel": "medium"
+  },
+  {
+    "id": "evt-lab-002",
+    "title": "Lab Safety Training",
+    "startTime": "2025-11-19T13:00:00Z",
+    "endTime": "2025-11-19T14:00:00Z",
+    "type": "training",
+    "location": "LAB-A",
+    "instructor": "SafetyAgent",
+    "description": "Quarterly safety protocol review",
+    "safetyLevel": "high"
+  },
+  {
+    "id": "evt-lab-003",
+    "title": "Organic Synthesis Lab",
+    "startTime": "2025-11-20T10:00:00Z",
+    "endTime": "2025-11-20T13:00:00Z",
+    "type": "lab",
+    "location": "LAB-A",
+    "instructor": "Dr. Maria Rodriguez",
+    "description": "Ester synthesis and purification",
+    "safetyLevel": "high"
+  },
+  {
+    "id": "evt-lab-004",
+    "title": "Spectroscopy Analysis",
+    "startTime": "2025-11-21T09:00:00Z",
+    "endTime": "2025-11-21T11:00:00Z",
+    "type": "lab",
+    "location": "LAB-A",
+    "instructor": "Dr. Maria Rodriguez",
+    "description": "IR and NMR spectrum analysis",
+    "safetyLevel": "low"
+  },
+  {
+    "id": "evt-lab-005",
+    "title": "Equipment Maintenance",
+    "startTime": "2025-11-21T14:00:00Z",
+    "endTime": "2025-11-21T16:00:00Z",
+    "type": "maintenance",
+    "location": "LAB-A",
+    "instructor": "Facilities",
+    "description": "Scheduled maintenance of lab equipment",
+    "safetyLevel": "low"
+  }
+]
