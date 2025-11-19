@@ -1,0 +1,478 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://smart-campus.edu/schemas/openai-integration.json",
+  "title": "OpenAI API 3.1.0 Integration",
+  "description": "OpenAI API integration for room personalities and AI interactions (compliant with OpenAI API 3.1.0)",
+  "type": "object",
+  "definitions": {
+    "RoomPersonalityPrompt": {
+      "type": "object",
+      "description": "System prompt configuration for room personality AI",
+      "required": ["room_id", "system_message"],
+      "properties": {
+        "room_id": { "type": "string" },
+        "system_message": {
+          "type": "string",
+          "description": "Base system message that establishes room personality",
+          "examples": [
+            "You are Pax, the AI persona of the Peace room at Smart Campus. Your tone is calming and mindful. You encourage quiet reflection and deep focus. Speak gently and with intention, offering insights about meditation, philosophy, and mindful presence."
+          ]
+        },
+        "personality_context": {
+          "type": "object",
+          "description": "Structured personality data (from RoomPersonality schema)",
+          "properties": {
+            "avatar": { "type": "string" },
+            "tone": { "type": "string" },
+            "traits": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "topics_of_interest": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "backstory": { "type": "string" }
+          }
+        },
+        "room_context": {
+          "type": "object",
+          "description": "Current room state context",
+          "properties": {
+            "capacity": { "type": "integer" },
+            "current_occupancy": { "type": "integer" },
+            "equipment": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "typical_activities": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "current_sensors": {
+              "type": "object",
+              "description": "Latest sensor readings for context"
+            }
+          }
+        },
+        "instructions": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Specific behavioral instructions",
+          "examples": [
+            [
+              "Always respond in character as the room's persona",
+              "Use sensor data to inform your responses (e.g., 'The air quality is excellent right now')",
+              "Suggest activities appropriate to the room's purpose",
+              "Be helpful and informative while maintaining your personality",
+              "If asked to perform actions, use available function tools"
+            ]
+          ]
+        }
+      }
+    },
+    "OpenAIFunctionTool": {
+      "type": "object",
+      "description": "Function tool definition (OpenAI function calling format)",
+      "required": ["type", "function"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["function"],
+          "const": "function"
+        },
+        "function": {
+          "type": "object",
+          "required": ["name", "description", "parameters"],
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Function name (snake_case)",
+              "pattern": "^[a-z_][a-z0-9_]*$"
+            },
+            "description": {
+              "type": "string",
+              "description": "Clear description of what the function does"
+            },
+            "parameters": {
+              "type": "object",
+              "description": "JSON Schema for function parameters (OpenAI API 3.1.0 compliant)",
+              "required": ["type", "properties"],
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "const": "object"
+                },
+                "properties": {
+                  "type": "object",
+                  "description": "Parameter definitions"
+                },
+                "required": {
+                  "type": "array",
+                  "items": { "type": "string" },
+                  "description": "Required parameter names"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "RoomFunctionTools": {
+      "type": "object",
+      "description": "Available function tools for room AI interactions",
+      "properties": {
+        "tools": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/OpenAIFunctionTool" },
+          "description": "List of available function tools"
+        },
+        "tool_choice": {
+          "oneOf": [
+            { "type": "string", "enum": ["none", "auto", "required"] },
+            {
+              "type": "object",
+              "properties": {
+                "type": { "type": "string", "const": "function" },
+                "function": {
+                  "type": "object",
+                  "properties": {
+                    "name": { "type": "string" }
+                  }
+                }
+              }
+            }
+          ],
+          "description": "Tool selection strategy",
+          "default": "auto"
+        }
+      }
+    },
+    "StandardRoomTools": {
+      "type": "object",
+      "description": "Standard function tools available to all room personalities",
+      "properties": {
+        "get_current_sensors": {
+          "description": "Get current sensor readings for the room",
+          "function": {
+            "name": "get_current_sensors",
+            "description": "Retrieve current sensor data (temperature, humidity, CO2, etc.) for the room",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "sensor_types": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": ["temperature", "humidity", "co2", "air_quality", "illumination", "occupancy", "noise"]
+                  },
+                  "description": "Which sensor types to retrieve (empty = all)"
+                }
+              },
+              "required": []
+            }
+          }
+        },
+        "get_room_schedule": {
+          "description": "Get upcoming events and reservations for the room",
+          "function": {
+            "name": "get_room_schedule",
+            "description": "Retrieve upcoming scheduled events and reservations for this room",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "time_range": {
+                  "type": "string",
+                  "enum": ["today", "this_week", "next_7_days"],
+                  "default": "today"
+                },
+                "max_events": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 20,
+                  "default": 5
+                }
+              },
+              "required": []
+            }
+          }
+        },
+        "get_room_availability": {
+          "description": "Check if the room is available for booking",
+          "function": {
+            "name": "get_room_availability",
+            "description": "Check room availability for a specific time slot",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "start_time": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "Start time (ISO 8601)"
+                },
+                "duration_minutes": {
+                  "type": "integer",
+                  "minimum": 15,
+                  "description": "Duration in minutes"
+                }
+              },
+              "required": ["start_time", "duration_minutes"]
+            }
+          }
+        },
+        "quick_reserve_room": {
+          "description": "Create a quick reservation for the room",
+          "function": {
+            "name": "quick_reserve_room",
+            "description": "Make a quick reservation for this room",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "description": "Reservation title"
+                },
+                "start_time": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "Start time (ISO 8601)"
+                },
+                "duration_minutes": {
+                  "type": "integer",
+                  "minimum": 15,
+                  "maximum": 480
+                },
+                "participants": {
+                  "type": "array",
+                  "items": { "type": "string" },
+                  "description": "Email addresses of participants"
+                }
+              },
+              "required": ["title", "duration_minutes"]
+            }
+          }
+        },
+        "get_active_users": {
+          "description": "Get list of users currently in the room",
+          "function": {
+            "name": "get_active_users",
+            "description": "Retrieve list of users currently present in this room",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "presence_type": {
+                  "type": "string",
+                  "enum": ["all", "physical", "virtual"],
+                  "default": "all"
+                }
+              },
+              "required": []
+            }
+          }
+        },
+        "search_room_history": {
+          "description": "Search past events and activities in the room",
+          "function": {
+            "name": "search_room_history",
+            "description": "Search historical events and activities in this room",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "query": {
+                  "type": "string",
+                  "description": "Search query (topic, participant name, event type, etc.)"
+                },
+                "time_range": {
+                  "type": "string",
+                  "enum": ["this_week", "this_month", "this_semester", "all_time"],
+                  "default": "this_month"
+                },
+                "max_results": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 20,
+                  "default": 5
+                }
+              },
+              "required": ["query"]
+            }
+          }
+        },
+        "get_equipment_status": {
+          "description": "Get status of room equipment",
+          "function": {
+            "name": "get_equipment_status",
+            "description": "Check the availability and status of equipment in this room",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "equipment_type": {
+                  "type": "string",
+                  "description": "Specific equipment type (empty = all)"
+                }
+              },
+              "required": []
+            }
+          }
+        },
+        "suggest_similar_rooms": {
+          "description": "Suggest alternative rooms with similar characteristics",
+          "function": {
+            "name": "suggest_similar_rooms",
+            "description": "Find similar rooms based on capacity, equipment, or activity type",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "criteria": {
+                  "type": "string",
+                  "enum": ["capacity", "equipment", "activity_type", "personality"],
+                  "default": "activity_type"
+                },
+                "max_suggestions": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 5,
+                  "default": 3
+                }
+              },
+              "required": []
+            }
+          }
+        }
+      }
+    },
+    "OpenAIChatMessage": {
+      "type": "object",
+      "description": "Message format for OpenAI Chat API",
+      "required": ["role", "content"],
+      "properties": {
+        "role": {
+          "type": "string",
+          "enum": ["system", "user", "assistant", "function", "tool"],
+          "description": "Message role"
+        },
+        "content": {
+          "oneOf": [
+            { "type": "string" },
+            { "type": "null" }
+          ],
+          "description": "Message content (null for function calls)"
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of function (for function/tool messages)"
+        },
+        "function_call": {
+          "type": "object",
+          "description": "Deprecated: use tool_calls instead",
+          "properties": {
+            "name": { "type": "string" },
+            "arguments": { "type": "string" }
+          }
+        },
+        "tool_calls": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "type": { "type": "string", "const": "function" },
+              "function": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string" },
+                  "arguments": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "tool_call_id": {
+          "type": "string",
+          "description": "ID of the tool call this message is responding to"
+        }
+      }
+    },
+    "OpenAIRequestPayload": {
+      "type": "object",
+      "description": "Complete OpenAI API chat completion request",
+      "required": ["model", "messages"],
+      "properties": {
+        "model": {
+          "type": "string",
+          "description": "Model identifier",
+          "examples": ["gpt-4", "gpt-4-turbo-preview", "gpt-3.5-turbo"]
+        },
+        "messages": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/OpenAIChatMessage" },
+          "minItems": 1
+        },
+        "tools": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/OpenAIFunctionTool" }
+        },
+        "tool_choice": {
+          "oneOf": [
+            { "type": "string", "enum": ["none", "auto", "required"] },
+            { "type": "object" }
+          ]
+        },
+        "temperature": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 2,
+          "default": 1
+        },
+        "max_tokens": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "presence_penalty": {
+          "type": "number",
+          "minimum": -2,
+          "maximum": 2,
+          "default": 0
+        },
+        "frequency_penalty": {
+          "type": "number",
+          "minimum": -2,
+          "maximum": 2,
+          "default": 0
+        },
+        "user": {
+          "type": "string",
+          "description": "Unique user identifier for abuse monitoring"
+        }
+      }
+    },
+    "ConversationSession": {
+      "type": "object",
+      "description": "Ongoing conversation session with room personality",
+      "required": ["session_id", "room_id", "user_id", "messages"],
+      "properties": {
+        "session_id": { "type": "string" },
+        "room_id": { "type": "string" },
+        "user_id": { "type": "string" },
+        "started_at": { "type": "string", "format": "date-time" },
+        "last_interaction": { "type": "string", "format": "date-time" },
+        "messages": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/OpenAIChatMessage" }
+        },
+        "context": {
+          "type": "object",
+          "description": "Additional context for the conversation",
+          "properties": {
+            "total_tokens": { "type": "integer" },
+            "function_calls_count": { "type": "integer" },
+            "topics_discussed": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          }
+        }
+      }
+    }
+  }
+}
