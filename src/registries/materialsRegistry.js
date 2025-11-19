@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { HDRLoader } from "three/examples/jsm/loaders/HDRLoader.js";
 import { buildRoomNodeMaterial } from "@three/materials/RoomNodeMaterial.js";
+import { buildToonShaderMaterial } from "@three/materials/ToonShaderMaterial.js";
 
 const MATERIAL_PRESETS = {
   roomBase: {
@@ -9,6 +10,18 @@ const MATERIAL_PRESETS = {
     roughness: 0.55,
     metalness: 0.15,
     envMapIntensity: 0.45,
+  },
+  roomToon: {
+    type: "toon",
+    color: "#2dd4bf",
+    shadowColor: "#13172b",
+    rimColor: "#5eead4",
+    roughness: 0.7,
+    metalness: 0.2,
+    envMapIntensity: 0.3,
+    toonSteps: 3,
+    rimPower: 0.6,
+    rimThickness: 0.3,
   },
   roomHighlight: {
     type: "standard",
@@ -150,6 +163,37 @@ class MaterialRegistry {
       throw new Error(`[MaterialRegistry] Unknown material key: ${key}`);
     }
 
+    // Handle roomToon (toon shader for WebGPU)
+    if (key === "roomToon" && this.renderer?.isWebGPURenderer) {
+      const baseColorHex = toColorString(
+        overrides.color ?? preset.color,
+        preset.color,
+      );
+      try {
+        const toonMaterial = buildToonShaderMaterial({
+          baseColor: overrides.baseColor ?? baseColorHex,
+          shadowColor: overrides.shadowColor ?? preset.shadowColor ?? "#13172b",
+          rimColor: overrides.rimColor ?? preset.rimColor ?? "#5eead4",
+          accentColor: overrides.accentColor ?? baseColorHex,
+          occupancy: overrides.occupancy ?? 0,
+          toonSteps: overrides.toonSteps ?? preset.toonSteps ?? 3,
+          rimPower: overrides.rimPower ?? preset.rimPower ?? 0.6,
+          rimThickness: overrides.rimThickness ?? preset.rimThickness ?? 0.3,
+          opacity: overrides.opacity ?? preset.opacity ?? 0.95,
+          roughness: overrides.roughness ?? preset.roughness ?? 0.7,
+          metalness: overrides.metalness ?? preset.metalness ?? 0.2,
+          roomKey: overrides.roomKey ?? null,
+        });
+        return this.register(toonMaterial, key, overrides);
+      } catch (error) {
+        console.warn(
+          "[MaterialRegistry] Failed to create toon shader material, falling back to MeshStandardMaterial.",
+          error,
+        );
+      }
+    }
+
+    // Handle roomBase (gradient shader for WebGPU)
     if (key === "roomBase" && this.renderer?.isWebGPURenderer) {
       const accentHex = toColorString(
         overrides.color ?? preset.color,
