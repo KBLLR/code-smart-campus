@@ -1,0 +1,198 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://smart-campus.edu/schemas/classroom-view.json",
+  "title": "Classroom View Configuration",
+  "description": "Complete configuration for the classroom experience",
+  "type": "object",
+  "required": ["room_id", "layout", "sections"],
+  "properties": {
+    "room_id": {
+      "type": "string",
+      "description": "Room identifier"
+    },
+    "layout": {
+      "type": "object",
+      "properties": {
+        "template": {
+          "type": "string",
+          "enum": ["default", "lecture", "lab", "lounge", "custom"],
+          "description": "Layout preset"
+        },
+        "grid": {
+          "type": "object",
+          "description": "CSS Grid configuration",
+          "properties": {
+            "areas": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "columns": { "type": "string" },
+            "rows": { "type": "string" }
+          }
+        },
+        "responsive_breakpoints": {
+          "type": "object",
+          "properties": {
+            "mobile": { "type": "string" },
+            "tablet": { "type": "string" },
+            "desktop": { "type": "string" }
+          }
+        }
+      }
+    },
+    "sections": {
+      "type": "object",
+      "properties": {
+        "header": { "$ref": "#/definitions/HeaderSection" },
+        "presence": { "$ref": "#/definitions/PresenceSection" },
+        "chat": { "$ref": "#/definitions/ChatSection" },
+        "sensors": { "$ref": "#/definitions/SensorsSection" },
+        "calendar": { "$ref": "#/definitions/CalendarSection" },
+        "history": { "$ref": "#/definitions/HistorySection" },
+        "integrations": { "$ref": "#/definitions/IntegrationsSection" }
+      }
+    },
+    "theme": {
+      "type": "object",
+      "properties": {
+        "primary_color": { "type": "string" },
+        "accent_color": { "type": "string" },
+        "background": { "type": "string" },
+        "room_personality_override": { "type": "boolean" }
+      }
+    },
+    "permissions": {
+      "type": "object",
+      "properties": {
+        "can_chat": { "type": "boolean" },
+        "can_view_sensors": { "type": "boolean" },
+        "can_reserve": { "type": "boolean" },
+        "can_view_history": { "type": "boolean" }
+      }
+    }
+  },
+  "definitions": {
+    "HeaderSection": {
+      "type": "object",
+      "properties": {
+        "visible": { "type": "boolean", "default": true },
+        "show_room_icon": { "type": "boolean", "default": true },
+        "show_avatar": { "type": "boolean", "default": true },
+        "show_status_badge": { "type": "boolean", "default": true },
+        "custom_title": { "type": "string" }
+      }
+    },
+    "PresenceSection": {
+      "type": "object",
+      "properties": {
+        "visible": { "type": "boolean", "default": true },
+        "show_avatars": { "type": "boolean", "default": true },
+        "max_visible_users": { "type": "integer", "minimum": 1, "default": 10 },
+        "update_interval_ms": { "type": "integer", "default": 5000 }
+      }
+    },
+    "ChatSection": {
+      "type": "object",
+      "properties": {
+        "visible": { "type": "boolean", "default": true },
+        "canvas_config": { "$ref": "#/definitions/ChatCanvasConfig" },
+        "message_history_limit": { "type": "integer", "default": 100 },
+        "enable_voice": { "type": "boolean", "default": true },
+        "enable_room_personality": { "type": "boolean", "default": true }
+      }
+    },
+    "ChatCanvasConfig": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["shader_ball", "avatar_2d", "avatar_3d"],
+          "default": "shader_ball"
+        },
+        "position": {
+          "type": "object",
+          "properties": {
+            "x": { "type": "number" },
+            "y": { "type": "number" },
+            "z": { "type": "number" }
+          }
+        },
+        "scale": { "type": "number", "default": 1.0 },
+        "shader_params": {
+          "type": "object",
+          "description": "Shader-specific parameters (for shader_ball type)"
+        },
+        "avatar_params": {
+          "type": "object",
+          "description": "Avatar-specific parameters (for avatar types)"
+        }
+      }
+    },
+    "SensorsSection": {
+      "type": "object",
+      "properties": {
+        "visible": { "type": "boolean", "default": true },
+        "display_mode": {
+          "type": "string",
+          "enum": ["compact", "detailed", "chart"],
+          "default": "detailed"
+        },
+        "show_historical": { "type": "boolean", "default": true },
+        "chart_time_range": {
+          "type": "string",
+          "enum": ["1h", "6h", "24h", "7d", "30d"],
+          "default": "24h"
+        }
+      }
+    },
+    "CalendarSection": {
+      "type": "object",
+      "properties": {
+        "visible": { "type": "boolean", "default": true },
+        "view_mode": {
+          "type": "string",
+          "enum": ["day", "week", "month"],
+          "default": "week"
+        },
+        "show_upcoming_events": { "type": "boolean", "default": true },
+        "enable_quick_reserve": { "type": "boolean", "default": true }
+      }
+    },
+    "HistorySection": {
+      "type": "object",
+      "properties": {
+        "visible": { "type": "boolean", "default": true },
+        "display_mode": {
+          "type": "string",
+          "enum": ["timeline", "list", "grid"],
+          "default": "timeline"
+        },
+        "time_range": {
+          "type": "string",
+          "enum": ["today", "week", "month", "all"],
+          "default": "week"
+        },
+        "event_types": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["classes", "workshops", "study_sessions", "chats", "resources"]
+          }
+        }
+      }
+    },
+    "IntegrationsSection": {
+      "type": "object",
+      "properties": {
+        "visible": { "type": "boolean", "default": true },
+        "enabled_mcps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["notion", "slack", "figma", "github", "calendar"]
+          }
+        }
+      }
+    }
+  }
+}

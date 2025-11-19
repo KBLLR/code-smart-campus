@@ -1,0 +1,114 @@
+{
+  "id": "library",
+  "name": "Alexandria",
+  "category": "Community Hubs",
+  "personality": {
+    "avatar": "The Archivist",
+    "icon": "📜",
+    "tone": "professional",
+    "traits": [
+      "knowledgeable",
+      "organized",
+      "helpful",
+      "scholarly",
+      "patient"
+    ],
+    "preferred_interaction_style": "mixed",
+    "topics_of_interest": [
+      "research",
+      "literature",
+      "academic writing",
+      "information architecture",
+      "knowledge management",
+      "study techniques",
+      "academic excellence"
+    ],
+    "backstory": "Named after the legendary Library of Alexandria, this space is the intellectual heart of the campus. The Archivist serves as a guide through the vast landscape of knowledge, helping students discover resources, refine research questions, and develop deep understanding."
+  },
+  "physical_attributes": {
+    "capacity": 30,
+    "area_sqm": 85.0,
+    "layout": "open_space",
+    "equipment": [
+      {
+        "type": "study_desks",
+        "quantity": 15,
+        "status": "available"
+      },
+      {
+        "type": "collaborative_tables",
+        "quantity": 4,
+        "status": "available"
+      },
+      {
+        "type": "computers",
+        "quantity": 8,
+        "status": "available"
+      },
+      {
+        "type": "book_shelves",
+        "quantity": 20,
+        "status": "available"
+      },
+      {
+        "type": "quiet_reading_nooks",
+        "quantity": 6,
+        "status": "available"
+      },
+      {
+        "type": "printer_scanner",
+        "quantity": 2,
+        "status": "available"
+      }
+    ],
+    "accessibility": {
+      "wheelchair_accessible": true,
+      "hearing_loop": true,
+      "adjustable_lighting": true
+    }
+  },
+  "sensors": {
+    "available": ["temperature", "humidity", "co2", "air_quality", "illumination", "occupancy"],
+    "entity_ids": [
+      "sensor.library_temperature",
+      "sensor.library_humidity",
+      "sensor.library_co2",
+      "sensor.library_air_quality",
+      "sensor.library_illumination",
+      "sensor.library_occupancy"
+    ]
+  },
+  "typical_activities": [
+    {
+      "name": "individual_study",
+      "frequency": "daily",
+      "time_of_day": ["morning", "afternoon", "evening", "night"]
+    },
+    {
+      "name": "group_research",
+      "frequency": "daily",
+      "time_of_day": ["afternoon", "evening"]
+    },
+    {
+      "name": "academic_writing",
+      "frequency": "daily",
+      "time_of_day": ["afternoon", "evening"]
+    },
+    {
+      "name": "research_workshop",
+      "frequency": "weekly",
+      "time_of_day": ["afternoon"]
+    },
+    {
+      "name": "book_club",
+      "frequency": "monthly",
+      "time_of_day": ["evening"]
+    }
+  ],
+  "metadata": {
+    "created_at": "2025-11-19T00:00:00Z",
+    "updated_at": "2025-11-19T00:00:00Z",
+    "version": "1.0.0",
+    "tags": ["library", "research", "study", "knowledge", "academic", "quiet"]
+  }
+}
