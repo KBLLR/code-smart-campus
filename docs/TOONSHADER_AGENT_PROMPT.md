@@ -12,6 +12,12 @@ You are **"ToonShaderAgent"**, a senior Three.js + WebGPU material specialist wi
 
 Create a reusable TSL-based toon material tailored for the Smart Campus 3D floor map, visually similar to the Rodin / Hyper3D apartment-floor aesthetic: **soft warm colors, sharp but clean edges, banded lighting, and a subtle rim/ambient accent**. The material must work with Three.js' WebGPURenderer (with WebGL fallback) and the new TSL / NodeMaterial system.
 
+### ⚠️ CRITICAL: SVG-Based Room Generation
+
+**The room meshes are NOT loaded from GLTF files.** They are **procedurally generated from an SVG floorplan** using `RoundedBlockGenerator.js`. Your toon material will be applied to these extruded 3D blocks (RoundedBoxGeometry) that represent individual rooms.
+
+**Target:** `extrudedGroup` (THREE.Group containing 50+ room meshes) or `meshRegistry` (Object mapping room IDs to meshes)
+
 ---
 
 ## Project Context (Smart Campus)
@@ -41,10 +47,57 @@ The project already has a TSL-based room material at `src/three/materials/RoomNo
 - Clean edge detection (optional outline/silhouette)
 - Warm color palette matching Rodin/Hyper3D aesthetic
 
-### Campus Floor Model
-- Loaded as a `THREE.Object3D` (usually from GLTF)
-- Contains child meshes with various materials (MeshStandardMaterial, MeshPhysicalMaterial, etc.)
-- The agent must traverse and replace materials, not assume a specific loader
+### Campus Floor Model - SVG-to-3D Pipeline ⚠️ IMPORTANT
+
+**The room meshes are NOT loaded from GLTF. They are procedurally generated from an SVG floorplan.**
+
+#### Pipeline Flow:
+1. **Source of Truth:** `public/floorplan.svg` - SVG floorplan with `<path>` elements (one per room)
+   - Each path has an `id` attribute (e.g., `id="b.3"` for Peace room)
+
+2. **Room Registry Generation:** `src/tools/generateRoomRegistry.js`
+   - Parses SVG and extracts room coordinates
+   - Creates `src/data/roomRegistry.js` with room positions and metadata
+
+3. **3D Mesh Generation:** `src/three/RoundedBlockGenerator.js`
+   - `generateRoundedBlocksFromSVG(svgURL, scene, registry, height)`
+   - For each SVG path:
+     - Creates `RoundedBoxGeometry` (extruded 3D block)
+     - Applies material from `materialRegistry.create("roomBase", {...})`
+     - Stores mesh in `registry[roomId]` (e.g., `registry["b.3"]`)
+     - Returns `THREE.Group` containing all room meshes
+
+4. **Orchestration:** `src/modules/RoomsManager.js`
+   - Calls `generateRoundedBlocksFromSVG()` to create extruded room geometry
+   - Stores result in `this.extrudedGroup` (THREE.Group)
+   - Maintains `this.meshRegistry` (map of room IDs → extruded meshes)
+
+#### Where Your Toon Material Should Be Applied:
+
+**Target:** The extruded room meshes created by `generateRoundedBlocksFromSVG()`
+- These are `THREE.Mesh` objects with `RoundedBoxGeometry`
+- Currently use materials from `materialRegistry.create("roomBase")`
+- Stored in `RoomsManager.meshRegistry` (keyed by room ID like "b.3", "library", etc.)
+
+**Example Structure:**
+```js
+extrudedGroup (THREE.Group)
+  ├─ mesh "b.3" (Peace room)
+  │   ├─ geometry: RoundedBoxGeometry
+  │   ├─ material: [Current: RoomNodeMaterial from materialRegistry]
+  │   └─ userData: { roomKey: "b.3", roomId: "b.3" }
+  ├─ mesh "library" (Alexandria)
+  ├─ mesh "a.5" (Makers Space)
+  └─ ... (50+ room meshes)
+```
+
+**Your `applyCampusToonMaterial()` function should:**
+1. Accept `extrudedGroup` or `meshRegistry` as input
+2. Traverse the group or iterate over registry values
+3. Replace each mesh's material with `createCampusToonMaterial()`
+4. Preserve `userData.roomKey` and `userData.roomId` (important for picking)
+
+**⚠️ Do NOT assume GLTF loading** - the room geometry is generated procedurally from SVG.
 
 ---
 
@@ -133,42 +186,73 @@ export default function createCampusToonMaterial(options?: CampusToonOptions): M
 
 **Named Export:**
 ```js
-export function applyCampusToonMaterial(root: THREE.Object3D, options?: CampusToonOptions): void
+export function applyCampusToonMaterial(target: THREE.Group | Object, options?: CampusToonOptions): void
 ```
 
+**Parameters:**
+- `target` - Either:
+  - `THREE.Group` (the extrudedGroup from RoundedBlockGenerator)
+  - `Object` (the meshRegistry from RoomsManager)
+- `options` - CampusToonOptions for material configuration
+
 **Behavior:**
-1. Traverse `root` using `root.traverse()`
-2. For every `THREE.Mesh` with a material that should be replaced:
-   - Check if it's a standard material type (MeshStandard, MeshPhysical, MeshPhong, MeshLambert)
-   - Replace with `createCampusToonMaterial(options)`
-3. Handle multi-material meshes (arrays)
-4. **Do NOT modify:**
-   - Non-mesh objects (lights, cameras, helpers)
-   - Geometry
-   - Materials that are not standard types (preserve special materials)
+1. **If target is THREE.Group:**
+   - Traverse using `target.traverse()`
+   - For each mesh, replace material with toon material
+2. **If target is Object (meshRegistry):**
+   - Iterate over `Object.values(target)`
+   - Replace each mesh's material
+3. **For all meshes:**
+   - Preserve `userData.roomKey` and `userData.roomId` (critical for picking system)
+   - Clone material for each mesh (avoid shared state)
+   - Dispose old material to prevent memory leaks
 
 **Example Implementation:**
 ```js
-export function applyCampusToonMaterial(root, options = {}) {
-  const toonMat = createCampusToonMaterial(options);
+export function applyCampusToonMaterial(target, options = {}) {
+  const baseMaterial = createCampusToonMaterial(options);
+  let processedCount = 0;
 
-  root.traverse((obj) => {
-    if (obj.isMesh) {
-      const materials = Array.isArray(obj.material) ? obj.material : [obj.material];
-      const replacedMaterials = materials.map((mat) => {
-        if (
-          mat.isMeshStandardMaterial ||
-          mat.isMeshPhysicalMaterial ||
-          mat.isMeshPhongMaterial ||
-          mat.isMeshLambertMaterial
-        ) {
-          return toonMat.clone(); // Clone to avoid shared material state
-        }
-        return mat; // Preserve other materials
-      });
-      obj.material = Array.isArray(obj.material) ? replacedMaterials : replacedMaterials[0];
+  // Helper to replace material on a single mesh
+  const replaceMaterial = (mesh) => {
+    if (!mesh.isMesh) return;
+
+    // Preserve userData before replacing material
+    const roomKey = mesh.userData.roomKey;
+    const roomId = mesh.userData.roomId;
+
+    // Dispose old material
+    if (mesh.material && mesh.material.dispose) {
+      mesh.material.dispose();
     }
-  });
+
+    // Clone toon material for this mesh
+    const toonMat = baseMaterial.clone();
+    mesh.material = toonMat;
+
+    // Restore userData
+    mesh.userData.roomKey = roomKey;
+    mesh.userData.roomId = roomId;
+
+    processedCount++;
+  };
+
+  // Handle different input types
+  if (target.isGroup || target.isObject3D) {
+    // Traverse THREE.Group (extrudedGroup)
+    target.traverse(replaceMaterial);
+  } else if (typeof target === 'object') {
+    // Iterate over meshRegistry (Object with room IDs as keys)
+    Object.values(target).forEach(replaceMaterial);
+  } else {
+    console.warn('[ToonMaterial] Invalid target type. Expected THREE.Group or Object.');
+    return;
+  }
+
+  console.log(`[ToonMaterial] Applied toon material to ${processedCount} room meshes`);
+
+  // Dispose base material (we only used it for cloning)
+  baseMaterial.dispose();
 }
 ```
 
@@ -176,13 +260,13 @@ export function applyCampusToonMaterial(root, options = {}) {
 
 ### 3. Integration Example Snippet
 
-Include this as a comment block or separate example file:
+Include this as a comment block or separate example file showing integration with Smart Campus:
 
 ```js
 // Example: src/examples/toonMaterialDemo.js
 import * as THREE from "three";
 import { createRenderer } from "../three/createRenderer.js";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { generateRoundedBlocksFromSVG } from "../three/RoundedBlockGenerator.js";
 import createCampusToonMaterial, { applyCampusToonMaterial } from "../materials/campusToonMaterial.js";
 
 const canvas = document.querySelector("canvas");
@@ -196,36 +280,42 @@ await initPromise;
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x1a1a2e);
 
-const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
-camera.position.set(8, 8, 8);
+const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+camera.position.set(0, 800, 800);
 camera.lookAt(0, 0, 0);
 
 // Add directional light for toon shading
 const light = new THREE.DirectionalLight(0xffffff, 2.0);
-light.position.set(5, 10, 5);
+light.position.set(500, 1000, 500);
 scene.add(light);
 
 const ambientLight = new THREE.AmbientLight(0x404040, 0.5);
 scene.add(ambientLight);
 
-// Load campus floor model
-const loader = new GLTFLoader();
-loader.load("/models/campusFloor.glb", (gltf) => {
-  const root = gltf.scene;
+// Generate room meshes from SVG floorplan
+const meshRegistry = {}; // Will be populated by generateRoundedBlocksFromSVG
+const extrudedGroup = await generateRoundedBlocksFromSVG(
+  "/floorplan.svg",
+  scene,
+  meshRegistry,
+  250 // height of extruded blocks
+);
 
-  // Apply toon material to all room meshes
-  applyCampusToonMaterial(root, {
-    baseColor: [0.93, 0.88, 0.82],  // Warm beige
-    bands: 4,
-    rimStrength: 0.25,
-    rimPower: 2.5,
-    edgeThickness: 0.01,
-    edgeColor: [0.1, 0.1, 0.15],
-  });
+scene.add(extrudedGroup);
+console.log(`[Setup] Generated ${Object.keys(meshRegistry).length} room meshes from SVG`);
 
-  scene.add(root);
-  console.log(`[ToonMaterial] Applied to ${root.children.length} objects`);
+// Apply toon material to all room meshes
+applyCampusToonMaterial(extrudedGroup, {
+  baseColor: [0.93, 0.88, 0.82],  // Warm beige
+  bands: 4,
+  rimStrength: 0.25,
+  rimPower: 2.5,
+  edgeThickness: 0.01,
+  edgeColor: [0.1, 0.1, 0.15],
 });
+
+// Alternative: Apply to meshRegistry directly
+// applyCampusToonMaterial(meshRegistry, { ... });
 
 function animate() {
   requestAnimationFrame(animate);
@@ -233,6 +323,34 @@ function animate() {
 }
 
 animate();
+```
+
+**Integration with RoomsManager:**
+```js
+// Example: Using with RoomsManager (recommended for production)
+import { RoomsManager } from "../modules/RoomsManager.js";
+import { applyCampusToonMaterial } from "../materials/campusToonMaterial.js";
+
+// ... setup renderer, scene, camera ...
+
+const roomsManager = new RoomsManager(scene, camera, {
+  svgPath: '/floorplan.svg',
+  extrudedHeight: 250,
+  pickingEnabled: true,
+  labelsEnabled: false,
+});
+
+await roomsManager.initialize();
+
+// Apply toon material after room meshes are generated
+applyCampusToonMaterial(roomsManager.extrudedGroup, {
+  baseColor: [0.93, 0.88, 0.82],
+  bands: 4,
+  rimStrength: 0.25,
+  rimPower: 2.5,
+});
+
+console.log(`[ToonMaterial] Applied to ${roomsManager.roomMeshes.length} rooms`);
 ```
 
 ---
@@ -287,14 +405,97 @@ The toon material is successful if:
 
 ## Notes for Agent
 
-- Review `src/three/materials/RoomNodeMaterial.js` for existing TSL patterns
-- Use `uniform()` for parameters that need runtime updates
-- Consider exposing `userData.toonShader` API similar to `roomShader` for dynamic control
-- If outline is complex, consider a separate post-processing pass
-- Test with various lighting setups (different light directions, colors, intensities)
+### Critical Architecture Understanding ⚠️
+
+**The room meshes are generated from SVG, NOT loaded from GLTF.**
+
+**Pipeline Flow:**
+```
+public/floorplan.svg (source)
+         ↓
+generateRoomRegistry.js (tool)
+         ↓
+src/data/roomRegistry.js (generated)
+         ↓
+RoundedBlockGenerator.generateRoundedBlocksFromSVG()
+         ↓
+extrudedGroup (THREE.Group) + meshRegistry (Object)
+         ↓
+YOUR TOON MATERIAL → Applied here
+```
+
+### Implementation Guidance
+
+- **Review these files FIRST:**
+  - `src/three/materials/RoomNodeMaterial.js` - Existing TSL material patterns
+  - `src/three/RoundedBlockGenerator.js` - How room meshes are created
+  - `src/modules/RoomsManager.js` - How everything is orchestrated
+
+- **Material Application Strategy:**
+  - Target: `extrudedGroup` (THREE.Group) or `meshRegistry` (Object)
+  - Must preserve `userData.roomKey` and `userData.roomId` (required for picking)
+  - Clone material for each mesh (avoid shared state)
+  - Dispose old materials to prevent memory leaks
+
+- **TSL Patterns:**
+  - Use `uniform()` for parameters that need runtime updates
+  - Follow existing patterns from `RoomNodeMaterial.js`
+  - Consider exposing `userData.toonShader` API for dynamic control (similar to `roomShader`)
+
+- **Optional Enhancements:**
+  - If outline is complex, consider a separate post-processing pass
+  - Test with various lighting setups (different light directions, colors, intensities)
+  - Ensure performance with 50+ room meshes at 60 FPS
 
 ---
 
-**Document Version:** 2.0
+---
+
+## Quick Reference: Where to Apply Material
+
+```
+Smart Campus Room Mesh Generation Flow:
+┌─────────────────────────────────────────────────────────────┐
+│  public/floorplan.svg                                       │
+│  - <path id="b.3" ...> (Peace room)                         │
+│  - <path id="library" ...> (Alexandria)                     │
+│  - <path id="a.5" ...> (Makers Space)                       │
+│  - ... 50+ paths                                            │
+└─────────────────────┬───────────────────────────────────────┘
+                      │
+                      ↓
+┌─────────────────────────────────────────────────────────────┐
+│  RoundedBlockGenerator.generateRoundedBlocksFromSVG()       │
+│  - Reads SVG paths                                          │
+│  - Creates RoundedBoxGeometry for each path                 │
+│  - Applies material from materialRegistry                   │
+│  - Returns: extrudedGroup + meshRegistry                    │
+└─────────────────────┬───────────────────────────────────────┘
+                      │
+                      ↓
+┌─────────────────────────────────────────────────────────────┐
+│  extrudedGroup (THREE.Group)                                │
+│  ├─ mesh "b.3" (Peace)                                      │
+│  │   ├─ geometry: RoundedBoxGeometry                        │
+│  │   ├─ material: [YOUR TOON MATERIAL GOES HERE] ◄────────┐│
+│  │   └─ userData: { roomKey: "b.3", roomId: "b.3" }        ││
+│  ├─ mesh "library" (Alexandria)                             ││
+│  │   └─ material: [YOUR TOON MATERIAL GOES HERE] ◄─────────┤│
+│  ├─ mesh "a.5" (Makers Space)                               ││
+│  │   └─ material: [YOUR TOON MATERIAL GOES HERE] ◄─────────┤│
+│  └─ ... 50+ meshes                                          ││
+└─────────────────────────────────────────────────────────────┘│
+                                                                │
+                  applyCampusToonMaterial(extrudedGroup) ──────┘
+```
+
+**Your Task:**
+1. Create `createCampusToonMaterial()` - TSL-based toon material factory
+2. Create `applyCampusToonMaterial(extrudedGroup)` - Replace all room materials
+3. Preserve `userData.roomKey` and `userData.roomId` (critical for picking)
+
+---
+
+**Document Version:** 2.1 (Updated: SVG-based workflow clarification)
 **Last Updated:** 2025-11-19
-**Aligned With:** Smart Campus Live Integration (WebGPU + TSL)
+**Aligned With:** Smart Campus Live Integration (WebGPU + TSL + SVG Pipeline)

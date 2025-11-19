@@ -187,16 +187,30 @@ OAuth-based integration system for:
 If you're the ToonShaderAgent, your task is to:
 
 1. **Read the revised prompt** at `docs/TOONSHADER_AGENT_PROMPT.md`
-2. **Review existing material** at `src/three/materials/RoomNodeMaterial.js`
+   - ⚠️ **CRITICAL:** Understand that room meshes are generated from SVG, NOT loaded from GLTF
+   - Review the SVG-to-3D pipeline flow diagram at the end of the prompt
+
+2. **Review existing files**:
+   - `src/three/materials/RoomNodeMaterial.js` - Existing TSL material patterns
+   - `src/three/RoundedBlockGenerator.js` - How room meshes are created from SVG
+   - `src/modules/RoomsManager.js` - How the system orchestrates everything
+
 3. **Create** `src/materials/campusToonMaterial.js` with:
    - `createCampusToonMaterial(options)` default export
-   - `applyCampusToonMaterial(root, options)` named export
+   - `applyCampusToonMaterial(target, options)` named export
+     - `target` can be `extrudedGroup` (THREE.Group) or `meshRegistry` (Object)
+     - Must preserve `userData.roomKey` and `userData.roomId` (required for picking)
+
 4. **Implement TSL-based toon shading**:
    - N·L calculation with `normalView.dot(lightDir)`
    - Band quantization: `floor(ndl * bands) / (bands - 1)`
    - Rim lighting: `pow(1.0 - ndl, rimPower) * rimStrength`
+
 5. **Test with dual renderer** (WebGPU and WebGL modes)
+
 6. **Match Rodin/Hyper3D aesthetic** (warm colors, clean edges, soft shadows)
+
+**Important:** The material will be applied to 50+ extruded `RoundedBoxGeometry` meshes, each representing a room from the SVG floorplan.
 
 ---
 
