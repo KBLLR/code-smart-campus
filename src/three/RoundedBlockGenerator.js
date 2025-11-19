@@ -1,4 +1,14 @@
 // src/three/RoundedBlockGenerator.js
+//
+// SVG-based room mesh generation for Smart Campus
+// Generates RoundedBoxGeometry meshes (50+ per scene) from floorplan.svg
+//
+// Material options:
+// - "roomToon": Toon/cel-shaded look with rim lighting (DEFAULT)
+// - "roomBase": Gradient shader with smooth transitions
+//
+// To switch materials, change materialRegistry.create() key at line 76
+
 import * as THREE from "three";
 import { SVGLoader } from "three/examples/jsm/loaders/SVGLoader.js";
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
@@ -73,12 +83,16 @@ export async function generateRoundedBlocksFromSVG(
             bbox.getCenter(center);
 
             const colorHex = getRoomColorHex(normId || rawId || `room-${group.children.length}`);
-            const material = materialRegistry.create("roomBase", {
+            const material = materialRegistry.create("roomToon", {
               color: colorHex,
+              baseColor: colorHex,
               transparent: true,
               opacity: 0.95,
-              roughness: 0.5,
-              metalness: 0.35,
+              roughness: 0.7,
+              metalness: 0.2,
+              toonSteps: 3,
+              rimPower: 0.6,
+              rimThickness: 0.3,
               roomKey: normId || rawId || null,
             });
 
