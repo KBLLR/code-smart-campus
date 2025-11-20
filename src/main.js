@@ -63,6 +63,7 @@ import {
   setSceneCapabilities,
   updateSceneCapabilities,
 } from "@config/capabilities.js";
+import { initClassroom } from "@/modules/classroom/init";
 
 // --- Global Variables / State ---
 
@@ -1450,6 +1451,14 @@ window.addEventListener("DOMContentLoaded", () => {
   } catch (error) {
     console.error("❌ Failed to initialize SensorDashboard:", error);
     // Decide how to handle this - maybe show an error message?
+  }
+
+  // Initialize classroom module (adds classroom selector UI)
+  try {
+    initClassroom();
+    console.log("✅ Classroom module initialized.");
+  } catch (error) {
+    console.error("❌ Failed to initialize classroom module:", error);
   }
   loader.updateText("Connecting to Home Assistant...");
   console.log("[Init] Attempting to connect WebSocket...");

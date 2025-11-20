@@ -6,16 +6,82 @@
  * - GET /api/classrooms/:id/snapshot - Get classroom snapshot
  * - GET /api/classrooms/:id/events - Get classroom events
  * - POST /api/classrooms/:id/events - Append classroom event
- * - POST /api/classrooms/:id/chat - Chat with classroom AI assistant
+ * - POST /api/classrooms/:id/chat - Chat with classroom AI assistant (MLX-enabled)
  * - GET /api/classrooms/:id/calendar - Get classroom calendar
  * - WS /api/classrooms/:id/sensors - Stream sensor updates
+ *
+ * MLX Integration (Phase 2):
+ * - Supports local MLX server via ENABLE_LOCAL_AI env var
+ * - Implements tool calling loop with classroom-scoped tools
+ * - Preserves existing OpenAI cloud fallback
  */
 
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
+import { config } from 'dotenv';
+import { randomBytes } from 'crypto';
+
+// Load environment variables
+config();
+
+// Import classroom tools for MLX tool calling
+import {
+  get_classroom,
+  get_classroom_snapshot,
+  append_classroom_event,
+  OPENAI_TOOL_DEFINITIONS,
+} from './shared/classroom/classroom-tools.js';
 
 // In-memory stores (in production, use database/Redis)
 const eventsStore = new Map(); // classroom_id -> ClassroomEvent[]
+
+// ============================================================================
+// Configuration & Helpers
+// ============================================================================
+
+/**
+ * MLX Configuration from environment variables
+ */
+const MLX_CONFIG = {
+  enabled: process.env.ENABLE_LOCAL_AI === 'true',
+  serverUrl: process.env.MLX_SERVER_URL || 'http://localhost:8000',
+  modelName: process.env.MLX_MODEL_NAME || 'mlx-community/qwen2.5-7b-instruct-4bit',
+  cloudFallback: process.env.ENABLE_CLOUD_FALLBACK === 'true',
+  logLevel: process.env.LOG_LEVEL || 'info',
+  debugMode: process.env.DEBUG_CHAT_API === 'true',
+};
+
+/**
+ * Generate a non-PII request ID for logging and tracing
+ * Format: classroom-{classroomId}-{random}
+ */
+function generateRequestId(classroomId) {
+  const random = randomBytes(8).toString('hex');
+  return `classroom-${classroomId}-${random}`;
+}
+
+/**
+ * Safe logger that never logs PII (student messages, names)
+ * Logs request IDs, tool calls, and system events only
+ */
+function safeLog(level, requestId, message, metadata = {}) {
+  if (MLX_CONFIG.logLevel === 'error' && level !== 'error') return;
+
+  const timestamp = new Date().toISOString();
+  const logEntry = {
+    timestamp,
+    level,
+    requestId,
+    message,
+    ...metadata,
+  };
+
+  if (MLX_CONFIG.debugMode || level === 'error') {
+    console[level === 'error' ? 'error' : 'log'](`[Chat API] ${JSON.stringify(logEntry)}`);
+  } else if (level === 'info') {
+    console.log(`[Chat API] ${timestamp} ${requestId} - ${message}`);
+  }
+}
 
 /**
  * Parse request body for POST requests
@@ -144,10 +210,94 @@ function loadCalendar(classroomId) {
   return [];
 }
 
+// ============================================================================
+// Tool Execution (for MLX tool calling)
+// ============================================================================
+
 /**
- * Call OpenAI API (or local MLX server) for chat
+ * Execute a classroom tool call from the MLX model
+ * Enforces classroom scoping - tools can only access their own classroom
+ *
+ * @param {string} toolName - Name of the tool (e.g., 'get_classroom_snapshot')
+ * @param {object} toolArgs - Tool arguments from the model
+ * @param {string} classroomId - Classroom ID from the chat request
+ * @param {string} requestId - Request ID for logging
+ * @returns {Promise<object>} Tool execution result
+ */
+async function executeClassroomTool(toolName, toolArgs, classroomId, requestId) {
+  // SECURITY: Enforce classroom scoping
+  // Tools MUST operate only on the classroom from the chat request
+  const scopedArgs = {
+    ...toolArgs,
+    classroom_id: classroomId, // Override with actual classroom from request
+  };
+
+  safeLog('info', requestId, `Executing tool: ${toolName}`, {
+    toolName,
+    // Don't log full args - may contain PII
+    hasArgs: Object.keys(toolArgs).length > 0,
+  });
+
+  try {
+    let result;
+
+    switch (toolName) {
+      case 'get_classroom':
+        result = await get_classroom(scopedArgs);
+        break;
+
+      case 'get_classroom_snapshot':
+        result = await get_classroom_snapshot(scopedArgs);
+        break;
+
+      case 'append_classroom_event':
+        result = await append_classroom_event(scopedArgs);
+        // Also update in-memory events store
+        if (result.success && result.data) {
+          appendEvent(classroomId, scopedArgs.event);
+        }
+        break;
+
+      default:
+        return {
+          success: false,
+          error: `Unknown tool: ${toolName}. Available tools: get_classroom, get_classroom_snapshot, append_classroom_event`,
+        };
+    }
+
+    safeLog('info', requestId, `Tool executed: ${toolName}`, {
+      success: result.success,
+    });
+
+    return result;
+  } catch (error) {
+    safeLog('error', requestId, `Tool execution failed: ${toolName}`, {
+      error: error.message,
+    });
+
+    return {
+      success: false,
+      error: `Tool execution error: ${error.message}`,
+    };
+  }
+}
+
+// ============================================================================
+// Chat Response Generation (MLX + OpenAI + Fallback)
+// ============================================================================
+
+/**
+ * Generate chat response using MLX server, OpenAI cloud, or mock
+ * Implements tool calling loop for MLX integration
+ *
+ * @param {string} classroomId - Classroom ID
+ * @param {Array} messages - Chat messages from frontend
+ * @param {string} mode - Chat mode (reserved for future use)
+ * @returns {Promise<object>} Assistant message response
  */
 async function generateChatResponse(classroomId, messages, mode = 'default') {
+  const requestId = generateRequestId(classroomId);
+
   try {
     const classroom = loadClassroom(classroomId);
     if (!classroom) {
@@ -155,7 +305,6 @@ async function generateChatResponse(classroomId, messages, mode = 'default') {
     }
 
     const snapshot = generateSnapshot(classroom);
-    const events = getEvents(classroomId);
 
     // Build system prompt with classroom context
     const systemPrompt = `You are a helpful AI assistant for ${classroom.name}, a smart classroom.
@@ -179,21 +328,179 @@ async function generateChatResponse(classroomId, messages, mode = 'default') {
 - If comfort score is low, suggest improvements (ventilation, lighting, breaks)
 - Reference the teacher and classroom policies when relevant
 - Keep responses concise and actionable
+- Use tools when you need real-time data or to record events
 
 Respond naturally to user questions about the classroom environment, schedule, or general assistance.`;
 
-    // Check for OpenAI API key in environment
-    const apiKey = process.env.OPENAI_API_KEY;
-    if (!apiKey) {
-      // Return mock response if no API key
+    // ===== ROUTING: MLX vs OpenAI Cloud vs Mock =====
+
+    if (MLX_CONFIG.enabled) {
+      // Route 1: Local MLX Server
+      safeLog('info', requestId, 'Using local MLX server', {
+        serverUrl: MLX_CONFIG.serverUrl,
+        model: MLX_CONFIG.modelName,
+      });
+
+      return await generateMLXResponse(
+        classroomId,
+        systemPrompt,
+        messages,
+        requestId
+      );
+    } else if (process.env.OPENAI_API_KEY) {
+      // Route 2: OpenAI Cloud API
+      safeLog('info', requestId, 'Using OpenAI cloud API');
+
+      return await generateOpenAIResponse(
+        systemPrompt,
+        messages,
+        requestId
+      );
+    } else {
+      // Route 3: Mock Response (no API key, MLX disabled)
+      safeLog('info', requestId, 'Using mock response (no API configured)');
+
       return {
         role: 'assistant',
         content: `[Mock Response] I'm the ${classroom.name} assistant. The comfort score is ${snapshot.comfortScore}/100. How can I help you?`,
       };
     }
+  } catch (err) {
+    safeLog('error', requestId, 'Error generating chat response', {
+      error: err.message,
+    });
+    throw err;
+  }
+}
 
-    // Call OpenAI API
-    const fetch = (await import('node-fetch')).default;
+/**
+ * Generate response using local MLX server with tool calling
+ */
+async function generateMLXResponse(classroomId, systemPrompt, messages, requestId) {
+  const fetch = (await import('node-fetch')).default;
+
+  try {
+    // Prepare messages with system prompt
+    const allMessages = [
+      { role: 'system', content: systemPrompt },
+      ...messages,
+    ];
+
+    // First call: Send messages + tool definitions
+    let response;
+    try {
+      response = await fetch(`${MLX_CONFIG.serverUrl}/v1/chat/completions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Request-ID': requestId,
+        },
+        body: JSON.stringify({
+          model: MLX_CONFIG.modelName,
+          messages: allMessages,
+          tools: OPENAI_TOOL_DEFINITIONS,
+          temperature: 0.7,
+          max_tokens: 800,
+        }),
+      });
+    } catch (fetchError) {
+      if (MLX_CONFIG.cloudFallback && process.env.OPENAI_API_KEY) {
+        safeLog('info', requestId, 'MLX server unreachable, falling back to OpenAI', {
+          error: fetchError.message,
+        });
+        return await generateOpenAIResponse(systemPrompt, messages, requestId);
+      }
+      throw new Error(`MLX server unreachable at ${MLX_CONFIG.serverUrl}: ${fetchError.message}`);
+    }
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`MLX server error (${response.status}): ${errorText}`);
+    }
+
+    const data = await response.json();
+    let assistantMessage = data.choices[0].message;
+
+    safeLog('info', requestId, 'Received MLX response', {
+      hasToolCalls: !!assistantMessage.tool_calls,
+      toolCallCount: assistantMessage.tool_calls?.length || 0,
+    });
+
+    // Tool calling loop
+    if (assistantMessage.tool_calls && assistantMessage.tool_calls.length > 0) {
+      safeLog('info', requestId, 'Processing tool calls', {
+        count: assistantMessage.tool_calls.length,
+      });
+
+      // Add assistant's tool_calls message to conversation
+      allMessages.push(assistantMessage);
+
+      // Execute each tool call
+      for (const toolCall of assistantMessage.tool_calls) {
+        const toolName = toolCall.function.name;
+        const toolArgs = JSON.parse(toolCall.function.arguments);
+
+        const toolResult = await executeClassroomTool(
+          toolName,
+          toolArgs,
+          classroomId,
+          requestId
+        );
+
+        // Add tool result as a tool message
+        allMessages.push({
+          role: 'tool',
+          tool_call_id: toolCall.id,
+          content: JSON.stringify(toolResult),
+        });
+      }
+
+      // Second call: Get final response with tool results
+      const finalResponse = await fetch(`${MLX_CONFIG.serverUrl}/v1/chat/completions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Request-ID': requestId,
+        },
+        body: JSON.stringify({
+          model: MLX_CONFIG.modelName,
+          messages: allMessages,
+          temperature: 0.7,
+          max_tokens: 800,
+        }),
+      });
+
+      if (!finalResponse.ok) {
+        const errorText = await finalResponse.text();
+        throw new Error(`MLX server error on follow-up (${finalResponse.status}): ${errorText}`);
+      }
+
+      const finalData = await finalResponse.json();
+      assistantMessage = finalData.choices[0].message;
+
+      safeLog('info', requestId, 'Tool calling complete', {
+        toolsExecuted: assistantMessage.tool_calls?.length || 0,
+      });
+    }
+
+    safeLog('info', requestId, 'Chat response generated via MLX');
+    return assistantMessage;
+  } catch (err) {
+    safeLog('error', requestId, 'MLX response generation failed', {
+      error: err.message,
+    });
+    throw err;
+  }
+}
+
+/**
+ * Generate response using OpenAI cloud API (fallback)
+ */
+async function generateOpenAIResponse(systemPrompt, messages, requestId) {
+  const fetch = (await import('node-fetch')).default;
+  const apiKey = process.env.OPENAI_API_KEY;
+
+  try {
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -212,13 +519,17 @@ Respond naturally to user questions about the classroom environment, schedule, o
     });
 
     if (!response.ok) {
-      throw new Error(`OpenAI API error: ${response.statusText}`);
+      const errorText = await response.text();
+      throw new Error(`OpenAI API error (${response.status}): ${errorText}`);
     }
 
     const data = await response.json();
+    safeLog('info', requestId, 'Chat response generated via OpenAI Cloud');
     return data.choices[0].message;
   } catch (err) {
-    console.error('[chat] Error generating response:', err);
+    safeLog('error', requestId, 'OpenAI response generation failed', {
+      error: err.message,
+    });
     throw err;
   }
 }
