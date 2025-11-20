@@ -1,4 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Architects+Daughter&family=Roboto+Mono:wght@400;700&display=swap");
+@import "../css/classroom-view.css";
 
 :root {
     --primary: #2dd4bf;
@@ -1683,8 +1684,3 @@ canvas {
     font-family: "Roboto Mono", monospace;
     font-weight: 500;
 }
-
-/* ============================================================================
-   Classroom Module Styles
-   ============================================================================ */
-@import "../css/classroom-view.css";

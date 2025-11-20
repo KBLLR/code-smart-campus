@@ -24,17 +24,22 @@
     "test:sun": "node --test tests/sunTelemetry.test.js"
   },
   "dependencies": {
+    "@rollup/rollup-linux-x64-gnu": "^4.53.3",
     "@takram/three-atmosphere": "^0.15.1",
     "@tweenjs/tween.js": "^25.0.0",
     "canvas": "^3.1.0",
     "dotenv": "^16.4.7",
     "gsap": "^3.12.7",
     "lil-gui": "^0.21.0",
+    "node-fetch": "^3.3.2",
     "node-html-parser": "^7.0.1",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
     "stats-gl": "^3.6.0",
     "suncalc": "^1.9.0",
     "three": "^0.181.0",
-    "uil": "^4.4.2"
+    "uil": "^4.4.2",
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.0",
