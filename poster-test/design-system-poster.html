@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CODE Smart Campus - Design System Poster</title>
+<!-- 1. Load Font Awesome (Essential for icon-component) -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<!-- 2. Link Poster Stylesheet -->
+<link href="./poster.css" rel="stylesheet"/>
+<!-- 3. Import ALL Web Component JavaScript Files (Adjust paths as needed) -->
+<script src="./src/web-components/icon-component/icon-component.js" type="module"></script>
+<script src="./src/web-components/tag-component/tag-component.js" type="module"></script>
+<script src="./src/web-components/stamp-component/stamp-component.js" type="module"></script>
+<script src="./src/web-components/sticky-note/sticky-note.js" type="module"></script>
+<script src="./src/web-components/speech-bubble/speech-bubble.js" type="module"></script>
+<script src="./src/web-components/sketchy-box/sketchy-box.js" type="module"></script>
+<script src="./src/web-components/floor-plan/floor-plan.js" type="module"></script>
+<script src="./src/web-components/file-folder/file-folder.js" type="module"></script>
+<script src="./src/web-components/persona-card/persona-card.js" type="module"></script>
+<script src="./src/web-components/feedback-item/feedback-item.js" type="module"></script>
+<script src="./src/web-components/highlight-item/highlight-item.js" type="module"></script>
+<script src="./src/web-components/tech-diagram/tech-diagram.js" type="module"></script>
+<script src="./src/web-components/timeline-event-card/timeline-event-card.js" type="module"></script>
+<!-- Note: TimelineEventCard depends on many others being loaded first -->
+</head>
+<body class="blueprint-grid">
+<div class="poster-container">
+<header>
+<h1>CODE Smart Campus - Design System</h1>
+<p class="intro">A showcase of reusable Web Components built for the interactive project presentation.</p>
+</header>
+<!-- ========================== -->
+<!-- Core & Utility Components  -->
+<!-- ========================== -->
+<section class="component-group">
+<h2>Core &amp; Utility</h2>
+<div class="component-showcase">
+<h3><icon-component></icon-component></h3>
+<p class="description">Displays Font Awesome icons with options for size, color, and basic animation.</p>
+<div class="examples">
+<div class="example-item">
+<icon-component name="fas fa-brain" size="2rem"></icon-component>
+</div>
+<div class="example-item">
+<icon-component animation="pulse" color="var(--color-yellow-icon)" name="fas fa-bolt" size="2rem"></icon-component>
+</div>
+<div class="example-item">
+<icon-component color="var(--color-purple-icon)" name="fas fa-robot" size="2rem"></icon-component>
+</div>
+</div>
+<div class="usage">
+<h4>Usage:</h4>
+<pre><code><icon-component animation="pulse" color="var(--blueprint-line)" name="fas fa-brain" size="2rem"></icon-component></code></pre>
+<h4>Attributes:</h4>
+<ul>
+<li><code>name</code>: (String) Font Awesome class names (e.g., "fas fa-brain"). Required.</li>
+<li><code>size</code>: (String) CSS font-size value (e.g., "2rem", "24px"). Optional.</li>
+<li><code>color</code>: (String) CSS color value (e.g., "red", "#ff0000", "var(--some-color)"). Optional.</li>
+<li><code>animation</code>: (String) Currently supports "pulse". Optional.</li>
+</ul>
+</div>
+</div>
+<div class="component-showcase">
+<h3><tag-component></tag-component></h3>
+<p class="description">Displays a small, capsule-shaped tag, often used for keywords.</p>
+<div class="examples">
+<div class="example-item"> <tag-component text="Speculative Design"></tag-component> </div>
+<div class="example-item"> <tag-component text="AI Personas"></tag-component> </div>
+<div class="example-item"> <tag-component text="Interaction Design"></tag-component> </div>
+</div>
+<div class="usage">
+<h4>Usage:</h4>
+<pre><code><tag-component text="Keyword"></tag-component></code></pre>
+<h4>Attributes:</h4>
+<ul>
+<li><code>text</code>: (String) The text content of the tag. Required.</li>
+</ul>
+</div>
+</div>
+</section>
+<!-- ============================ -->
+<!-- Emphasis & Annotations       -->
+<!-- ============================ -->
+<section class="component-group">
+<h2>Emphasis &amp; Annotations</h2>
+<div class="component-showcase">
+<h3><stamp-component></stamp-component></h3>
+<p class="description">A dashed, rotated stamp effect for highlighting status (e.g., Approved, Complete).</p>
+<div class="examples">
+<div class="example-item"> <stamp-component text="PROJECT APPROVED"></stamp-component> </div>
+<div class="example-item"> <stamp-component text="FINAL DRAFT"></stamp-component> </div>
+</div>
+<div class="usage">
+<h4>Usage:</h4>
+<pre><code><stamp-component text="YOUR TEXT HERE"></stamp-component></code></pre>
+<h4>Attributes:</h4>
+<ul>
+<li><code>text</code>: (String) The text to display inside the stamp. Required.</li>
+</ul>
+</div>
+</div>
+<div class="component-showcase">
+<h3><sticky-note></sticky-note></h3>
+<p class="description">Simulates a sticky note, useful for brief comments or lists. Can display simple text or a title with list items.</p>
+<div class="examples">
+<div class="example-item">
+<sticky-note pin-color="var(--color-red-icon)" text="Mix of ID, SE, and PM students"></sticky-note>
+</div>
+<div class="example-item">
+<sticky-note items='["Privacy concerns","More customization","Subtle notifications"]' pin-color="var(--color-blue-icon)" title="Key Insights"></sticky-note>
+</div>
+<div class="example-item">
+<sticky-note items='["Expand","Open source","Collaboration"]' title="Future Directions"></sticky-note> <!-- Default pin color -->
+</div>
+</div>
+<div class="usage">
+<h4>Usage (Simple Text):</h4>
+<pre><code><sticky-note pin-color="var(--color-red-icon)" text="A quick note."></sticky-note></code></pre>
+<h4>Usage (Title &amp; List):</h4>
+<pre><code><sticky-note items='["Item 1","Item 2"]' title="To Do"></sticky-note></code></pre>
+<h4>Attributes:</h4>
+<ul>
+<li><code>text</code>: (String) Simple text content (use *either* text *or* title/items).</li>
+<li><code>title</code>: (String) Title for the note (used with `items`). Optional.</li>
+<li><code>items</code>: (JSON String Array) A JSON string representing an array of list items (e.g., `'["Item 1", "Item 2"]'`). Required if using `title`.</li>
+<li><code>pin-color</code>: (String) CSS color for the thumbtack icon. Optional (defaults to red-ish).</li>
+</ul>
+</div>
+</div>
+<div class="component-showcase">
+<h3><speech-bubble></speech-bubble></h3>
+<p class="description">Displays text within a speech bubble shape with an optional directional tail.</p>
+<div class="examples">
+<div class="example-item"> <speech-bubble text="'Campus, is this room booked?'"></speech-bubble> </div>
+<div class="example-item"> <speech-bubble direction="top" text="'This chair knows when Im stressed!'"></speech-bubble> </div>
+<div class="example-item"> <speech-bubble direction="left" text="'Hello from the left!'"></speech-bubble> </div>
+</div>
+<div class="usage">
+<h4>Usage:</h4>
+<pre><code><speech-bubble direction="bottom" text="Quote or message"></speech-bubble></code></pre>
+<h4>Attributes:</h4>
+<ul>
+<li><code>text</code>: (String) The text content of the bubble. Required.</li>
+<li><code>direction</code>: (String) Tail direction: "top", "bottom", "left", "right". Optional (defaults to "bottom").</li>
+</ul>
+</div>
+</div>
+</section>
+<!-- ============================ -->
+<!-- Containers & Structure       -->
+<!-- ============================ -->
+<section class="component-group">
+<h2>Containers &amp; Structure</h2>
+<div class="component-showcase">
+<h3><sketchy-box></sketchy-box></h3>
+<p class="description">A container with a hand-drawn ("sketchy") border effect. Accepts child elements via slots.</p>
+<div class="examples">
+<div class="example-item" style="width: 80%;">
+<sketchy-box padding="1rem">
+<p style="color: var(--blueprint-text); margin: 0;">This content is <em>inside</em> the sketchy box.</p>
+<tag-component text="Nested Component"></tag-component>
+</sketchy-box>
+</div>
+<div class="example-item">
+<sketchy-box> Default Padding </sketchy-box>
+</div>
+</div>
+<div class="usage">
+<h4>Usage:</h4>
+<pre><code><sketchy-box padding="1rem">
+    <!-- Your content here -->
+    <p>Some text inside.</p>
+</sketchy-box></code></pre>
+<h4>Attributes:</h4>
+<ul>
+<li><code>padding</code>: (String) CSS padding value (e.g., "1rem", "20px"). Optional (defaults to 1.5rem).</li>
+</ul>
+<h4>Slots:</h4>
+<ul>
+<li>Default slot: Accepts any HTML content to be placed inside the box.</li>
+</ul>
+</div>
+</div>
+<div class="component-showcase">
+<h3><floor-plan></floor-plan></h3>
+<p class="description">Renders a basic grid-based floor plan layout.</p>
+<div class="examples">
+<div class="example-item" style="width: 80%;">
+<floor-plan columns="3" rooms='[{"label":"Library","span":1},{"label":"Caf\u00e9","span":2},{"label":"Lab","span":1},{"label":"Office","span":1},{"label":"Lounge","span":1}]'></floor-plan>
+</div>
+<div class="example-item" style="width: 60%;">
+<floor-plan columns="2" rooms='[{"label":"Area A","span":1},{"label":"Area B","span":1}]'></floor-plan>
+</div>
+</div>
+<div class="usage">
+<h4>Usage:</h4>
+<pre><code><floor-plan columns="3" rooms='[{"label":"Room 1","span":1},{"label":"Room 2","span":2}]'></floor-plan></code></pre>
+<h4>Attributes:</h4>
+<ul>
+<li><code>columns</code>: (Number) The number of columns in the grid layout. Optional (defaults to 3).</li>
+<li><code>rooms</code>: (JSON String Array) JSON string of room objects. Each object needs `label` (String) and optionally `span` (Number, default 1). Required.</li>
+</ul>
+</div>
+</div>
+</section>
+<!-- ============================ -->
+<!-- Content Display            -->
+<!-- ============================ -->
+<section class="component-group">
+<h2>Content Display</h2>
+<div class="component-showcase">
+<h3><file-folder></file-folder></h3>
+<p class="description">A simple representation of a file folder with a label and optional icon.</p>
+<div class="examples">
+<div class="example-item"> <file-folder icon="fas fa-file-alt" label="Future Vision"></file-folder> </div>
+<div class="example-item"> <file-folder icon="fas fa-microchip" label="Smart Sensors"></file-folder> </div>
+<div class="example-item"> <file-folder icon="fas fa-users" label="User Personas"></file-folder> </div>
+</div>
+<div class="usage">
+<h4>Usage:</h4>
+<pre><code><file-folder icon="fas fa-file-alt" label="Document Title"></file-folder></code></pre>
+<h4>Attributes:</h4>
+<ul>
+<li><code>label</code>: (String) The text label for the folder. Required.</li>
+<li><code>icon</code>: (String) Font Awesome class names for the icon. Optional (defaults to "fas fa-file-alt").</li>
+</ul>
+</div>
+</div>
+<div class="component-showcase">
+<h3><persona-card></persona-card></h3>
+<p class="description">Displays information about a persona, including name, description, and an icon.</p>
+<div class="examples">
+<div class="example-item"> <persona-card description="Knows all the campus secrets" icon="fas fa-hat-wizard" name="Dumpster Wizard"></persona-card> </div>
+<div class="example-item"> <persona-card description="Always brewing drama" icon="fas fa-mug-hot" name="Gen Z Kettle"></persona-card> </div>
+<div class="example-item"> <persona-card description="Demands perfect conditions" icon="fas fa-coffee" name="Coffee Machine Diva"></persona-card> </div>
+</div>
+<div class="usage">
+<h4>Usage:</h4>
+<pre><code><persona-card description="Short description" icon="fas fa-user" name="Persona Name"></persona-card></code></pre>
+<h4>Attributes:</h4>
+<ul>
+<li><code>name</code>: (String) The name of the persona. Required.</li>
+<li><code>description</code>: (String) A short description. Required.</li>
+<li><code>icon</code>: (String) Font Awesome class names for the persona's icon. Required.</li>
+</ul>
+</div>
+</div>
+<div class="component-showcase">
+<h3><feedback-item></feedback-item></h3>
+<p class="description">Displays a single piece of feedback, typically with source, text, and an icon.</p>
+<div class="examples">
+<div class="example-item" style="width: 80%;">
+<feedback-item source="Student" text="The AI assistant is helpful but sometimes too chatty"></feedback-item>
+</div>
+<div class="example-item" style="width: 80%;">
+<feedback-item icon="fas fa-chalkboard-teacher" source="Faculty Notes" text="Room booking system needs clearer visual feedback"></feedback-item>
+</div>
+<div class="example-item" style="width: 80%;">
+<feedback-item icon="fas fa-triangle-exclamation" source="System Log" text="Sensor offline in Room 101"></feedback-item>
+</div>
+</div>
+<div class="usage">
+<h4>Usage:</h4>
+<pre><code><feedback-item icon="fas fa-comment" source="User Type" text="Feedback content here"></feedback-item></code></pre>
+<h4>Attributes:</h4>
+<ul>
+<li><code>source</code>: (String) Who or what provided the feedback. Required.</li>
+<li><code>text</code>: (String) The feedback content. Required.</li>
+<li><code>icon</code>: (String) Font Awesome class names. Optional (defaults based on source: user/teacher/comment).</li>
+</ul>
+</div>
+</div>
+<div class="component-showcase">
+<h3><highlight-item></highlight-item></h3>
+<p class="description">Showcases a key achievement or highlight, with category, text, and icon.</p>
+<div class="examples">
+<div class="example-item" style="width: 80%;">
+<highlight-item category="Implementation" icon="fas fa-check-circle" text="Core features deployed in CODE building"></highlight-item>
+</div>
+<div class="example-item" style="width: 80%;">
+<highlight-item category="Innovation" icon="fas fa-lightbulb" text="5 patent applications filed"></highlight-item>
+</div>
+<div class="example-item" style="width: 80%;">
+<highlight-item category="Impact" icon="fas fa-graduation-cap" text="Adopted as part of CODE curriculum"></highlight-item>
+</div>
+</div>
+<div class="usage">
+<h4>Usage:</h4>
+<pre><code><highlight-item category="Milestone" icon="fas fa-flag-checkered" text="Project phase complete"></highlight-item></code></pre>
+<h4>Attributes:</h4>
+<ul>
+<li><code>category</code>: (String) The category of the highlight. Required.</li>
+<li><code>text</code>: (String) The description of the highlight. Required.</li>
+<li><code>icon</code>: (String) Font Awesome class names. Required.</li>
+</ul>
+</div>
+</div>
+</section>
+<!-- ============================ -->
+<!-- Specialized Visuals        -->
+<!-- ============================ -->
+<section class="component-group">
+<h2>Specialized Visuals</h2>
+<div class="component-showcase">
+<h3><tech-diagram></tech-diagram></h3>
+<p class="description">Renders a simple linear flow diagram based on node data.</p>
+<div class="examples">
+<div class="example-item" style="width: 90%;">
+<tech-diagram nodes='[{"icon":"fas fa-comment-dots","label":"Dialogflow"},{"icon":"fas fa-brain","label":"Vertex AI"},{"icon":"fas fa-cloud","label":"CloudRun"}]'></tech-diagram>
+</div>
+<div class="example-item" style="width: 60%;">
+<tech-diagram nodes='[{"icon":"fas fa-microphone","label":"Input"},{"icon":"fas fa-cogs","label":"Processing"}]'></tech-diagram>
+</div>
+</div>
+<div class="usage">
+<h4>Usage:</h4>
+<pre><code><tech-diagram nodes='[{"icon":"fas fa-box","label":"Step 1"},{"icon":"fas fa-arrow-right","label":"Step 2"}]'></tech-diagram></code></pre>
+<h4>Attributes:</h4>
+<ul>
+<li><code>nodes</code>: (JSON String Array) JSON array of node objects. Each needs `label` (String) and `icon` (String - FA class). Required.</li>
+<!-- <li><code>connections</code>: (JSON String Array) Optional for more complex diagrams (not fully implemented in basic version).</li> -->
+</ul>
+</div>
+</div>
+</section>
+<!-- ============================ -->
+<!-- Composite Components         -->
+<!-- ============================ -->
+<section class="component-group">
+<h2>Composite</h2>
+<div class="component-showcase">
+<h3><timeline-event-card></timeline-event-card></h3>
+<p class="description">A complex component representing a single event on a timeline. It dynamically renders other components (like stamps, notes, diagrams) based on its `visuals` data.</p>
+<div class="examples">
+<div class="example-item" style="width: 95%;">
+<timeline-event-card date="November 2024" description="Professor-led, multi-departmental initiative..." key-elements='["Multi-departmental (ID, SE, PM)","Student involvement"]' title="Project Approval" visuals='[{"type":"stamp","text":"PROJECT APPROVED"},{"type":"sticky-note","text":"Mix of ID, SE, and PM students"}]'></timeline-event-card>
+</div>
+<div class="example-item" style="width: 95%;">
+<timeline-event-card ]'="" booked?'"}="" campus,="" date="January 2025" description="Technical foundation laid using Google Cloud services..." is="" room="" this="" title="Kickoff &amp; Architecture Setup" visuals='[
+                                 {"type": "diagram", "nodes": [{"icon": "fas fa-comment-dots", "label": "Dialogflow"}, {"icon": "fas fa-brain", "label": "Vertex AI"}, {"icon": "fas fa-cloud", "label": "CloudRun"}]},
+                                 {"type": "speech-bubble", "text": "'></timeline-event-card>
+</div>
+</div>
+<div class="usage">
+<h4>Usage:</h4>
+<pre><code><timeline-event-card date="Event Date" description="Event description..." key-elements='["Point 1","Point 2"]' title="Event Title" visuals='[{"type":"stamp","text":"STATUS"},{"type":"sticky-note","title":"Note","items":["Detail"]},{"type":"tag","text":"Category"}]'></timeline-event-card></code></pre>
+<h4>Attributes:</h4>
+<ul>
+<li><code>date</code>: (String) Date of the event. Required.</li>
+<li><code>title</code>: (String) Title of the event. Required.</li>
+<li><code>description</code>: (String) Main description text. Optional.</li>
+<li><code>key-elements</code>: (JSON String Array) List of key points for the event. Optional.</li>
+<li><code>visuals</code>: (JSON String Array) Array of visual objects to render. Each object needs a `type` (String, e.g., "stamp", "sticky-note", "diagram") and other attributes specific to that type. Optional.</li>
+</ul>
+</div>
+</div>
+</section>
+<footer>
+<p>Design System Poster for CODE Smart Campus Project</p>
+</footer>
+</div> <!-- /poster-container -->
+</body>
+</html>

@@ -1,0 +1,194 @@
+/* poster.css */
+@import url("https://fonts.googleapis.com/css2?family=Architects+Daughter&family=Roboto+Mono:wght@400;700&display=swap");
+
+/* 1. Define Global CSS Variables (Crucial!) */
+:root {
+    --blueprint-bg: #0a192f;
+    --blueprint-light: #172a45;
+    --blueprint-line: #64ffda;
+    --blueprint-text: #e6f1ff;
+    --font-body: "Roboto Mono", monospace;
+    --font-handwriting: "Architects Daughter", cursive;
+    --color-yellow-note: #fffacd;
+    --color-yellow-icon: #fbbf24;
+    --color-blue-icon: #60a5fa;
+    --color-purple-icon: #c084fc;
+    --color-red-icon: #f87171;
+    --color-orange-icon: #fb923c;
+    --color-brown-icon: #a16207; /* Approximation */
+    --color-green-icon: #4ade80;
+    --pin-color-default: var(--color-red-icon);
+    --icon-color-default: var(
+        --blueprint-line
+    ); /* Default for icon-component if not set */
+    --code-bg: #2d2d2d; /* Background for code snippets */
+    --border-color-light: rgba(
+        100,
+        255,
+        218,
+        0.2
+    ); /* Lighter border for structure */
+}
+
+/* 2. Basic Body & Poster Styles */
+body {
+    font-family: var(--font-body);
+    background-color: var(--blueprint-bg);
+    color: var(--blueprint-text);
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+}
+
+.blueprint-grid {
+    background-image:
+        linear-gradient(rgba(100, 255, 218, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(100, 255, 218, 0.05) 1px, transparent 1px);
+    background-size: 30px 30px;
+}
+
+.poster-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: rgba(10, 25, 47, 0.8); /* Slightly transparent bg */
+    border: 1px solid var(--border-color-light);
+}
+
+header {
+    text-align: center;
+    margin-bottom: 3rem;
+    border-bottom: 1px solid var(--border-color-light);
+    padding-bottom: 1.5rem;
+}
+
+header h1 {
+    font-family: var(--font-handwriting);
+    font-size: 2.5rem;
+    color: var(--blueprint-line);
+    margin-bottom: 0.5rem;
+}
+
+header .intro {
+    font-size: 1.1rem;
+    color: var(--blueprint-text);
+}
+
+/* 3. Component Grouping & Showcase Styles */
+.component-group {
+    margin-bottom: 3rem;
+}
+
+.component-group h2 {
+    font-family: var(--font-handwriting);
+    font-size: 2rem;
+    color: var(--blueprint-line);
+    border-bottom: 2px solid var(--blueprint-line);
+    padding-bottom: 0.5rem;
+    margin-bottom: 2rem;
+}
+
+.component-showcase {
+    background-color: var(--blueprint-light);
+    border: 1px solid var(--border-color-light);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    border-radius: 4px;
+}
+
+.component-showcase h3 {
+    font-family: var(--font-body); /* Use monospace for tag name */
+    font-size: 1.3rem;
+    color: var(--blueprint-text);
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    background-color: rgba(100, 255, 218, 0.1);
+    padding: 0.25rem 0.5rem;
+    display: inline-block;
+    border-radius: 3px;
+}
+
+.component-showcase .description {
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+    color: var(--blueprint-text);
+    opacity: 0.9;
+}
+
+/* 4. Examples Area Styles */
+.examples {
+    background-color: rgba(10, 25, 47, 0.7); /* Slightly darker */
+    border: 1px dashed var(--border-color-light);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    align-items: flex-start; /* Align items top */
+    border-radius: 3px;
+}
+
+.example-item {
+    /* Add specific sizing or layout per example if needed */
+    /* e.g., for components that need more width */
+}
+
+/* 5. Usage Area Styles */
+.usage {
+    background-color: rgba(100, 255, 218, 0.05);
+    padding: 1rem;
+    border-radius: 3px;
+    border: 1px solid var(--border-color-light);
+}
+
+.usage h4 {
+    font-size: 1rem;
+    color: var(--blueprint-line);
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+}
+
+.usage pre {
+    background-color: var(--code-bg);
+    color: #f0f0f0;
+    padding: 0.8rem 1rem;
+    border-radius: 4px;
+    overflow-x: auto; /* Allow horizontal scroll for long code */
+    font-size: 0.85rem;
+    margin-bottom: 1rem;
+}
+
+.usage code {
+    font-family: var(--font-body);
+}
+
+.usage ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.usage li {
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.usage li code {
+    background-color: rgba(100, 255, 218, 0.15);
+    color: var(--blueprint-line);
+    padding: 0.1rem 0.3rem;
+    border-radius: 3px;
+    font-size: 0.85rem;
+    margin-right: 0.5rem;
+}
+
+/* 6. Footer */
+footer {
+    text-align: center;
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color-light);
+    font-size: 0.9rem;
+    color: var(--blueprint-text);
+    opacity: 0.7;
+}
