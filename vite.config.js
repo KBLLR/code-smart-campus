@@ -17,6 +17,12 @@ export default defineConfig({
         changeOrigin: true,
         secure: true,
         rewrite: (path) => path.replace(/^\/api/, "/api"),
+        // Bypass proxy for classroom API routes (handled by vite.classroom-api.js plugin)
+        bypass: (req, res, options) => {
+          if (req.url.startsWith('/api/classrooms')) {
+            return req.url; // Don't proxy, let the plugin handle it
+          }
+        },
       },
     },
   },
