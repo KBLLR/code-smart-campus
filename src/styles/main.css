@@ -1683,3 +1683,8 @@ canvas {
     font-family: "Roboto Mono", monospace;
     font-weight: 500;
 }
+
+/* ============================================================================
+   Classroom Module Styles
+   ============================================================================ */
+@import "../css/classroom-view.css";
