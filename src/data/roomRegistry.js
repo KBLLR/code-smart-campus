@@ -1,5 +1,5 @@
 // AUTO-GENERATED from floorplan.svg
-// Generated: 2025-11-20T00:57:54.230Z
+// Generated: 2025-11-20T01:59:59.533Z
 // Do NOT edit by hand - regenerate with: node src/tools/generateRoomRegistry.js
 //
 // Source of truth: public/floorplan.svg
