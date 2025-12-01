@@ -13,13 +13,16 @@ export default defineConfig({
     open: true,
     proxy: {
       "/api": {
-        target: "https://rehvwt2m9uw7pkdyqcuta2lmai6wgzei.ui.nabu.casa",
+        // Phase-4 Mode: Proxy to genbooth orchestrator
+        // Dev Mode: Proxy to Home Assistant
+        target: process.env.VITE_API_PROXY_TARGET || "http://localhost:3001",
         changeOrigin: true,
-        secure: true,
+        secure: false,
         rewrite: (path) => path.replace(/^\/api/, "/api"),
-        // Bypass proxy for classroom API routes (handled by vite.classroom-api.js plugin)
+        // Bypass proxy for classroom API routes when using local plugin
         bypass: (req, res, options) => {
-          if (req.url.startsWith('/api/classrooms')) {
+          // Only bypass if using local Vite plugin (not Phase-4 mode)
+          if (process.env.VITE_USE_LOCAL_CLASSROOM_PLUGIN === 'true' && req.url.startsWith('/api/classrooms')) {
             return req.url; // Don't proxy, let the plugin handle it
           }
         },

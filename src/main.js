@@ -63,7 +63,7 @@ import {
   setSceneCapabilities,
   updateSceneCapabilities,
 } from "@config/capabilities.js";
-import { initClassroom } from "@/modules/classroom/init";
+// import { initClassroom } from "@/modules/classroom/init"; // DISABLED: Skip classroom selector, go directly to 3D view
 
 // --- Global Variables / State ---
 
@@ -424,11 +424,9 @@ window.addEventListener('resize', () => {
         hudManager.sync(labelManager.getLabels());
         console.log('  ✓ HUD synced with labels');
 
-        // Hide all label categories by default
-        ['generic', 'calendar', 'occupancy'].forEach(category => {
-          hudManager.setCategoryVisibility(category, false);
-        });
-        console.log('  ✓ Labels hidden by default (use toolbar to show)');
+        // Hide ALL labels by default (not just by category)
+        hudManager.hideAll();
+        console.log('  ✓ Labels hidden by default (show on hover)');
 
         // Wire picking events AFTER everything is ready
         if (typeof wirePickingPointerEvents === 'function') {
@@ -1454,12 +1452,13 @@ window.addEventListener("DOMContentLoaded", () => {
   }
 
   // Initialize classroom module (adds classroom selector UI)
-  try {
-    initClassroom();
-    console.log("✅ Classroom module initialized.");
-  } catch (error) {
-    console.error("❌ Failed to initialize classroom module:", error);
-  }
+  // DISABLED: Skip classroom selector to go directly to 3D campus view
+  // try {
+  //   initClassroom();
+  //   console.log("✅ Classroom module initialized.");
+  // } catch (error) {
+  //   console.error("❌ Failed to initialize classroom module:", error);
+  // }
   loader.updateText("Connecting to Home Assistant...");
   console.log("[Init] Attempting to connect WebSocket...");
 
@@ -1623,6 +1622,7 @@ function wirePickingPointerEvents() {
     if (!result.hit || !result.roomId) {
       if (currentlyHighlightedRoom && roomsManager) {
         roomsManager.highlightRoom(currentlyHighlightedRoom, false);
+        roomsManager.hideLabel(currentlyHighlightedRoom); // Hide label on hover out
         currentlyHighlightedRoom = null;
       }
       clearHighlight();
@@ -1635,11 +1635,13 @@ function wirePickingPointerEvents() {
     // Clear previous highlight if hovering a different room
     if (currentlyHighlightedRoom && currentlyHighlightedRoom !== result.roomId && roomsManager) {
       roomsManager.highlightRoom(currentlyHighlightedRoom, false);
+      roomsManager.hideLabel(currentlyHighlightedRoom); // Hide previous room's label
     }
 
     // Highlight the extruded geometry (visual block) instead of picking mesh
     if (roomsManager) {
       roomsManager.highlightRoom(result.roomId, true);
+      roomsManager.showLabel(result.roomId); // Show label on hover
       currentlyHighlightedRoom = result.roomId;
     } else {
       // Fallback to old method if RoomsManager not ready
@@ -1712,6 +1714,7 @@ function wirePickingPointerEvents() {
   canvas.addEventListener('pointerleave', () => {
     if (currentlyHighlightedRoom && roomsManager) {
       roomsManager.highlightRoom(currentlyHighlightedRoom, false);
+      roomsManager.hideLabel(currentlyHighlightedRoom); // Hide label when leaving canvas
       currentlyHighlightedRoom = null;
     }
     clearHighlight();

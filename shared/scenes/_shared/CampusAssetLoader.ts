@@ -2,17 +2,18 @@
  * shared/scenes/_shared/CampusAssetLoader.ts
  *
  * Modularized campus geometry loader
- * Extracts SVG→Floor→Rooms pipeline from main.js into a reusable, scene-agnostic module
+ * Supports both SVG and GLTF loading modes
  *
  * Responsibilities:
  * - Load Floor base geometry
- * - Load SVG and generate extruded classroom meshes
+ * - Load campus model (SVG or GLTF)
  * - Initialize materials via materialRegistry
  * - Return complete CampusAsset with full lifecycle management
  */
 
 import * as THREE from "three";
 import { SVGLoader } from "three/examples/jsm/loaders/SVGLoader.js";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
 
 /**
@@ -42,7 +43,9 @@ export interface CampusAsset {
  * Configuration for campus asset loading
  */
 export interface CampusAssetLoaderConfig {
+  mode?: "svg" | "gltf"; // Loading mode: SVG or GLTF
   svgURL?: string;
+  gltfURL?: string; // Path to GLTF/GLB model
   floorWidth?: number;
   floorHeight?: number;
   floorColor?: number;
@@ -56,7 +59,9 @@ export interface CampusAssetLoaderConfig {
  * Default configuration
  */
 const DEFAULT_CONFIG: Required<CampusAssetLoaderConfig> = {
+  mode: "gltf", // Use GLTF by default now
   svgURL: "/floorplan.svg",
+  gltfURL: "/models/campus.glb", // Default GLTF model path
   floorWidth: 320,
   floorHeight: 250,
   floorColor: 0x2b2b2b,
@@ -86,16 +91,19 @@ export class CampusAssetLoader {
   }
 
   /**
-   * Load complete campus asset (Floor + SVG rooms)
+   * Load complete campus asset (Floor + rooms from SVG or GLTF)
    */
   async load(): Promise<CampusAsset> {
-    console.log("[CampusAssetLoader] Loading campus geometry...");
+    console.log(`[CampusAssetLoader] Loading campus geometry (mode: ${this.config.mode})...`);
 
-    // Step 1: Create floor
-    const floorMesh = this.createFloor();
+    // Step 1: Create floor (only in SVG mode - GLTF has its own floor)
+    const floorMesh = this.config.mode === "svg" ? this.createFloor() : this.createDummyFloor();
 
-    // Step 2: Load SVG and generate rooms
-    const { roomGroup, roomMeshes, roomRegistry } = await this.loadRoomsFromSVG();
+    // Step 2: Load rooms (SVG or GLTF mode)
+    const { roomGroup, roomMeshes, roomRegistry } =
+      this.config.mode === "gltf"
+        ? await this.loadRoomsFromGLTF()
+        : await this.loadRoomsFromSVG();
 
     // Step 3: Create scene config
     const sceneConfig = {
@@ -122,7 +130,7 @@ export class CampusAssetLoader {
   // ============================================================================
 
   /**
-   * Create floor base geometry
+   * Create floor base geometry (SVG mode only)
    */
   private createFloor(): THREE.Mesh {
     const geometry = new THREE.PlaneGeometry(
@@ -141,6 +149,18 @@ export class CampusAssetLoader {
     mesh.receiveShadow = true;
 
     console.log("[CampusAssetLoader] Floor created");
+    return mesh;
+  }
+
+  /**
+   * Create dummy invisible floor (GLTF mode - model has its own floor)
+   */
+  private createDummyFloor(): THREE.Mesh {
+    const geometry = new THREE.PlaneGeometry(1, 1);
+    const material = new THREE.MeshBasicMaterial({ visible: false });
+    const mesh = new THREE.Mesh(geometry, material);
+    mesh.visible = false;
+    console.log("[CampusAssetLoader] Using GLTF floor (no separate floor mesh)");
     return mesh;
   }
 
@@ -237,6 +257,100 @@ export class CampusAssetLoader {
         undefined,
         (err) => {
           console.error("[CampusAssetLoader] SVG load failed:", err);
+          reject(err);
+        }
+      );
+    });
+  }
+
+  /**
+   * Load GLTF model and extract room meshes
+   */
+  private async loadRoomsFromGLTF(): Promise<{
+    roomGroup: THREE.Group;
+    roomMeshes: Map<string, THREE.Mesh>;
+    roomRegistry: Record<string, { meshKey: string; userData: any }>;
+  }> {
+    return new Promise((resolve, reject) => {
+      const loader = new GLTFLoader();
+      const roomMeshes = new Map<string, THREE.Mesh>();
+      const roomRegistry: Record<string, { meshKey: string; userData: any }> = {};
+
+      console.log(`[CampusAssetLoader] Loading GLTF from ${this.config.gltfURL}...`);
+
+      loader.load(
+        this.config.gltfURL,
+        (gltf) => {
+          try {
+            const roomGroup = gltf.scene;
+            roomGroup.name = "CampusRooms";
+
+            // Traverse the GLTF scene to find all meshes
+            roomGroup.traverse((object) => {
+              if (object instanceof THREE.Mesh) {
+                // Normalize mesh name to use as room key
+                const meshName = object.name;
+                const normId = meshName.toLowerCase().replace(/[^a-z0-9]/g, "");
+
+                if (normId) {
+                  // Store mesh reference
+                  roomMeshes.set(normId, object);
+
+                  // Get color for this room
+                  const colorHex = this.getRoomColor(normId);
+
+                  // Update mesh properties
+                  object.castShadow = true;
+                  object.receiveShadow = true;
+                  object.userData = {
+                    roomKey: normId,
+                    roomId: meshName,
+                    colorHex,
+                  };
+
+                  // Apply material from registry if needed
+                  // (You can customize this based on your material strategy)
+                  if (this.materialRegistry) {
+                    try {
+                      const material = this.materialRegistry.create("roomBase", {
+                        color: colorHex,
+                        transparent: true,
+                        opacity: 0.95,
+                        roughness: 0.5,
+                        metalness: 0.35,
+                        roomKey: normId,
+                      });
+                      object.material = material;
+                    } catch (e) {
+                      console.warn(`[CampusAssetLoader] Failed to apply material to ${meshName}:`, e);
+                      // Keep existing material from GLTF
+                    }
+                  }
+
+                  // Add to registry
+                  roomRegistry[normId] = {
+                    meshKey: normId,
+                    userData: object.userData,
+                  };
+
+                  console.log(`[CampusAssetLoader] Found room: ${meshName} → ${normId}`);
+                }
+              }
+            });
+
+            console.log(`[CampusAssetLoader] Loaded GLTF with ${roomMeshes.size} room meshes`);
+            resolve({ roomGroup, roomMeshes, roomRegistry });
+          } catch (e) {
+            console.error("[CampusAssetLoader] GLTF processing failed:", e);
+            reject(e);
+          }
+        },
+        (progress) => {
+          const percent = (progress.loaded / progress.total) * 100;
+          console.log(`[CampusAssetLoader] Loading GLTF: ${percent.toFixed(1)}%`);
+        },
+        (err) => {
+          console.error("[CampusAssetLoader] GLTF load failed:", err);
           reject(err);
         }
       );

@@ -386,8 +386,9 @@ function updateMoon(date = new Date()) {
 // Labels will be available after initializeRoomMeshesAndPicking() is called
 // layoutManager.labels will be populated when RoomsManager initializes
 
-const floor = new Floor(); // Add floor
-scene.add(floor.mesh);
+// DISABLED: Floor is now part of the GLTF model (campus.glb)
+// const floor = new Floor(); // Add floor
+// scene.add(floor.mesh);
 scene.add(sunController.object3d);
 syncSunAssets();
 applySunVisualConfig();

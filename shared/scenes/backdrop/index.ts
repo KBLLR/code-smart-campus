@@ -241,8 +241,10 @@ export class BackdropScene extends SceneBase {
     console.log("[BackdropScene] Loading campus geometry...");
 
     try {
-      // Load same campus asset
+      // Load same campus asset (GLTF mode)
       this.campusAsset = await loadCampusAsset(this.materialRegistry, {
+        mode: "gltf", // Use GLTF model instead of SVG
+        gltfURL: "/models/campus.glb",
         fogColor: "#0f0f0f",  // Darker backdrop
         fogDensity: 0.0015,
         backgroundColor: "#0a0a0a",

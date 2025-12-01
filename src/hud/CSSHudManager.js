@@ -213,6 +213,48 @@ export class CSSHudManager {
     });
   }
 
+  /**
+   * Hide all labels (regardless of category)
+   */
+  hideAll() {
+    this.labels.forEach(({ element }) => {
+      if (element) {
+        element.classList.add(this.options.hiddenClass);
+      }
+    });
+  }
+
+  /**
+   * Show all labels (regardless of category)
+   */
+  showAll() {
+    this.labels.forEach(({ element }) => {
+      if (element) {
+        element.classList.remove(this.options.hiddenClass);
+      }
+    });
+  }
+
+  /**
+   * Show specific label by entity ID
+   */
+  showLabel(entityId) {
+    const entry = this.labels.get(entityId);
+    if (entry && entry.element) {
+      entry.element.classList.remove(this.options.hiddenClass);
+    }
+  }
+
+  /**
+   * Hide specific label by entity ID
+   */
+  hideLabel(entityId) {
+    const entry = this.labels.get(entityId);
+    if (entry && entry.element) {
+      entry.element.classList.add(this.options.hiddenClass);
+    }
+  }
+
   dispose() {
     this._detachEventDelegates();
     this.labels.forEach(({ element }) => element?.remove());

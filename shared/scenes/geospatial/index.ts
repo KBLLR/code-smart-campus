@@ -302,8 +302,10 @@ export class GeospatialScene extends SceneBase {
     console.log("[GeospatialScene] Loading campus geometry...");
 
     try {
-      // Load campus asset (Floor + rooms from SVG)
+      // Load campus asset (Floor + rooms from GLTF)
       this.campusAsset = await loadCampusAsset(this.materialRegistry, {
+        mode: "gltf", // Use GLTF model instead of SVG
+        gltfURL: "/models/campus.glb",
         fogColor: "#13243d",
         fogDensity: 0.0009,
         backgroundColor: "#0f1419",

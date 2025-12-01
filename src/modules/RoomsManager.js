@@ -23,6 +23,7 @@
  */
 
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { roomRegistry } from '@data/roomRegistry.js';
 import entityLocations from '@data/entityLocations.json';
 import { generateRoundedBlocksFromSVG } from '@three/RoundedBlockGenerator.js';
@@ -36,11 +37,14 @@ import { cleanedLabelRegistry } from '@data/labelCollections.js';
  * Configuration for RoomsManager
  */
 export const ROOMS_CONFIG = {
+  mode: 'gltf', // 'svg' or 'gltf' - loading mode
   svgPath: '/floorplan.svg',
-  extrudedHeight: 250, // Height of 3D room blocks
+  gltfPath: '/models/campus.glb', // Path to GLTF model
+  extrudedHeight: 250, // Height of 3D room blocks (SVG mode only)
   pickingEnabled: true,
   entityBindingEnabled: true,
-  labelsEnabled: false, // Enable integrated label system
+  labelsEnabled: true, // Enable integrated label system
+  labelsHiddenByDefault: true, // Hide labels until room is hovered
   useSprites: false, // Use sprite-based labels (true) or anchor-based (false)
   debugMode: false,
 };
@@ -88,7 +92,8 @@ export class RoomsManager {
     }
 
     console.log('=== RoomsManager Initialization ===');
-    console.log(`  SVG source: ${this.config.svgPath}`);
+    console.log(`  Mode: ${this.config.mode}`);
+    console.log(`  Source: ${this.config.mode === 'gltf' ? this.config.gltfPath : this.config.svgPath}`);
     console.log(`  Registry entries: ${Object.keys(this.roomRegistry).length}`);
     console.log(`  Entity locations: ${this.entityLocations.length}`);
 
@@ -127,9 +132,20 @@ export class RoomsManager {
   }
 
   /**
-   * Load and generate extruded 3D geometry from SVG
+   * Load and generate 3D geometry (SVG or GLTF mode)
    */
   async loadExtrudedGeometry() {
+    if (this.config.mode === 'gltf') {
+      await this.loadFromGLTF();
+    } else {
+      await this.loadFromSVG();
+    }
+  }
+
+  /**
+   * Load extruded geometry from SVG
+   */
+  async loadFromSVG() {
     console.log('[RoomsManager] Loading extruded geometry from SVG...');
 
     this.extrudedGroup = await generateRoundedBlocksFromSVG(
@@ -144,22 +160,123 @@ export class RoomsManager {
   }
 
   /**
+   * Load geometry from GLTF model
+   */
+  async loadFromGLTF() {
+    console.log(`[RoomsManager] Loading GLTF model from ${this.config.gltfPath}...`);
+    const loader = new GLTFLoader();
+
+    // List of non-room objects to skip
+    const skipObjects = ['projection_live', 'projectionlive', 'walls', 'floor'];
+
+    let gltf;
+    try {
+      console.log('[RoomsManager] About to call loadAsync...');
+      // Use loadAsync for better async/await support
+      gltf = await loader.loadAsync(this.config.gltfPath, (progress) => {
+        const percent = (progress.loaded / progress.total) * 100;
+        console.log(`  Loading: ${percent.toFixed(1)}%`);
+      });
+      console.log('[RoomsManager] loadAsync completed');
+    } catch (loadError) {
+      console.error('[RoomsManager] loadAsync failed:', loadError);
+      throw new Error(`Failed to load GLTF file: ${loadError.message}`);
+    }
+
+    try {
+      console.log('[RoomsManager] GLTF object:', gltf);
+      console.log('[RoomsManager] GLTF properties:', Object.keys(gltf || {}));
+      console.log('[RoomsManager] GLTF.scene:', gltf?.scene);
+      console.log('[RoomsManager] GLTF.scenes:', gltf?.scenes);
+
+      // Blender exports might have scene in scenes[0] instead of scene
+      let sceneToUse = gltf.scene;
+      if (!sceneToUse && gltf.scenes && gltf.scenes.length > 0) {
+        sceneToUse = gltf.scenes[0];
+        console.log('[RoomsManager] Using scenes[0] from Blender export');
+      }
+
+      console.log('[RoomsManager] Scene to use:', sceneToUse);
+      console.log('[RoomsManager] GLTF loaded successfully:', {
+        hasScene: !!sceneToUse,
+        sceneType: sceneToUse?.type,
+        sceneChildren: sceneToUse?.children?.length,
+      });
+
+      // Check if we have a valid scene
+      if (!sceneToUse) {
+        throw new Error(`No valid scene found in GLTF. Available properties: ${Object.keys(gltf || {}).join(', ')}`);
+      }
+
+      // Use the GLTF scene directly as our room group (don't create a new group)
+      this.extrudedGroup = sceneToUse;
+      this.extrudedGroup.name = 'RoomsFromGLTF';
+
+      let meshCount = 0;
+
+      // Traverse GLTF scene and register room meshes (don't move them)
+      sceneToUse.traverse((object) => {
+        if (object.isMesh || object instanceof THREE.Mesh) {
+          meshCount++;
+          const meshName = object.name || `unnamed_${meshCount}`;
+          const normId = meshName.toLowerCase().replace(/[^a-z0-9]/g, '');
+
+          // Skip non-room objects (walls, projection_live, etc.)
+          if (skipObjects.includes(normId)) {
+            console.log(`  ⊗ Skipping non-room object: ${meshName}`);
+            // Hide non-room objects
+            object.visible = false;
+            return;
+          }
+
+          if (normId) {
+            // Store in mesh registry
+            this.meshRegistry[normId] = object;
+
+            // Setup mesh properties
+            object.castShadow = true;
+            object.receiveShadow = true;
+            object.userData.roomKey = normId;
+            object.userData.roomId = normId; // Use normalized ID for consistency
+
+            console.log(`  ✓ Found room mesh: ${meshName} → ${normId}`);
+          }
+
+          // Don't move the mesh - it stays in the GLTF scene hierarchy
+        }
+      });
+
+      this.scene.add(this.extrudedGroup);
+      console.log(`  ✓ Loaded GLTF with ${Object.keys(this.meshRegistry).length} room meshes`);
+
+    } catch (error) {
+      console.error('[RoomsManager] GLTF load/processing failed:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Create invisible picking meshes positioned at registry coordinates
+   * In GLTF mode, use the GLTF meshes directly for picking
    */
   createPickingMeshes() {
     console.log('[RoomsManager] Creating picking meshes...');
 
     try {
-      const { meshes, group } = createRoomMeshes(this.roomRegistry, this.entityLocations);
-
-      this.roomMeshes = meshes;
-      this.pickingGroup = group;
-
-      // Add group to scene (meshes are children of group)
-      this.scene.add(group);
-
-      console.log(`  ✓ Created ${this.roomMeshes.length} picking meshes`);
-      console.log(`  ✓ Applied coordinate transform to match extruded geometry`);
+      if (this.config.mode === 'gltf') {
+        // In GLTF mode, use the actual GLTF meshes for picking
+        this.roomMeshes = Object.values(this.meshRegistry);
+        this.pickingGroup = this.extrudedGroup; // Use the GLTF group directly
+        console.log(`  ✓ Using ${this.roomMeshes.length} GLTF meshes for picking`);
+      } else {
+        // In SVG mode, create separate picking meshes from registry
+        const { meshes, group } = createRoomMeshes(this.roomRegistry, this.entityLocations);
+        this.roomMeshes = meshes;
+        this.pickingGroup = group;
+        this.scene.add(group);
+        console.log(`  ✓ Created ${this.roomMeshes.length} picking meshes`);
+        console.log(`  ✓ Applied coordinate transform to match extruded geometry`);
+      }
     } catch (error) {
       // createRoomMeshes fails hard if any rooms are missing
       console.error('[RoomsManager] Failed to create picking meshes:', error.message);
@@ -201,7 +318,90 @@ export class RoomsManager {
 
     this.labelManager.injectLabels();
 
-    console.log('  ✓ Label system ready');
+    // Hide all labels initially if configured
+    if (this.config.labelsHiddenByDefault) {
+      this.hideAllLabels();
+      console.log('  ✓ Labels created (hidden by default, show on hover)');
+    } else {
+      console.log('  ✓ Label system ready');
+    }
+  }
+
+  /**
+   * Hide all labels
+   */
+  hideAllLabels() {
+    if (!this.labelManager) return;
+
+    // Handle both sprite labels (object) and anchor labels (object)
+    if (this.labelManager.labels && typeof this.labelManager.labels === 'object') {
+      Object.values(this.labelManager.labels).forEach((label) => {
+        if (label && label.element) {
+          label.element.style.display = 'none';
+        }
+      });
+    }
+
+    // Also handle anchor-based labels
+    if (this.labelManager.anchors && typeof this.labelManager.anchors === 'object') {
+      Object.values(this.labelManager.anchors).forEach((anchor) => {
+        if (anchor && anchor.userData && anchor.userData.labelElement) {
+          anchor.userData.labelElement.style.display = 'none';
+        }
+      });
+    }
+  }
+
+  /**
+   * Show label for specific room
+   */
+  showLabel(roomId) {
+    if (!this.labelManager) return;
+
+    // Normalize room ID
+    const normId = roomId.toLowerCase().replace(/[^a-z0-9]/g, '');
+
+    // Try sprite labels first
+    if (this.labelManager.labels && this.labelManager.labels[normId]) {
+      const label = this.labelManager.labels[normId];
+      if (label && label.element) {
+        label.element.style.display = 'block';
+      }
+    }
+
+    // Also try anchor-based labels
+    if (this.labelManager.anchors && this.labelManager.anchors[normId]) {
+      const anchor = this.labelManager.anchors[normId];
+      if (anchor && anchor.userData && anchor.userData.labelElement) {
+        anchor.userData.labelElement.style.display = 'block';
+      }
+    }
+  }
+
+  /**
+   * Hide label for specific room
+   */
+  hideLabel(roomId) {
+    if (!this.labelManager) return;
+
+    // Normalize room ID
+    const normId = roomId.toLowerCase().replace(/[^a-z0-9]/g, '');
+
+    // Try sprite labels first
+    if (this.labelManager.labels && this.labelManager.labels[normId]) {
+      const label = this.labelManager.labels[normId];
+      if (label && label.element) {
+        label.element.style.display = 'none';
+      }
+    }
+
+    // Also try anchor-based labels
+    if (this.labelManager.anchors && this.labelManager.anchors[normId]) {
+      const anchor = this.labelManager.anchors[normId];
+      if (anchor && anchor.userData && anchor.userData.labelElement) {
+        anchor.userData.labelElement.style.display = 'none';
+      }
+    }
   }
 
   /**
