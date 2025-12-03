@@ -18,7 +18,8 @@ export class CampusReportManager {
     this.baseUrl = 'http://localhost:3001/api/mlx/chat'; // Proxy to MLX
 
     // Model configuration (using available MLX models)
-    this.cerberusModel = 'mlx-community/Jinx-gpt-oss-20b-mxfp4-mlx';  // GPT-OSS 20B with Harmony format
+    // TODO: Switch to GPT-OSS 20B when tier2-orchestrator is running
+    this.cerberusModel = 'mlx-community/Phi-3-mini-4k-instruct-4bit';  // Phi-3 Mini (temp, works with current MLX)
     this.classroomModel = 'mlx-community/Phi-3-mini-4k-instruct-4bit';  // Phi-3 Mini 4bit for classrooms
 
     // Cache for classroom reports
