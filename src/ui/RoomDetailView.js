@@ -14,6 +14,8 @@ import { HologramMaterial } from '../materials/HologramMaterial.js';
 import { AudioWave } from './components/AudioWave.js';
 import { GraphManager } from '../managers/GraphManager.js';
 import { CloseButton } from './components/CloseButton.js';
+import { VoiceChatService } from '../services/VoiceChatService.js';
+import { RadialAudioGraph } from './components/RadialAudioGraph.js';
 
 export class RoomDetailView extends Interface {
     constructor() {
@@ -25,9 +27,15 @@ export class RoomDetailView extends Interface {
         this.hologramMesh = null;
         this.originalMaterials = new Map();
         this.graphManager = new GraphManager();
+        this.voiceService = new VoiceChatService();
+        this.mediaRecorder = null;
+        this.audioChunks = [];
+        this.recording = false;
+        this.voiceConfigured = Boolean(import.meta.env.VITE_VOICE_API_URL);
 
         this.init();
         this.initViews();
+        this._bindEvents();
     }
 
     init() {
@@ -146,6 +154,10 @@ export class RoomDetailView extends Interface {
         this.audioWave = new AudioWave({ width: 300, height: 40, color: '#00d1ff' });
         this.rightPanel.add(this.audioWave);
 
+        // Radial Audio Graph
+        this.radialGraph = new RadialAudioGraph({ size: 160 });
+        this.rightPanel.add(this.radialGraph);
+
         // Chat History
         this.chatHistory = new Interface('.chat-history');
         this.chatHistory.css({
@@ -240,6 +252,112 @@ export class RoomDetailView extends Interface {
 
         // 4. Start Audio Wave
         this.audioWave.start();
+    }
+
+    _bindEvents() {
+        this.micBtn.element.addEventListener('click', () => {
+            if (this.recording) {
+                this._stopRecording();
+            } else {
+                this._startRecording();
+            }
+        });
+    }
+
+    async _startRecording() {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            this.audioChunks = [];
+            this.mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+            // Attach analyser to stream for radial graph
+            this.radialGraph.attachStream(stream);
+            this.mediaRecorder.ondataavailable = (e) => {
+                if (e.data.size > 0) this.audioChunks.push(e.data);
+            };
+            this.mediaRecorder.onstop = () => {
+                stream.getTracks().forEach(t => t.stop());
+                this._sendVoiceMessage();
+                this.radialGraph.stop();
+            };
+            this.mediaRecorder.start();
+            this.recording = true;
+            this.micBtn.css({ background: 'rgba(255, 99, 99, 0.15)', border: '1px solid rgba(255,99,99,0.4)', color: '#ff6b6b' });
+        } catch (error) {
+            console.error('[RoomDetailView] Mic access failed:', error);
+        }
+    }
+
+    _stopRecording() {
+        if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
+            this.mediaRecorder.stop();
+        }
+        this.recording = false;
+        this.micBtn.css({ background: 'rgba(0, 209, 255, 0.1)', border: '1px solid rgba(0, 209, 255, 0.3)', color: '#00d1ff' });
+    }
+
+    async _sendVoiceMessage() {
+        if (!this.voiceConfigured) {
+            const warn = new Interface('.chat-msg');
+            warn.text('System: Voice service not configured. Set VITE_VOICE_API_URL / VOICE_API_URL.');
+            warn.css({ color: '#fca5a5' });
+            this.chatHistory.add(warn);
+            return;
+        }
+
+        if (!this.currentRoomId || this.audioChunks.length === 0) return;
+
+        const pending = new Interface('.chat-msg');
+        pending.text('You: (voice message)');
+        pending.css({ color: 'var(--ui-color)', opacity: 0.8 });
+        this.chatHistory.add(pending);
+
+        const blob = new Blob(this.audioChunks, { type: 'audio/webm' });
+        const roomData = this.roomsManager?.rooms.get(this.currentRoomId);
+        const voiceId = roomData?.agent?.personality?.voice || 'af_bella';
+
+        try {
+            const result = await this.voiceService.sendAudio({
+                roomId: this.currentRoomId,
+                agentId: roomData?.agent?.id || this.currentRoomId,
+                voiceId,
+                audioBlob: blob
+            });
+
+            if (result.transcript) {
+                const userMsg = new Interface('.chat-msg');
+                userMsg.text(`You: ${result.transcript}`);
+                userMsg.css({ color: 'var(--ui-color)', opacity: 0.8 });
+                this.chatHistory.add(userMsg);
+            }
+
+            if (result.response_text) {
+                const agentMsg = new Interface('.chat-msg');
+                agentMsg.text(`${roomData?.agent?.name || 'Agent'}: ${result.response_text}`);
+                agentMsg.css({ color: '#7dd3fc' });
+                this.chatHistory.add(agentMsg);
+            }
+
+            if (result.model === 'placeholder') {
+                const warn = new Interface('.chat-msg');
+                warn.text('System: Voice backend returned placeholder. Check VOICE_API_URL.');
+                warn.css({ color: '#fca5a5' });
+                this.chatHistory.add(warn);
+            }
+
+            if (result.audio_base64) {
+                const audio = new Audio(`data:audio/wav;base64,${result.audio_base64}`);
+                audio.play().catch(err => console.warn('Audio play failed:', err));
+            } else if (result.audio_url) {
+                const audio = new Audio(result.audio_url);
+                audio.play().catch(err => console.warn('Audio play failed:', err));
+            }
+        } catch (error) {
+            console.error('[RoomDetailView] Voice send failed:', error);
+            const errMsg = new Interface('.chat-msg');
+            errMsg.text(`System: Voice request failed (${error.message})`);
+            errMsg.css({ color: '#fca5a5' });
+            this.chatHistory.add(errMsg);
+        }
     }
 
     updateContent(roomId) {

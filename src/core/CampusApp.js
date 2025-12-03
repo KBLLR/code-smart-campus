@@ -21,7 +21,10 @@ import { downloadJSON, downloadYAML } from '../utils/downloadHelper.js';
 import { CampusHeader } from '../ui/hud/CampusHeader.js';
 import { CampusMetrics } from '../ui/hud/CampusMetrics.js';
 import { RoomHoverPanel } from '../ui/hud/RoomHoverPanel.js';
+import { HeaderBar } from '../ui/hud/HeaderBar.js';
 import { classroomRegistry } from '../models/ClassroomRegistry.js';
+import classroomsWithSensors from '../data/classrooms/classrooms-with-sensors.js';
+import { RadialGlowBackground } from '../visuals/RadialGlowBackground.js';
 
 export class CampusApp {
   constructor(options = {}) {
@@ -48,6 +51,8 @@ export class CampusApp {
     this.campusHeader = null;
     this.campusMetrics = null;
     this.roomHoverPanel = null;
+    this.headerBar = null;
+    this.radialBackground = null;
     this.classroomRegistry = classroomRegistry;
 
     // State
@@ -76,6 +81,11 @@ export class CampusApp {
 
     // Initialize room manager with loaded model
     this.roomManager = new RoomManager(this.scene, campusModel);
+    // Ensure GLB doesn't override background/environment
+    this.scene.background = null;
+    this.scene.environment = null;
+    // Radial glow background (Alien.js-inspired)
+    this.radialBackground = new RadialGlowBackground(this.scene, this.camera);
 
     // Initialize sensor manager and connectors
     this._setupSensorSystem();
@@ -122,9 +132,11 @@ export class CampusApp {
     this.stop();
 
     // Dispose subsystems
+    this.headerBar?.destroy();
     this.campusHeader?.destroy();
     this.campusMetrics?.destroy();
     this.roomHoverPanel?.destroy();
+    this.radialBackground?.dispose();
     this.sensorSyncService?.dispose();
     this.sensorManager?.dispose();
     this.point3DManager?.dispose();
@@ -144,8 +156,7 @@ export class CampusApp {
 
   _setupScene() {
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color(0x0f1419);
-    this.scene.fog = new THREE.FogExp2(0x13243d, 0.0009);
+        this.scene.fog = new THREE.FogExp2(0x13243d, 0.0009);
     console.log('[CampusApp] Scene created');
   }
 
@@ -165,8 +176,10 @@ export class CampusApp {
     this.renderer = new THREE.WebGLRenderer({
       canvas: this.canvas,
       antialias: true,
-      alpha: false,
+      alpha: true,
     });
+    this.renderer.setClearColor(0x000000, 0);
+    this.renderer.autoClear = false;
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this.renderer.shadowMap.enabled = true;
@@ -314,12 +327,16 @@ export class CampusApp {
   }
 
   async _loadClassroomData() {
-    // Classroom data loading removed as per request
-    console.log('[CampusApp] No classroom data loaded (lab-a.json removed)');
+    classroomsWithSensors.forEach(room => {
+      this.classroomRegistry.register(room);
+    });
+    console.log(`[CampusApp] Loaded ${this.classroomRegistry.count} classrooms (sensors + metadata)`);
   }
+
 
   _setupUI() {
     // HUD Components (Space.js)
+    this.headerBar = new HeaderBar();
     this.campusHeader = new CampusHeader(this.classroomRegistry, this.sensorManager);
     window.campusHeader = this.campusHeader; // Expose for legacy UI toggling
 
@@ -390,6 +407,7 @@ export class CampusApp {
     this.camera.aspect = window.innerWidth / window.innerHeight;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(window.innerWidth, window.innerHeight);
+    this.radialBackground?.handleResize(window.innerWidth, window.innerHeight);
   }
 
   _onCanvasClick(event) {
@@ -429,6 +447,14 @@ export class CampusApp {
 
     // Update room manager
     this.roomManager?.update(delta);
+
+    // Render radial glow background first (full-screen pass)
+    this.renderer.clear();
+    this.radialBackground?.render(this.renderer);
+    this.renderer.clearDepth();
+
+    // Update radial background
+    this.radialBackground?.update(time);
 
     // Update Point3D system (handles raycasting, positioning, animations, lines)
     this.point3DManager?.update(time);

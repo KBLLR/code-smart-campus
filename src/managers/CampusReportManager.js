@@ -15,12 +15,13 @@ export class CampusReportManager {
   constructor(classroomRegistry, snapshotService) {
     this.classroomRegistry = classroomRegistry;
     this.snapshotService = snapshotService;
-    this.baseUrl = 'http://localhost:3001/api/mlx/chat'; // Proxy to MLX
+    // Route through tier2 orchestrator (OpenAI-compatible surface)
+    this.baseUrl = import.meta.env.VITE_ORCHESTRATOR_URL
+      || 'http://localhost:8081/api/v1/chat/completions';
 
-    // Model configuration (using available MLX models)
-    // TODO: Switch to GPT-OSS 20B when tier2-orchestrator is running
-    this.cerberusModel = 'mlx-community/Phi-3-mini-4k-instruct-4bit';  // Phi-3 Mini (temp, works with current MLX)
-    this.classroomModel = 'mlx-community/Phi-3-mini-4k-instruct-4bit';  // Phi-3 Mini 4bit for classrooms
+    // Model configuration (use locally available MLX models from tier3b-mlx-rag)
+    this.cerberusModel = 'mlx-community/Jinx-gpt-oss-20b-mxfp4-mlx';  // Cerberus (Harmony)
+    this.classroomModel = 'mlx-community/Phi-3-mini-4k-instruct-4bit';  // Default classroom model (lightweight)
 
     // Cache for classroom reports
     this.reportCache = new Map();
@@ -93,7 +94,7 @@ export class CampusReportManager {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          model: this.classroomModel,  // Use Qwen 2.5 7B Instruct
+          model: this.classroomModel,  // Classroom LLM (local MLX)
           messages: [{
             role: 'system',
             content: classroom.agent.system.instructions
@@ -102,7 +103,7 @@ export class CampusReportManager {
             content: `Generate a brief status report for your classroom. Current state:\n${JSON.stringify(context, null, 2)}\n\nProvide a 1-sentence summary of the current state and activity.`
           }],
           temperature: 0.7,
-          maxTokens: 150
+          max_tokens: 150
         })
       });
 
@@ -111,11 +112,12 @@ export class CampusReportManager {
       }
 
       const result = await response.json();
+      const completionText = this._extractCompletionText(result);
       const report = {
         classroom_id: classroom.id,
         classroom_name: classroom.name,
         agent_name: classroom.agent.personality.name,
-        summary: result.completion,
+        summary: completionText,
         context,
         generated_at: new Date().toISOString()
       };
@@ -205,7 +207,7 @@ Synthesize the individual classroom reports into a unified campus narrative.`;
             }, null, 2)
           }],
           temperature: 0.8,
-          maxTokens: 400  // Increased for Harmony format (3 channels)
+          max_tokens: 400  // Increased for Harmony format (3 channels)
         })
       });
 
@@ -214,14 +216,15 @@ Synthesize the individual classroom reports into a unified campus narrative.`;
       }
 
       const result = await response.json();
+      const completionText = this._extractCompletionText(result);
 
       // Parse Harmony format response
-      const harmonyParsed = parseHarmonyResponse(result.completion);
+      const harmonyParsed = parseHarmonyResponse(completionText);
       const cerberusHeads = extractCerberusHeads(harmonyParsed.analysis);
 
       const reportData = {
         ok: true,
-        overview: getDisplayText(result.completion),  // Extract final channel for display
+        overview: getDisplayText(completionText),  // Extract final channel for display
         harmonyChannels: {
           analysis: harmonyParsed.analysis,
           commentary: harmonyParsed.commentary,
@@ -230,9 +233,9 @@ Synthesize the individual classroom reports into a unified campus narrative.`;
         cerberusHeads,  // Three-headed observations
         classroomReports,
         aggregateMetrics,
-        model: result.model,
+        model: result.model || this.cerberusModel,
         latencyMs: result.latencyMs,
-        rawResponse: result.completion,  // Keep raw for debugging
+        rawResponse: completionText,  // Keep raw for debugging
         timestamp: new Date().toISOString()
       };
 
@@ -363,5 +366,25 @@ Synthesize the individual classroom reports into a unified campus narrative.`;
    */
   clearCache() {
     this.reportCache.clear();
+  }
+
+  /**
+   * Extract completion text from orchestrator/MLX responses
+   */
+  _extractCompletionText(result) {
+    if (!result) return '';
+    if (typeof result.completion === 'string') {
+      return result.completion;
+    }
+
+    const choice = result.choices?.[0];
+    if (choice?.message?.content) {
+      return choice.message.content;
+    }
+    if (choice?.text) {
+      return choice.text;
+    }
+
+    return '';
   }
 }

@@ -104,17 +104,35 @@ export class CampusMetrics extends Interface {
     const data = this.getAggregateData();
 
     // Update occupancy
-    this.metrics.occupancy.valueEl.text(`${data.totalOccupancy}/${data.totalCapacity}`);
+    if (data.totalOccupancy === null) {
+      this.metrics.occupancy.valueEl.text('—');
+    } else if (data.totalCapacity > 0) {
+      this.metrics.occupancy.valueEl.text(`${data.totalOccupancy}/${data.totalCapacity}`);
+    } else {
+      this.metrics.occupancy.valueEl.text(`${data.totalOccupancy}`);
+    }
 
     // Update temperature
-    this.metrics.temperature.valueEl.text(`${data.avgTemperature.toFixed(1)}°C`);
+    if (data.avgTemperature === null) {
+      this.metrics.temperature.valueEl.text('—');
+    } else {
+      this.metrics.temperature.valueEl.text(`${data.avgTemperature.toFixed(1)}°C`);
+    }
 
     // Update CO2
-    this.metrics.co2.valueEl.text(`${data.avgCO2}ppm`);
+    if (data.avgCO2 === null) {
+      this.metrics.co2.valueEl.text('—');
+    } else {
+      this.metrics.co2.valueEl.text(`${data.avgCO2}ppm`);
+    }
 
     // Update active rooms
     const total = this.classroomRegistry.count;
-    this.metrics.active.valueEl.text(`${data.activeRooms}/${total} rooms`);
+    if (total === 0) {
+      this.metrics.active.valueEl.text('—');
+    } else {
+      this.metrics.active.valueEl.text(`${data.activeRooms}/${total} rooms`);
+    }
   }
 
   getAggregateData() {
@@ -132,20 +150,24 @@ export class CampusMetrics extends Interface {
       // Occupancy
       const occupancySensor = classroom.getSensor('occupancy');
       if (occupancySensor) {
-        totalOccupancy += occupancySensor.current_value || 0;
+        if (typeof occupancySensor.current_value === 'number') {
+          totalOccupancy += occupancySensor.current_value;
+        }
       }
-      totalCapacity += classroom.metadata.capacity || 0;
+      if (typeof classroom.metadata.capacity === 'number') {
+        totalCapacity += classroom.metadata.capacity;
+      }
 
       // Temperature
       const tempSensor = classroom.getSensor('temperature');
-      if (tempSensor && tempSensor.current_value) {
+      if (tempSensor && typeof tempSensor.current_value === 'number') {
         tempSum += tempSensor.current_value;
         tempCount++;
       }
 
       // CO2
       const co2Sensor = classroom.getSensor('co2');
-      if (co2Sensor && co2Sensor.current_value) {
+      if (co2Sensor && typeof co2Sensor.current_value === 'number') {
         co2Sum += co2Sensor.current_value;
         co2Count++;
       }
@@ -157,10 +179,10 @@ export class CampusMetrics extends Interface {
     });
 
     return {
-      totalOccupancy,
+      totalOccupancy: tempCount === 0 && co2Count === 0 && totalOccupancy === 0 && totalCapacity === 0 ? null : totalOccupancy,
       totalCapacity,
-      avgTemperature: tempCount > 0 ? tempSum / tempCount : 22,
-      avgCO2: co2Count > 0 ? Math.round(co2Sum / co2Count) : 450,
+      avgTemperature: tempCount > 0 ? tempSum / tempCount : null,
+      avgCO2: co2Count > 0 ? Math.round(co2Sum / co2Count) : null,
       activeRooms
     };
   }

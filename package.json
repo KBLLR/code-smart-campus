@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "npm run dev:vite",
     "server": "node server/index.js",
-    "dev:full": "concurrently \"npm run server\" \"npm run dev\" --names \"server,vite\" --prefix-colors \"blue,green\"",
+    "dev:vite": "vite",
+    "dev:full": "concurrently \"npm run server\" \"npm run dev:vite\" --names \"server,vite\" --prefix-colors \"blue,green\"",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx",

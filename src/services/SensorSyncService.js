@@ -91,6 +91,11 @@ export class SensorSyncService {
     const classroom = this.classroomRegistry.updateSensorByEntity(entityId, value, status);
 
     if (classroom) {
+      const sensor = classroom.sensors.find(s => s.entity_id === entityId);
+      if (sensor?.type === 'occupancy') {
+        classroom.setState({ occupied: Number(value) > 0 });
+      }
+
       // Add to history
       this._addToHistory(entityId, {
         timestamp: Date.now(),
