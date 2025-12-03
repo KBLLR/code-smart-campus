@@ -327,11 +327,11 @@ const prompt = formatRoomAgentPrompt(roomId, {
 - [ ] Create debugging tools for Harmony format
 
 ### Phase 2: Calendar Visualization (Week 3-4)
-- [ ] Improve ICS parser (timezones, recurrence, attendees)
-- [ ] Create 3D event visualization on room blocks
-- [ ] Build timeline scrubber for past/present/future
-- [ ] Add room availability checker
-- [ ] Implement color-coding by event type
+- [x] Improve ICS parser (timezones, recurrence, attendees)
+- [x] Create 3D event visualization on room blocks
+- [x] Build timeline scrubber for past/present/future
+- [x] Add room availability checker
+- [x] Implement color-coding by event type
 
 ### Phase 3: Analytics Dashboard (Week 5-6)
 - [ ] Room utilization statistics
@@ -370,7 +370,11 @@ const prompt = formatRoomAgentPrompt(roomId, {
 - Usage examples needed in documentation
 
 ### Calendar System
-- `src/utils/ICSParser.js` - ICS parser (60 lines)
+- `src/utils/ICSParser.js` - Basic ICS parser (60 lines)
+- `src/utils/ICSParser.enhanced.js` - Enhanced ICS parser with timezone/recurrence (438 lines) ✨
+- `src/ui/CalendarEventMarker.js` - 3D event markers with Point3D (679 lines) ✨
+- `src/ui/CalendarTimeline.js` - Timeline scrubber with Interface (673 lines) ✨
+- `src/ui/RoomAvailabilityPanel.js` - Room availability display (661 lines) ✨
 - `src/data/schemas/CalendarReservation.schema.json` - Data schema (300 lines)
 - `src/data/integrations/calendar/CODE_david.caballero@code.berlin.ics` - Live data
 
