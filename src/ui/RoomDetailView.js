@@ -16,6 +16,7 @@ import { GraphManager } from '../managers/GraphManager.js';
 import { CloseButton } from './components/CloseButton.js';
 import { VoiceChatService } from '../services/VoiceChatService.js';
 import { RadialAudioGraph } from './components/RadialAudioGraph.js';
+import { personalityLoader } from '../data/personalities/PersonalityLoader.js';
 
 export class RoomDetailView extends Interface {
     constructor() {
@@ -262,6 +263,14 @@ export class RoomDetailView extends Interface {
                 this._startRecording();
             }
         });
+
+        // Text chat input
+        this.chatInput.element.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && this.chatInput.element.value.trim()) {
+                this._sendTextMessage(this.chatInput.element.value.trim());
+                this.chatInput.element.value = '';
+            }
+        });
     }
 
     async _startRecording() {
@@ -293,6 +302,61 @@ export class RoomDetailView extends Interface {
         }
         this.recording = false;
         this.micBtn.css({ background: 'rgba(0, 209, 255, 0.1)', border: '1px solid rgba(0, 209, 255, 0.3)', color: '#00d1ff' });
+    }
+
+    async _sendTextMessage(text) {
+        if (!this.currentRoomId || !text) return;
+
+        // Add user message
+        const userMsg = new Interface('.chat-msg');
+        userMsg.text(`You: ${text}`);
+        userMsg.css({ color: 'var(--ui-color)', opacity: 0.8 });
+        this.chatHistory.add(userMsg);
+
+        // Get room personality data
+        const roomData = this.roomsManager?.rooms.get(this.currentRoomId);
+        const personality = personalityLoader.getMergedPersonality(this.currentRoomId);
+
+        try {
+            // Call MLX chat endpoint
+            const response = await fetch('/api/mlx/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    model: 'mlx-community/Jinx-gpt-oss-20b-mxfp4-mlx',
+                    messages: [
+                        {
+                            role: 'system',
+                            content: `You are ${personality?.['room-avatar'] || 'an agent'}, the ${personality?.trait || 'intelligent assistant'} of ${personality?.['room-name'] || this.currentRoomId}. ${personality?.base_story || ''} Your personality: ${personality?.want || ''} ${personality?.flaw || ''}`
+                        },
+                        {
+                            role: 'user',
+                            content: text
+                        }
+                    ],
+                    temperature: personality?.ocean?.temperature || 0.7,
+                    maxTokens: 150
+                })
+            });
+
+            const result = await response.json();
+
+            if (result.completion) {
+                const agentMsg = new Interface('.chat-msg');
+                agentMsg.text(`${personality?.['room-avatar'] || 'Agent'}: ${result.completion}`);
+                agentMsg.css({ color: '#7dd3fc' });
+                this.chatHistory.add(agentMsg);
+
+                // Scroll to bottom
+                this.chatHistory.element.scrollTop = this.chatHistory.element.scrollHeight;
+            }
+        } catch (error) {
+            console.error('[RoomDetailView] Text chat failed:', error);
+            const errMsg = new Interface('.chat-msg');
+            errMsg.text(`System: Chat request failed (${error.message})`);
+            errMsg.css({ color: '#fca5a5' });
+            this.chatHistory.add(errMsg);
+        }
     }
 
     async _sendVoiceMessage() {
@@ -363,17 +427,10 @@ export class RoomDetailView extends Interface {
     updateContent(roomId) {
         const roomData = this.roomsManager?.rooms.get(roomId);
         const displayName = roomData?.name || roomId.replace(/-/g, ' ');
+        const personality = personalityLoader.getMergedPersonality(roomId);
 
         this.roomTitle.text(displayName);
         this.roomSubtitle.text(`UNIT ID: ${roomId.toUpperCase()}`);
-
-        // Clean description of any potential "Harmony" artifacts
-        let description = roomData?.metadata?.description || "No description available for this unit.";
-        if (description.includes('<|start_header_id|>')) {
-            // Fallback if raw prompt leaked
-            description = "Smart Room Agent Active";
-        }
-        this.descBox.text(description);
 
         // Clear Metrics & Graphs
         this.metricsContainer.empty();
@@ -381,9 +438,159 @@ export class RoomDetailView extends Interface {
         this.chatHistory.empty();
         this.graphManager.clear(); // Clear managed graphs
 
+        // Clear right panel personality sections
+        this.rightPanel.remove(this.descBox);
+
+        // --- PERSONALITY TRAITS (3 characteristics) ---
+        if (personality) {
+            // Personality Header
+            const personalityHeader = new Interface('.personality-header');
+            personalityHeader.css({
+                width: '100%',
+                textAlign: 'center',
+                marginBottom: '15px',
+                pointerEvents: 'auto'
+            });
+
+            const agentName = new Interface('.agent-name');
+            agentName.text(personality['room-avatar'] || displayName);
+            agentName.css({
+                fontFamily: 'var(--ui-font-family)',
+                fontSize: '18px',
+                fontWeight: 'bold',
+                color: 'var(--ui-color)',
+                textTransform: 'uppercase',
+                letterSpacing: '2px',
+                marginBottom: '5px'
+            });
+            personalityHeader.add(agentName);
+
+            const agentIcon = new Interface('.agent-icon');
+            agentIcon.text(personality.icon || '🤖');
+            agentIcon.css({
+                fontSize: '32px',
+                marginBottom: '10px'
+            });
+            personalityHeader.add(agentIcon);
+
+            this.rightPanel.add(personalityHeader, 2); // Insert after audio wave
+
+            // 3 Personality Traits Box
+            const traitsBox = new Interface('.traits-box');
+            traitsBox.css({
+                width: '100%',
+                background: 'rgba(0, 0, 0, 0.4)',
+                border: '1px solid rgba(0, 209, 255, 0.3)',
+                borderRadius: '8px',
+                padding: '15px',
+                marginBottom: '15px',
+                pointerEvents: 'auto'
+            });
+
+            const traitsTitle = new Interface('.traits-title');
+            traitsTitle.text('Personality Profile');
+            traitsTitle.css({
+                fontFamily: 'var(--ui-font-family)',
+                fontSize: '11px',
+                fontWeight: 'bold',
+                color: 'var(--ui-color)',
+                textTransform: 'uppercase',
+                letterSpacing: '1px',
+                marginBottom: '12px',
+                textAlign: 'center'
+            });
+            traitsBox.add(traitsTitle);
+
+            // Trait 1: Core Trait
+            this._addTraitRow(traitsBox, 'Trait', personality.trait || 'Unknown');
+
+            // Trait 2: Want/Flow
+            this._addTraitRow(traitsBox, 'Flow', personality.want || 'Unknown desires');
+
+            // Trait 3: Flaw
+            this._addTraitRow(traitsBox, 'Want', personality.flaw || 'Unknown flaw');
+
+            this.rightPanel.add(traitsBox, 3);
+
+            // OCEAN Scores
+            if (personality.ocean) {
+                const oceanBox = new Interface('.ocean-box');
+                oceanBox.css({
+                    width: '100%',
+                    background: 'rgba(0, 0, 0, 0.4)',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    borderRadius: '8px',
+                    padding: '15px',
+                    marginBottom: '15px',
+                    pointerEvents: 'auto'
+                });
+
+                const oceanTitle = new Interface('.ocean-title');
+                oceanTitle.text('OCEAN Framework');
+                oceanTitle.css({
+                    fontFamily: 'var(--ui-font-family)',
+                    fontSize: '11px',
+                    fontWeight: 'bold',
+                    color: 'var(--ui-secondary-color)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '1px',
+                    marginBottom: '10px',
+                    textAlign: 'center'
+                });
+                oceanBox.add(oceanTitle);
+
+                const ffm = personality.ocean.ffm;
+                this._addOceanBar(oceanBox, 'O', 'Openness', ffm.O);
+                this._addOceanBar(oceanBox, 'C', 'Conscientiousness', ffm.C);
+                this._addOceanBar(oceanBox, 'E', 'Extraversion', ffm.E);
+                this._addOceanBar(oceanBox, 'A', 'Agreeableness', ffm.A);
+                this._addOceanBar(oceanBox, 'N', 'Neuroticism', ffm.N);
+
+                this.rightPanel.add(oceanBox, 4);
+            }
+
+            // Base Story / Description
+            this.descBox = new Interface('.desc-box');
+            this.descBox.css({
+                width: '100%',
+                fontFamily: 'var(--ui-font-family)',
+                fontSize: '11px',
+                lineHeight: '1.6',
+                color: 'var(--ui-secondary-color)',
+                background: 'rgba(0,0,0,0.3)',
+                padding: '15px',
+                borderRadius: '8px',
+                border: '1px solid rgba(255,255,255,0.1)',
+                maxHeight: '200px',
+                overflowY: 'auto',
+                pointerEvents: 'auto'
+            });
+
+            const storyText = personality.base_story || roomData?.metadata?.description || "No origin story available.";
+            this.descBox.text(storyText);
+            this.rightPanel.add(this.descBox, 5);
+        } else {
+            // Fallback if no personality data
+            this.descBox = new Interface('.desc-box');
+            this.descBox.css({
+                width: '100%',
+                fontFamily: 'var(--ui-font-family)',
+                fontSize: '12px',
+                lineHeight: '1.6',
+                color: 'var(--ui-secondary-color)',
+                background: 'rgba(0,0,0,0.3)',
+                padding: '15px',
+                borderRadius: '8px',
+                border: '1px solid rgba(255,255,255,0.1)',
+                pointerEvents: 'auto'
+            });
+            this.descBox.text(roomData?.metadata?.description || "Smart Room Agent Active");
+            this.rightPanel.add(this.descBox, 2);
+        }
+
         // Add Welcome Message
         const welcomeMsg = new Interface('.chat-msg');
-        welcomeMsg.text(`System: Connected to ${displayName} agent.`);
+        welcomeMsg.text(`System: Connected to ${personality?.['room-avatar'] || displayName} agent.`);
         welcomeMsg.css({ color: 'var(--ui-color)', opacity: 0.7 });
         this.chatHistory.add(welcomeMsg);
 
@@ -538,6 +745,102 @@ export class RoomDetailView extends Interface {
             rimColor: 0xffffff,
             scanlineScale: 80.0
         });
+    }
+
+    _addTraitRow(container, label, value) {
+        const row = new Interface('.trait-row');
+        row.css({
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'flex-start',
+            marginBottom: '8px',
+            gap: '10px'
+        });
+
+        const labelEl = new Interface('.trait-label');
+        labelEl.text(label);
+        labelEl.css({
+            fontFamily: 'var(--ui-font-family)',
+            fontSize: '10px',
+            fontWeight: 'bold',
+            color: 'var(--ui-color)',
+            textTransform: 'uppercase',
+            letterSpacing: '0.5px',
+            minWidth: '50px'
+        });
+        row.add(labelEl);
+
+        const valueEl = new Interface('.trait-value');
+        valueEl.text(value);
+        valueEl.css({
+            fontFamily: 'var(--ui-font-family)',
+            fontSize: '10px',
+            color: 'var(--ui-secondary-color)',
+            lineHeight: '1.4',
+            textAlign: 'right',
+            flex: '1'
+        });
+        row.add(valueEl);
+
+        container.add(row);
+    }
+
+    _addOceanBar(container, code, label, value) {
+        const row = new Interface('.ocean-row');
+        row.css({
+            marginBottom: '8px'
+        });
+
+        const labelRow = new Interface('.ocean-label-row');
+        labelRow.css({
+            display: 'flex',
+            justifyContent: 'space-between',
+            marginBottom: '3px'
+        });
+
+        const labelEl = new Interface('.ocean-label');
+        labelEl.text(`${code} - ${label}`);
+        labelEl.css({
+            fontFamily: 'var(--ui-font-family)',
+            fontSize: '9px',
+            color: 'var(--ui-secondary-color)',
+            textTransform: 'uppercase'
+        });
+        labelRow.add(labelEl);
+
+        const scoreEl = new Interface('.ocean-score');
+        scoreEl.text((value * 100).toFixed(0) + '%');
+        scoreEl.css({
+            fontFamily: 'var(--ui-font-family)',
+            fontSize: '9px',
+            color: 'var(--ui-color)',
+            fontWeight: 'bold'
+        });
+        labelRow.add(scoreEl);
+
+        row.add(labelRow);
+
+        // Progress bar
+        const barBg = new Interface('.ocean-bar-bg');
+        barBg.css({
+            width: '100%',
+            height: '4px',
+            background: 'rgba(255, 255, 255, 0.1)',
+            borderRadius: '2px',
+            overflow: 'hidden'
+        });
+
+        const barFill = new Interface('.ocean-bar-fill');
+        barFill.css({
+            width: `${value * 100}%`,
+            height: '100%',
+            background: 'linear-gradient(90deg, rgba(0, 209, 255, 0.5), rgba(0, 209, 255, 0.8))',
+            borderRadius: '2px'
+        });
+        barBg.add(barFill);
+
+        row.add(barBg);
+        container.add(row);
     }
 
     hide() {
