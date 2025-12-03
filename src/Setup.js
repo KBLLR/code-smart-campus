@@ -10,6 +10,7 @@ import {
   createRenderer,
   shouldPreferWebGPU,
 } from "@three/createRenderer.js";
+import gsap from "gsap";
 
 const DEFAULT_TARGET_BOUNDS = {
   min: new THREE.Vector3(-220, -10, -220),
@@ -363,8 +364,13 @@ export default class Setup {
     }
   }
 
-  flyToTarget(targetPosition, targetLookAt, duration = 0.8) {
+  flyToTarget(targetPosition, targetLookAt, duration = 2.0) {
     if (!targetPosition || !targetLookAt) return;
+
+    // Stop any existing animation
+    if (this.currentTween) {
+      this.currentTween.kill();
+    }
 
     const startPosition = this.cam.position.clone();
     const startTarget = this.orbCtrls.target.clone();
@@ -380,40 +386,34 @@ export default class Setup {
     if (distance > max) offset.setLength(max);
     const finalPosition = toTarget.clone().add(offset);
 
-    const startTime = this.clock.getElapsedTime();
-    const animate = () => {
-      const elapsed = this.clock.getElapsedTime() - startTime;
-      const progress = duration > 0 ? Math.min(elapsed / duration, 1) : 1;
-      const ease = duration > 0 ? 1 - Math.pow(1 - progress, 3) : 1;
-      this.cam.position.lerpVectors(startPosition, finalPosition, ease);
-      this.orbCtrls.target.lerpVectors(startTarget, toTarget, ease);
-      this.cam.lookAt(this.orbCtrls.target);
-      this.applyConstraints();
-      this.orbCtrls.update();
-      if (progress < 1) {
-        requestAnimationFrame(animate);
-      } else {
-        this.cam.position.copy(finalPosition);
-        this.orbCtrls.target.copy(toTarget);
-        this.isCameraAnimating = false;
-        this.orbCtrls.enabled = true;
-        this.orbCtrls.update();
-        this.persistCameraState();
-      }
-    };
-
     this.isCameraAnimating = true;
     this.orbCtrls.enabled = false;
-    if (duration > 0) {
-      requestAnimationFrame(animate);
-    } else {
-      this.cam.position.copy(finalPosition);
-      this.orbCtrls.target.copy(toTarget);
-      this.orbCtrls.enabled = true;
-      this.isCameraAnimating = false;
-      this.orbCtrls.update();
-      this.persistCameraState();
-    }
+
+    // Use GSAP for smooth transition (Alien.js style)
+    this.currentTween = gsap.to(
+      {},
+      {
+        duration,
+        ease: "expo.inOut",
+        onUpdate: () => {
+          const progress = this.currentTween.progress();
+          this.cam.position.lerpVectors(startPosition, finalPosition, progress);
+          this.orbCtrls.target.lerpVectors(startTarget, toTarget, progress);
+          this.cam.lookAt(this.orbCtrls.target);
+          this.applyConstraints();
+          this.orbCtrls.update();
+        },
+        onComplete: () => {
+          this.cam.position.copy(finalPosition);
+          this.orbCtrls.target.copy(toTarget);
+          this.isCameraAnimating = false;
+          this.orbCtrls.enabled = true;
+          this.orbCtrls.update();
+          this.persistCameraState();
+          this.currentTween = null;
+        },
+      }
+    );
   }
 
   clampTarget(target) {

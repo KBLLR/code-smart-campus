@@ -1,9 +1,13 @@
 import { defineConfig } from "vite";
+// Trigger restart
 import tailwindcss from "@tailwindcss/vite";
 import path from "path";
 import dotenv from "dotenv";
-import labelRegistryDevPlugin from "./vite.server.js";
-import classroomApiPlugin from "./vite.classroom-api.js";
+// Disabled for minimal setup - these plugins require node-html-parser
+// import labelRegistryDevPlugin from "./vite.server.js";
+// import classroomApiPlugin from "./vite.classroom-api.js";
+
+import { sensorHistoryPlugin } from "./vite.sensor-history.js";
 
 dotenv.config();
 
@@ -74,7 +78,13 @@ export default defineConfig({
       },
     },
   },
-  plugins: [labelRegistryDevPlugin(), classroomApiPlugin(), tailwindcss()],
+  plugins: [
+    // Disabled for minimal setup
+    // labelRegistryDevPlugin(),
+    // classroomApiPlugin(),
+    sensorHistoryPlugin(),
+    tailwindcss()
+  ],
   experimental: {
     renderBuiltUrl(filename) {
       // Handle WASM files properly in production builds

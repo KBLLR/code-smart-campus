@@ -5,11 +5,24 @@ dist/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
 # macOS
 .DS_Store
+
 # Genkit
 .genkit/
+
 # IDEs and other
 .vscode/
-*.logpublic/models/protos/*.stl
+*.log
+
+# Models
+public/models/protos/*.stl
 public/models
+
+# Sensor data (contains Home Assistant sensor info - keep private)
+sensors.json
+sensors.yaml
+sensor-analysis.json
+sensor-analysis.yaml
+data/sensors/

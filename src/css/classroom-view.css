@@ -1,8 +1,7 @@
 /**
- * Classroom View Styles
+ * Classroom View Styles - Space.js Aesthetic
  *
- * Responsive dashboard layout for classroom UI.
- * Supports 4 themes: studio-lite, studio-dark, campus, minimal
+ * Minimalist, technical, dark mode.
  */
 
 /* ============================================================================
@@ -13,9 +12,261 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding: 16px;
-  gap: 16px;
+  padding: 20px;
+  gap: 20px;
   box-sizing: border-box;
+  font-family: var(--ui-font-family);
+  color: var(--ui-color);
+  background: transparent;
+  /* Let canvas show through */
+}
+
+.classroom-view__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--ui-color-divider-line);
+}
+
+.classroom-view__title h1 {
+  margin: 0;
+  font-family: var(--ui-name-font-family);
+  font-weight: var(--ui-name-font-weight);
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: var(--ui-name-letter-spacing);
+  text-transform: uppercase;
+}
+
+.classroom-view__room-tag {
+  font-family: var(--ui-font-family);
+  font-size: 10px;
+  letter-spacing: var(--ui-letter-spacing);
+  color: var(--ui-secondary-color);
+  margin-top: 4px;
+  display: block;
+}
+
+.classroom-view__status {
+  display: flex;
+  gap: 10px;
+}
+
+.classroom-view__pill {
+  padding: 0;
+  border: none;
+  font-family: var(--ui-font-family);
+  font-size: 10px;
+  letter-spacing: var(--ui-letter-spacing);
+  color: var(--ui-color);
+  text-transform: uppercase;
+}
+
+.classroom-view__pill::before {
+  content: '[';
+  color: var(--ui-secondary-color);
+  margin-right: 4px;
+}
+
+.classroom-view__pill::after {
+  content: ']';
+  color: var(--ui-secondary-color);
+  margin-left: 4px;
+}
+
+.classroom-view__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  gap: 40px;
+  /* More space */
+  flex: 1;
+  min-height: 0;
+}
+
+.classroom-view__panel {
+  background: rgba(6, 6, 6, 0.7);
+  /* Glassy dark */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--ui-color-line);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+
+.classroom-view__right-column {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-height: 0;
+}
+
+/* ============================================================================
+   Chat Section
+   ============================================================================ */
+
+.classroom-chat__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--ui-color-divider-line);
+  padding-bottom: 10px;
+}
+
+.classroom-chat__messages {
+  flex: 1;
+  overflow: auto;
+  padding-right: 10px;
+}
+
+.classroom-chat__message {
+  margin-bottom: 16px;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.classroom-chat__message--user {
+  color: var(--ui-color);
+  text-align: right;
+}
+
+.classroom-chat__message--assistant {
+  color: var(--ui-secondary-color);
+}
+
+.classroom-chat__message-content {
+  font-family: var(--ui-font-family);
+}
+
+.classroom-chat__input-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  border-top: 1px solid var(--ui-color-divider-line);
+  padding-top: 20px;
+}
+
+.classroom-chat__input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--ui-color-line);
+  color: var(--ui-color);
+  font-family: var(--ui-font-family);
+  font-size: 11px;
+  padding: 8px 0;
+  outline: none;
+}
+
+.classroom-chat__input:focus {
+  border-bottom-color: var(--ui-color);
+}
+
+.classroom-chat__send {
+  background: transparent;
+  border: 1px solid var(--ui-color-line);
+  color: var(--ui-color);
+  font-family: var(--ui-font-family);
+  font-size: 10px;
+  text-transform: uppercase;
+  padding: 0 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.classroom-chat__send:hover {
+  background: var(--ui-color);
+  color: var(--bg-color);
+}
+
+/* ============================================================================
+   Sensors Section
+   ============================================================================ */
+
+.classroom-sensors__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.classroom-sensors__item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.classroom-sensors__label {
+  font-family: var(--ui-font-family);
+  font-size: 10px;
+  color: var(--ui-secondary-color);
+  text-transform: uppercase;
+  letter-spacing: var(--ui-letter-spacing);
+}
+
+.classroom-sensors__value {
+  font-family: var(--ui-font-family);
+  font-size: 14px;
+  color: var(--ui-color);
+}
+
+/* ============================================================================
+   Calendar Section
+   ============================================================================ */
+
+.classroom-calendar__event {
+  margin-bottom: 16px;
+  padding-left: 10px;
+  border-left: 1px solid var(--ui-color-line);
+}
+
+.classroom-calendar__event-time {
+  font-size: 10px;
+  color: var(--ui-secondary-color);
+  margin-bottom: 2px;
+}
+
+.classroom-calendar__event-title {
+  font-size: 11px;
+  color: var(--ui-color);
+  text-transform: uppercase;
+}
+
+/* ============================================================================
+   Integrations Section
+   ============================================================================ */
+
+.classroom-integrations__item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 10px;
+}
+
+.classroom-integrations__label {
+  color: var(--ui-secondary-color);
+}
+
+.classroom-integrations__value {
+  color: var(--ui-color);
+}
+
+/* ============================================================================
+   Common
+   ============================================================================ */
+
+h3 {
+  font-family: var(--ui-name-font-family);
+  font-weight: var(--ui-name-font-weight);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: var(--ui-name-letter-spacing);
+  margin: 0 0 16px 0;
+  color: var(--ui-color);
 }
 
 .classroom-view__header {
@@ -255,7 +506,7 @@
   font-size: 0.85rem;
 }
 
-.classroom-history__item + .classroom-history__item {
+.classroom-history__item+.classroom-history__item {
   margin-top: 6px;
   padding-top: 6px;
   border-top: 1px solid rgba(255, 255, 255, 0.04);
@@ -306,7 +557,7 @@
   font-size: 0.85rem;
 }
 
-.classroom-integrations__item + .classroom-integrations__item {
+.classroom-integrations__item+.classroom-integrations__item {
   margin-top: 4px;
 }
 
@@ -582,8 +833,15 @@
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 0.4; }
-  50% { opacity: 1; }
+
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+
+  50% {
+    opacity: 1;
+  }
 }
 
 .classroom-chat__controls {
@@ -625,8 +883,15 @@
 }
 
 @keyframes pulse-mic {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.1); }
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.1);
+  }
 }
 
 .classroom-chat__listening-indicator {
@@ -660,8 +925,15 @@
 }
 
 @keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.4;
+  }
 }
 
 .classroom-sensors__item--good {

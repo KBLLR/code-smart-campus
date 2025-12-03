@@ -1,0 +1,299 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://smart-campus.edu/schemas/calendar-reservation.json",
+  "title": "Calendar & Reservation System",
+  "description": "Room booking, scheduling, and calendar management (Google Calendar-style)",
+  "type": "object",
+  "definitions": {
+    "Reservation": {
+      "type": "object",
+      "required": ["id", "room_id", "title", "start_time", "end_time", "organizer"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique reservation identifier (UUID)"
+        },
+        "room_id": {
+          "type": "string",
+          "description": "Target room identifier"
+        },
+        "title": {
+          "type": "string",
+          "description": "Event/reservation title",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "description": {
+          "type": "string",
+          "description": "Detailed description",
+          "maxLength": 2000
+        },
+        "start_time": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Start timestamp (ISO 8601)"
+        },
+        "end_time": {
+          "type": "string",
+          "format": "date-time",
+          "description": "End timestamp (ISO 8601)"
+        },
+        "organizer": {
+          "type": "object",
+          "required": ["id", "name"],
+          "properties": {
+            "id": { "type": "string" },
+            "name": { "type": "string" },
+            "email": { "type": "string", "format": "email" }
+          }
+        },
+        "participants": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "name": { "type": "string" },
+              "email": { "type": "string", "format": "email" },
+              "response": {
+                "type": "string",
+                "enum": ["accepted", "declined", "tentative", "pending"]
+              },
+              "role": {
+                "type": "string",
+                "enum": ["required", "optional", "facilitator"]
+              }
+            }
+          }
+        },
+        "type": {
+          "type": "string",
+          "enum": ["class", "workshop", "study_session", "meeting", "event", "lab_time", "office_hours"],
+          "description": "Type of reservation"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["confirmed", "tentative", "cancelled"],
+          "default": "confirmed"
+        },
+        "recurrence": {
+          "$ref": "#/definitions/RecurrenceRule"
+        },
+        "reminders": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "method": {
+                "type": "string",
+                "enum": ["email", "notification", "sms"]
+              },
+              "minutes_before": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          }
+        },
+        "attachments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "url": { "type": "string", "format": "uri" },
+              "type": { "type": "string" }
+            }
+          }
+        },
+        "virtual_meeting": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "platform": {
+              "type": "string",
+              "enum": ["zoom", "teams", "meet", "webex"]
+            },
+            "url": { "type": "string", "format": "uri" },
+            "meeting_id": { "type": "string" },
+            "passcode": { "type": "string" }
+          }
+        },
+        "room_setup": {
+          "type": "object",
+          "properties": {
+            "layout": {
+              "type": "string",
+              "enum": ["classroom", "theater", "roundtable", "u_shape", "hollow_square", "pods"]
+            },
+            "equipment_needed": {
+              "type": "array",
+              "items": { "type": "string" },
+              "examples": [["projector", "whiteboard", "microphone"]]
+            },
+            "catering": { "type": "boolean", "default": false }
+          }
+        },
+        "privacy": {
+          "type": "string",
+          "enum": ["public", "private", "campus_only"],
+          "default": "public",
+          "description": "Event visibility"
+        },
+        "metadata": {
+          "type": "object",
+          "properties": {
+            "created_at": { "type": "string", "format": "date-time" },
+            "updated_at": { "type": "string", "format": "date-time" },
+            "created_by": { "type": "string" },
+            "calendar_source": {
+              "type": "string",
+              "description": "External calendar integration ID"
+            }
+          }
+        }
+      }
+    },
+    "RecurrenceRule": {
+      "type": "object",
+      "description": "RFC 5545 iCalendar-compatible recurrence rules",
+      "properties": {
+        "frequency": {
+          "type": "string",
+          "enum": ["daily", "weekly", "monthly", "yearly"]
+        },
+        "interval": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Interval between occurrences"
+        },
+        "by_day": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["MO", "TU", "WE", "TH", "FR", "SA", "SU"]
+          },
+          "description": "Days of week for recurrence"
+        },
+        "by_month_day": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 31
+          }
+        },
+        "count": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Number of occurrences"
+        },
+        "until": {
+          "type": "string",
+          "format": "date-time",
+          "description": "End date for recurrence"
+        },
+        "exceptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "description": "Dates to exclude from recurrence"
+        }
+      }
+    },
+    "AvailabilitySlot": {
+      "type": "object",
+      "description": "Available time slot for booking",
+      "required": ["start_time", "end_time", "available"],
+      "properties": {
+        "start_time": { "type": "string", "format": "date-time" },
+        "end_time": { "type": "string", "format": "date-time" },
+        "available": { "type": "boolean" },
+        "reason": {
+          "type": "string",
+          "description": "Reason if unavailable (e.g., 'Booked', 'Maintenance', 'After hours')"
+        },
+        "reservation_id": {
+          "type": "string",
+          "description": "Existing reservation ID if booked"
+        }
+      }
+    },
+    "RoomCalendar": {
+      "type": "object",
+      "description": "Complete calendar view for a room",
+      "required": ["room_id", "date_range"],
+      "properties": {
+        "room_id": { "type": "string" },
+        "date_range": {
+          "type": "object",
+          "properties": {
+            "start": { "type": "string", "format": "date-time" },
+            "end": { "type": "string", "format": "date-time" }
+          }
+        },
+        "reservations": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/Reservation" }
+        },
+        "availability": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/AvailabilitySlot" }
+        },
+        "operating_hours": {
+          "type": "object",
+          "description": "Regular room operating hours",
+          "patternProperties": {
+            "^(monday|tuesday|wednesday|thursday|friday|saturday|sunday)$": {
+              "type": "object",
+              "properties": {
+                "open": { "type": "string", "pattern": "^([01]?[0-9]|2[0-3]):[0-5][0-9]$" },
+                "close": { "type": "string", "pattern": "^([01]?[0-9]|2[0-3]):[0-5][0-9]$" },
+                "closed": { "type": "boolean" }
+              }
+            }
+          }
+        },
+        "blocked_periods": {
+          "type": "array",
+          "description": "Maintenance or special closures",
+          "items": {
+            "type": "object",
+            "properties": {
+              "start": { "type": "string", "format": "date-time" },
+              "end": { "type": "string", "format": "date-time" },
+              "reason": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "QuickReserveRequest": {
+      "type": "object",
+      "description": "Simplified quick-booking request",
+      "required": ["room_id", "duration_minutes"],
+      "properties": {
+        "room_id": { "type": "string" },
+        "title": { "type": "string", "default": "Quick Study Session" },
+        "start_time": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Start time (defaults to now if not specified)"
+        },
+        "duration_minutes": {
+          "type": "integer",
+          "minimum": 15,
+          "maximum": 480,
+          "description": "Duration in minutes (15min to 8 hours)"
+        },
+        "participants": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Email addresses to invite"
+        }
+      }
+    }
+  }
+}

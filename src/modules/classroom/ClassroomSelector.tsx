@@ -19,13 +19,6 @@ interface Classroom {
 
 const AVAILABLE_CLASSROOMS: Classroom[] = [
   {
-    id: 'eng-101',
-    name: 'Engineering 101',
-    building: 'ENG',
-    room: '101',
-    description: 'Computer Science lecture hall with smart sensors',
-  },
-  {
     id: 'lab-a',
     name: 'Chemistry Lab A',
     building: 'SCI',

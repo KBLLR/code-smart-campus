@@ -1,4 +1,5 @@
 // --- START OF FILE main.js (Improved Loader, Panel Debugging) ---
+console.log("[Main] Loaded - Checking for updates...");
 
 import "@styles/main.css";
 import * as THREE from "three";
@@ -56,6 +57,7 @@ import { PostProcessor } from "@/postprocessing/PostProcessor.js";
 import { CSSHudManager } from "@hud/CSSHudManager.js";
 import { dataPipeline } from "@data/DataPipeline.js";
 import { RoomSelectionController } from "@interaction/RoomSelectionController.js";
+import { RoomDetailView } from "@ui/RoomDetailView.js";
 import { WebGPUScreen } from "@three/WebGPUScreen.js";
 import { materialRegistry } from "@registries/materialsRegistry.js";
 import {
@@ -137,6 +139,24 @@ const uilPanelState = {
   visible: false,
   dragged: false,
 };
+
+// Initialize Room Detail View
+let roomDetailView;
+try {
+  console.log("[Main] Attempting to create RoomDetailView...");
+  roomDetailView = new RoomDetailView();
+  window.roomDetailView = roomDetailView;
+  console.log("[Main] RoomDetailView assigned to window:", window.roomDetailView);
+
+  roomDetailView.onClose = () => {
+    // Clear selection when panel is closed
+    if (roomSelectionController) {
+      roomSelectionController.handleClickOff();
+    }
+  };
+} catch (e) {
+  console.error("[Main] CRITICAL ERROR initializing RoomDetailView:", e);
+}
 
 enableUILPanelDrag(uilPanelState);
 setUILPanelVisibility(false);
@@ -252,9 +272,9 @@ const viewHero = new ViewHero({
     </svg>
     <span>Sensors</span>
   `;
-sensorToggleControl.addEventListener("click", () => {
-  toggleSensorPanelState();
-});
+  sensorToggleControl.addEventListener("click", () => {
+    toggleSensorPanelState();
+  });
   viewHero.addStatusControl(sensorToggleControl);
 })();
 
@@ -307,11 +327,30 @@ function initRoomSelectionController() {
   const selectHandler = ({ roomKey, entityId } = {}) => {
     if (entityId) {
       setSelectedEntity(entityId);
-      focusEntity(entityId, { duration: 0.85 });
+      focusEntity(entityId, { duration: 2.0 });
       return;
     }
     if (roomKey) {
       highlightRoomByKey(roomKey);
+
+      // Show Detail View
+      if (window.roomDetailView) {
+        window.roomDetailView.show(roomKey, roomsManager);
+
+        // Hide Legacy UI
+        if (window.campusHeader) window.campusHeader.hide();
+        if (window.roomHoverPanel) window.roomHoverPanel.hide();
+        if (hudManager) hudManager.hideAll();
+      }
+
+      // Focus Camera on Room
+      const normalizedKey = normalizeRoomId(roomKey);
+      const mesh = window.roomMeshes?.[normalizedKey];
+      if (mesh) {
+        const box = new THREE.Box3().setFromObject(mesh);
+        const center = box.getCenter(new THREE.Vector3());
+        setup.focusOnPoint(center, 2.0);
+      }
     }
   };
 
@@ -322,6 +361,15 @@ function initRoomSelectionController() {
     }
     if (roomKey) {
       clearRoomHighlightByKey(roomKey);
+      // Hide Detail View
+      if (window.roomDetailView) {
+        window.roomDetailView.hide();
+
+        // Restore Legacy UI
+        if (window.campusHeader) window.campusHeader.show();
+        if (window.roomHoverPanel) window.roomHoverPanel.show(); // Assuming show exists
+        if (hudManager) hudManager.showAll(); // Assuming showAll exists or logic to restore
+      }
     }
   };
 
@@ -520,13 +568,13 @@ whenReady("roomMeshes", (meshesMap) => {
     scene,
     extraEntries: scene.userData.screen?.screenMesh
       ? [
-          {
-            id: "__screen__",
-            label: "Screen",
-            object: scene.userData.screen.screenMesh,
-            highlightable: false,
-          },
-        ]
+        {
+          id: "__screen__",
+          label: "Screen",
+          object: scene.userData.screen.screenMesh,
+          highlightable: false,
+        },
+      ]
       : [],
   });
 });
@@ -629,7 +677,7 @@ if (!setup.usingWebGPU) {
   scene.userData.postFX = {
     config: { enabled: false },
     setEnabled: () => false,
-    setBloomSettings: () => {},
+    setBloomSettings: () => { },
     captureSnapshot: () => {
       console.warn(
         "[PostFX] Snapshot capture is unavailable while using the WebGPU renderer.",
@@ -1443,7 +1491,7 @@ window.addEventListener("DOMContentLoaded", () => {
   // This ensures the DOM is ready for UI elements like WebSocketStatus if needed
   console.log("[Init] DOMContentLoaded event fired.");
   try {
-      sensorDashboardInstance = null;
+    sensorDashboardInstance = null;
     console.log("📊 SensorDashboard initialized.");
     initializeToolbar();
   } catch (error) {
@@ -1853,7 +1901,7 @@ window.addEventListener('keydown', (event) => {
 
   // Debug controls (only when active)
   if (debugMode && svgDebugger) {
-    switch(event.key) {
+    switch (event.key) {
       case '1':
         svgDebugger.toggleOverlay(0);
         break;

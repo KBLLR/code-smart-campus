@@ -1,0 +1,399 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://smart-campus.edu/schemas/chat-presence-history.json",
+  "title": "Chat, Presence, and Room History",
+  "description": "Real-time chat, user presence tracking, and persistent room history",
+  "type": "object",
+  "definitions": {
+    "ChatMessage": {
+      "type": "object",
+      "description": "Individual chat message in a room",
+      "required": ["id", "room_id", "sender", "content", "timestamp"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique message identifier (UUID)"
+        },
+        "room_id": {
+          "type": "string",
+          "description": "Room where message was sent"
+        },
+        "sender": {
+          "type": "object",
+          "required": ["id", "name"],
+          "properties": {
+            "id": { "type": "string" },
+            "name": { "type": "string" },
+            "avatar_url": { "type": "string", "format": "uri" },
+            "is_room_persona": {
+              "type": "boolean",
+              "default": false,
+              "description": "True if message is from the room's AI personality"
+            }
+          }
+        },
+        "content": {
+          "type": "object",
+          "required": ["type"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["text", "voice", "image", "file", "link", "system", "ai_response"]
+            },
+            "text": {
+              "type": "string",
+              "description": "Text content (for text, voice transcription, or link preview)"
+            },
+            "media_url": {
+              "type": "string",
+              "format": "uri",
+              "description": "URL for images, files, or voice recordings"
+            },
+            "metadata": {
+              "type": "object",
+              "description": "Type-specific metadata (file size, duration, etc.)"
+            }
+          }
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "reply_to": {
+          "type": "string",
+          "description": "Message ID being replied to (for threads)"
+        },
+        "reactions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "emoji": { "type": "string" },
+              "user_ids": {
+                "type": "array",
+                "items": { "type": "string" }
+              },
+              "count": { "type": "integer", "minimum": 1 }
+            }
+          }
+        },
+        "edited": {
+          "type": "boolean",
+          "default": false
+        },
+        "edited_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "deleted": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    "VoiceInteraction": {
+      "type": "object",
+      "description": "Voice-based chat interaction",
+      "properties": {
+        "id": { "type": "string" },
+        "room_id": { "type": "string" },
+        "participant_id": { "type": "string" },
+        "start_time": { "type": "string", "format": "date-time" },
+        "end_time": { "type": "string", "format": "date-time" },
+        "duration_seconds": { "type": "number" },
+        "mode": {
+          "type": "string",
+          "enum": ["push_to_talk", "live", "recorded"],
+          "description": "Voice interaction mode"
+        },
+        "recording_url": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL to voice recording (if saved)"
+        },
+        "transcription": {
+          "type": "string",
+          "description": "Text transcription of voice content"
+        },
+        "ai_response": {
+          "type": "object",
+          "properties": {
+            "text": { "type": "string" },
+            "voice_url": { "type": "string", "format": "uri" },
+            "confidence": { "type": "number", "minimum": 0, "maximum": 1 }
+          }
+        }
+      }
+    },
+    "UserPresence": {
+      "type": "object",
+      "description": "User presence information in a room",
+      "required": ["user_id", "room_id", "status"],
+      "properties": {
+        "user_id": { "type": "string" },
+        "room_id": { "type": "string" },
+        "display_name": { "type": "string" },
+        "avatar_url": { "type": "string", "format": "uri" },
+        "status": {
+          "type": "string",
+          "enum": ["active", "idle", "away", "offline"],
+          "description": "Current presence status"
+        },
+        "presence_type": {
+          "type": "string",
+          "enum": ["physical", "virtual", "both"],
+          "description": "How the user is present (physically in room, virtually connected, or both)"
+        },
+        "joined_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "last_active": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "current_activity": {
+          "type": "string",
+          "description": "Optional activity status (e.g., 'Presenting', 'In breakout', 'Taking notes')"
+        },
+        "device_info": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["desktop", "mobile", "tablet", "vr"]
+            },
+            "browser": { "type": "string" }
+          }
+        }
+      }
+    },
+    "RoomPresenceSnapshot": {
+      "type": "object",
+      "description": "Current presence state for a room",
+      "required": ["room_id", "timestamp", "users"],
+      "properties": {
+        "room_id": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "total_count": { "type": "integer", "minimum": 0 },
+        "physical_count": { "type": "integer", "minimum": 0 },
+        "virtual_count": { "type": "integer", "minimum": 0 },
+        "users": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/UserPresence" }
+        },
+        "active_sessions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "session_id": { "type": "string" },
+              "type": {
+                "type": "string",
+                "enum": ["class", "study_group", "meeting", "workshop", "adhoc"]
+              },
+              "title": { "type": "string" },
+              "participant_count": { "type": "integer" }
+            }
+          }
+        }
+      }
+    },
+    "HistoryEvent": {
+      "type": "object",
+      "description": "Single event in room history",
+      "required": ["id", "room_id", "event_type", "timestamp"],
+      "properties": {
+        "id": { "type": "string" },
+        "room_id": { "type": "string" },
+        "event_type": {
+          "type": "string",
+          "enum": [
+            "class",
+            "workshop",
+            "study_session",
+            "meeting",
+            "chat_conversation",
+            "resource_shared",
+            "experiment",
+            "presentation",
+            "adhoc_gathering"
+          ]
+        },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Event start time"
+        },
+        "end_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "participants": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "name": { "type": "string" },
+              "role": {
+                "type": "string",
+                "enum": ["organizer", "presenter", "participant", "facilitator"]
+              }
+            }
+          }
+        },
+        "resources": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["document", "link", "video", "board", "code", "recording", "notion_page", "figma_file", "slack_thread"]
+              },
+              "title": { "type": "string" },
+              "url": { "type": "string", "format": "uri" },
+              "source": {
+                "type": "string",
+                "description": "MCP integration source (notion, figma, slack, etc.)"
+              },
+              "shared_by": { "type": "string" },
+              "shared_at": { "type": "string", "format": "date-time" }
+            }
+          }
+        },
+        "outcomes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Key takeaways or results from the event"
+        },
+        "chat_log_reference": {
+          "type": "object",
+          "properties": {
+            "available": { "type": "boolean" },
+            "message_count": { "type": "integer" },
+            "archive_url": { "type": "string", "format": "uri" }
+          }
+        },
+        "tags": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "RoomTimeline": {
+      "type": "object",
+      "description": "Timeline view of room history",
+      "required": ["room_id", "time_range", "events"],
+      "properties": {
+        "room_id": { "type": "string" },
+        "time_range": {
+          "type": "object",
+          "properties": {
+            "start": { "type": "string", "format": "date-time" },
+            "end": { "type": "string", "format": "date-time" }
+          }
+        },
+        "events": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/HistoryEvent" },
+          "description": "Events sorted chronologically"
+        },
+        "statistics": {
+          "type": "object",
+          "properties": {
+            "total_events": { "type": "integer" },
+            "total_participants": { "type": "integer" },
+            "total_resources_shared": { "type": "integer" },
+            "event_type_breakdown": {
+              "type": "object",
+              "additionalProperties": { "type": "integer" }
+            }
+          }
+        }
+      }
+    },
+    "ChatCanvas3D": {
+      "type": "object",
+      "description": "Configuration for floating 3D chat canvas (shader ball or future avatar)",
+      "required": ["type", "position"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["shader_ball", "avatar_2d", "avatar_3d"],
+          "default": "shader_ball",
+          "description": "Visual representation type (anticipates future avatar upgrade)"
+        },
+        "position": {
+          "type": "object",
+          "required": ["x", "y", "z"],
+          "properties": {
+            "x": { "type": "number" },
+            "y": { "type": "number" },
+            "z": { "type": "number" }
+          },
+          "description": "3D position in scene"
+        },
+        "scale": {
+          "type": "number",
+          "default": 1.0,
+          "minimum": 0.1,
+          "maximum": 10.0
+        },
+        "shader_params": {
+          "type": "object",
+          "description": "Shader-specific parameters (for shader_ball type)",
+          "properties": {
+            "shader_type": {
+              "type": "string",
+              "enum": ["animated", "mood_reactive", "conversation_reactive", "sensor_reactive"]
+            },
+            "color_palette": {
+              "type": "array",
+              "items": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+              "description": "Color palette for shader (from room personality)"
+            },
+            "animation_speed": { "type": "number", "default": 1.0 },
+            "reaction_sensitivity": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "default": 0.5,
+              "description": "How strongly the shader reacts to conversation/mood/sensors"
+            }
+          }
+        },
+        "avatar_params": {
+          "type": "object",
+          "description": "Avatar-specific parameters (for future avatar types)",
+          "properties": {
+            "model_url": { "type": "string", "format": "uri" },
+            "animation_set": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "Available animations (idle, talking, listening, etc.)"
+            },
+            "lip_sync_enabled": { "type": "boolean", "default": false },
+            "expression_mapping": {
+              "type": "object",
+              "description": "Map mood/emotion to facial expressions"
+            }
+          }
+        },
+        "interaction": {
+          "type": "object",
+          "properties": {
+            "clickable": { "type": "boolean", "default": true },
+            "hover_effect": { "type": "boolean", "default": true },
+            "auto_rotate": { "type": "boolean", "default": false }
+          }
+        }
+      }
+    }
+  }
+}

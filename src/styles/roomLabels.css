@@ -1,0 +1,372 @@
+/**
+ * Room Labels - Space.js Style
+ * Hover interaction with line, label, and expandable panel
+ */
+
+/* ============================================================
+   SVG Line (Room → Label/Panel)
+   ============================================================ */
+.room-label-line {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 100;
+  display: none;
+}
+
+.room-label-line line {
+  stroke: rgba(45, 212, 191, 0.4);
+  stroke-width: 1.5;
+  stroke-dasharray: 4 2;
+  transition: stroke 0.3s ease;
+}
+
+/* ============================================================
+   Compact Label (Hover State)
+   ============================================================ */
+.room-label {
+  position: fixed;
+  display: none;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: rgba(10, 10, 15, 0.95);
+  border: 1px solid rgba(45, 212, 191, 0.3);
+  border-radius: 6px;
+  font-family: 'Monaco', 'Courier New', monospace;
+  font-size: 13px;
+  color: #e5e7eb;
+  z-index: 101;
+  cursor: pointer;
+  user-select: none;
+
+  /* Animation */
+  opacity: 0;
+  transform: scale(0.9) translateY(-10px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.room-label:hover {
+  background: rgba(15, 15, 20, 0.98);
+  border-color: rgba(45, 212, 191, 0.5);
+  transform: scale(1.02);
+}
+
+.room-label__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #2dd4bf;
+}
+
+.room-label__name {
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+/* ============================================================
+   Full Panel (Expanded State)
+   ============================================================ */
+.panel {
+  position: fixed;
+  display: none;
+  flex-direction: column;
+  min-width: 320px;
+  max-width: 400px;
+  max-height: 80vh;
+  background: rgba(10, 10, 15, 0.98);
+  border: 1px solid rgba(45, 212, 191, 0.3);
+  border-radius: 8px;
+  font-family: 'Monaco', 'Courier New', monospace;
+  color: #e5e7eb;
+  z-index: 102;
+  overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+
+  /* Animation */
+  opacity: 0;
+  transform: scale(0.95) translateY(-10px);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.panel.visible {
+  display: flex;
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+
+/* Panel Header */
+.room-panel-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border-bottom: 1px solid rgba(45, 212, 191, 0.2);
+}
+
+.room-panel-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #2dd4bf;
+}
+
+.room-panel-header h2 {
+  flex: 1;
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.room-panel-close {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 4px 8px;
+  transition: color 0.2s ease;
+}
+
+.room-panel-close:hover {
+  color: #e5e7eb;
+}
+
+/* ============================================================
+   Panel Content Sections
+   ============================================================ */
+
+/* Personality Section */
+.personality-section {
+  padding: 16px;
+}
+
+.personality-section h3 {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #2dd4bf;
+}
+
+.personality-section p {
+  margin: 0 0 12px 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #cbd5e1;
+}
+
+.personality-traits {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.personality-traits .trait {
+  padding: 4px 8px;
+  background: rgba(45, 212, 191, 0.1);
+  border: 1px solid rgba(45, 212, 191, 0.2);
+  border-radius: 4px;
+  font-size: 11px;
+  color: #2dd4bf;
+  font-family: 'Monaco', 'Courier New', monospace;
+}
+
+/* Sensor Items */
+.sensor-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  transition: background 0.2s ease;
+}
+
+.sensor-item:hover {
+  background: rgba(45, 212, 191, 0.05);
+}
+
+.sensor-item__label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #cbd5e1;
+}
+
+.sensor-item__value {
+  font-size: 14px;
+  font-weight: 600;
+  font-family: 'Monaco', 'Courier New', monospace;
+}
+
+.sensor-item__value--ok {
+  color: #2dd4bf;
+}
+
+.sensor-item__value--warning {
+  color: #fbbf24;
+}
+
+.sensor-item__value--error {
+  color: #f87171;
+}
+
+.sensor-item__value--unknown {
+  color: #94a3b8;
+}
+
+.no-sensors {
+  padding: 16px;
+  text-align: center;
+  font-size: 12px;
+  color: #64748b;
+  font-style: italic;
+}
+
+/* Room Info */
+.room-info {
+  padding: 16px;
+}
+
+.room-info__item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(45, 212, 191, 0.1);
+}
+
+.room-info__item:last-child {
+  border-bottom: none;
+}
+
+.room-info__label {
+  font-size: 12px;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.room-info__value {
+  font-size: 13px;
+  color: #e5e7eb;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.color-swatch {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Panel Divider */
+.panel-item-divider {
+  height: 1px;
+  background: rgba(45, 212, 191, 0.2);
+  margin: 0;
+}
+
+/* ============================================================
+   Icon Sizing
+   ============================================================ */
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.icon-sm {
+  width: 16px;
+  height: 16px;
+}
+
+.icon-md {
+  width: 20px;
+  height: 20px;
+}
+
+.icon-lg {
+  width: 24px;
+  height: 24px;
+}
+
+/* ============================================================
+   Scrollbar Styling
+   ============================================================ */
+.panel::-webkit-scrollbar {
+  width: 6px;
+}
+
+.panel::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+.panel::-webkit-scrollbar-thumb {
+  background: rgba(45, 212, 191, 0.3);
+  border-radius: 3px;
+}
+
+.panel::-webkit-scrollbar-thumb:hover {
+  background: rgba(45, 212, 191, 0.5);
+}
+
+/* ============================================================
+   Responsive Adjustments
+   ============================================================ */
+@media (max-width: 768px) {
+  .panel {
+    max-width: 90vw;
+  }
+
+  .room-label {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+}
+
+/* ============================================================
+   Animation Keyframes
+   ============================================================ */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95) translateY(-10px);
+  }
+}
+
+.panel.animating-in {
+  animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.panel.animating-out {
+  animation: fadeOut 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}

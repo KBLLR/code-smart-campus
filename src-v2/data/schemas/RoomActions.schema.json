@@ -1,0 +1,321 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://smart-campus.edu/schemas/room-actions.json",
+  "title": "Room Actions & Contextual UI",
+  "description": "Room interaction strip (Enter/View info/Reserve) and contextual actions",
+  "type": "object",
+  "definitions": {
+    "RoomActionStrip": {
+      "type": "object",
+      "description": "Contextual action strip that appears when a room is selected",
+      "required": ["room_id", "actions"],
+      "properties": {
+        "room_id": { "type": "string" },
+        "visible": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether the action strip is currently visible"
+        },
+        "position": {
+          "type": "object",
+          "description": "Screen position (for 3D picking or list view)",
+          "properties": {
+            "x": { "type": "number" },
+            "y": { "type": "number" },
+            "anchor": {
+              "type": "string",
+              "enum": ["top", "bottom", "left", "right", "floating"],
+              "default": "floating"
+            }
+          }
+        },
+        "actions": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/RoomAction" },
+          "minItems": 1
+        }
+      }
+    },
+    "RoomAction": {
+      "type": "object",
+      "description": "Individual action available for a room",
+      "required": ["id", "label", "type"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique action identifier"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "enter",
+            "view_info",
+            "reserve",
+            "quick_chat",
+            "view_sensors",
+            "view_calendar",
+            "add_favorite",
+            "share"
+          ],
+          "description": "Action type"
+        },
+        "label": {
+          "type": "string",
+          "description": "Display label for the action"
+        },
+        "icon": {
+          "type": "string",
+          "description": "Icon identifier or emoji"
+        },
+        "enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether the action is currently enabled"
+        },
+        "badge": {
+          "type": "object",
+          "description": "Optional badge (notification count, status indicator)",
+          "properties": {
+            "text": { "type": "string" },
+            "count": { "type": "integer", "minimum": 0 },
+            "color": {
+              "type": "string",
+              "enum": ["primary", "success", "warning", "danger", "info"]
+            }
+          }
+        },
+        "tooltip": {
+          "type": "string",
+          "description": "Tooltip text on hover"
+        },
+        "action_config": {
+          "type": "object",
+          "description": "Type-specific configuration",
+          "oneOf": [
+            { "$ref": "#/definitions/EnterAction" },
+            { "$ref": "#/definitions/ViewInfoAction" },
+            { "$ref": "#/definitions/ReserveAction" }
+          ]
+        }
+      }
+    },
+    "EnterAction": {
+      "type": "object",
+      "description": "Configuration for 'Enter' action (opens classroom view)",
+      "properties": {
+        "target_view": {
+          "type": "string",
+          "enum": ["classroom_full", "classroom_minimal", "quick_peek"],
+          "default": "classroom_full"
+        },
+        "transition": {
+          "type": "string",
+          "enum": ["instant", "fade", "zoom", "slide"],
+          "default": "zoom"
+        },
+        "auto_join_session": {
+          "type": "boolean",
+          "default": false,
+          "description": "Automatically join active session in room"
+        },
+        "requires_permission": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether entering requires explicit permission"
+        }
+      }
+    },
+    "ViewInfoAction": {
+      "type": "object",
+      "description": "Configuration for 'View info' action",
+      "properties": {
+        "display_mode": {
+          "type": "string",
+          "enum": ["modal", "sidebar", "overlay", "inline"],
+          "default": "modal"
+        },
+        "sections": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "description",
+              "capacity",
+              "equipment",
+              "sensors_current",
+              "status",
+              "upcoming_events",
+              "active_users",
+              "personality"
+            ]
+          },
+          "description": "Which info sections to display",
+          "default": ["description", "capacity", "equipment", "status", "upcoming_events"]
+        },
+        "show_quick_actions": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show quick actions (Enter, Reserve) within info view"
+        }
+      }
+    },
+    "ReserveAction": {
+      "type": "object",
+      "description": "Configuration for 'Reserve' action",
+      "properties": {
+        "display_mode": {
+          "type": "string",
+          "enum": ["modal", "sidebar", "fullscreen"],
+          "default": "modal"
+        },
+        "default_view": {
+          "type": "string",
+          "enum": ["quick_reserve", "calendar", "availability_grid"],
+          "default": "quick_reserve",
+          "description": "Initial view when opening reservation"
+        },
+        "quick_reserve_durations": {
+          "type": "array",
+          "items": { "type": "integer" },
+          "default": [30, 60, 120, 240],
+          "description": "Pre-defined duration options (in minutes)"
+        },
+        "require_reason": {
+          "type": "boolean",
+          "default": false,
+          "description": "Require user to specify reason for reservation"
+        },
+        "show_conflicts": {
+          "type": "boolean",
+          "default": true,
+          "description": "Highlight conflicting reservations"
+        }
+      }
+    },
+    "RoomInfoPanel": {
+      "type": "object",
+      "description": "Detailed room information display",
+      "required": ["room_id"],
+      "properties": {
+        "room_id": { "type": "string" },
+        "basic_info": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string" },
+            "category": { "type": "string" },
+            "description": { "type": "string" },
+            "capacity": { "type": "integer" },
+            "area_sqm": { "type": "number" }
+          }
+        },
+        "current_status": {
+          "type": "object",
+          "properties": {
+            "occupied": { "type": "boolean" },
+            "occupant_count": { "type": "integer" },
+            "current_activity": { "type": "string" },
+            "available_in_minutes": { "type": "integer" },
+            "comfort_score": { "type": "number", "minimum": 0, "maximum": 100 }
+          }
+        },
+        "equipment": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "type": { "type": "string" },
+              "quantity": { "type": "integer" },
+              "status": {
+                "type": "string",
+                "enum": ["available", "in_use", "maintenance", "unavailable"]
+              }
+            }
+          }
+        },
+        "sensors_snapshot": {
+          "type": "object",
+          "description": "Current sensor readings",
+          "properties": {
+            "temperature": { "type": "number" },
+            "humidity": { "type": "number" },
+            "co2": { "type": "number" },
+            "air_quality": { "type": "string" },
+            "illumination": { "type": "number" },
+            "noise_level": { "type": "number" }
+          }
+        },
+        "upcoming_events": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "title": { "type": "string" },
+              "start_time": { "type": "string", "format": "date-time" },
+              "end_time": { "type": "string", "format": "date-time" },
+              "type": { "type": "string" }
+            }
+          },
+          "description": "Next 3-5 upcoming events"
+        },
+        "active_users": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "avatar_url": { "type": "string", "format": "uri" },
+              "presence_type": {
+                "type": "string",
+                "enum": ["physical", "virtual"]
+              }
+            }
+          },
+          "description": "Currently present users (respecting privacy settings)"
+        },
+        "personality": {
+          "type": "object",
+          "description": "Room personality preview",
+          "properties": {
+            "avatar": { "type": "string" },
+            "icon": { "type": "string" },
+            "tone": { "type": "string" },
+            "traits": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "backstory_snippet": {
+              "type": "string",
+              "maxLength": 200,
+              "description": "Brief excerpt from personality backstory"
+            }
+          }
+        }
+      }
+    },
+    "ActionResponse": {
+      "type": "object",
+      "description": "Response payload when an action is triggered",
+      "required": ["action_id", "room_id", "status"],
+      "properties": {
+        "action_id": { "type": "string" },
+        "room_id": { "type": "string" },
+        "status": {
+          "type": "string",
+          "enum": ["success", "error", "requires_auth", "requires_permission", "pending"]
+        },
+        "message": {
+          "type": "string",
+          "description": "User-facing message"
+        },
+        "data": {
+          "type": "object",
+          "description": "Action-specific response data"
+        },
+        "next_action": {
+          "type": "string",
+          "description": "Suggested next action (e.g., 'open_classroom_view', 'show_reservation_form')"
+        }
+      }
+    }
+  }
+}

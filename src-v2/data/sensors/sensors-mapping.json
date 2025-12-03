@@ -1,0 +1,1302 @@
+{
+  "rooms": [
+    {
+      "id": "makerspace",
+      "name": "Makers Space",
+      "category": "Lab",
+      "sensors": [
+        {
+          "entityId": "binary_sensor.makerspace_occupancy_occupancy",
+          "friendlyName": "MakerSpace Occupancy",
+          "type": "occupancy"
+        },
+        {
+          "entityId": "sensor.makerspace_occupancy_last_illumination_state",
+          "friendlyName": "MakerSpace Last illumination state",
+          "type": "enum"
+        },
+        {
+          "entityId": "sensor.aq_sensor_temperature",
+          "friendlyName": "MakerSpace Temperature",
+          "type": "temperature",
+          "unit": "°C"
+        },
+        {
+          "entityId": "sensor.aq_sensor_humidity",
+          "friendlyName": "MakerSpace Humidity",
+          "type": "humidity",
+          "unit": "%"
+        },
+        {
+          "entityId": "sensor.aq_sensor_pm2_5",
+          "friendlyName": "MakerSpace PM2.5",
+          "type": "pm25",
+          "unit": "μg/m³"
+        },
+        {
+          "entityId": "sensor.aq_sensor_voc_index",
+          "friendlyName": "MakerSpace VOC index",
+          "type": "aqi"
+        },
+        {
+          "entityId": "sensor.ikea_of_sweden_remote_control_n2_battery",
+          "friendlyName": "MakerSpace light switch",
+          "type": "battery",
+          "unit": "%"
+        },
+        {
+          "entityId": "binary_sensor.octoprint_printing",
+          "friendlyName": "OctoPrint Printing",
+          "type": "unknown"
+        },
+        {
+          "entityId": "binary_sensor.octoprint_printing_error",
+          "friendlyName": "OctoPrint Printing Error",
+          "type": "unknown"
+        },
+        {
+          "entityId": "sensor.octoprint_actual_a_temp",
+          "friendlyName": "OctoPrint actual A temp",
+          "type": "temperature",
+          "unit": "°C"
+        },
+        {
+          "entityId": "sensor.octoprint_target_a_temp",
+          "friendlyName": "OctoPrint target A temp",
+          "type": "temperature",
+          "unit": "°C"
+        },
+        {
+          "entityId": "sensor.octoprint_actual_w_temp",
+          "friendlyName": "OctoPrint actual W temp",
+          "type": "temperature",
+          "unit": "°C"
+        },
+        {
+          "entityId": "sensor.octoprint_target_w_temp",
+          "friendlyName": "OctoPrint target W temp",
+          "type": "temperature",
+          "unit": "°C"
+        },
+        {
+          "entityId": "sensor.octoprint_actual_x_temp",
+          "friendlyName": "OctoPrint actual X temp",
+          "type": "temperature",
+          "unit": "°C"
+        },
+        {
+          "entityId": "sensor.octoprint_target_x_temp",
+          "friendlyName": "OctoPrint target X temp",
+          "type": "temperature",
+          "unit": "°C"
+        },
+        {
+          "entityId": "sensor.octoprint_actual_bed_temp",
+          "friendlyName": "OctoPrint actual bed temp",
+          "type": "temperature",
+          "unit": "°C"
+        },
+        {
+          "entityId": "sensor.octoprint_target_bed_temp",
+          "friendlyName": "OctoPrint target bed temp",
+          "type": "temperature",
+          "unit": "°C"
+        },
+        {
+          "entityId": "sensor.octoprint_actual_tool0_temp",
+          "friendlyName": "OctoPrint actual tool0 temp",
+          "type": "temperature",
+          "unit": "°C"
+        },
+        {
+          "entityId": "sensor.octoprint_target_tool0_temp",
+          "friendlyName": "OctoPrint target tool0 temp",
+          "type": "temperature",
+          "unit": "°C"
+        },
+        {
+          "entityId": "sensor.octoprint_current_state",
+          "friendlyName": "OctoPrint Current State",
+          "type": "unknown"
+        },
+        {
+          "entityId": "sensor.octoprint_job_percentage",
+          "friendlyName": "OctoPrint Job Percentage",
+          "type": "unknown",
+          "unit": "%"
+        },
+        {
+          "entityId": "sensor.octoprint_estimated_finish_time",
+          "friendlyName": "OctoPrint Estimated Finish Time",
+          "type": "timestamp"
+        },
+        {
+          "entityId": "sensor.octoprint_start_time",
+          "friendlyName": "OctoPrint Start Time",
+          "type": "timestamp"
+        },
+        {
+          "entityId": "sensor.octoprint_current_file",
+          "friendlyName": "OctoPrint Current File",
+          "type": "unknown"
+        },
+        {
+          "entityId": "sensor.octoprint_current_file_size",
+          "friendlyName": "OctoPrint Current File Size",
+          "type": "data_size",
+          "unit": "MB"
+        },
+        {
+          "entityId": "binary_sensor.octoprint_printing_2",
+          "friendlyName": "OctoPrint Printing",
+          "type": "unknown"
+        },
+        {
+          "entityId": "binary_sensor.octoprint_printing_error_2",
+          "friendlyName": "OctoPrint Printing Error",
+          "type": "unknown"
+        },
+        {
+          "entityId": "sensor.octoprint_actual_a_temp_2",
+          "friendlyName": "OctoPrint actual A temp",
+          "type": "temperature",
+          "unit": "°C"
+        },
+        {
+          "entityId": "sensor.octoprint_target_a_temp_2",
+          "friendlyName": "OctoPrint target A temp",
+          "type": "temperature",
+          "unit": "°C"
+        },
+        {
+          "entityId": "sensor.octoprint_actual_w_temp_2",
+          "friendlyName": "OctoPrint actual W temp",
+          "type": "temperature",
+          "unit": "°C"
+        },
+        {
+          "entityId": "sensor.octoprint_target_w_temp_2",
+          "friendlyName": "OctoPrint target W temp",
+          "type": "temperature",
+          "unit": "°C"
+        },
+        {
+          "entityId": "sensor.octoprint_actual_x_temp_2",
+          "friendlyName": "OctoPrint actual X temp",
+          "type": "temperature",
+          "unit": "°C"
+        },
+        {
+          "entityId": "sensor.octoprint_target_x_temp_2",
+          "friendlyName": "OctoPrint target X temp",
+          "type": "temperature",
+          "unit": "°C"
+        },
+        {
+          "entityId": "sensor.octoprint_actual_bed_temp_2",
+          "friendlyName": "OctoPrint actual bed temp",
+          "type": "temperature",
+          "unit": "°C"
+        },
+        {
+          "entityId": "sensor.octoprint_target_bed_temp_2",
+          "friendlyName": "OctoPrint target bed temp",
+          "type": "temperature",
+          "unit": "°C"
+        },
+        {
+          "entityId": "sensor.octoprint_actual_tool0_temp_2",
+          "friendlyName": "OctoPrint actual tool0 temp",
+          "type": "temperature",
+          "unit": "°C"
+        },
+        {
+          "entityId": "sensor.octoprint_target_tool0_temp_2",
+          "friendlyName": "OctoPrint target tool0 temp",
+          "type": "temperature",
+          "unit": "°C"
+        },
+        {
+          "entityId": "sensor.octoprint_current_state_2",
+          "friendlyName": "OctoPrint Current State",
+          "type": "unknown"
+        },
+        {
+          "entityId": "sensor.octoprint_job_percentage_2",
+          "friendlyName": "OctoPrint Job Percentage",
+          "type": "unknown",
+          "unit": "%"
+        },
+        {
+          "entityId": "sensor.octoprint_estimated_finish_time_2",
+          "friendlyName": "OctoPrint Estimated Finish Time",
+          "type": "timestamp"
+        },
+        {
+          "entityId": "sensor.octoprint_start_time_2",
+          "friendlyName": "OctoPrint Start Time",
+          "type": "timestamp"
+        },
+        {
+          "entityId": "sensor.octoprint_current_file_2",
+          "friendlyName": "OctoPrint Current File",
+          "type": "unknown"
+        },
+        {
+          "entityId": "sensor.octoprint_current_file_size_2",
+          "friendlyName": "OctoPrint Current File Size",
+          "type": "data_size",
+          "unit": "MB"
+        },
+        {
+          "entityId": "sensor.3d_printer_power_socket_current",
+          "friendlyName": "3D Printer power socket Current",
+          "type": "current",
+          "unit": "A"
+        },
+        {
+          "entityId": "sensor.3d_printer_power_socket_voltage",
+          "friendlyName": "3D Printer power socket Voltage",
+          "type": "voltage",
+          "unit": "V"
+        },
+        {
+          "entityId": "sensor.3d_printer_power_socket_power",
+          "friendlyName": "3D Printer power socket Power",
+          "type": "power",
+          "unit": "W"
+        },
+        {
+          "entityId": "sensor.3d_printer_power_socket_summation_delivered",
+          "friendlyName": "3D Printer power socket Summation delivered",
+          "type": "energy",
+          "unit": "kWh"
+        }
+      ],
+      "sensorCount": 48
+    },
+    {
+      "id": "a.3",
+      "name": "Hive",
+      "category": "Conceptual Realm",
+      "sensors": [
+        {
+          "entityId": "binary_sensor.presence_sensor",
+          "friendlyName": "A2 Occupancy",
+          "type": "occupancy"
+        },
+        {
+          "entityId": "sensor.presence_sensor_last_illumination_state_2",
+          "friendlyName": "Presence sensor Last illumination state",
+          "type": "enum"
+        },
+        {
+          "entityId": "sensor.ikea_of_sweden_vindstyrka_temperature_2",
+          "friendlyName": "A3 temperature",
+          "type": "temperature",
+          "unit": "°C"
+        },
+        {
+          "entityId": "sensor.ikea_of_sweden_vindstyrka_humidity_2",
+          "friendlyName": "A3 Humidity",
+          "type": "humidity",
+          "unit": "%"
+        },
+        {
+          "entityId": "sensor.ikea_of_sweden_vindstyrka_pm2_5_2",
+          "friendlyName": "A3 PM2.5",
+          "type": "pm25",
+          "unit": "μg/m³"
+        },
+        {
+          "entityId": "sensor.ikea_of_sweden_vindstyrka_voc_index_2",
+          "friendlyName": "A3 VOC index",
+          "type": "aqi"
+        }
+      ],
+      "sensorCount": 6
+    },
+    {
+      "id": "b.3",
+      "name": "Peace",
+      "category": "Classroom",
+      "sensors": [
+        {
+          "entityId": "binary_sensor.b3_occupancy_occupancy",
+          "friendlyName": "B3 Occupancy",
+          "type": "occupancy"
+        },
+        {
+          "entityId": "sensor.b3_occupancy_last_illumination_state",
+          "friendlyName": "B3 Last illumination state",
+          "type": "enum"
+        },
+        {
+          "entityId": "sensor.ikea_aq_sensor_temperature",
+          "friendlyName": "B3 Temperature",
+          "type": "temperature",
+          "unit": "°C"
+        },
+        {
+          "entityId": "sensor.ikea_aq_sensor_humidity",
+          "friendlyName": "B3 Humidity",
+          "type": "humidity",
+          "unit": "%"
+        },
+        {
+          "entityId": "sensor.ikea_aq_sensor_pm2_5",
+          "friendlyName": "B3 PM2.5",
+          "type": "pm25",
+          "unit": "μg/m³"
+        },
+        {
+          "entityId": "sensor.ikea_aq_sensor_voc_index",
+          "friendlyName": "B3 VOC index",
+          "type": "aqi"
+        },
+        {
+          "entityId": "sensor.sonoff_snzb_02d_temp_humidity_battery",
+          "friendlyName": "B.3 Sensor Battery",
+          "type": "battery",
+          "unit": "%"
+        },
+        {
+          "entityId": "sensor.sonoff_snzb_06p_rssi_2",
+          "friendlyName": "B3 occupancy RSSI",
+          "type": "signal_strength",
+          "unit": "dBm"
+        },
+        {
+          "entityId": "sensor.sonoff_snzb_06p_lqi_2",
+          "friendlyName": "B3 occupancy LQI",
+          "type": "unknown"
+        }
+      ],
+      "sensorCount": 9
+    },
+    {
+      "id": "b.4",
+      "name": "Classroom B4",
+      "category": "Classroom",
+      "sensors": [
+        {
+          "entityId": "binary_sensor.b4_occupancy_occupancy",
+          "friendlyName": "B4 Occupancy",
+          "type": "occupancy"
+        },
+        {
+          "entityId": "sensor.b4_occupancy_last_illumination_state",
+          "friendlyName": "B4 Last illumination state",
+          "type": "enum"
+        },
+        {
+          "entityId": "sensor.sonoff_snzb_02d_humid_temp_temperature",
+          "friendlyName": "B4 Temperature",
+          "type": "temperature",
+          "unit": "°C"
+        },
+        {
+          "entityId": "sensor.sonoff_snzb_02d_humid_temp_humidity",
+          "friendlyName": "B4 Humidity",
+          "type": "humidity",
+          "unit": "%"
+        },
+        {
+          "entityId": "sensor.sonoff_snzb_02d_humid_temp_battery",
+          "friendlyName": "B.4 Sensor Battery",
+          "type": "battery",
+          "unit": "%"
+        }
+      ],
+      "sensorCount": 5
+    },
+    {
+      "id": "b.5",
+      "name": "Present",
+      "category": "Classroom",
+      "sensors": [
+        {
+          "entityId": "binary_sensor.b5_occupancy",
+          "friendlyName": "B5 Occupancy",
+          "type": "occupancy"
+        },
+        {
+          "entityId": "sensor.sonoff_snzb_06p_last_illumination_state",
+          "friendlyName": "B5 Last Illumination state",
+          "type": "enum"
+        },
+        {
+          "entityId": "sensor.sonoff_snzb_02d_temp_humid_temperature",
+          "friendlyName": "B5 Temperature",
+          "type": "temperature",
+          "unit": "°C"
+        },
+        {
+          "entityId": "sensor.sonoff_snzb_02d_temp_humid_humidity",
+          "friendlyName": "B5 Humidity",
+          "type": "humidity",
+          "unit": "%"
+        },
+        {
+          "entityId": "sensor.sonoff_snzb_02d_temp_humid_battery",
+          "friendlyName": "B.5 Sensor Battery",
+          "type": "battery",
+          "unit": "%"
+        }
+      ],
+      "sensorCount": 5
+    },
+    {
+      "id": "b.6",
+      "name": "After",
+      "category": "Classroom",
+      "sensors": [
+        {
+          "entityId": "binary_sensor.b6_occupancy_occupancy_2",
+          "friendlyName": "B6 Occupancy",
+          "type": "occupancy"
+        },
+        {
+          "entityId": "sensor.b6_occupancy_last_illumination_state_2",
+          "friendlyName": "B6 Last illumination state",
+          "type": "enum"
+        },
+        {
+          "entityId": "sensor.sonoff_snzb_02d_temperature",
+          "friendlyName": "B.6 Temperature",
+          "type": "temperature",
+          "unit": "°C"
+        },
+        {
+          "entityId": "sensor.sonoff_snzb_02d_humidity",
+          "friendlyName": "B.6 Humidity",
+          "type": "humidity",
+          "unit": "%"
+        },
+        {
+          "entityId": "sensor.sonoff_snzb_02d_battery",
+          "friendlyName": "B.6 Sensor Battery",
+          "type": "battery",
+          "unit": "%"
+        }
+      ],
+      "sensorCount": 5
+    },
+    {
+      "id": "b.7",
+      "name": "W Room",
+      "category": "Classroom",
+      "sensors": [
+        {
+          "entityId": "binary_sensor.b7_occupancy_occupancy_2",
+          "friendlyName": "B7 Occupancy",
+          "type": "occupancy"
+        },
+        {
+          "entityId": "sensor.b7_occupancy_last_illumination_state_2",
+          "friendlyName": "B7 Last illumination state",
+          "type": "enum"
+        },
+        {
+          "entityId": "sensor.sonoff_snzb_02d_humid_temp_temperature_2",
+          "friendlyName": "B7 Temperature",
+          "type": "temperature",
+          "unit": "°C"
+        },
+        {
+          "entityId": "sensor.sonoff_snzb_02d_humid_temp_humidity_2",
+          "friendlyName": "B7 Humidity",
+          "type": "humidity",
+          "unit": "%"
+        },
+        {
+          "entityId": "sensor.sonoff_snzb_02d_humid_temp_battery_2",
+          "friendlyName": "B.7 Sensor Battery",
+          "type": "battery",
+          "unit": "%"
+        }
+      ],
+      "sensorCount": 5
+    },
+    {
+      "id": "b.10",
+      "name": "MF Room",
+      "category": "Classroom",
+      "sensors": [
+        {
+          "entityId": "binary_sensor.unknown_occupancy_3",
+          "friendlyName": "B10 Occupancy",
+          "type": "occupancy"
+        },
+        {
+          "entityId": "sensor.unknown_last_illumination_state_3",
+          "friendlyName": "B10 Last illumination state",
+          "type": "enum"
+        }
+      ],
+      "sensorCount": 2
+    },
+    {
+      "id": "b.12",
+      "name": "Hans Zimmer",
+      "category": "Classroom",
+      "sensors": [
+        {
+          "entityId": "binary_sensor.b12_occupancy_occupancy_3",
+          "friendlyName": "B12 Occupancy",
+          "type": "occupancy"
+        },
+        {
+          "entityId": "sensor.b12_occupancy_last_illumination_state_3",
+          "friendlyName": "B12 Last illumination state",
+          "type": "enum"
+        },
+        {
+          "entityId": "sensor.sonoff_snzb_02d_humid_temp_temperature_3",
+          "friendlyName": "B12 Temperature",
+          "type": "temperature",
+          "unit": "°C"
+        },
+        {
+          "entityId": "sensor.sonoff_snzb_02d_humid_temp_humidity_3",
+          "friendlyName": "B12 Humidity",
+          "type": "humidity",
+          "unit": "%"
+        },
+        {
+          "entityId": "sensor.sonoff_snzb_02d_humid_temp_battery_3",
+          "friendlyName": "B.12 Sensor Battery",
+          "type": "battery",
+          "unit": "%"
+        }
+      ],
+      "sensorCount": 5
+    },
+    {
+      "id": "b.14",
+      "name": "Dark Matter",
+      "category": "Classroom",
+      "sensors": [
+        {
+          "entityId": "binary_sensor.b14_occupancy",
+          "friendlyName": "B14 Occupancy",
+          "type": "occupancy"
+        },
+        {
+          "entityId": "sensor.b14_occupancy_last_illumination_state_2",
+          "friendlyName": "B14 Occupancy Last illumination state",
+          "type": "enum"
+        }
+      ],
+      "sensorCount": 2
+    },
+    {
+      "id": "a.1",
+      "name": "Babylon",
+      "category": "Conceptual Realm",
+      "sensors": [
+        {
+          "entityId": "binary_sensor.a1_occupancy",
+          "friendlyName": "A1 Occupancy",
+          "type": "occupancy"
+        },
+        {
+          "entityId": "sensor.a1_occupancy_last_illumination_state_2",
+          "friendlyName": "A1 occupancy Last illumination state",
+          "type": "enum"
+        }
+      ],
+      "sensorCount": 2
+    },
+    {
+      "id": "a.6",
+      "name": "Muted",
+      "category": "Conceptual Realm",
+      "sensors": [
+        {
+          "entityId": "binary_sensor.a6_occupancy_occupancy_4",
+          "friendlyName": "A6 Occupancy",
+          "type": "occupancy"
+        },
+        {
+          "entityId": "sensor.a6_occupancy_last_illumination_state_4",
+          "friendlyName": "A6 occupancy Last illumination state",
+          "type": "enum"
+        },
+        {
+          "entityId": "sensor.sonoff_snzb_02d_temperature_2",
+          "friendlyName": "A6 Temperature",
+          "type": "temperature",
+          "unit": "°C"
+        },
+        {
+          "entityId": "sensor.sonoff_snzb_02d_humidity_2",
+          "friendlyName": "A6 Humidity",
+          "type": "humidity",
+          "unit": "%"
+        },
+        {
+          "entityId": "sensor.sonoff_snzb_02d_battery_2",
+          "friendlyName": "A.6 Sensor Battery",
+          "type": "battery",
+          "unit": "%"
+        }
+      ],
+      "sensorCount": 5
+    },
+    {
+      "id": "a.11",
+      "name": "A11 (TET and RIS)",
+      "category": "Lab",
+      "sensors": [
+        {
+          "entityId": "binary_sensor.a11_occupancy",
+          "friendlyName": "A11 Occupancy",
+          "type": "occupancy"
+        },
+        {
+          "entityId": "sensor.a11_occupancy_last_illumination_state_2",
+          "friendlyName": "A11 occupancy Last illumination state",
+          "type": "enum"
+        }
+      ],
+      "sensorCount": 2
+    },
+    {
+      "id": "kitchen",
+      "name": "Cantina Kitchen",
+      "category": "Service",
+      "sensors": [
+        {
+          "entityId": "sensor.sonoff_snzb_02d_temperature_3",
+          "friendlyName": "Kitchen Temperature",
+          "type": "temperature",
+          "unit": "°C"
+        },
+        {
+          "entityId": "sensor.sonoff_snzb_02d_humidity_3",
+          "friendlyName": "Kitchen Humidity",
+          "type": "humidity",
+          "unit": "%"
+        },
+        {
+          "entityId": "sensor.sonoff_snzb_02d_battery_3",
+          "friendlyName": "Kitchen Sensor Battery",
+          "type": "battery",
+          "unit": "%"
+        }
+      ],
+      "sensorCount": 3
+    },
+    {
+      "id": "a.14",
+      "name": "Houston",
+      "category": "Lab",
+      "sensors": [
+        {
+          "entityId": "sensor.sonoff_snzb_02d_temperature_4",
+          "friendlyName": "A12 temperature",
+          "type": "temperature",
+          "unit": "°C"
+        },
+        {
+          "entityId": "sensor.a12_climate",
+          "friendlyName": "A12 humidity",
+          "type": "humidity",
+          "unit": "%"
+        },
+        {
+          "entityId": "sensor.sonoff_snzb_02d_battery_4",
+          "friendlyName": "Team HQ Sensor Battery",
+          "type": "battery",
+          "unit": "%"
+        },
+        {
+          "entityId": "binary_sensor.a12_occupancy",
+          "friendlyName": "A12 Occupancy",
+          "type": "occupancy"
+        },
+        {
+          "entityId": "sensor.a12_occupancy_last_illumination_state_2",
+          "friendlyName": "A12 occupancy Last illumination state",
+          "type": "enum"
+        },
+        {
+          "entityId": "sensor.ikea_of_sweden_vindstyrka_temperature",
+          "friendlyName": "Team HQ temperature",
+          "type": "temperature",
+          "unit": "°C"
+        },
+        {
+          "entityId": "sensor.ikea_of_sweden_vindstyrka_humidity",
+          "friendlyName": "Team HQ Humidity",
+          "type": "humidity",
+          "unit": "%"
+        },
+        {
+          "entityId": "sensor.ikea_of_sweden_vindstyrka_pm2_5",
+          "friendlyName": "Team HQ PM2.5",
+          "type": "pm25",
+          "unit": "μg/m³"
+        },
+        {
+          "entityId": "sensor.ikea_of_sweden_vindstyrka_voc_index",
+          "friendlyName": "Team HQ VOC",
+          "type": "aqi"
+        }
+      ],
+      "sensorCount": 9
+    },
+    {
+      "id": "a.23",
+      "name": "Lecture Hall",
+      "category": "Lab",
+      "sensors": [
+        {
+          "entityId": "sensor.sonoff_snzb_02d_temp_humidity_temperature",
+          "friendlyName": "A2 Temperature",
+          "type": "temperature",
+          "unit": "°C"
+        },
+        {
+          "entityId": "sensor.sonoff_snzb_02d_temp_humidity_humidity",
+          "friendlyName": "A2 Humidity",
+          "type": "humidity",
+          "unit": "%"
+        }
+      ],
+      "sensorCount": 2
+    },
+    {
+      "id": "hydrogen",
+      "name": "Hydrogen Lab",
+      "category": "Lab",
+      "sensors": [
+        {
+          "entityId": "sensor.frient_a_s_aqszb_110_temperature",
+          "friendlyName": "frient A/S AQSZB-110 Temperature",
+          "type": "temperature",
+          "unit": "°C"
+        },
+        {
+          "entityId": "sensor.frient_a_s_aqszb_110_humidity",
+          "friendlyName": "frient A/S AQSZB-110 Humidity",
+          "type": "humidity",
+          "unit": "%"
+        },
+        {
+          "entityId": "sensor.frient_a_s_aqszb_110_volatile_organic_compounds",
+          "friendlyName": "frient A/S AQSZB-110 Volatile organic compounds parts",
+          "type": "volatile_organic_compounds_parts",
+          "unit": "ppb"
+        },
+        {
+          "entityId": "sensor.frient_a_s_aqszb_110_battery",
+          "friendlyName": "frient A/S AQSZB-110 Battery",
+          "type": "battery",
+          "unit": "%"
+        }
+      ],
+      "sensorCount": 4
+    }
+  ],
+  "phoneBooths": [
+    {
+      "id": "phone_booth_1",
+      "name": "Phone Booth 1",
+      "sensors": [
+        {
+          "entityId": "binary_sensor.phone_booth_1_occupancy",
+          "friendlyName": "Phone Booth 1 Occupancy",
+          "type": "occupancy"
+        }
+      ],
+      "sensorCount": 1
+    },
+    {
+      "id": "phone_booth_3",
+      "name": "Phone Booth 3",
+      "sensors": [
+        {
+          "entityId": "binary_sensor.phone_booth_3_occupancy",
+          "friendlyName": "Phone Booth 3 Occupancy",
+          "type": "occupancy"
+        }
+      ],
+      "sensorCount": 1
+    },
+    {
+      "id": "phone_booth_4",
+      "name": "Phone Booth 4",
+      "sensors": [
+        {
+          "entityId": "binary_sensor.phone_booth_4_occupancy",
+          "friendlyName": "Phone Booth 4 Occupancy",
+          "type": "occupancy"
+        }
+      ],
+      "sensorCount": 1
+    }
+  ],
+  "labArea": {
+    "name": "Lab Area",
+    "sensors": [
+      {
+        "entityId": "sensor.smaller_black_slab_battery_level",
+        "friendlyName": "Smaller black slab Battery Level",
+        "type": "battery",
+        "unit": "%"
+      },
+      {
+        "entityId": "sensor.smaller_black_slab_ssid",
+        "friendlyName": "Smaller black slab SSID",
+        "type": "unknown"
+      },
+      {
+        "entityId": "sensor.smaller_black_slab_storage",
+        "friendlyName": "Smaller black slab Storage",
+        "type": "unknown",
+        "unit": "% available"
+      },
+      {
+        "entityId": "sensor.smaller_black_slab_bssid",
+        "friendlyName": "Smaller black slab BSSID",
+        "type": "unknown"
+      },
+      {
+        "entityId": "sensor.smaller_black_slab_connection_type",
+        "friendlyName": "Smaller black slab Connection Type",
+        "type": "unknown"
+      },
+      {
+        "entityId": "sensor.smaller_black_slab_app_version",
+        "friendlyName": "Smaller black slab App Version",
+        "type": "unknown"
+      },
+      {
+        "entityId": "sensor.smaller_black_slab_sim_2",
+        "friendlyName": "Smaller black slab SIM 2",
+        "type": "unknown"
+      },
+      {
+        "entityId": "sensor.smaller_black_slab_last_update_trigger",
+        "friendlyName": "Smaller black slab Last Update Trigger",
+        "type": "unknown"
+      },
+      {
+        "entityId": "sensor.smaller_black_slab_location_permission",
+        "friendlyName": "Smaller black slab Location permission",
+        "type": "unknown"
+      },
+      {
+        "entityId": "sensor.smaller_black_slab_sim_1",
+        "friendlyName": "Smaller black slab SIM 1",
+        "type": "unknown"
+      },
+      {
+        "entityId": "sensor.smaller_black_slab_audio_output",
+        "friendlyName": "Smaller black slab Audio Output",
+        "type": "unknown"
+      },
+      {
+        "entityId": "sensor.smaller_black_slab_battery_state",
+        "friendlyName": "Smaller black slab Battery State",
+        "type": "unknown"
+      },
+      {
+        "entityId": "sensor.ewelink_ms01_battery",
+        "friendlyName": "eWeLink MS01 Battery",
+        "type": "battery",
+        "unit": "%"
+      },
+      {
+        "entityId": "sensor.ewelink_ms01_battery_2",
+        "friendlyName": "eWeLink MS01 Battery",
+        "type": "battery",
+        "unit": "%"
+      },
+      {
+        "entityId": "sensor.ewelink_ms01_battery_3",
+        "friendlyName": "eWeLink MS01 Battery",
+        "type": "battery",
+        "unit": "%"
+      }
+    ],
+    "sensorCount": 15
+  },
+  "buildingWideSystems": {
+    "name": "Building-Wide Systems",
+    "sensors": [
+      {
+        "entityId": "sensor.backup_backup_manager_state",
+        "friendlyName": "Backup Backup Manager state",
+        "type": "enum"
+      },
+      {
+        "entityId": "sensor.backup_next_scheduled_automatic_backup",
+        "friendlyName": "Backup Next scheduled automatic backup",
+        "type": "timestamp"
+      },
+      {
+        "entityId": "sensor.backup_last_successful_automatic_backup",
+        "friendlyName": "Backup Last successful automatic backup",
+        "type": "timestamp"
+      },
+      {
+        "entityId": "sensor.backup_last_attempted_automatic_backup",
+        "friendlyName": "Backup Last attempted automatic backup",
+        "type": "timestamp"
+      },
+      {
+        "entityId": "binary_sensor.remote_ui",
+        "friendlyName": "Remote UI",
+        "type": "connectivity"
+      },
+      {
+        "entityId": "sensor.sun_next_dawn",
+        "friendlyName": "Sun Next dawn",
+        "type": "timestamp"
+      },
+      {
+        "entityId": "sensor.sun_next_dusk",
+        "friendlyName": "Sun Next dusk",
+        "type": "timestamp"
+      },
+      {
+        "entityId": "sensor.sun_next_midnight",
+        "friendlyName": "Sun Next midnight",
+        "type": "timestamp"
+      },
+      {
+        "entityId": "sensor.sun_next_noon",
+        "friendlyName": "Sun Next noon",
+        "type": "timestamp"
+      },
+      {
+        "entityId": "sensor.sun_next_rising",
+        "friendlyName": "Sun Next rising",
+        "type": "timestamp"
+      },
+      {
+        "entityId": "sensor.sun_next_setting",
+        "friendlyName": "Sun Next setting",
+        "type": "timestamp"
+      },
+      {
+        "entityId": "sensor.low_battery_devices",
+        "friendlyName": "Low Battery Devices",
+        "type": "unknown"
+      },
+      {
+        "entityId": "sensor.unoccupied_rooms",
+        "friendlyName": "Unoccupied rooms",
+        "type": "unknown"
+      },
+      {
+        "entityId": "binary_sensor.unoccupied_rooms",
+        "friendlyName": "Unoccupied rooms",
+        "type": "unknown"
+      },
+      {
+        "entityId": "sensor.occupancy_count",
+        "friendlyName": "Occupancy Count",
+        "type": "unknown"
+      },
+      {
+        "entityId": "sensor.occupancy_percentage",
+        "friendlyName": "Occupancy Percentage",
+        "type": "unknown",
+        "unit": "%"
+      },
+      {
+        "entityId": "binary_sensor.rpi_power_status",
+        "friendlyName": "RPi Power status",
+        "type": "problem"
+      },
+      {
+        "entityId": "sensor.karl_marx_strasse_berlin_germany_air_quality_index",
+        "friendlyName": "Karl-Marx-Straße, Berlin, Germany Air quality index",
+        "type": "aqi"
+      },
+      {
+        "entityId": "sensor.karl_marx_strasse_berlin_germany_humidity",
+        "friendlyName": "Karl-Marx-Straße, Berlin, Germany Humidity",
+        "type": "humidity",
+        "unit": "%"
+      },
+      {
+        "entityId": "sensor.karl_marx_strasse_berlin_germany_pressure",
+        "friendlyName": "Karl-Marx-Straße, Berlin, Germany Pressure",
+        "type": "pressure",
+        "unit": "hPa"
+      },
+      {
+        "entityId": "sensor.karl_marx_strasse_berlin_germany_temperature",
+        "friendlyName": "Karl-Marx-Straße, Berlin, Germany Temperature",
+        "type": "temperature",
+        "unit": "°C"
+      },
+      {
+        "entityId": "sensor.karl_marx_strasse_berlin_germany_nitrogen_dioxide",
+        "friendlyName": "Karl-Marx-Straße, Berlin, Germany Nitrogen dioxide",
+        "type": "unknown"
+      },
+      {
+        "entityId": "sensor.karl_marx_strasse_berlin_germany_pm10",
+        "friendlyName": "Karl-Marx-Straße, Berlin, Germany PM10",
+        "type": "unknown"
+      },
+      {
+        "entityId": "sensor.karl_marx_strasse_berlin_germany_pm2_5",
+        "friendlyName": "Karl-Marx-Straße, Berlin, Germany PM2.5",
+        "type": "unknown"
+      },
+      {
+        "entityId": "sensor.karl_marx_strasse_berlin_germany_dominant_pollutant",
+        "friendlyName": "Karl-Marx-Straße, Berlin, Germany Dominant pollutant",
+        "type": "enum"
+      }
+    ],
+    "sensorCount": 25
+  },
+  "personalDevices": {
+    "name": "Personal Devices",
+    "sensors": [
+      {
+        "entityId": "binary_sensor.xxx_xxx_x_x_focus",
+        "friendlyName": "xxx.xxx.x.x Focus",
+        "type": "unknown"
+      },
+      {
+        "entityId": "sensor.xxx_xxx_x_x_connection_type",
+        "friendlyName": "xxx.xxx.x.x Connection Type",
+        "type": "unknown"
+      },
+      {
+        "entityId": "sensor.xxx_xxx_x_x_battery_level",
+        "friendlyName": "xxx.xxx.x.x Battery Level",
+        "type": "battery",
+        "unit": "%"
+      },
+      {
+        "entityId": "sensor.xxx_xxx_x_x_ssid",
+        "friendlyName": "xxx.xxx.x.x SSID",
+        "type": "unknown"
+      },
+      {
+        "entityId": "sensor.xxx_xxx_x_x_bssid",
+        "friendlyName": "xxx.xxx.x.x BSSID",
+        "type": "unknown"
+      },
+      {
+        "entityId": "sensor.xxx_xxx_x_x_battery_state",
+        "friendlyName": "xxx.xxx.x.x Battery State",
+        "type": "unknown"
+      },
+      {
+        "entityId": "sensor.xxx_xxx_x_x_storage",
+        "friendlyName": "xxx.xxx.x.x Storage",
+        "type": "unknown",
+        "unit": "% available"
+      },
+      {
+        "entityId": "sensor.xxx_xxx_x_x_sim_2",
+        "friendlyName": "xxx.xxx.x.x SIM 2",
+        "type": "unknown"
+      },
+      {
+        "entityId": "sensor.xxx_xxx_x_x_geocoded_location",
+        "friendlyName": "xxx.xxx.x.x Geocoded Location",
+        "type": "unknown"
+      },
+      {
+        "entityId": "sensor.xxx_xxx_x_x_sim_1",
+        "friendlyName": "xxx.xxx.x.x SIM 1",
+        "type": "unknown"
+      },
+      {
+        "entityId": "sensor.xxx_xxx_x_x_last_update_trigger",
+        "friendlyName": "xxx.xxx.x.x Last Update Trigger",
+        "type": "unknown"
+      },
+      {
+        "entityId": "sensor.xxx_xxx_x_x_app_version",
+        "friendlyName": "xxx.xxx.x.x App Version",
+        "type": "unknown"
+      },
+      {
+        "entityId": "sensor.xxx_xxx_x_x_location_permission",
+        "friendlyName": "xxx.xxx.x.x Location permission",
+        "type": "unknown"
+      },
+      {
+        "entityId": "sensor.xxx_xxx_x_x_audio_output",
+        "friendlyName": "xxx.xxx.x.x Audio Output",
+        "type": "unknown"
+      },
+      {
+        "entityId": "sensor.xxx_xxx_x_x_activity",
+        "friendlyName": "xxx.xxx.x.x Activity",
+        "type": "unknown"
+      },
+      {
+        "entityId": "sensor.xxx_xxx_x_x_floors_descended",
+        "friendlyName": "xxx.xxx.x.x Floors Descended",
+        "type": "unknown",
+        "unit": "floors"
+      },
+      {
+        "entityId": "sensor.xxx_xxx_x_x_steps",
+        "friendlyName": "xxx.xxx.x.x Steps",
+        "type": "unknown",
+        "unit": "steps"
+      },
+      {
+        "entityId": "sensor.xxx_xxx_x_x_distance",
+        "friendlyName": "xxx.xxx.x.x Distance",
+        "type": "unknown",
+        "unit": "m"
+      },
+      {
+        "entityId": "sensor.xxx_xxx_x_x_floors_ascended",
+        "friendlyName": "xxx.xxx.x.x Floors Ascended",
+        "type": "unknown",
+        "unit": "floors"
+      },
+      {
+        "entityId": "sensor.xxx_xxx_x_x_average_active_pace",
+        "friendlyName": "xxx.xxx.x.x Average Active Pace",
+        "type": "unknown",
+        "unit": "m/s"
+      },
+      {
+        "entityId": "binary_sensor.macbook_pro_21_active",
+        "friendlyName": "MacBook Pro (21) Active",
+        "type": "unknown"
+      },
+      {
+        "entityId": "binary_sensor.macbook_pro_21_camera_in_use",
+        "friendlyName": "MacBook Pro (21) Camera In Use",
+        "type": "unknown"
+      },
+      {
+        "entityId": "binary_sensor.macbook_pro_21_audio_output_in_use",
+        "friendlyName": "MacBook Pro (21) Audio Output In Use",
+        "type": "unknown"
+      },
+      {
+        "entityId": "binary_sensor.macbook_pro_21_focus",
+        "friendlyName": "MacBook Pro (21) Focus",
+        "type": "unknown"
+      },
+      {
+        "entityId": "binary_sensor.macbook_pro_21_audio_input_in_use",
+        "friendlyName": "MacBook Pro (21) Audio Input In Use",
+        "type": "unknown"
+      },
+      {
+        "entityId": "sensor.macbook_pro_21_storage",
+        "friendlyName": "MacBook Pro (21) Storage",
+        "type": "unknown",
+        "unit": "% available"
+      },
+      {
+        "entityId": "sensor.macbook_pro_21_bssid",
+        "friendlyName": "MacBook Pro (21) BSSID",
+        "type": "unknown"
+      },
+      {
+        "entityId": "sensor.macbook_pro_21_connection_type",
+        "friendlyName": "MacBook Pro (21) Connection Type",
+        "type": "unknown"
+      },
+      {
+        "entityId": "sensor.macbook_pro_21_primary_display_name",
+        "friendlyName": "MacBook Pro (21) Primary Display Name",
+        "type": "unknown"
+      },
+      {
+        "entityId": "sensor.macbook_pro_21_internal_battery_state",
+        "friendlyName": "MacBook Pro (21) Internal Battery State",
+        "type": "unknown"
+      },
+      {
+        "entityId": "sensor.macbook_pro_21_displays",
+        "friendlyName": "MacBook Pro (21) Displays",
+        "type": "unknown"
+      },
+      {
+        "entityId": "sensor.macbook_pro_21_active_audio_output",
+        "friendlyName": "MacBook Pro (21) Active Audio Output",
+        "type": "unknown"
+      },
+      {
+        "entityId": "sensor.macbook_pro_21_location_permission",
+        "friendlyName": "MacBook Pro (21) Location permission",
+        "type": "unknown"
+      },
+      {
+        "entityId": "sensor.macbook_pro_21_app_version",
+        "friendlyName": "MacBook Pro (21) App Version",
+        "type": "unknown"
+      },
+      {
+        "entityId": "sensor.macbook_pro_21_last_update_trigger",
+        "friendlyName": "MacBook Pro (21) Last Update Trigger",
+        "type": "unknown"
+      },
+      {
+        "entityId": "sensor.macbook_pro_21_primary_display_id",
+        "friendlyName": "MacBook Pro (21) Primary Display ID",
+        "type": "unknown"
+      },
+      {
+        "entityId": "sensor.macbook_pro_21_internal_battery_level",
+        "friendlyName": "MacBook Pro (21) Internal Battery Level",
+        "type": "battery",
+        "unit": "%"
+      },
+      {
+        "entityId": "sensor.macbook_pro_21_frontmost_app",
+        "friendlyName": "MacBook Pro (21) Frontmost App",
+        "type": "unknown"
+      },
+      {
+        "entityId": "sensor.macbook_pro_21_active_audio_input",
+        "friendlyName": "MacBook Pro (21) Active Audio Input",
+        "type": "unknown"
+      },
+      {
+        "entityId": "sensor.macbook_pro_21_active_camera",
+        "friendlyName": "MacBook Pro (21) Active Camera",
+        "type": "unknown"
+      },
+      {
+        "entityId": "sensor.macbook_pro_21_ssid",
+        "friendlyName": "MacBook Pro (21) SSID",
+        "type": "unknown"
+      },
+      {
+        "entityId": "sensor.macbook_pro_21_audio_output",
+        "friendlyName": "MacBook Pro (21) Audio Output",
+        "type": "unknown"
+      }
+    ],
+    "sensorCount": 42
+  },
+  "summary": {
+    "totalRoomsWithSensors": 18,
+    "totalPhoneBooths": 3,
+    "totalSensorsAssigned": 203,
+    "roomsBySensorCount": {
+      "mostSensors": "Makers Space (48 sensors)",
+      "leastSensors": "Multiple rooms (2 sensors)"
+    },
+    "categories": {
+      "Classroom": 9,
+      "Lab": 5,
+      "Conceptual Realm": 3,
+      "Service": 1
+    }
+  }
+}

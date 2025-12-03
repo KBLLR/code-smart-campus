@@ -1,4 +1,9 @@
 {
   "extends": "./src/tsconfig.json",
-  "include": ["src", "shared"]
+  "include": ["src", "shared"],
+  "exclude": [
+    "shared/classroom/**/*.ts",
+    "src/modules/classroom/**/*.tsx",
+    "src/modules/classroom/**/*.ts"
+  ]
 }
