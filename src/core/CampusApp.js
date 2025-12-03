@@ -16,6 +16,7 @@ import { Point3DManager } from '../ui/spacejs/Point3DManager.js';
 import { SensorManager } from '../sensors/SensorManager.js';
 import { HomeAssistantConnector } from '../connectors/HomeAssistantConnector.js';
 import { SensorSyncService } from '../services/SensorSyncService.js';
+import { loadSensorMappings, validateSensorMappings } from '../utils/sensorMappingLoader.js';
 import { downloadJSON, downloadYAML } from '../utils/downloadHelper.js';
 import { CampusHeader } from '../ui/hud/CampusHeader.js';
 import { CampusMetrics } from '../ui/hud/CampusMetrics.js';
@@ -229,9 +230,9 @@ export class CampusApp {
     this.sensorSyncService = new SensorSyncService(this.sensorManager, this.classroomRegistry);
 
     // Start all connectors (will auto-discover sensors from Home Assistant)
-    this.sensorManager.startAll().then(() => {
+    this.sensorManager.startAll().then(async () => {
       // Log discovered sensors after connection
-      setTimeout(() => {
+      setTimeout(async () => {
         const sensors = this.sensorManager.getDiscoveredSensors();
         console.log(`[CampusApp] ✓ Discovered ${sensors.length} sensors from Home Assistant:`);
         console.table(sensors.map(s => ({
@@ -239,6 +240,18 @@ export class CampusApp {
           'Friendly Name': s.friendlyName,
           'Current Value': `${s.state} ${s.unit}`,
         })));
+
+        // Load and apply sensor mappings from sensors-mapping.json
+        console.log('\n[CampusApp] 📡 Loading sensor mappings...');
+        const mappingStats = await loadSensorMappings(this.sensorManager);
+
+        console.log(`\n[CampusApp] ✓ Telemetry enabled for ${mappingStats.roomsWithTelemetry.length} rooms:`);
+        console.log(`  • Total mapped sensors: ${mappingStats.mappedSensors}/${mappingStats.totalSensors}`);
+        console.log(`  • Sensor types: ${Array.from(mappingStats.sensorTypes).join(', ')}`);
+
+        // Validate mappings
+        console.log('\n[CampusApp] 🔍 Validating sensor mappings...');
+        const validation = validateSensorMappings(this.sensorManager);
 
         // Export sensors to JSON
         const sensorsJSON = this.sensorManager.exportSensorsToJSON();
