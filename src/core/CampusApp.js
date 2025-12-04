@@ -58,6 +58,9 @@ export class CampusApp {
     // State
     this.isRunning = false;
     this.clock = new THREE.Clock();
+    this.raycaster = new THREE.Raycaster();
+    this.mouse = new THREE.Vector2();
+    this.hoveredRoom = null;
   }
 
   /**
@@ -85,7 +88,7 @@ export class CampusApp {
     this.scene.background = null;
     this.scene.environment = null;
     // Radial glow background (Alien.js-inspired)
-    this.radialBackground = new RadialGlowBackground(this.scene, this.camera);
+    this.radialBackground = new RadialGlowBackground();
 
     // Initialize sensor manager and connectors
     this._setupSensorSystem();
@@ -400,6 +403,12 @@ export class CampusApp {
     this.canvas.addEventListener('click', (event) => this._onCanvasClick(event));
     this.canvas.addEventListener('pointermove', (event) => this._onCanvasHover(event));
 
+    // Listen for room selection from Point3D panel clicks
+    document.addEventListener('room:select', (e) => {
+      this.roomDetailView.show(e.detail.roomId, this.roomManager, this.sensorManager);
+      this.campusHeader.hide();
+    });
+
     console.log('[CampusApp] Event listeners attached');
   }
 
@@ -423,13 +432,14 @@ export class CampusApp {
 
   _onCanvasHover(event) {
     const room = this.roomManager.getRoomAtPointer(event, this.camera);
+
     if (room) {
       this.roomManager.highlightRoom(room.id);
-      // Show hover panel with room information
+      this.hoveredRoom = room;
       this.roomHoverPanel.show(room.id, event.clientX, event.clientY);
     } else {
       this.roomManager.clearHighlight();
-      // Hide hover panel when not hovering over a room
+      this.hoveredRoom = null;
       this.roomHoverPanel.hide();
     }
   }

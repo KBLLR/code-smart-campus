@@ -313,9 +313,26 @@ export class RoomDetailView extends Interface {
         userMsg.css({ color: 'var(--ui-color)', opacity: 0.8 });
         this.chatHistory.add(userMsg);
 
-        // Get room personality data
+        // Get room personality data with fallback
         const roomData = this.roomsManager?.rooms.get(this.currentRoomId);
-        const personality = personalityLoader.getMergedPersonality(this.currentRoomId);
+        let personality = personalityLoader.getMergedPersonality(this.currentRoomId);
+
+        // Fallback to generic agent personality if custom personality not found
+        if (!personality) {
+            const classroom = this.classroomRegistry?.get(this.currentRoomId);
+            if (classroom?.agent?.personality) {
+                const agentPersonality = classroom.agent.personality;
+                personality = {
+                    'room-avatar': agentPersonality.name,
+                    'room-name': classroom.name || this.currentRoomId,
+                    trait: agentPersonality.archetype || 'Agent',
+                    want: agentPersonality.expertise || 'To assist',
+                    flaw: agentPersonality.communication_style || 'Standard responses',
+                    base_story: agentPersonality.description || 'A campus AI agent',
+                    ocean: { temperature: 0.7 }
+                };
+            }
+        }
 
         try {
             // Call MLX chat endpoint
@@ -427,7 +444,34 @@ export class RoomDetailView extends Interface {
     updateContent(roomId) {
         const roomData = this.roomsManager?.rooms.get(roomId);
         const displayName = roomData?.name || roomId.replace(/-/g, ' ');
-        const personality = personalityLoader.getMergedPersonality(roomId);
+
+        // Try to get custom personality from PersonalityLoader first
+        let personality = personalityLoader.getMergedPersonality(roomId);
+
+        // Fallback to generic agent personality from classroom registry
+        if (!personality) {
+            const classroom = this.classroomRegistry?.get(roomId);
+            if (classroom?.agent?.personality) {
+                const agentPersonality = classroom.agent.personality;
+                personality = {
+                    'room-avatar': agentPersonality.name || displayName,
+                    'room-name': displayName,
+                    icon: '🤖',
+                    trait: agentPersonality.archetype || 'Agent',
+                    want: agentPersonality.expertise || 'To monitor and assist',
+                    flaw: agentPersonality.communication_style || 'Standard responses',
+                    base_story: `${agentPersonality.name} is ${agentPersonality.description || 'a campus AI agent'}.`,
+                    ocean: {
+                        Openness: agentPersonality.ffm?.O || 0.5,
+                        Conscientiousness: agentPersonality.ffm?.C || 0.7,
+                        Extraversion: agentPersonality.ffm?.E || 0.4,
+                        Agreeableness: agentPersonality.ffm?.A || 0.6,
+                        Neuroticism: agentPersonality.ffm?.N || 0.3,
+                        temperature: 0.7
+                    }
+                };
+            }
+        }
 
         this.roomTitle.text(displayName);
         this.roomSubtitle.text(`UNIT ID: ${roomId.toUpperCase()}`);

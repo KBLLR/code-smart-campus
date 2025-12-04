@@ -60,6 +60,16 @@ export class Point3DManager {
         }));
       }
 
+      // Add click handler to panel to open detail view
+      point.panel.element.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.onPanelClick(room.id);
+      });
+
+      // Make panel clickable
+      point.panel.element.style.cursor = 'pointer';
+      point.panel.element.style.pointerEvents = 'auto';
+
       this.roomPoints.set(room.id, point);
     });
 
@@ -149,6 +159,15 @@ export class Point3DManager {
           `${occupancySensor.current_value}/${classroom.metadata.capacity}`);
       }
     });
+  }
+
+  onPanelClick(roomId) {
+    // Dispatch event to open detail view with graphs and full data
+    const event = new CustomEvent('room:select', {
+      detail: { roomId },
+      bubbles: true
+    });
+    document.dispatchEvent(event);
   }
 
   animateIn() {
