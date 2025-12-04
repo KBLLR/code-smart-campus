@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Gothic+A1:wght@400;700;900&display=swap");
 
 :root {
     /* Space.js monochrome palette - NO PURPLE */
@@ -9,6 +9,10 @@
     --light: #ffffff;
     --glass: rgba(6, 6, 6, 0.5);
     --glow: 0 0 20px rgba(255, 255, 255, 0.1);
+
+    /* Fonts */
+    --font-mono: "Roboto Mono", monospace;
+    --font-gothic: "Gothic A1", sans-serif;
 }
 
 * {
@@ -69,4 +73,15 @@ textarea,
     -webkit-user-select: text;
     -moz-user-select: text;
     user-select: text;
+}
+
+/* Gothic A1 for uppercase text */
+.uppercase,
+[style*="text-transform: uppercase"],
+[style*="text-transform:uppercase"],
+[style*="textTransform: 'uppercase'"],
+[style*='textTransform: "uppercase"'] {
+    font-family: var(--font-gothic) !important;
+    font-weight: 700;
+    letter-spacing: 1.5px;
 }
