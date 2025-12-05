@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 
 export function sensorHistoryPlugin() {
-    const shouldPersist = process.env.SENSOR_HISTORY_SAVE === 'true';
+    const shouldPersist = false; // Force disabled to prevent report writes during dev
 
     return {
         name: 'sensor-history-plugin',
