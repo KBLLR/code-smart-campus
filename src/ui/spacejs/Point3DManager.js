@@ -3,6 +3,7 @@
  * Uses the actual Space.js Point3D system for room labels and panels
  */
 
+import * as THREE from 'three';
 import { Stage } from '@alienkitty/space.js/src/utils/Stage.js';
 import { Point3D } from '@alienkitty/space.js/src/three/ui/Point3D.js';
 import { PanelItem } from '@alienkitty/space.js/src/panels/PanelItem.js';
@@ -37,21 +38,38 @@ export class Point3DManager {
     rooms.forEach(room => {
       if (!room.mesh) return;
 
+      // Calculate geometry center of mass for line origin
+      const boundingBox = new THREE.Box3().setFromObject(room.mesh);
+      const center = new THREE.Vector3();
+      boundingBox.getCenter(center);
+
+      // Create a small invisible object at the center of mass
+      const centerPoint = new THREE.Object3D();
+      centerPoint.position.copy(center);
+      room.mesh.parent.add(centerPoint);
+
       // Get classroom data if available
       const classroom = this.classroomRegistry.get(room.id);
       const roomName = classroom?.name || room.name;
       const roomType = classroom?.metadata?.room_type || 'Room';
 
-      // Create Point3D for this room (includes Line, Tracker, Reticle, Point automatically)
-      const point = new Point3D(room.mesh, {
+      // Create Point3D using center point (includes Line, Tracker, Reticle, Point automatically)
+      const point = new Point3D(centerPoint, {
         name: roomName,
         type: roomType,
         noTracker: false // Show corner brackets
       });
 
+      // Store reference to the actual room mesh for click detection
+      point.userData = {
+        roomId: room.id,
+        roomMesh: room.mesh,
+        centerPoint: centerPoint
+      };
+
       // Add panel items if we have classroom data
       if (classroom) {
-        this.addPanelItems(point, classroom);
+        this.addPanelItems(point, classroom, room.id);
       } else {
         // Add minimal info for rooms without data
         point.panel.add(new PanelItem({
@@ -60,23 +78,13 @@ export class Point3DManager {
         }));
       }
 
-      // Add click handler to panel to open detail view
-      point.panel.element.addEventListener('click', (e) => {
-        e.stopPropagation();
-        this.onPanelClick(room.id);
-      });
-
-      // Make panel clickable
-      point.panel.element.style.cursor = 'pointer';
-      point.panel.element.style.pointerEvents = 'auto';
-
       this.roomPoints.set(room.id, point);
     });
 
     console.log(`[Point3DManager] Created ${this.roomPoints.size} room points`);
   }
 
-  addPanelItems(point, classroom) {
+  addPanelItems(point, classroom, roomId) {
     const { panel } = point;
 
     // Spacer
@@ -85,54 +93,120 @@ export class Point3DManager {
     // Divider
     panel.add(new PanelItem({ type: 'divider' }));
 
+    // Agent info (at top)
+    if (classroom.agent?.personality) {
+      panel.add(new PanelItem({
+        type: 'content',
+        text: `<div style="opacity:0.7;font-size:11px;margin-bottom:8px">
+          <strong>${classroom.agent.personality.name}</strong>
+        </div>`
+      }));
+    }
+
+    // Sensor data section
+    const sensors = [];
+
     // Occupancy
     const occupancySensor = classroom.getSensor('occupancy');
     if (occupancySensor) {
-      panel.add(new PanelItem({
-        type: 'content',
-        text: `<div style="display:flex;justify-content:space-between">
-          <span style="opacity:0.5">OCCUPANCY</span>
-          <span>${occupancySensor.current_value}/${classroom.metadata.capacity}</span>
-        </div>`
-      }));
+      sensors.push({
+        label: 'OCCUPANCY',
+        value: `${occupancySensor.current_value}/${classroom.metadata.capacity || '?'}`
+      });
     }
 
     // Temperature
     const tempSensor = classroom.getSensor('temperature');
-    if (tempSensor && tempSensor.current_value) {
-      panel.add(new PanelItem({
-        type: 'content',
-        text: `<div style="display:flex;justify-content:space-between">
-          <span style="opacity:0.5">TEMPERATURE</span>
-          <span>${tempSensor.current_value.toFixed(1)}°C</span>
-        </div>`
-      }));
+    if (tempSensor && tempSensor.current_value != null) {
+      sensors.push({
+        label: 'TEMPERATURE',
+        value: `${tempSensor.current_value.toFixed(1)}°C`
+      });
+    }
+
+    // Humidity
+    const humiditySensor = classroom.getSensor('humidity');
+    if (humiditySensor && humiditySensor.current_value != null) {
+      sensors.push({
+        label: 'HUMIDITY',
+        value: `${humiditySensor.current_value.toFixed(0)}%`
+      });
     }
 
     // CO2
     const co2Sensor = classroom.getSensor('co2');
-    if (co2Sensor && co2Sensor.current_value) {
+    if (co2Sensor && co2Sensor.current_value != null) {
+      sensors.push({
+        label: 'CO₂',
+        value: `${co2Sensor.current_value}ppm`
+      });
+    }
+
+    // PM2.5
+    const pm25Sensor = classroom.getSensor('pm25');
+    if (pm25Sensor && pm25Sensor.current_value != null) {
+      sensors.push({
+        label: 'PM2.5',
+        value: `${pm25Sensor.current_value.toFixed(1)}μg/m³`
+      });
+    }
+
+    // Add all sensor items
+    sensors.forEach(sensor => {
       panel.add(new PanelItem({
         type: 'content',
-        text: `<div style="display:flex;justify-content:space-between">
-          <span style="opacity:0.5">CO₂</span>
-          <span>${co2Sensor.current_value}ppm</span>
+        text: `<div style="display:flex;justify-content:space-between;margin:4px 0">
+          <span style="opacity:0.5;font-size:9px">${sensor.label}</span>
+          <span style="font-size:10px">${sensor.value}</span>
         </div>`
       }));
-    }
+    });
 
     // Divider
     panel.add(new PanelItem({ type: 'divider' }));
 
-    // Agent info
-    if (classroom.agent?.personality) {
-      panel.add(new PanelItem({
-        type: 'content',
-        text: `<div style="opacity:0.5;font-style:italic">
-          Agent: ${classroom.agent.personality.name}
-        </div>`
-      }));
-    }
+    // "Enter Room" button
+    const enterButton = new PanelItem({
+      type: 'content',
+      text: `<div style="
+        text-align:center;
+        padding:8px 12px;
+        background:rgba(0,209,255,0.1);
+        border:1px solid rgba(0,209,255,0.3);
+        border-radius:4px;
+        cursor:pointer;
+        font-size:10px;
+        font-weight:bold;
+        letter-spacing:1px;
+        transition:all 0.2s ease;
+      " class="enter-room-btn">
+        ENTER ROOM →
+      </div>`
+    });
+    panel.add(enterButton);
+
+    // Add click handler to "Enter Room" button
+    setTimeout(() => {
+      const btnElement = panel.element.querySelector('.enter-room-btn');
+      if (btnElement) {
+        btnElement.addEventListener('click', (e) => {
+          e.stopPropagation();
+          this.onEnterRoom(roomId);
+        });
+
+        btnElement.addEventListener('mouseenter', () => {
+          btnElement.style.background = 'rgba(0,209,255,0.3)';
+          btnElement.style.borderColor = 'rgba(0,209,255,0.6)';
+          btnElement.style.transform = 'scale(1.05)';
+        });
+
+        btnElement.addEventListener('mouseleave', () => {
+          btnElement.style.background = 'rgba(0,209,255,0.1)';
+          btnElement.style.borderColor = 'rgba(0,209,255,0.3)';
+          btnElement.style.transform = 'scale(1)';
+        });
+      }
+    }, 100);
 
     // Spacer
     panel.add(new PanelItem({ type: 'spacer' }));
@@ -161,7 +235,7 @@ export class Point3DManager {
     });
   }
 
-  onPanelClick(roomId) {
+  onEnterRoom(roomId) {
     // Dispatch event to open detail view with graphs and full data
     const event = new CustomEvent('room:select', {
       detail: { roomId },
@@ -185,8 +259,12 @@ export class Point3DManager {
   }
 
   dispose() {
-    // Clean up Point3D system
+    // Clean up Point3D system and center points
     this.roomPoints.forEach(point => {
+      // Remove center point from scene
+      if (point.userData?.centerPoint) {
+        point.userData.centerPoint.parent?.remove(point.userData.centerPoint);
+      }
       Point3D.remove(point);
     });
     this.roomPoints.clear();

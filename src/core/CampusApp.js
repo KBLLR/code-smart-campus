@@ -420,13 +420,15 @@ export class CampusApp {
   }
 
   _onCanvasClick(event) {
+    // Geometry clicks now handled by Point3D system
+    // Point3D will show panel, "Enter Room" button opens detail view
+    // This handler is kept for potential future use or non-room clicks
     const room = this.roomManager.getRoomAtPointer(event, this.camera);
     if (room) {
       console.log('[CampusApp] Room clicked:', room.name);
       this.roomManager.selectRoom(room.id);
       this.heroHeader.updateStatus(room.name, 'info');
-      // Open detail panel
-      this.roomDetailView.show(room.id, this.roomManager, this.sensorManager);
+      // Detail view now opened via "Enter Room" button in Point3D panel
     }
   }
 
