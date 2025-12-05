@@ -18,12 +18,13 @@ import { RadialAudioGraph } from './components/RadialAudioGraph.js';
 import { personalityLoader } from '../data/personalities/PersonalityLoader.js';
 
 export class RoomDetailView extends Interface {
-    constructor() {
+    constructor(classroomRegistry = null) {
         super('.room-detail-view');
         console.log('[RoomDetailView] Initializing...');
 
         this.visible = false;
         this.currentRoomId = null;
+        this.classroomRegistry = classroomRegistry;
         this.hologramMesh = null;
         this.originalMaterials = new Map();
         this.graphManager = new GraphManager();
@@ -292,13 +293,16 @@ export class RoomDetailView extends Interface {
         this.calendarSection.add(this.eventsList);
     }
 
-    show(roomId, roomsManager, sensorManager) {
+    show(roomId, roomsManager, sensorManager, classroomRegistry) {
         if (this.visible && this.currentRoomId === roomId) return;
 
         this.currentRoomId = roomId;
         this.visible = true;
         this.roomsManager = roomsManager;
         this.sensorManager = sensorManager;
+        if (classroomRegistry) {
+            this.classroomRegistry = classroomRegistry;
+        }
 
         // 1. Update UI Content
         this.updateContent(roomId);

@@ -354,8 +354,8 @@ export class CampusApp {
       this.classroomRegistry
     );
 
-    // Room detail view (opened via Point3D "Enter Room" button) (Hologram style with chat) // Changed from Room detail panel
-    this.roomDetailView = new RoomDetailView(); // Changed from RoomDetailPanel
+    // Room detail view (opened via Point3D "Enter Room" button) (Hologram style with chat)
+    this.roomDetailView = new RoomDetailView(this.classroomRegistry);
 
     // Listen for room selection events
     document.addEventListener('classroompicker:roomselect', (e) => {
@@ -399,7 +399,7 @@ export class CampusApp {
 
     // Listen for room selection from Point3D panel clicks
     document.addEventListener('room:select', (e) => {
-      this.roomDetailView.show(e.detail.roomId, this.roomManager, this.sensorManager);
+      this.roomDetailView.show(e.detail.roomId, this.roomManager, this.sensorManager, this.classroomRegistry);
       this.campusHeader.hide();
     });
 
