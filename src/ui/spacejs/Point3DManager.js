@@ -38,6 +38,11 @@ export class Point3DManager {
     rooms.forEach(room => {
       if (!room.mesh) return;
 
+      // Get classroom data if available
+      const classroom = this.classroomRegistry.get(room.id);
+      const roomName = classroom?.name || room.name || room.id;
+      const roomType = classroom?.metadata?.room_type || classroom?.type || 'classroom';
+
       // Calculate geometry center of mass for line origin
       const boundingBox = new THREE.Box3().setFromObject(room.mesh);
       const center = new THREE.Vector3();
@@ -46,12 +51,19 @@ export class Point3DManager {
       // Create a small invisible object at the center of mass
       const centerPoint = new THREE.Object3D();
       centerPoint.position.copy(center);
-      room.mesh.parent.add(centerPoint);
+      centerPoint.name = `${room.id}_center`;
 
-      // Get classroom data if available
-      const classroom = this.classroomRegistry.get(room.id);
-      const roomName = classroom?.name || room.name;
-      const roomType = classroom?.metadata?.room_type || 'Room';
+      // Add to scene (find scene root)
+      let sceneRoot = room.mesh;
+      while (sceneRoot.parent && sceneRoot.parent.type !== 'Scene') {
+        sceneRoot = sceneRoot.parent;
+      }
+      if (sceneRoot.parent) {
+        sceneRoot.parent.add(centerPoint);
+      } else {
+        // If no scene parent found, add to roomManager scene
+        this.roomManager.scene.add(centerPoint);
+      }
 
       // Create Point3D using center point (includes Line, Tracker, Reticle, Point automatically)
       const point = new Point3D(centerPoint, {
