@@ -644,12 +644,14 @@ export class RoomDetailView extends Interface {
                 });
                 oceanBox.add(oceanTitle);
 
-                const ffm = personality.ocean.ffm;
-                this._addOceanBar(oceanBox, 'O', 'Openness', ffm.O);
-                this._addOceanBar(oceanBox, 'C', 'Conscientiousness', ffm.C);
-                this._addOceanBar(oceanBox, 'E', 'Extraversion', ffm.E);
-                this._addOceanBar(oceanBox, 'A', 'Agreeableness', ffm.A);
-                this._addOceanBar(oceanBox, 'N', 'Neuroticism', ffm.N);
+                const ffm = personality.ocean.ffm || {
+                    O: 0.5, C: 0.5, E: 0.5, A: 0.5, N: 0.5
+                };
+                this._addOceanBar(oceanBox, 'O', 'Openness', ffm.O ?? 0.5);
+                this._addOceanBar(oceanBox, 'C', 'Conscientiousness', ffm.C ?? 0.5);
+                this._addOceanBar(oceanBox, 'E', 'Extraversion', ffm.E ?? 0.5);
+                this._addOceanBar(oceanBox, 'A', 'Agreeableness', ffm.A ?? 0.5);
+                this._addOceanBar(oceanBox, 'N', 'Neuroticism', ffm.N ?? 0.5);
 
                 // Insert ocean box after traits
                 this.centerPanel.add(oceanBox, 2);
