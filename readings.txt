@@ -1,0 +1,68 @@
+
+CampusPoint3DSystem.js:84 [CampusPoint3DSystem] Hovering room: a24
+CampusPoint3DSystem.js:84 [CampusPoint3DSystem] Hovering room: a25
+CampusPoint3DSystem.js:84 [CampusPoint3DSystem] Hovering room: a3
+CampusPoint3DSystem.js:84 [CampusPoint3DSystem] Hovering room: makerspace
+CampusPoint3DSystem.js:84 [CampusPoint3DSystem] Hovering room: a6
+CampusPoint3DSystem.js:84 [CampusPoint3DSystem] Hovering room: b4
+CampusPoint3DSystem.js:84 [CampusPoint3DSystem] Hovering room: b6
+CampusPoint3DSystem.js:84 [CampusPoint3DSystem] Hovering room: b7
+CampusPoint3DSystem.js:84 [CampusPoint3DSystem] Hovering room: library
+CampusPoint3DSystem.js:84 [CampusPoint3DSystem] Hovering room: b14
+CampusPoint3DSystem.js:84 [CampusPoint3DSystem] Hovering room: a14
+CampusPoint3DSystem.js:84 [CampusPoint3DSystem] Hovering room: a14
+CampusPoint3DSystem.js:84 [CampusPoint3DSystem] Hovering room: library
+CampusPoint3DSystem.js:84 [CampusPoint3DSystem] Hovering room: b12
+CampusPoint3DSystem.js:84 [CampusPoint3DSystem] Hovering room: b10
+CampusPoint3DSystem.js:84 [CampusPoint3DSystem] Hovering room: b10
+CampusPoint3DSystem.js:84 [CampusPoint3DSystem] Hovering room: restroomsexits02
+CampusPoint3DSystem.js:84 [CampusPoint3DSystem] Hovering room: a11
+CampusPoint3DSystem.js:84 [CampusPoint3DSystem] Hovering room: b12
+CampusPoint3DSystem.js:84 [CampusPoint3DSystem] Hovering room: library
+CampusPoint3DSystem.js:84 [CampusPoint3DSystem] Hovering room: a14
+CampusPoint3DSystem.js:84 [CampusPoint3DSystem] Hovering room: b15
+CampusPoint3DSystem.js:84 [CampusPoint3DSystem] Hovering room: b16
+CampusPoint3DSystem.js:84 [CampusPoint3DSystem] Hovering room: kitchen
+CampusPoint3DSystem.js:59 [CampusPoint3DSystem] Point3D clicked: kitchen
+installHook.js:1 [SensorManager] Unknown sensor type: aqi
+SensorManager.js:401 [SensorManager] Updated b.3/humidity: 32% (HomeAssistant)
+SensorManager.js:401 [SensorManager] Updated b.3/humidity: 33% (HomeAssistant)
+SensorManager.js:401 [SensorManager] Updated a.14/humidity: 32% (HomeAssistant)
+installHook.js:1 [SensorManager] Unknown sensor type: aqi
+SensorManager.js:401 [SensorManager] Updated b.3/humidity: 32% (HomeAssistant)
+installHook.js:1 [SensorManager] Unknown sensor type: volatile_organic_compounds_parts
+installHook.js:1 [SensorManager] Unknown sensor type: aqi
+installHook.js:1 [SensorManager] Unknown sensor type: signal_strength
+installHook.js:1 [SensorManager] Unknown sensor type: unknown
+SensorManager.js:401 [SensorManager] Updated b.3/humidity: 33% (HomeAssistant)
+SensorManager.js:401 [SensorManager] Updated a.14/humidity: 33% (HomeAssistant)
+installHook.js:1 [SensorManager] Unknown sensor type: aqi
+installHook.js:1 [SensorManager] Unknown sensor type: current
+SensorManager.js:401 [SensorManager] Updated a.14/humidity: 32% (HomeAssistant)
+SensorManager.js:401 [SensorManager] Updated makerspace/energy: 94.54kW (HomeAssistant)
+SensorManager.js:401 [SensorManager] Updated a.14/humidity: 33% (HomeAssistant)
+installHook.js:1 [SensorManager] Unknown sensor type: current
+SensorManager.js:401 [SensorManager] Updated a.14/humidity: 32% (HomeAssistant)
+2
+installHook.js:1 [SensorManager] Unknown sensor type: current
+SensorManager.js:401 [SensorManager] Updated a.14/humidity: 33% (HomeAssistant)
+SensorManager.js:401 [SensorManager] Updated b.3/humidity: 32% (HomeAssistant)
+SensorManager.js:401 [SensorManager] Updated hydrogen/humidity: 28.5% (HomeAssistant)
+installHook.js:1 [SensorManager] Unknown sensor type: current
+SensorManager.js:401 [SensorManager] Updated b.3/humidity: 33% (HomeAssistant)
+installHook.js:1 [SensorManager] Unknown sensor type: current
+installHook.js:1 [SensorManager] Unknown sensor type: aqi
+SensorManager.js:401 [SensorManager] Updated b.12/temperature: 22.1°C (HomeAssistant)
+installHook.js:1 [SensorManager] Unknown sensor type: voltage
+SensorManager.js:401 [SensorManager] Updated b.3/humidity: 32% (HomeAssistant)
+installHook.js:1 [SensorManager] Unknown sensor type: current
+installHook.js:1 [SensorManager] Unknown sensor type: voltage
+SensorManager.js:401 [SensorManager] Updated b.3/humidity: 33% (HomeAssistant)
+SensorManager.js:401 [SensorManager] Updated hydrogen/temperature: 23.6°C (HomeAssistant)
+SensorManager.js:401 [SensorManager] Updated b.3/humidity: 32% (HomeAssistant)
+SensorManager.js:401 [SensorManager] Updated b.3/humidity: 33% (HomeAssistant)
+2
+installHook.js:1 [SensorManager] Unknown sensor type: current
+SensorManager.js:401 [SensorManager] Updated b.12/temperature: 21.9°C (HomeAssistant)
+installHook.js:1 [SensorManager] Unknown sensor type: current
+

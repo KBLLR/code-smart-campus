@@ -1,0 +1,15 @@
+{
+  "engine": "kokoro",
+  "voice": "bf_emma",
+  "lang_code": "a", 
+  "speed": 0.95,
+  "id": "bf_emma",
+  "name": "Emma (Young Female)",
+  "description": "Innocent, ethereal AI voice for ADA system",
+  "ttsLang": "en-GB",
+  "ttsRate": 0.95,
+  "ttsPitch": 1.1,
+  "ttsVolume": 0.7,
+  "emotion": "calm",
+  "style": "innocent"
+}

@@ -304,7 +304,7 @@ export class RoomDetailView extends Interface {
         this.updateContent(roomId);
 
         // 2. Animate UI In
-        this.css({ pointerEvents: 'auto' });
+        // this.css({ pointerEvents: 'auto' }); // REMOVED: Keep container pointer-events: none to allow navigation
         this.leftPanel.css({ opacity: 1, transform: 'translateX(0)' });
         this.centerPanel.css({ opacity: 1, transform: 'translateY(0)' });
         this.rightPanel.css({ opacity: 1, transform: 'translateX(0)' });
