@@ -48,8 +48,14 @@ export class Point3DManager {
       const center = new THREE.Vector3();
       boundingBox.getCenter(center);
 
-      // Create a small invisible object at the center of mass
-      const centerPoint = new THREE.Object3D();
+      // Create a tiny invisible mesh at the center (Point3D requires a Mesh with geometry and material)
+      const centerGeometry = new THREE.SphereGeometry(0.1, 8, 8);
+      const centerMaterial = new THREE.MeshBasicMaterial({
+        visible: false,
+        transparent: true,
+        opacity: 0
+      });
+      const centerPoint = new THREE.Mesh(centerGeometry, centerMaterial);
       centerPoint.position.copy(center);
       centerPoint.name = `${room.id}_center`;
 
@@ -273,9 +279,12 @@ export class Point3DManager {
   dispose() {
     // Clean up Point3D system and center points
     this.roomPoints.forEach(point => {
-      // Remove center point from scene
+      // Remove and dispose center point mesh
       if (point.userData?.centerPoint) {
-        point.userData.centerPoint.parent?.remove(point.userData.centerPoint);
+        const centerMesh = point.userData.centerPoint;
+        centerMesh.parent?.remove(centerMesh);
+        centerMesh.geometry?.dispose();
+        centerMesh.material?.dispose();
       }
       Point3D.remove(point);
     });
