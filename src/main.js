@@ -57,6 +57,7 @@ import { CSSHudManager } from "@hud/CSSHudManager.js";
 import { dataPipeline } from "@data/DataPipeline.js";
 import { RoomSelectionController } from "@interaction/RoomSelectionController.js";
 import { RoomDetailView } from "@ui/RoomDetailView.js";
+import { classroomRegistry } from "./models/ClassroomRegistry.js";
 import { WebGPUScreen } from "@three/WebGPUScreen.js";
 import { materialRegistry } from "@registries/materialsRegistry.js";
 import {
@@ -170,7 +171,7 @@ window.addEventListener('enter-room', (e) => {
     // Note: sensorManager is not globally available in main.js scope easily, 
     // but RoomDetailView might handle it or we might need to pass it if available.
     // For now, passing roomsManager which is imported.
-    window.roomDetailView.show(roomId, roomsManager, window.sensorManager);
+    window.roomDetailView.show(roomId, roomsManager, window.sensorManager, classroomRegistry);
 
     // Hide Legacy UI
     if (window.campusHeader) window.campusHeader.hide();
@@ -186,6 +187,18 @@ window.addEventListener('enter-room', (e) => {
     const center = box.getCenter(new THREE.Vector3());
     setup.focusOnPoint(center, 2.0);
   }
+});
+
+// Handle Space.js room selection events (CampusPoint3DSystem)
+document.addEventListener('room:select', (e) => {
+  const roomId = e.detail?.roomId;
+  if (!roomId || !window.roomDetailView) return;
+
+  window.roomDetailView.show(roomId, roomsManager, window.sensorManager, classroomRegistry);
+
+  if (window.campusHeader) window.campusHeader.hide();
+  if (window.roomHoverPanel) window.roomHoverPanel.hide();
+  if (typeof hudManager?.hideAll === 'function') hudManager.hideAll();
 });
 
 enableUILPanelDrag(uilPanelState);
