@@ -8,7 +8,7 @@ export class CampusHeader extends Interface {
 
     this.classroomRegistry = classroomRegistry;
     this.sensorManager = sensorManager;
-    this.snapshotService = new SensorSnapshotService(classroomRegistry);
+    this.snapshotService = new SensorSnapshotService(classroomRegistry, { enabled: false });
     this.reportManager = new CampusReportManager(classroomRegistry, this.snapshotService);
 
     this.pages = [];

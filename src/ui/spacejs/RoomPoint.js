@@ -3,7 +3,6 @@
  * Displays hover label with SVG line connecting to 3D geometry
  */
 
-import * as THREE from 'three';
 import { Interface } from '@alienkitty/space.js/src/utils/Interface.js';
 import { Panel } from '@alienkitty/space.js/src/panels/Panel.js';
 import { PanelItem } from '@alienkitty/space.js/src/panels/PanelItem.js';

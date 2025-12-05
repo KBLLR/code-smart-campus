@@ -228,7 +228,7 @@ export class RoomManager {
   /**
    * Update loop
    */
-  update(delta) {
+  update() {
     // Room animations, state updates, etc.
   }
 

@@ -2,11 +2,20 @@ import fs from 'fs';
 import path from 'path';
 
 export function sensorHistoryPlugin() {
+    const shouldPersist = process.env.SENSOR_HISTORY_SAVE === 'true';
+
     return {
         name: 'sensor-history-plugin',
         configureServer(server) {
             server.middlewares.use('/api/save-file', async (req, res, next) => {
                 if (req.method === 'POST') {
+                    if (!shouldPersist) {
+                        res.statusCode = 200;
+                        res.setHeader('Content-Type', 'application/json');
+                        res.end(JSON.stringify({ success: false, reason: 'persistence disabled' }));
+                        return;
+                    }
+
                     let body = '';
                     req.on('data', chunk => {
                         body += chunk.toString();

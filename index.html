@@ -7,29 +7,14 @@
     <link rel="icon" type="image/x-icon" href="/ico.jpg" />
   </head>
   <body>
-    <canvas id="canvas" aria-label="Campus 3D canvas"></canvas>
+    <!-- Three.js canvas -->
+    <canvas id="canvas" aria-label="Campus 3D visualization"></canvas>
 
-    <div id="ui-shell">
-      <div id="view-hero-root"></div>
-
-      <div id="hud-root" aria-live="polite"></div>
-      <div class="ui-shell__top">
-        <header id="toolbar-root"></header>
-      </div>
-      <main class="panel-shell">
-        <section id="content-area" class="panel-strip" role="region" aria-live="polite"></section>
-        <nav class="panel-indicators" aria-label="Sensor panels"></nav>
-      </main>
-
-      <button class="floating-btn" type="button" aria-label="Toggle sensor panels">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M10 20v-6H4v-4h6V4h4v6h6v4h-6v6h-4z" />
-        </svg>
-      </button>
-
-      <div id="uil-root" class="uil-root" aria-label="Scene controls"></div>
-
-    </div>
+    <!-- All UI components (Space.js) append dynamically to document.body -->
+    <!-- - CampusHeader, HeaderBar, CampusMetrics, RoomHoverPanel -->
+    <!-- - Point3D labels, panels, trackers -->
+    <!-- - RoomDetailView, ClassroomPicker -->
+    <!-- - SceneControls -->
 
     <script type="module" src="/src/main-minimal.js"></script>
   </body>

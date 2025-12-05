@@ -21,7 +21,17 @@ backlog:
     research:
       - "node cli design"
 
-in_progress: []
+in_progress:
+  - id: CAMPUS-203
+    title: "Fix room label hover/panel interactions and positioning"
+    description: "Address hover/click label UX so only one label shows, clicking opens/closes panels with room data, and labels align to geometric centers; refs: Space.js README for Panel/UI update loop https://github.com/alienkitty/space.js, three.js Box3 center via setFromObject/getCenter/computeBoundingBox https://threejs.org/docs/#api/en/math/Box3, BufferGeometry.center for recentering vertices when boundingSphere is off https://threejs.org/docs/#api/en/core/BufferGeometry."
+    priority: high
+    owner: "@agent"
+    started: "2025-12-05T05:20:07Z"
+    research:
+      - "space.js panel graph meter UI"
+      - "three.js geometry center bounding box"
+      - "label placement best practices"
 
 review: []
 

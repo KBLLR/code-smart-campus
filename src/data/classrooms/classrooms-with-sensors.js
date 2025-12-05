@@ -1,4 +1,4 @@
-import sensorMappingData from '../sensors/sensors-mapping.json' assert { type: 'json' };
+import sensorMappingData from '../sensors/sensors-mapping.json';
 import roomList from './rooms.js';
 
 const normalize = (value) => (value || '').toString().toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -32,7 +32,7 @@ const classroomsWithSensors = (sensorMappingData.rooms || []).map((room) => {
     agent: {
       id: `agent-${room.id}`,
       name: `${room.name} Agent`,
-      model: 'mlx-community/Phi-3-mini-4k-instruct-4bit',
+      model: 'mlx-community/gemma-2-9b-it-4bit',
       description: 'On-campus room agent',
       personality: {
         name: room.name,

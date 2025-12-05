@@ -3,7 +3,6 @@
 import * as THREE from "three";
 import { roomRegistry } from "@registries/roomRegistry.js";
 import { LabelLayoutManager } from "@utils/LabelLayoutManager.js";
-import { Floor } from "@three/FloorGeometry.js";
 import { SunController } from "@lib/SunController.js";
 import { SunTelemetry } from "@lib/SunTelemetry.js";
 import { SunSkyDome, DEFAULT_SUN_SKY_PALETTE } from "@lib/SunSkyDome.js";

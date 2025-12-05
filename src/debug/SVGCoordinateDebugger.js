@@ -288,7 +288,7 @@ export class SVGCoordinateDebugger {
   /**
    * Print diagnostic info
    */
-  printDiagnostics(roomRegistry, extrudedGeometry) {
+  printDiagnostics(roomRegistry) {
     console.group('[SVGDebugger] Coordinate System Diagnostics');
 
     console.log('SVG Configuration:');

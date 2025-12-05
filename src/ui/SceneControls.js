@@ -19,7 +19,7 @@ export class SceneControls {
     console.log('[SceneControls] Initialized (stub - space.js integration pending)');
   }
 
-  update(delta) {
+  update() {
     // Update controls if needed
   }
 

@@ -9,7 +9,7 @@ export const roomRegistry = {
   "Restrooms_exits_01": {
     "id": "Restrooms_exits_01",
     "name": "Restrooms_exits_01",
-    "category": "Unknown",
+    "category": "Facilities - Restrooms",
     "center": [
       61,
       20,
@@ -19,7 +19,7 @@ export const roomRegistry = {
   "Restrooms_exits_02": {
     "id": "Restrooms_exits_02",
     "name": "Restrooms_exits_02",
-    "category": "Unknown",
+    "category": "Facilities - Restrooms",
     "center": [
       121.38850000000001,
       20,
@@ -28,8 +28,8 @@ export const roomRegistry = {
   },
   "Oxygen": {
     "id": "Oxygen",
-    "name": "Oxygen",
-    "category": "Unknown",
+    "name": "Oxygen Terrace",
+    "category": "Facilities - Smoke-free Area",
     "center": [
       37.3000005,
       20,
@@ -39,7 +39,7 @@ export const roomRegistry = {
   "Lifts": {
     "id": "Lifts",
     "name": "Lifts",
-    "category": "Unknown",
+    "category": "Facilities - Lifts",
     "center": [
       108.21900000000001,
       20,
@@ -48,8 +48,8 @@ export const roomRegistry = {
   },
   "hydrogen": {
     "id": "hydrogen",
-    "name": "Hydrogen Lab",
-    "category": "Lab",
+    "name": "Hydrogen Terrace",
+    "category": "Facilities - Smoking Area",
     "center": [
       53.51050000000001,
       20,
@@ -59,7 +59,7 @@ export const roomRegistry = {
   "kitchen": {
     "id": "kitchen",
     "name": "Cantina Kitchen",
-    "category": "Service",
+    "category": "Common Space",
     "center": [
       37.300000000000004,
       20,
@@ -69,7 +69,7 @@ export const roomRegistry = {
   "library": {
     "id": "library",
     "name": "Alexandria Library",
-    "category": "Common",
+    "category": "Common Space",
     "center": [
       79.9805,
       20,
@@ -79,7 +79,7 @@ export const roomRegistry = {
   "b.23": {
     "id": "b.23",
     "name": "Pluto Family Room",
-    "category": "Common",
+    "category": "Common Space",
     "center": [
       96.9697,
       20,
@@ -89,7 +89,7 @@ export const roomRegistry = {
   "b.22": {
     "id": "b.22",
     "name": "Artemis Student Service Desk",
-    "category": "Service",
+    "category": "Students Service",
     "center": [
       104.72270000000002,
       20,
@@ -319,7 +319,7 @@ export const roomRegistry = {
   "a.3": {
     "id": "a.3",
     "name": "Hive",
-    "category": "Conceptual Realm",
+    "category": "Classroom",
     "center": [
       159.92550000000003,
       20,
@@ -329,7 +329,7 @@ export const roomRegistry = {
   "a.2": {
     "id": "a.2",
     "name": "Jungle",
-    "category": "Conceptual Realm",
+    "category": "Classroom",
     "center": [
       143.1824,
       20,
@@ -339,7 +339,7 @@ export const roomRegistry = {
   "a.1": {
     "id": "a.1",
     "name": "Babylon",
-    "category": "Conceptual Realm",
+    "category": "Classroom",
     "center": [
       133.32715000000002,
       20,

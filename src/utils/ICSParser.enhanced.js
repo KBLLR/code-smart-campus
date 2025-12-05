@@ -22,7 +22,6 @@ export class ICSParser {
     const lines = this._unfoldLines(content);
     const events = [];
     let currentEvent = null;
-    let currentTimezone = null;
     let inEvent = false;
     let inAlarm = false;
 
@@ -59,10 +58,6 @@ export class ICSParser {
         inAlarm = false;
       } else if (inEvent && !inAlarm) {
         this._parseEventProperty(line, currentEvent);
-      } else if (line.startsWith('BEGIN:VTIMEZONE')) {
-        currentTimezone = {};
-      } else if (line.startsWith('END:VTIMEZONE')) {
-        currentTimezone = null;
       }
     }
 

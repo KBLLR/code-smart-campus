@@ -9,7 +9,7 @@
  * @param {{ entityId: string, friendlyName: string }} params
  * @returns {null}
  */
-export function resolveRoomMeta({ entityId, friendlyName }) {
+export function resolveRoomMeta() {
   // Stub: Returns null until proper integration with new sensor system
   // The new sensor-mapping.json system should be integrated here
   return null;

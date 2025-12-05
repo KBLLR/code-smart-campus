@@ -73,7 +73,7 @@ export class CloseButton extends Interface {
             this.iconGroup.style.strokeWidth = '2';
 
             // Animate rotation
-            tween(this, { rotation: 90 }, 400, 'easeOutCubic', (val) => {
+            tween(this, { rotation: 90 }, 400, 'easeOutCubic', () => {
                 this.iconGroup.setAttribute('transform', `translate(19, 19) rotate(${this.rotation}, 11, 11)`);
             });
         });
@@ -84,7 +84,7 @@ export class CloseButton extends Interface {
             this.iconGroup.style.strokeWidth = '1.5';
 
             // Animate rotation back
-            tween(this, { rotation: 0 }, 400, 'easeOutCubic', (val) => {
+            tween(this, { rotation: 0 }, 400, 'easeOutCubic', () => {
                 this.iconGroup.setAttribute('transform', `translate(19, 19) rotate(${this.rotation}, 11, 11)`);
             });
         });

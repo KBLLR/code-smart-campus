@@ -7,12 +7,12 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLBLoader } from '../loaders/GLBLoader.js';
 import { RoomManager } from '../rooms/RoomManager.js';
-import { ClassroomPicker } from '../ui/ClassroomPicker.js';
+// ClassroomPicker removed - using Space.js Point3D system instead
 import { RoomDetailView } from '../ui/RoomDetailView.js';
 import { HeroHeader } from '../ui/HeroHeader.js';
 import { PanelDocker } from '../ui/PanelDocker.js';
 import { SceneControls } from '../ui/SceneControls.js';
-import { Point3DManager } from '../ui/spacejs/Point3DManager.js';
+import { CampusPoint3DSystem } from '../ui/spacejs/CampusPoint3DSystem.js';
 import { SensorManager } from '../sensors/SensorManager.js';
 import { HomeAssistantConnector } from '../connectors/HomeAssistantConnector.js';
 import { SensorSyncService } from '../services/SensorSyncService.js';
@@ -42,8 +42,7 @@ export class CampusApp {
     this.roomManager = null;
     this.sensorManager = null;
     this.sensorSyncService = null;
-    this.point3DManager = null;
-    this.classroomPicker = null;
+    this.campusPoint3D = null;
     this.roomDetailPanel = null;
     this.heroHeader = null;
     this.panelDocker = null;
@@ -97,9 +96,9 @@ export class CampusApp {
     this._setupUI();
 
     // Create Point3D labels for all rooms (after UI setup)
-    if (this.point3DManager) {
-      this.point3DManager.createRoomPoints();
-      this.point3DManager.animateIn();
+    // Points remain hidden until hovered (proper Space.js behavior)
+    if (this.campusPoint3D) {
+      this.campusPoint3D.createRoomPoints();
     }
 
     // Setup event listeners
@@ -142,8 +141,7 @@ export class CampusApp {
     this.radialBackground?.dispose();
     this.sensorSyncService?.dispose();
     this.sensorManager?.dispose();
-    this.point3DManager?.dispose();
-    this.classroomPicker?.dispose();
+    this.campusPoint3D?.dispose();
     this.roomDetailView?.dispose();
     this.roomManager?.dispose();
     this.sceneControls?.dispose();
@@ -267,7 +265,7 @@ export class CampusApp {
 
         // Validate mappings
         console.log('\n[CampusApp] 🔍 Validating sensor mappings...');
-        const validation = validateSensorMappings(this.sensorManager);
+        validateSensorMappings(this.sensorManager);
 
         // Export sensors to JSON
         const sensorsJSON = this.sensorManager.exportSensorsToJSON();
@@ -348,19 +346,15 @@ export class CampusApp {
     this.roomHoverPanel = new RoomHoverPanel(this.classroomRegistry);
     window.roomHoverPanel = this.roomHoverPanel; // Expose for legacy UI toggling
 
-    // Space.js Point3D system (proper labels with panels, brackets, lines)
-    this.point3DManager = new Point3DManager(
-      this.roomManager,
+    // Space.js Point3D system (complete implementation following Space.js architecture)
+    this.campusPoint3D = new CampusPoint3DSystem(
+      this.scene,
       this.camera,
+      this.roomManager,
       this.classroomRegistry
     );
 
-    // Classroom picker (for room selection)
-    this.classroomPicker = new ClassroomPicker(this.roomManager, {
-      position: 'top-right',
-    });
-
-    // Room detail view (Hologram style with chat) // Changed from Room detail panel
+    // Room detail view (opened via Point3D "Enter Room" button) (Hologram style with chat) // Changed from Room detail panel
     this.roomDetailView = new RoomDetailView(); // Changed from RoomDetailPanel
 
     // Listen for room selection events
@@ -419,17 +413,10 @@ export class CampusApp {
     this.radialBackground?.handleResize(window.innerWidth, window.innerHeight);
   }
 
-  _onCanvasClick(event) {
-    // Geometry clicks now handled by Point3D system
-    // Point3D will show panel, "Enter Room" button opens detail view
-    // This handler is kept for potential future use or non-room clicks
-    const room = this.roomManager.getRoomAtPointer(event, this.camera);
-    if (room) {
-      console.log('[CampusApp] Room clicked:', room.name);
-      this.roomManager.selectRoom(room.id);
-      this.heroHeader.updateStatus(room.name, 'info');
-      // Detail view now opened via "Enter Room" button in Point3D panel
-    }
+  _onCanvasClick() {
+    // Point3D system handles click automatically
+    // Panel will show via Point3D hover/click interaction
+    // "Enter Room" button in Point3DManager will trigger detail view
   }
 
   _onCanvasHover(event) {
@@ -469,7 +456,7 @@ export class CampusApp {
     this.radialBackground?.update(time);
 
     // Update Point3D system (handles raycasting, positioning, animations, lines)
-    this.point3DManager?.update(time);
+    this.campusPoint3D?.update(time);
 
     // Update scene controls
     this.sceneControls?.update(delta);

@@ -19,7 +19,7 @@
  */
 
 import * as THREE from 'three';
-import { LOCATION_CONFIG, getEffectiveLocation } from '@data/geospatial/locationConfig.js';
+import { getEffectiveLocation } from '@data/geospatial/locationConfig.js';
 import { SunController } from './SunController.js';
 import { MoonController } from './MoonController.js';
 import { SunSkyDome } from './SunSkyDome.js';
@@ -225,7 +225,7 @@ export class GeospatialManager {
     // Update sky dome palette based on sun elevation
     // This will be enhanced once three-geospatial atmosphere is integrated
     const elevation = Math.max(-18, Math.min(90, elevationDeg)); // Clamp to twilight range
-
+    void elevation;
     // TODO: Use three-geospatial atmosphere LUT to update sky color
     // this.sunSkyDome.updatePaletteForElevation(elevation);
   }

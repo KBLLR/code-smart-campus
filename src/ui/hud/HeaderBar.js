@@ -161,7 +161,7 @@ export class HeaderBar extends Interface {
       } else {
         parts.push('Backend error');
       }
-    } catch (err) {
+    } catch {
       parts.push('Backend unreachable');
     }
 
@@ -180,7 +180,7 @@ export class HeaderBar extends Interface {
       } else {
         parts.push('Voice error');
       }
-    } catch (err) {
+    } catch {
       parts.push('Voice unreachable');
     }
 

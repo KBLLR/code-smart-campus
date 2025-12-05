@@ -224,7 +224,7 @@ export class SensorDashboard {
             timeText = date.toLocaleDateString();
           }
           sensorRef.timestamp.textContent = timeText;
-        } catch (e) {
+        } catch {
           sensorRef.timestamp.textContent = "—";
         }
       } else {

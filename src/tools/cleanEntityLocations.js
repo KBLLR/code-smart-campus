@@ -7,9 +7,10 @@ try {
     const data = fs.readFileSync(filePath, 'utf8');
     const locations = JSON.parse(data);
 
-    const cleaned = locations.map(loc => {
-        const { potentialSensors, ...rest } = loc;
-        return rest;
+    const cleaned = locations.map((loc) => {
+        const cleanedLoc = { ...loc };
+        delete cleanedLoc.potentialSensors;
+        return cleanedLoc;
     });
 
     fs.writeFileSync(filePath, JSON.stringify(cleaned, null, 2));

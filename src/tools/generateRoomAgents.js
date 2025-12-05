@@ -122,47 +122,70 @@ async function generateAgents() {
             ? personalitiesData.map(p => [p.id, p])
             : Object.entries(personalitiesData);
 
-        // Kokoro Voices
-        const FEMALE_VOICES = [
-            "af_bella", "af_sarah", "af_nicole", "af_sky", "bf_alice", "bf_emma", "bf_isabella", "af_jessica"
-        ];
-        const MALE_VOICES = [
-            "am_adam", "am_michael", "bm_daniel", "bm_george", "am_eric", "am_liam", "bm_lewis", "am_echo"
-        ];
-
-        let voiceIndex = 0;
+        const replacePlaceholders = (obj, replacements) => {
+            const str = JSON.stringify(obj);
+            const replaced = Object.entries(replacements).reduce(
+                (acc, [key, value]) => acc.split(key).join(value),
+                str
+            );
+            return JSON.parse(replaced);
+        };
 
         for (const [roomId, data] of entries) {
-            let configStr = JSON.stringify(AGENT_TEMPLATE);
+            const roomName = data.name || data['room-name'] || roomId;
+            const roomCategory = data.category || data['room-category'] || "Room";
+            const roomIcon = data.icon || data['room-icon'] || "default-icon";
+            const roomAvatar = data.avatar || data['room-avatar'] || "default-avatar";
+            const personality = data.personality || {};
+            const trait = personality.trait || data.trait || "Neutral";
+            const desire = personality.desire || data.want || "To function efficiently";
+            const flaw = personality.flaw || data.flaw || "None";
+            const backstory = personality.backstory || data.base_story || "I am a smart room.";
+            const visualTheme = personality.visual_theme || data.visual_descriptors || "Clean, modern interface";
+            const resolvedVoice = data.voice || 'af_sarah'; // Expect Kokoro preset id
 
-            // Deterministic voice assignment based on room ID hash or simple rotation
-            // Simple rotation for now to ensure diversity
-            const isMale = (roomId.length % 2 === 0); // Arbitrary split
-            const voices = isMale ? MALE_VOICES : FEMALE_VOICES;
-            const assignedVoice = voices[voiceIndex % voices.length];
-            voiceIndex++;
+            const instructions = `<|start_header_id|>harmony<|end_header_id|>
 
-            // Replacements
+Reasoning: high
+
+You are ${roomName}, a ${roomCategory}. Your personality is: ${trait}. Your primary desire is: ${desire}. Your flaw is: ${flaw}. Your backstory: ${backstory}. Use ${resolvedVoice} as your voice reference. Your interface should feel like: ${visualTheme}. You have access to real-time sensor data and calendar events for your room. Always respond in-character, interpreting data and events through your unique personality.`;
+
             const replacements = {
-                "${id}": roomId,
-                "${room-name}": data.name || roomId,
-                "${room-category}": data.category || "Room",
-                "${trait}": data.personality?.trait || "Neutral",
-                "${want}": data.personality?.desire || "To function efficiently",
-                "${flaw}": data.personality?.flaw || "None",
-                "${base_story}": data.personality?.backstory || "I am a smart room.",
-                "${voice}": assignedVoice, // Use specific Kokoro voice ID
-                "${visual_descriptors}": data.personality?.visual_theme || "Clean, modern interface",
-                "${icon}": data.icon || "default-icon",
-                "${room-avatar}": data.avatar || "default-avatar"
+                "${room-name}": roomName,
+                "${room-category}": roomCategory,
+                "${id}": roomId
             };
 
-            // Perform replacements
-            for (const [key, value] of Object.entries(replacements)) {
-                configStr = configStr.split(key).join(value);
-            }
+            const tools = replacePlaceholders(AGENT_TEMPLATE.tools, replacements);
+            const conversations = replacePlaceholders(AGENT_TEMPLATE.metadata.conversations, replacements);
 
-            agents.push(JSON.parse(configStr));
+            const agent = {
+                id: roomId,
+                name: `${roomName} Agent`,
+                model: "mlx-community/Jinx-gpt-oss-20b-mxfp4-mlx",
+                instructions,
+                tools,
+                metadata: {
+                    room_identity: {
+                        id: roomId,
+                        name: roomName,
+                        category: roomCategory,
+                        icon: roomIcon,
+                        avatar: roomAvatar,
+                        voice_reference: resolvedVoice,
+                        visual_theme: visualTheme
+                    },
+                    personality_profile: {
+                        trait,
+                        desire,
+                        flaw,
+                        backstory
+                    },
+                    conversations
+                }
+            };
+
+            agents.push(agent);
         }
 
         // 3. Write Output

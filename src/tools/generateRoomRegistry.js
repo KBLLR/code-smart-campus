@@ -102,7 +102,7 @@ function parseSvgRooms(svgContent) {
   let skippedCount = 0;
 
   paths.forEach((pathNode) => {
-    const id = pathNode.getAttribute("id");
+    let id = pathNode.getAttribute("id");
     const dAttr = pathNode.getAttribute("d");
     const dataName = pathNode.getAttribute("data-name");
     const dataCategory = pathNode.getAttribute("data-category");
@@ -112,6 +112,9 @@ function parseSvgRooms(svgContent) {
       skippedCount++;
       return;
     }
+
+    // NORMALIZE ID: Remove dots and lowercase (e.g., "A.3" -> "a3")
+    id = id.replace(/\./g, "").toLowerCase();
 
     if (!dAttr) {
       console.warn(`  [!] Skipping path id='${id}': missing 'd' attribute`);
@@ -250,7 +253,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const startTime = Date.now();
 
   try {
-    const registry = generate();
+    generate();
     const duration = (Date.now() - startTime) / 1000;
 
     console.log(`\n🏁 Generation completed in ${duration.toFixed(2)}s`);

@@ -1,3 +1,5 @@
+import classroomsWithSensors from '../data/classrooms/classrooms-with-sensors.js';
+
 /**
  * SensorManager - Central hub for all sensor data
  * Manages sensor readings from multiple sources (HA, APIs, mock)
@@ -535,12 +537,30 @@ export class SensorManager {
   }
 
   /**
+   * Load sensor mappings from static data (classrooms-with-sensors.js)
+   */
+  loadMappingsFromStaticData() {
+    console.log('[SensorManager] Loading static sensor mappings...');
+    classroomsWithSensors.forEach(room => {
+      if (room.sensors) {
+        room.sensors.forEach(sensor => {
+          if (sensor.entity_id) {
+            this.mapEntityToRoom(sensor.entity_id, room.id, sensor.type);
+          }
+        });
+      }
+    });
+    console.log(`[SensorManager] Loaded static mappings for ${classroomsWithSensors.length} rooms`);
+  }
+
+  /**
    * Start all connectors
    */
   async startAll() {
     console.log('[SensorManager] Starting all connectors...');
 
     // Load mappings first
+    this.loadMappingsFromStaticData();
     await this.loadMappings();
 
     const promises = Array.from(this.connectors.values()).map((connector) =>

@@ -5,7 +5,6 @@ import "@styles/main.css";
 import * as THREE from "three";
 import Setup from "@/Setup.js";
 import { markReady, whenReady, createSignal } from "@utils/initCoordinator.js"; // Assuming createSignal exists in initCoordinator
-import { generateRoundedBlocksFromSVG } from "@three/RoundedBlockGenerator.js";
 import { LoaderUI } from "@components/Loader.js";
 import { Toolbar } from "@organisms/Toolbar.js";
 import historyManager from "@data/modules/HistoryManager.js";
@@ -157,6 +156,37 @@ try {
 } catch (e) {
   console.error("[Main] CRITICAL ERROR initializing RoomDetailView:", e);
 }
+
+// Handle 'enter-room' event from RoomLabel
+window.addEventListener('enter-room', (e) => {
+  const { roomId } = e.detail;
+  if (!roomId) return;
+
+  console.log(`[Main] Entering room: ${roomId}`);
+
+  // Show Detail View
+  if (window.roomDetailView) {
+    // Ensure we have managers available
+    // Note: sensorManager is not globally available in main.js scope easily, 
+    // but RoomDetailView might handle it or we might need to pass it if available.
+    // For now, passing roomsManager which is imported.
+    window.roomDetailView.show(roomId, roomsManager, window.sensorManager);
+
+    // Hide Legacy UI
+    if (window.campusHeader) window.campusHeader.hide();
+    if (window.roomHoverPanel) window.roomHoverPanel.hide();
+    if (hudManager) hudManager.hideAll();
+  }
+
+  // Focus Camera on Room
+  const normalizedKey = normalizeRoomId(roomId);
+  const mesh = window.roomMeshes?.[normalizedKey];
+  if (mesh) {
+    const box = new THREE.Box3().setFromObject(mesh);
+    const center = box.getCenter(new THREE.Vector3());
+    setup.focusOnPoint(center, 2.0);
+  }
+});
 
 enableUILPanelDrag(uilPanelState);
 setUILPanelVisibility(false);
@@ -1912,13 +1942,14 @@ window.addEventListener('keydown', (event) => {
         svgDebugger.toggleOverlay(2);
         break;
       case 'm':
-      case 'M':
+      case 'M': {
         const markers = scene.getObjectByName('PickingMarkers');
         if (markers) {
           markers.visible = !markers.visible;
           console.log(`[Debug] Markers: ${markers.visible ? 'visible' : 'hidden'}`);
         }
         break;
+      }
     }
   }
 });

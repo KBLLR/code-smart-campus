@@ -276,9 +276,9 @@
       "sensorCount": 48
     },
     {
-      "id": "a.3",
+      "id": "a3",
       "name": "Hive",
-      "category": "Conceptual Realm",
+      "category": "Classroom",
       "sensors": [
         {
           "entityId": "binary_sensor.presence_sensor",
@@ -317,7 +317,7 @@
       "sensorCount": 6
     },
     {
-      "id": "b.3",
+      "id": "b3",
       "name": "Peace",
       "category": "Classroom",
       "sensors": [
@@ -375,7 +375,7 @@
       "sensorCount": 9
     },
     {
-      "id": "b.4",
+      "id": "b4",
       "name": "Classroom B4",
       "category": "Classroom",
       "sensors": [
@@ -411,7 +411,7 @@
       "sensorCount": 5
     },
     {
-      "id": "b.5",
+      "id": "b5",
       "name": "Present",
       "category": "Classroom",
       "sensors": [
@@ -447,7 +447,7 @@
       "sensorCount": 5
     },
     {
-      "id": "b.6",
+      "id": "b6",
       "name": "After",
       "category": "Classroom",
       "sensors": [
@@ -483,7 +483,7 @@
       "sensorCount": 5
     },
     {
-      "id": "b.7",
+      "id": "b7",
       "name": "W Room",
       "category": "Classroom",
       "sensors": [
@@ -519,7 +519,7 @@
       "sensorCount": 5
     },
     {
-      "id": "b.10",
+      "id": "b10",
       "name": "MF Room",
       "category": "Classroom",
       "sensors": [
@@ -537,7 +537,7 @@
       "sensorCount": 2
     },
     {
-      "id": "b.12",
+      "id": "b12",
       "name": "Hans Zimmer",
       "category": "Classroom",
       "sensors": [
@@ -573,7 +573,7 @@
       "sensorCount": 5
     },
     {
-      "id": "b.14",
+      "id": "b14",
       "name": "Dark Matter",
       "category": "Classroom",
       "sensors": [
@@ -591,9 +591,9 @@
       "sensorCount": 2
     },
     {
-      "id": "a.1",
+      "id": "a1",
       "name": "Babylon",
-      "category": "Conceptual Realm",
+      "category": "Classroom",
       "sensors": [
         {
           "entityId": "binary_sensor.a1_occupancy",
@@ -609,9 +609,9 @@
       "sensorCount": 2
     },
     {
-      "id": "a.6",
+      "id": "a6",
       "name": "Muted",
-      "category": "Conceptual Realm",
+      "category": "Classroom",
       "sensors": [
         {
           "entityId": "binary_sensor.a6_occupancy_occupancy_4",
@@ -645,9 +645,9 @@
       "sensorCount": 5
     },
     {
-      "id": "a.11",
+      "id": "a11",
       "name": "A11 (TET and RIS)",
-      "category": "Lab",
+      "category": "Classroom",
       "sensors": [
         {
           "entityId": "binary_sensor.a11_occupancy",
@@ -665,7 +665,7 @@
     {
       "id": "kitchen",
       "name": "Cantina Kitchen",
-      "category": "Service",
+      "category": "Common Area",
       "sensors": [
         {
           "entityId": "sensor.sonoff_snzb_02d_temperature_3",
@@ -689,9 +689,9 @@
       "sensorCount": 3
     },
     {
-      "id": "a.14",
+      "id": "a14",
       "name": "Houston",
-      "category": "Lab",
+      "category": "HQ",
       "sensors": [
         {
           "entityId": "sensor.sonoff_snzb_02d_temperature_4",
@@ -748,9 +748,9 @@
       "sensorCount": 9
     },
     {
-      "id": "a.23",
+      "id": "a23",
       "name": "Lecture Hall",
-      "category": "Lab",
+      "category": "Classroom",
       "sensors": [
         {
           "entityId": "sensor.sonoff_snzb_02d_temp_humidity_temperature",
@@ -770,7 +770,7 @@
     {
       "id": "hydrogen",
       "name": "Hydrogen Lab",
-      "category": "Lab",
+      "category": "Facilities - Terrace - Smoking Area",
       "sensors": [
         {
           "entityId": "sensor.frient_a_s_aqszb_110_temperature",
@@ -1294,8 +1294,12 @@
     },
     "categories": {
       "Classroom": 9,
+      "HQ": 1,
       "Lab": 5,
-      "Conceptual Realm": 3,
+      "Facilities": {
+        "Terrace - Smoking Area": 1,
+        "Terrace - Smoke-Free Area": 1
+      },
       "Service": 1
     }
   }

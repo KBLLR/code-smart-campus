@@ -139,6 +139,32 @@ export class RoomLabel extends Interface {
     infoItem.container.html(this._getRoomInfoHTML());
     this.panel.add(infoItem);
 
+    // Enter Room button
+    const enterItem = new PanelItem({
+      type: 'content'
+    });
+    enterItem.container.html(`
+      <button class="panel-enter" style="
+        width: 100%;
+        padding: 8px;
+        background: rgba(0, 209, 255, 0.1);
+        border: 1px solid rgba(0, 209, 255, 0.3);
+        color: #00d1ff;
+        cursor: pointer;
+        font-family: var(--ui-font-family);
+        font-size: var(--ui-font-size);
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        font-weight: bold;
+        letter-spacing: 1px;
+      ">Enter Room</button>
+    `);
+    enterItem.container.element.querySelector('.panel-enter').addEventListener('click', (e) => {
+      e.stopPropagation();
+      window.dispatchEvent(new CustomEvent('enter-room', { detail: { roomId: this.room.id } }));
+    });
+    this.panel.add(enterItem);
+
     // Close button
     const closeItem = new PanelItem({
       type: 'content'

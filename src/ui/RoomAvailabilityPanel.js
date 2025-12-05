@@ -15,8 +15,6 @@
  */
 
 import { Interface } from '@alienkitty/space.js/src/utils/Interface.js';
-import { Panel } from '@alienkitty/space.js/src/panels/Panel.js';
-import { PanelItem } from '@alienkitty/space.js/src/panels/PanelItem.js';
 
 export class RoomAvailabilityPanel extends Interface {
   constructor(roomId, roomName, eventManager) {

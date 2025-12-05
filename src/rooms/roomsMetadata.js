@@ -4,7 +4,7 @@
  * Personalities reference ADA Personality Compendium (FFM/OCEAN-based)
  */
 
-import personalitiesData from '../data/personalities/ocean-personalities.json' assert { type: 'json' };
+import personalitiesData from '../data/personalities/ocean-personalities.json';
 
 export const roomsMetadata = {
   // Example rooms from the Blender model (a1, a2, etc.)

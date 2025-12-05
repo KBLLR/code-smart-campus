@@ -3,7 +3,6 @@
  * Uses the actual Space.js Point3D system for room labels and panels
  */
 
-import * as THREE from 'three';
 import { Stage } from '@alienkitty/space.js/src/utils/Stage.js';
 import { Point3D } from '@alienkitty/space.js/src/three/ui/Point3D.js';
 import { PanelItem } from '@alienkitty/space.js/src/panels/PanelItem.js';

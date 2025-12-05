@@ -5,11 +5,18 @@ import { defineConfig } from "eslint/config";
 
 export default defineConfig([
   {
-    ignores: ["src/gltf-khronos+EXT/test/**"],
+    ignores: ["src/modules/classroom/**"],
+  },
+  {
+    ignores: ["src/gltf-khronos+EXT/test/**", "src/modules/classroom/**"],
     files: ["**/*.{js,mjs,cjs}"],
     plugins: { js },
     extends: ["js/recommended"],
     languageOptions: {
+      parserOptions: {
+        ecmaVersion: "latest",
+        sourceType: "module",
+      },
       globals: {
         ...globals.browser,
         ...globals.node,
@@ -33,7 +40,7 @@ export default defineConfig([
     }
   },
   {
-    ignores: ["src/gltf-khronos+EXT/test/**"],
+    ignores: ["src/gltf-khronos+EXT/test/**", "src/modules/classroom/**"],
     files: ["**/*.{ts,mts,cts}"],
     extends: [...tseslint.configs.recommended],
     languageOptions: {

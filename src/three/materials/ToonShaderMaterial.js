@@ -28,7 +28,6 @@ import {
   smoothstep,
   step,
   uniform,
-  dot,
   pow,
   add,
   mul,
@@ -37,9 +36,6 @@ import {
 
 // Utility functions
 const clamp01 = (value) => Math.min(1, Math.max(0, value ?? 0));
-const ensurePositive = (value, fallback = 1) =>
-  value > 0 ? value : fallback;
-
 const toColorString = (input, fallback = "#2dd4bf") => {
   if (!input && input !== 0) return fallback;
   if (typeof input === "string") return input;

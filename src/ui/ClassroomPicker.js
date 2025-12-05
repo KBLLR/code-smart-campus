@@ -4,7 +4,7 @@
  */
 
 import { Interface } from '@alienkitty/space.js/src/utils/Interface.js';
-import { roomsMetadata, getRoomPersonality } from '../rooms/roomsMetadata.js';
+import { getRoomPersonality } from '../rooms/roomsMetadata.js';
 import { getIcon } from './icons.js';
 
 export class ClassroomPicker extends Interface {

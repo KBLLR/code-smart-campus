@@ -4,17 +4,23 @@
  */
 
 export class SensorSnapshotService {
-  constructor(classroomRegistry) {
+  constructor(classroomRegistry, { enabled = false } = {}) {
     this.classroomRegistry = classroomRegistry;
     this.snapshotDir = '/data/sensors';
+    this.enabled = enabled;
 
-    console.log('[SensorSnapshotService] Initialized');
+    console.log(`[SensorSnapshotService] Initialized (enabled=${this.enabled})`);
   }
 
   /**
    * Save current sensor state for all classrooms
    */
   async saveAllSnapshots() {
+    if (!this.enabled) {
+      console.log('[SensorSnapshotService] Snapshots disabled; skipping saveAllSnapshots');
+      return [];
+    }
+
     const classrooms = this.classroomRegistry.getAll();
     const timestamp = new Date();
     const dateStr = this.formatDate(timestamp);
@@ -35,6 +41,8 @@ export class SensorSnapshotService {
    * Save sensor snapshot for a specific classroom
    */
   async saveClassroomSnapshot(classroom, timestamp = new Date(), dateStr = null) {
+    if (!this.enabled) return null;
+
     if (!dateStr) {
       dateStr = this.formatDate(timestamp);
     }
