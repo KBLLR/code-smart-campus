@@ -43,46 +43,18 @@ export class Point3DManager {
       const roomName = classroom?.name || room.name || room.id;
       const roomType = classroom?.metadata?.room_type || classroom?.type || 'classroom';
 
-      // Calculate geometry center of mass for line origin
-      const boundingBox = new THREE.Box3().setFromObject(room.mesh);
-      const center = new THREE.Vector3();
-      boundingBox.getCenter(center);
-
-      // Create a tiny invisible mesh at the center (Point3D requires a Mesh with geometry and material)
-      const centerGeometry = new THREE.SphereGeometry(0.1, 8, 8);
-      const centerMaterial = new THREE.MeshBasicMaterial({
-        visible: false,
-        transparent: true,
-        opacity: 0
-      });
-      const centerPoint = new THREE.Mesh(centerGeometry, centerMaterial);
-      centerPoint.position.copy(center);
-      centerPoint.name = `${room.id}_center`;
-
-      // Add to scene (find scene root)
-      let sceneRoot = room.mesh;
-      while (sceneRoot.parent && sceneRoot.parent.type !== 'Scene') {
-        sceneRoot = sceneRoot.parent;
-      }
-      if (sceneRoot.parent) {
-        sceneRoot.parent.add(centerPoint);
-      } else {
-        // If no scene parent found, add to roomManager scene
-        this.roomManager.scene.add(centerPoint);
-      }
-
-      // Create Point3D using center point (includes Line, Tracker, Reticle, Point automatically)
-      const point = new Point3D(centerPoint, {
+      // Create Point3D using room mesh (includes Line, Tracker, Reticle, Point automatically)
+      // This allows proper raycasting and hover detection
+      const point = new Point3D(room.mesh, {
         name: roomName,
         type: roomType,
         noTracker: false // Show corner brackets
       });
 
-      // Store reference to the actual room mesh for click detection
+      // Store reference for later use
       point.userData = {
         roomId: room.id,
-        roomMesh: room.mesh,
-        centerPoint: centerPoint
+        roomMesh: room.mesh
       };
 
       // Add panel items if we have classroom data
@@ -277,15 +249,8 @@ export class Point3DManager {
   }
 
   dispose() {
-    // Clean up Point3D system and center points
+    // Clean up Point3D system
     this.roomPoints.forEach(point => {
-      // Remove and dispose center point mesh
-      if (point.userData?.centerPoint) {
-        const centerMesh = point.userData.centerPoint;
-        centerMesh.parent?.remove(centerMesh);
-        centerMesh.geometry?.dispose();
-        centerMesh.material?.dispose();
-      }
       Point3D.remove(point);
     });
     this.roomPoints.clear();
