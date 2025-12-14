@@ -103,6 +103,12 @@ export class SensorSyncService {
         status,
         unit
       });
+
+      // Dispatch event for UIEventBridge
+      window.dispatchEvent(new CustomEvent('SMARTCAMPUS_SENSOR_UPDATE', { 
+         detail: { id: entityId, value, roomId: classroom.id, type: sensor.type, unit } 
+      }));
+
       return true;
     }
     return false;

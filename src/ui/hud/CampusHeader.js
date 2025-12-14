@@ -1,178 +1,251 @@
 import { Interface } from '@alienkitty/space.js/src/utils/Interface.js';
-import { CampusReportManager } from '../../managers/CampusReportManager.js';
-import { SensorSnapshotService } from '../../services/SensorSnapshotService.js';
+
+const CITY = 'Berlin';
+
+function formatTime(date) {
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${hours}:${minutes}`;
+}
+
+function formatDate(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
+function getWeekNumber(date) {
+    const target = new Date(date.valueOf());
+    const dayNr = (date.getDay() + 6) % 7;
+    target.setDate(target.getDate() - dayNr + 3);
+    const firstThursday = new Date(target.getFullYear(), 0, 4);
+    const weekDiff = (target - firstThursday) / 86400000;
+    return 1 + Math.floor(weekDiff / 7);
+}
 
 export class CampusHeader extends Interface {
-  constructor(classroomRegistry, sensorManager) {
-    super('.campus-header');
+    constructor() {
+        super('.campus-header');
 
-    this.classroomRegistry = classroomRegistry;
-    this.sensorManager = sensorManager;
-    this.snapshotService = new SensorSnapshotService(classroomRegistry, { enabled: false });
-    this.reportManager = new CampusReportManager(classroomRegistry, this.snapshotService);
+        this.updateTimer = null;
+        this.statusTimer = null;
+        this.statusText = 'SYSTEM NOMINAL';
+        this.roomContextActive = false;
 
-    this.pages = [];
-    this.currentPage = 0;
+        this.init();
+        this.initViews();
+    }
 
-    this.init();
-    this.initViews();
-  }
-
-  init() {
-    this.css({
-      position: 'absolute',
-      left: '40px',
-      bottom: '40px', // Bottom-left positioning
-      zIndex: 1000,
-      pointerEvents: 'none',
-      webkitUserSelect: 'none',
-      userSelect: 'none',
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '15px',
-      width: '300px'
-    });
-
-    document.body.appendChild(this.element);
-  }
-
-  initViews() {
-    // Title
-    this.title = new Interface('.title');
-    this.title.css({
-      fontFamily: 'var(--ui-font-family)',
-      fontSize: '11px',
-      fontWeight: '700',
-      letterSpacing: '1.5px',
-      textTransform: 'uppercase',
-      color: 'var(--ui-color)',
-      opacity: 0.9
-    });
-    this.title.text('SMART CAMPUS OVERVIEW');
-    this.add(this.title);
-
-    // Description / Content
-    this.content = new Interface('.content');
-    this.content.css({
-      fontFamily: 'var(--ui-font-family)',
-      fontSize: '13px',
-      lineHeight: '1.6',
-      color: 'var(--ui-secondary-color)',
-      opacity: 0.8,
-      minHeight: '60px' // Prevent jumping
-    });
-    this.content.text('Initializing campus neural link...');
-    this.add(this.content);
-
-    // Pagination (Squares)
-    this.pagination = new Interface('.pagination');
-    this.pagination.css({
-      display: 'flex',
-      gap: '8px',
-      marginTop: '5px',
-      pointerEvents: 'auto'
-    });
-    this.add(this.pagination);
-
-    // Initial update
-    this.updateOverview();
-
-    // Auto-rotate pages every 10 seconds
-    setInterval(() => this.nextPage(), 10000);
-  }
-
-  async updateOverview() {
-    try {
-      const result = await this.reportManager.generateCampusOverview();
-
-      if (result.ok) {
-        // Split overview into sentences for better readability
-        const sentences = result.overview.match(/[^.!?]+[.!?]+/g) || [result.overview];
-
-        // Group sentences if they are too short (optional, but good for flow)
-        const chunks = [];
-        let currentChunk = '';
-
-        sentences.forEach(sentence => {
-          if (currentChunk.length + sentence.length < 150) {
-            currentChunk += sentence + ' ';
-          } else {
-            chunks.push(currentChunk.trim());
-            currentChunk = sentence + ' ';
-          }
+    init() {
+        this.css({
+            position: 'absolute',
+            top: '20px',
+            left: '20px',
+            right: '20px',
+            zIndex: 100,
+            display: 'flex',
+            alignItems: 'flex-start', // Align top
+            justifyContent: 'space-between',
+            pointerEvents: 'none',
+            fontFamily: 'var(--ui-font-family)',
+            color: 'var(--ui-color)',
+            userSelect: 'none'
         });
-        if (currentChunk) chunks.push(currentChunk.trim());
 
-        this.pages = [
-          ...chunks,
-          `Active Sensors: ${this.sensorManager.getDiscoveredSensors().length}\nSystem Status: NOMINAL`,
-          "Cerberus Agent: Monitoring all sectors.\nAnomaly Detection: Active."
+        document.body.appendChild(this.element);
+    }
+
+    initViews() {
+        // --- LEFT: Time & Date ---
+        this.left = new Interface('.header-left');
+        this.left.css({
+            display: 'flex',
+            gap: '15px',
+            fontSize: '11px',
+            letterSpacing: '1px',
+            textTransform: 'uppercase',
+            opacity: 0.8
+        });
+        this.add(this.left);
+
+        this.timeEl = new Interface('.time');
+        this.dateEl = new Interface('.date');
+        this.cityEl = new Interface('.city');
+        this.weekEl = new Interface('.week');
+        
+        [this.timeEl, this.dateEl, this.cityEl, this.weekEl].forEach(el => this.left.add(el));
+
+
+        // --- CENTER: Dynamic Title & Status ---
+        this.center = new Interface('.header-center');
+        this.center.css({
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            position: 'absolute',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            textAlign: 'center'
+        });
+        this.add(this.center);
+
+        this.title = new Interface('.title');
+        this.title.css({
+            fontSize: '14px',
+            fontWeight: '700',
+            letterSpacing: '2px',
+            textTransform: 'uppercase',
+            color: 'var(--ui-color)',
+            textShadow: '0 0 20px rgba(0, 209, 255, 0.3)',
+            transition: 'all 0.5s ease',
+            whiteSpace: 'nowrap'
+        });
+        this.title.text('SMART CAMPUS LIVE');
+        this.center.add(this.title);
+
+        this.subtitle = new Interface('.subtitle');
+        this.subtitle.css({
+            fontSize: '10px',
+            letterSpacing: '1px',
+            textTransform: 'uppercase',
+            opacity: 0.7,
+            marginTop: '4px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            transition: 'all 0.5s ease'
+        });
+        this.subtitle.text('ESTABLISHING UPLINK...');
+        this.center.add(this.subtitle);
+        
+        // Pulse Indicator
+        this.pulse = new Interface('.pulse');
+        this.pulse.css({
+            width: '6px',
+            height: '6px',
+            borderRadius: '50%',
+            background: 'var(--ui-color-accent)',
+            boxShadow: '0 0 8px var(--ui-color-accent)',
+            display: 'none'
+        });
+        this.subtitle.add(this.pulse, 'prepend');
+
+
+        // --- RIGHT: Navigation Buttons ---
+        this.right = new Interface('.header-right');
+        this.right.css({
+            display: 'flex',
+            gap: '10px',
+            pointerEvents: 'auto'
+        });
+        this.add(this.right);
+
+        const items = [
+            { label: 'Returns', action: 'returnToApp', id: 'returnBtn', hidden: true, prominent: true },
+            { label: 'Sensors', action: 'openSensors' },
+            { label: 'Info', action: 'toggleInfo' }
         ];
 
-        this.renderPagination();
-        this.showPage(0);
-      } else {
-        this.content.text('Real-time campus monitoring active. Waiting for report...');
-      }
-    } catch (error) {
-      console.error('[CampusHeader] Failed to generate overview:', error);
-      this.content.text('System Link: Unstable. Retrying...');
+        this.chips = {};
+
+        items.forEach(item => {
+            const chip = new Interface('.chip');
+            chip.css({
+                padding: '6px 12px',
+                border: item.prominent ? '1px solid var(--ui-color)' : '1px solid rgba(255,255,255,0.15)',
+                borderRadius: '4px',
+                background: item.prominent ? 'rgba(0, 209, 255, 0.1)' : 'rgba(0,0,0,0.3)',
+                fontSize: '10px',
+                letterSpacing: '1px',
+                color: item.prominent ? 'var(--ui-color)' : 'var(--ui-color)',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                display: item.hidden ? 'none' : 'block',
+                textTransform: 'uppercase',
+                backdropFilter: 'blur(4px)'
+            });
+            chip.text(item.label);
+
+            chip.element.addEventListener('mouseenter', () => {
+                chip.css({ 
+                    background: item.prominent ? 'rgba(0, 209, 255, 0.2)' : 'rgba(255,255,255,0.1)',
+                    borderColor: 'var(--ui-color)'
+                });
+            });
+            chip.element.addEventListener('mouseleave', () => {
+                chip.css({ 
+                    background: item.prominent ? 'rgba(0, 209, 255, 0.1)' : 'rgba(0,0,0,0.3)',
+                    borderColor: item.prominent ? 'var(--ui-color)' : 'rgba(255,255,255,0.15)'
+                });
+            });
+
+            chip.element.addEventListener('click', () => {
+                if (this.onAction) this.onAction(item.action);
+            });
+
+            this.right.add(chip);
+            if (item.id) this.chips[item.id] = chip;
+        });
+
+        // Start Loops
+        this.updateTime();
+        this.updateTimer = setInterval(() => this.updateTime(), 30000);
     }
-  }
 
-  renderPagination() {
-    this.pagination.empty();
-    this.pages.forEach((_, index) => {
-      const dot = new Interface('.dot');
-      dot.css({
-        width: '8px',
-        height: '8px',
-        background: index === this.currentPage ? 'var(--ui-color)' : 'rgba(255,255,255,0.2)',
-        border: '1px solid rgba(0,0,0,0.1)',
-        cursor: 'pointer',
-        transition: 'background 0.3s ease'
-      });
-      dot.element.addEventListener('click', () => this.showPage(index));
-      this.pagination.add(dot);
-    });
-  }
-
-  showPage(index) {
-    this.currentPage = index;
-    if (this.currentPage >= this.pages.length) this.currentPage = 0;
-
-    const text = this.pages[this.currentPage];
-
-    // Animate text change
-    this.content.tween({ opacity: 0 }, 200, 'easeOutQuad', 0, () => {
-      this.content.text(text);
-      this.content.tween({ opacity: 0.8 }, 300, 'easeOutQuad');
-    });
-
-    // Update dots
-    const dots = this.pagination.element.children;
-    for (let i = 0; i < dots.length; i++) {
-      dots[i].style.background = i === this.currentPage ? 'var(--ui-color)' : 'rgba(255,255,255,0.2)';
+    updateTime() {
+        const now = new Date();
+        this.timeEl.text(formatTime(now));
+        this.dateEl.text(formatDate(now));
+        this.cityEl.text(CITY);
+        this.weekEl.text(`W${getWeekNumber(now)}`);
     }
-  }
 
-  nextPage() {
-    if (this.pages.length > 0) {
-      this.showPage((this.currentPage + 1) % this.pages.length);
+    // --- Dynamic Context Methods ---
+
+    setCampusMessage(text) {
+        if (this.roomContextActive) return;
+        this.subtitle.text(text);
     }
-  }
 
-  hide() {
-    this.tween({ opacity: 0, y: 20 }, 500, 'easeOutExpo');
-    this.css({ pointerEvents: 'none' });
-  }
+    setRoomContext({ roomName, agentName }) {
+        this.roomContextActive = true;
+        
+        // Update Title: Room Name
+        this.title.text(roomName);
+        this.title.css({ color: 'var(--ui-color-accent)' });
 
-  show() {
-    this.css({ pointerEvents: 'auto' });
-    this.tween({ opacity: 1, y: 0 }, 800, 'easeOutExpo');
-  }
+        // Update Subtitle: Agent Status
+        if (agentName) {
+            this.subtitle.text(`AI AGENT: ${agentName}`);
+            this.pulse.css({ display: 'block' });
+        } else {
+            this.subtitle.text('NO AGENT ACTIVE');
+            this.pulse.css({ display: 'none' });
+        }
+    }
 
-  destroy() {
-    super.destroy();
-  }
+    clearRoomContext() {
+        this.roomContextActive = false;
+
+        // Revert to Global State
+        this.title.text('SMART CAMPUS LIVE');
+        this.title.css({ color: 'var(--ui-color)' });
+        
+        this.subtitle.text(this.statusText); // Restore last system status
+        this.pulse.css({ display: 'none' });
+    }
+
+    showReturnButton() {
+        if (this.chips.returnBtn) this.chips.returnBtn.css({ display: 'block' });
+    }
+
+    hideReturnButton() {
+        if (this.chips.returnBtn) this.chips.returnBtn.css({ display: 'none' });
+    }
+
+    update(dt) {
+        // Animation loop if needed
+        // e.g. pulsing effect manually if CSS isn't enough
+    }
 }

@@ -1294,13 +1294,13 @@
     },
     "categories": {
       "Classroom": 9,
-      "HQ": 1,
+      "Team HQ": 1,
       "Lab": 5,
       "Facilities": {
         "Terrace - Smoking Area": 1,
         "Terrace - Smoke-Free Area": 1
       },
-      "Service": 1
+      "Student Services": 1
     }
   }
 }

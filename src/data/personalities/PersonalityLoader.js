@@ -3,8 +3,8 @@
  * Loads and merges room personalities with OCEAN framework
  */
 
-import roomsPersonalities from './rooms_personalities.json';
-import oceanPersonalities from './ocean-personalities.json';
+import roomsPersonalities from './rooms_personalities.json' with { type: 'json' };
+import oceanPersonalities from './ocean-personalities.json' with { type: 'json' };
 
 class PersonalityLoader {
     constructor() {
@@ -124,23 +124,24 @@ class PersonalityLoader {
         if (!roomPersonality) return null;
 
         // Map room traits to OCEAN personalities
+
         const oceanMapping = {
             'Explosive Optimist': 'innovator',
             'Charismatic Connector': 'ambassador',
-            'Melancholic Omniscience': 'archivist',
+            'Melancholic Omniscience': 'analyst', // Was archivist
             'Resentful Guardian': 'sentinel',
             'Fierce Protector': 'commander',
             'Stoic Logician': 'analyst',
             'Ingenious Tinkerer': 'innovator',
             'Mission Focused': 'architect',
-            'Elusive Influence': 'strategist',
+            'Elusive Influence': 'architect', // Was strategist
             'Emotive Architect of Sound': 'aesthete',
             'Harmonic Tuner': 'optimizer',
             'High-Speed Strategist': 'maverick',
             'Reflective Analyst': 'analyst',
             'Mindful Anchor': 'anchor',
-            'Anticipatory Planner': 'strategist',
-            'Harmonious Mediator': 'diplomat',
+            'Anticipatory Planner': 'architect', // Was strategist
+            'Harmonious Mediator': 'ambassador', // Was diplomat
             'Playful Pacifist': 'advocate',
             'Abstract Muse': 'aesthete',
             'Inquisitive Catalyst': 'challenger',
@@ -148,7 +149,7 @@ class PersonalityLoader {
             'Obsessive Organizer': 'optimizer',
             'Silent Observer': 'sentinel',
             'Resourceful Creator': 'innovator',
-            'Unified Consciousness': 'diplomat',
+            'Unified Consciousness': 'ambassador', // Was diplomat
             'Untamed Creativity': 'maverick',
             'Ambitious Builder': 'architect'
         };
@@ -165,3 +166,4 @@ class PersonalityLoader {
 
 export const personalityLoader = new PersonalityLoader();
 export default personalityLoader;
+

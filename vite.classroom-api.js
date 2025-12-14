@@ -44,7 +44,7 @@ const eventsStore = new Map(); // classroom_id -> ClassroomEvent[]
  */
 const MLX_CONFIG = {
   enabled: process.env.ENABLE_LOCAL_AI === 'true',
-  serverUrl: process.env.MLX_SERVER_URL || 'http://localhost:8000',
+  serverUrl: process.env.TIER2_CHAT_BASE_URL || 'http://localhost:8081/api',
   modelName: process.env.MLX_MODEL_NAME || 'mlx-community/qwen2.5-7b-instruct-4bit',
   cloudFallback: process.env.ENABLE_CLOUD_FALLBACK === 'true',
   logLevel: process.env.LOG_LEVEL || 'info',

@@ -5,8 +5,6 @@
 
 import { CampusApp } from './core/CampusApp.js';
 import './styles/main.css';
-import './styles/classroomPicker.css';
-
 import './styles/spacejs.css';
 
 // Initialize app when DOM is ready

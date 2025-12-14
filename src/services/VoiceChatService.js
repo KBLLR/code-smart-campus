@@ -1,4 +1,4 @@
-const DEFAULT_VOICE_API_URL = import.meta.env.VITE_VOICE_API_URL || 'http://localhost:3001/api/voice-chat';
+const DEFAULT_VOICE_API_URL = import.meta.env.VITE_VOICE_API_URL || 'http://localhost:7001/voice-chat';
 
 export class VoiceChatService {
   constructor(baseUrl = DEFAULT_VOICE_API_URL) {
@@ -7,10 +7,8 @@ export class VoiceChatService {
 
   async sendAudio({ roomId, agentId, voiceId, audioBlob, chatModel = 'mlx-community/Jinx-gpt-oss-20b-mxfp4-mlx' }) {
     const formData = new FormData();
-    formData.append('room_id', roomId);
-    formData.append('agent_id', agentId || roomId);
     formData.append('voice_id', voiceId || 'af_bella');
-    formData.append('chat_model', chatModel);
+    // formData.append('room_id', roomId); // Metadata for context (optional)
     formData.append('audio', audioBlob, 'input.wav');
 
     const response = await fetch(this.baseUrl, {

@@ -12,16 +12,14 @@ import { parseHarmonyResponse, formatCerberusHarmonyPrompt, getDisplayText, extr
 import { ICSParser } from '../utils/ICSParser.js';
 
 export class CampusReportManager {
-  constructor(classroomRegistry, snapshotService) {
+  constructor(classroomRegistry, snapshotService, sensorManager) {
     this.classroomRegistry = classroomRegistry;
     this.snapshotService = snapshotService;
-    // Route through tier2 orchestrator (OpenAI-compatible surface)
-    this.baseUrl = import.meta.env.VITE_ORCHESTRATOR_URL
-      || 'http://localhost:8081/api/v1/chat/completions';
+    this.sensorManager = sensorManager;
 
     // Model configuration (use locally available MLX models from tier3b-mlx-rag)
     this.cerberusModel = 'mlx-community/Jinx-gpt-oss-20b-mxfp4-mlx';  // Cerberus (Harmony)
-    this.classroomModel = 'mlx-community/Phi-3-mini-4k-instruct-4bit';  // Default classroom model (lightweight)
+    this.classroomModel = 'mlx-community/Phi-3-mini-4k-instruct-4bit';  // Default classroom model (check if supported by MLXConnector)
 
     // Cache for classroom reports
     this.reportCache = new Map();
@@ -90,29 +88,22 @@ export class CampusReportManager {
         }))
       };
 
-      const response = await fetch(this.baseUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: this.classroomModel,  // Classroom LLM (local MLX)
-          messages: [{
-            role: 'system',
-            content: classroom.agent.system.instructions
-          }, {
-            role: 'user',
-            content: `Generate a brief status report for your classroom. Current state:\n${JSON.stringify(context, null, 2)}\n\nProvide a 1-sentence summary of the current state and activity.`
-          }],
-          temperature: 0.7,
-          max_tokens: 150
-        })
+      const mlx = this.sensorManager.getConnector('MLX');
+      if (!mlx) throw new Error('MLX Connector not available');
+
+      const messages = [{
+        role: 'system',
+        content: classroom.agent.system.instructions
+      }, {
+        role: 'user',
+        content: `Generate a brief status report for your classroom. Current state:\n${JSON.stringify(context, null, 2)}\n\nProvide a 1-sentence summary of the current state and activity.`
+      }];
+
+      const completionText = await mlx.completion(messages, {
+        model: this.classroomModel,
+        temperature: 0.7,
+        maxTokens: 150
       });
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
-
-      const result = await response.json();
-      const completionText = this._extractCompletionText(result);
       const report = {
         classroom_id: classroom.id,
         classroom_name: classroom.name,
@@ -188,35 +179,28 @@ export class CampusReportManager {
 
 Synthesize the individual classroom reports into a unified campus narrative.`;
 
-      const response = await fetch(this.baseUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: this.cerberusModel,  // GPT-OSS 20B with Harmony format
-          messages: [{
-            role: 'system',
-            content: formatCerberusHarmonyPrompt(cerberusInstructions)
-          }, {
-            role: 'user',
-            content: JSON.stringify({
-              classroom_reports: classroomReports,
-              aggregate_metrics: aggregateMetrics,
-              calendar_events: calendarEvents, // Inject real calendar data
-              time_of_day: this.getTimeOfDay(),
-              timestamp: new Date().toISOString()
-            }, null, 2)
-          }],
-          temperature: 0.8,
-          max_tokens: 400  // Increased for Harmony format (3 channels)
-        })
+      const mlx = this.sensorManager.getConnector('MLX');
+      if (!mlx) throw new Error('MLX Connector not available');
+
+      const messages = [{
+        role: 'system',
+        content: formatCerberusHarmonyPrompt(cerberusInstructions)
+      }, {
+        role: 'user',
+        content: JSON.stringify({
+          classroom_reports: classroomReports,
+          aggregateMetrics: aggregateMetrics,
+          calendar_events: calendarEvents,
+          time_of_day: this.getTimeOfDay(),
+          timestamp: new Date().toISOString()
+        }, null, 2)
+      }];
+
+      const completionText = await mlx.completion(messages, {
+        model: this.cerberusModel,
+        temperature: 0.8,
+        maxTokens: 400
       });
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
-
-      const result = await response.json();
-      const completionText = this._extractCompletionText(result);
 
       // Parse Harmony format response
       const harmonyParsed = parseHarmonyResponse(completionText);
@@ -233,8 +217,8 @@ Synthesize the individual classroom reports into a unified campus narrative.`;
         cerberusHeads,  // Three-headed observations
         classroomReports,
         aggregateMetrics,
-        model: result.model || this.cerberusModel,
-        latencyMs: result.latencyMs,
+        model: this.cerberusModel,
+        // latencyMs not available from simple completion yet
         rawResponse: completionText,  // Keep raw for debugging
         timestamp: new Date().toISOString()
       };
@@ -368,23 +352,5 @@ Synthesize the individual classroom reports into a unified campus narrative.`;
     this.reportCache.clear();
   }
 
-  /**
-   * Extract completion text from orchestrator/MLX responses
-   */
-  _extractCompletionText(result) {
-    if (!result) return '';
-    if (typeof result.completion === 'string') {
-      return result.completion;
-    }
 
-    const choice = result.choices?.[0];
-    if (choice?.message?.content) {
-      return choice.message.content;
-    }
-    if (choice?.text) {
-      return choice.text;
-    }
-
-    return '';
-  }
 }

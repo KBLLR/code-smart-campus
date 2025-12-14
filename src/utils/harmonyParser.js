@@ -19,16 +19,19 @@ export function extractChannel(harmonyResponse, channelName) {
     return '';
   }
 
-  // Pattern: <|channelName|>content<|end|>
-  const pattern = new RegExp(`<\\|${channelName}\\|>([\\s\\S]*?)<\\|end\\|>`, 'i');
+  // Pattern: <|channelName|>content... (<|end|> OR next tag OR end of string)
+  // We use a more robust regex that looks for the start tag, captures content, 
+  // and stops at <|end|> OR the start of a new tag OR end of string.
+  const pattern = new RegExp(`<\\|${channelName}\\|>([\\s\\S]*?)(?:<\\|end\\|>|<\\||$)`, 'i');
   const match = harmonyResponse.match(pattern);
 
   if (match && match[1]) {
     return match[1].trim();
   }
 
-  // Fallback: if no harmony tags found, return the whole response
-  return harmonyResponse;
+  // Fallback: if requesting 'final' and no tags found, check if maybe the whole thing is the answer?
+  // But for 'analysis', if not found, we return empty.
+  return '';
 }
 
 /**
@@ -129,11 +132,8 @@ export function isHarmonyFormat(response) {
     return false;
   }
 
-  // Check for presence of Harmony channel markers
-  const hasChannels = response.includes('<|') && response.includes('|>');
-  const hasEnd = response.includes('<|end|>');
-
-  return hasChannels && hasEnd;
+  // Check for presence of ANY Harmony channel marker start
+  return /<\|(analysis|commentary|final)\|>/i.test(response);
 }
 
 /**
@@ -145,8 +145,20 @@ export function isHarmonyFormat(response) {
 export function getDisplayText(harmonyResponse) {
   if (isHarmonyFormat(harmonyResponse)) {
     const parsed = parseHarmonyResponse(harmonyResponse);
-    return parsed.final || parsed.raw;
+    // If we found a final channel, return it.
+    if (parsed.final) return parsed.final;
+
+    // If we found NO final channel but DID find analysis, 
+    // it means the model might have cut off or failed to produce final.
+    // In this case, we don't want to show raw reasoning. 
+    // We return a fallback "..." or simply the raw text if truly ambiguous.
+    // But better to verify if it has analysis and NO final, implies incomplete gen.
+    if (parsed.analysis && !parsed.final) {
+      return "(Agent is thinking...)"; // or handle as error?
+    }
   }
 
+  // Fallback: If no tags are detected at all, return the raw response 
+  // (Assuming model forgot to use tags and just answered)
   return harmonyResponse;
 }

@@ -1,214 +1,99 @@
-/**
- * CampusMetrics - Real-Time Campus Statistics (Space.js Style)
- * Displays occupancy, temperature, CO2, and active rooms
- */
-
 import { Interface } from '@alienkitty/space.js/src/utils/Interface.js';
+import { MetricRow } from '../components/MetricRow.js';
 
 export class CampusMetrics extends Interface {
-  constructor(classroomRegistry) {
-    super('.campus-metrics');
+    constructor() {
+        super('.campus-metrics');
 
-    this.classroomRegistry = classroomRegistry;
-    this.animatedIn = false;
-
-    this.init();
-    this.initViews();
-  }
-
-  init() {
-    this.css({
-      position: 'absolute',
-      right: 20,
-      bottom: 20,
-      zIndex: 1000,
-      pointerEvents: 'auto',
-      webkitUserSelect: 'none',
-      userSelect: 'none'
-    });
-
-    // CRITICAL: Add the metrics to the DOM!
-    document.body.appendChild(this.element);
-  }
-
-  initViews() {
-    // Container for all metrics
-    this.container = new Interface('.container');
-    this.container.css({
-      display: 'flex',
-      flexDirection: 'column',
-      gap: 8
-    });
-    this.add(this.container);
-
-    // Create metric rows
-    this.metrics = {
-      occupancy: this.createMetric('OCCUPANCY', '15/30'),
-      temperature: this.createMetric('TEMPERATURE', '22.5°C'),
-      co2: this.createMetric('CO₂', '650ppm'),
-      active: this.createMetric('ACTIVE', '1/1 rooms')
-    };
-
-    Object.values(this.metrics).forEach(metric => {
-      this.container.add(metric);
-    });
-
-    // Initial update
-    this.update();
-
-    // Update every 5 seconds
-    this.updateInterval = setInterval(() => this.update(), 5000);
-
-    // Animate in (after initialization completes)
-    setTimeout(() => this.animateIn(), 0);
-  }
-
-  createMetric(label, initialValue) {
-    const row = new Interface('.metric-row');
-    row.css({
-      display: 'flex',
-      justifyContent: 'space-between',
-      gap: 20,
-      fontFamily: 'var(--ui-font-family)',
-      fontSize: '11px',
-      letterSpacing: 1,
-      color: 'var(--ui-color)'
-    });
-
-    const labelEl = new Interface('.label');
-    labelEl.css({
-      textTransform: 'uppercase',
-      color: 'var(--ui-color)',
-      opacity: 0.5
-    });
-    labelEl.text(label);
-    row.add(labelEl);
-
-    const valueEl = new Interface('.value');
-    valueEl.css({
-      textAlign: 'right',
-      color: 'var(--ui-color)',
-      opacity: 0.7,
-      minWidth: 80
-    });
-    valueEl.text(initialValue);
-    row.add(valueEl);
-
-    // Store reference for updates
-    row.valueEl = valueEl;
-
-    return row;
-  }
-
-  update() {
-    const data = this.getAggregateData();
-
-    // Update occupancy
-    if (data.totalOccupancy === null) {
-      this.metrics.occupancy.valueEl.text('—');
-    } else if (data.totalCapacity > 0) {
-      this.metrics.occupancy.valueEl.text(`${data.totalOccupancy}/${data.totalCapacity}`);
-    } else {
-      this.metrics.occupancy.valueEl.text(`${data.totalOccupancy}`);
+        this.init();
+        this.initViews();
     }
 
-    // Update temperature
-    if (data.avgTemperature === null) {
-      this.metrics.temperature.valueEl.text('—');
-    } else {
-      this.metrics.temperature.valueEl.text(`${data.avgTemperature.toFixed(1)}°C`);
+    init() {
+        this.css({
+            position: 'absolute',
+            right: '40px',
+            bottom: '40px',
+            zIndex: 90,
+            pointerEvents: 'none',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '10px',
+            width: '240px',
+            background: 'rgba(0, 0, 0, 0.2)', // Slight backdrop
+            padding: '15px',
+            borderRadius: '8px',
+            border: '1px solid rgba(255, 255, 255, 0.05)'
+        });
+
+        document.body.appendChild(this.element);
     }
 
-    // Update CO2
-    if (data.avgCO2 === null) {
-      this.metrics.co2.valueEl.text('—');
-    } else {
-      this.metrics.co2.valueEl.text(`${data.avgCO2}ppm`);
+    initViews() {
+        this.header = new Interface('.metrics-header');
+        this.header.css({
+            fontSize: '10px',
+            color: 'rgba(255, 255, 255, 0.4)',
+            textTransform: 'uppercase',
+            marginBottom: '5px',
+            letterSpacing: '1px'
+        });
+        this.header.text('GLOBAL TELEMETRY');
+        this.add(this.header);
+
+        // Pre-create metric slots
+        this.metrics = {
+            occupancy: new MetricRow({ label: 'Occupancy', value: '--', unit: 'PPL' }),
+            temp: new MetricRow({ label: 'Avg Temp', value: '--', unit: '°C' }),
+            co2: new MetricRow({ label: 'Air Quality', value: '--', unit: 'PPM' }),
+            active: new MetricRow({ label: 'Active Zones', value: '--', unit: '' })
+        };
+
+        Object.values(this.metrics).forEach(m => this.add(m));
     }
 
-    // Update active rooms
-    const total = this.classroomRegistry.count;
-    if (total === 0) {
-      this.metrics.active.valueEl.text('—');
-    } else {
-      this.metrics.active.valueEl.text(`${data.activeRooms}/${total} rooms`);
+    setGlobalMetrics({ occupancy, temp, co2, activeRooms }) {
+        this.header.text('GLOBAL TELEMETRY');
+        this.css({ borderColor: 'rgba(255, 255, 255, 0.05)' });
+
+        this.metrics.occupancy.update(occupancy ?? '--');
+        this.metrics.temp.update(temp ?? '--');
+        this.metrics.co2.update(co2 ?? '--');
+        this.metrics.active.update(activeRooms ?? '--');
+        
+        // Show all
+        Object.values(this.metrics).forEach(m => m.css({ display: 'flex' }));
     }
-  }
 
-  getAggregateData() {
-    const classrooms = this.classroomRegistry.getAll();
+    setRoomMetrics({ temp, co2, occupancy, power }) {
+        this.header.text('LOCAL SENSORS');
+        this.css({ borderColor: 'var(--ui-color)' });
 
-    let totalOccupancy = 0;
-    let totalCapacity = 0;
-    let tempSum = 0;
-    let tempCount = 0;
-    let co2Sum = 0;
-    let co2Count = 0;
-    let activeRooms = 0;
-
-    classrooms.forEach(classroom => {
-      // Occupancy
-      const occupancySensor = classroom.getSensor('occupancy');
-      if (occupancySensor) {
-        if (typeof occupancySensor.current_value === 'number') {
-          totalOccupancy += occupancySensor.current_value;
+        // Update with available room data
+        this.metrics.temp.update(temp ?? '--');
+        this.metrics.co2.update(co2 ?? '--');
+        this.metrics.occupancy.update(occupancy ?? '--');
+        
+        // Re-purpose "active" slot for power if provided, or hide it
+        if (power) {
+            this.metrics.active.label.text('Power');
+            this.metrics.active.update(power);
+            this.metrics.active.unit.text('W');
+            this.metrics.active.css({ display: 'flex' });
+        } else {
+            this.metrics.active.css({ display: 'none' });
         }
-      }
-      if (typeof classroom.metadata.capacity === 'number') {
-        totalCapacity += classroom.metadata.capacity;
-      }
-
-      // Temperature
-      const tempSensor = classroom.getSensor('temperature');
-      if (tempSensor && typeof tempSensor.current_value === 'number') {
-        tempSum += tempSensor.current_value;
-        tempCount++;
-      }
-
-      // CO2
-      const co2Sensor = classroom.getSensor('co2');
-      if (co2Sensor && typeof co2Sensor.current_value === 'number') {
-        co2Sum += co2Sensor.current_value;
-        co2Count++;
-      }
-
-      // Active rooms
-      if (classroom.state.occupied) {
-        activeRooms++;
-      }
-    });
-
-    return {
-      totalOccupancy: tempCount === 0 && co2Count === 0 && totalOccupancy === 0 && totalCapacity === 0 ? null : totalOccupancy,
-      totalCapacity,
-      avgTemperature: tempCount > 0 ? tempSum / tempCount : null,
-      avgCO2: co2Count > 0 ? Math.round(co2Sum / co2Count) : null,
-      activeRooms
-    };
-  }
-
-  animateIn() {
-    const duration = 1000;
-    const stagger = 100;
-
-    this.container.children.forEach((child, i) => {
-      child.css({ x: 10, opacity: 0 });
-      child.clearTween().tween({ x: 0, opacity: 1 }, duration, 'easeOutQuart', i * stagger);
-    });
-
-    this.animatedIn = true;
-  }
-
-  animateOut() {
-    this.container.children.forEach(child => {
-      child.clearTween().tween({ opacity: 0 }, 500, 'easeInCubic');
-    });
-  }
-
-  destroy() {
-    if (this.updateInterval) {
-      clearInterval(this.updateInterval);
     }
-    super.destroy();
-  }
+
+    clearRoomMetrics() {
+        // Revert to global state or empty state? 
+        // Usually the system will call setGlobalMetrics immediately after.
+        // But we can reset visual cues here.
+        this.header.text('WAITING FOR DATA...');
+        this.css({ borderColor: 'rgba(255, 255, 255, 0.05)' });
+    }
+
+    update(dt) {
+        // Optional animation
+    }
 }

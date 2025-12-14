@@ -1,0 +1,456 @@
+{
+  "designSystem": {
+    "name": "Smart-C UI Design System",
+    "fileKey": "Q5UL8JFEzL4LZvY5JnAs2p",
+    "creator": "David Caballero",
+    "email": "david.caballero@code.berlin",
+    "dateAnalyzed": "2025-12-08",
+    "framework": "Space.js + Alien.js",
+    "organization": "CODE Smart Campus",
+    "partner": "Google Digital Schooling"
+  },
+  
+  "dimensions": {
+    "artboardWidth": 1800,
+    "contentWidth": 1444.602294921875,
+    "contentHeight": 865.15625,
+    "outerMargin": 80.25568389892578,
+    "innerPadding": 16.051136016845703
+  },
+  
+  "sections": [
+    {
+      "id": "583:107",
+      "name": "UI HUD Layout",
+      "purpose": "Main heads-up display for planetary information",
+      "url": "https://www.figma.com/design/Q5UL8JFEzL4LZvY5JnAs2p/Smart-C?node-id=583-107",
+      "components": [
+        "Branding Header",
+        "FPS Counter",
+        "Planetary Heading",
+        "Description Block",
+        "Data Cards (3)",
+        "Navigation Tabs",
+        "Info Button",
+        "Page Counter",
+        "Audio Indicator"
+      ]
+    },
+    {
+      "id": "583:412",
+      "name": "UI Floating Panel Settings",
+      "purpose": "Advanced material and post-processing controls",
+      "url": "https://www.figma.com/design/Q5UL8JFEzL4LZvY5JnAs2p/Smart-C?node-id=583-412",
+      "components": [
+        "Visibility Toggle",
+        "Opacity Slider",
+        "Material Type Toggle",
+        "Color Pickers",
+        "Surface Properties",
+        "Rendering Modes",
+        "Geometry Controls",
+        "Physics Settings",
+        "Post-Processing Panel"
+      ]
+    },
+    {
+      "id": "583:448",
+      "name": "3D Radial Graph",
+      "purpose": "Circular data visualization for 3D coordinates",
+      "url": "https://www.figma.com/design/Q5UL8JFEzL4LZvY5JnAs2p/Smart-C?node-id=583-448",
+      "components": [
+        "Circular Graph (365.97px)",
+        "6 Marker Points",
+        "IP Address Panel",
+        "Update Button",
+        "Border Elements"
+      ]
+    },
+    {
+      "id": "583:630",
+      "name": "UI Components Library",
+      "purpose": "Reusable component showcase",
+      "url": "https://www.figma.com/design/Q5UL8JFEzL4LZvY5JnAs2p/Smart-C?node-id=583-630",
+      "components": [
+        "Reticle (3 variants)",
+        "Tracker (2 variants)",
+        "TargetNumber",
+        "LineCanvas",
+        "Point (2 variants)",
+        "DetailsButton (6 variants)",
+        "MuteButton (2 variants)",
+        "NavLink",
+        "Link"
+      ],
+      "totalComponents": 19
+    },
+    {
+      "id": "592:640",
+      "name": "UI Details",
+      "purpose": "Expanded planetary information display",
+      "url": "https://www.figma.com/design/Q5UL8JFEzL4LZvY5JnAs2p/Smart-C?node-id=592-640",
+      "components": [
+        "Large Heading",
+        "Detail Text Block"
+      ]
+    },
+    {
+      "id": "594:729",
+      "name": "Audio Radial Graph",
+      "purpose": "Real-time audio frequency visualization",
+      "url": "https://www.figma.com/design/Q5UL8JFEzL4LZvY5JnAs2p/Smart-C?node-id=594-729",
+      "components": [
+        "Circular Spectrum (648.53px)",
+        "Frequency Labels (Highs/Mids/Lows)",
+        "Volume Control",
+        "Delay Control",
+        "Frequency Band Controls",
+        "Oscilloscope",
+        "Audio Source Display"
+      ]
+    },
+    {
+      "id": "594:750",
+      "name": "Graph Markers",
+      "purpose": "Interactive marker positioning demonstrations",
+      "url": "https://www.figma.com/design/Q5UL8JFEzL4LZvY5JnAs2p/Smart-C?node-id=594-750",
+      "components": [
+        "Circular Graph (240.77px)",
+        "Linear Graph (1069.01px)",
+        "Draggable Markers",
+        "Static Reference Markers"
+      ]
+    },
+    {
+      "id": "594:785",
+      "name": "Graphs Collection",
+      "purpose": "Multiple graph type demonstrations",
+      "url": "https://www.figma.com/design/Q5UL8JFEzL4LZvY5JnAs2p/Smart-C?node-id=594-785",
+      "components": [
+        "5-Marker Graph",
+        "2-Marker Graph",
+        "3-Segment Graph",
+        "Mixed Segment+Marker Graphs"
+      ],
+      "totalGraphs": 6
+    },
+    {
+      "id": "600:1007",
+      "name": "Space.js Example",
+      "purpose": "Complete implementation showcase",
+      "url": "https://www.figma.com/design/Q5UL8JFEzL4LZvY5JnAs2p/Smart-C?node-id=600-1007",
+      "source": "html.to.design conversion",
+      "components": [
+        "Dark Planet (SphereGeometry)",
+        "Floating Crystal (OctahedronGeometry)",
+        "Abstract Cube (BoxGeometry)",
+        "Material Controls",
+        "Physics Settings",
+        "Post-Processing Panel"
+      ]
+    }
+  ],
+  
+  "designTokens": {
+    "colors": {
+      "primary": {
+        "gray": "0x595959",
+        "black": "0x000000",
+        "white": "0xffffff"
+      },
+      "surface": "0x595959",
+      "background": "0x000000",
+      "text": "0xffffff"
+    },
+    
+    "typography": {
+      "fontSizes": {
+        "largeHeading": "36-37px",
+        "mediumHeading": "19px",
+        "body": "15-17px",
+        "small": "13px",
+        "label": "12.04px",
+        "numeric": "11px",
+        "micro": "9px"
+      },
+      "fontFamily": "System Font (-apple-system, SF Pro)"
+    },
+    
+    "spacing": {
+      "baseUnit": 8.026,
+      "margins": {
+        "outer": 16.05,
+        "inner": 8.03,
+        "panel": 80.26,
+        "graph": [20.87, 27.29]
+      }
+    },
+    
+    "borders": {
+      "width": 0.803,
+      "radius": "subtle",
+      "sizes": {
+        "badge": 13.64,
+        "colorPicker": 16.05,
+        "icon": 16.05
+      }
+    },
+    
+    "components": {
+      "toggle": {
+        "width": 40.13,
+        "height": 16.05
+      },
+      "slider": {
+        "widthRange": [9.63, 79.45],
+        "height": 0.803
+      },
+      "icons": {
+        "standard": 16.05,
+        "audio": {
+          "width": 19.26,
+          "height": 12.84
+        },
+        "detailButton": {
+          "width": 48.15,
+          "height": 32.10
+        }
+      }
+    }
+  },
+  
+  "componentLibrary": {
+    "navigation": [
+      {
+        "name": "Tab Navigation",
+        "variants": 3,
+        "options": ["POL", "OBL", "ISO"],
+        "dimensions": {
+          "width": 35.05,
+          "height": 31.05
+        },
+        "activeIndicator": {
+          "width": 18.46,
+          "height": 1.204
+        }
+      },
+      {
+        "name": "Link",
+        "dimensions": {
+          "width": 38.05,
+          "height": 31.05
+        }
+      }
+    ],
+    
+    "display": [
+      {
+        "name": "FPS Counter",
+        "dimensions": {
+          "width": 17,
+          "height": 12.04
+        },
+        "position": "top-right"
+      },
+      {
+        "name": "Data Card",
+        "dimensions": {
+          "widthRange": [100, 132],
+          "height": 59.63
+        },
+        "layout": "two-line"
+      },
+      {
+        "name": "Info Panel",
+        "dimensions": {
+          "width": 240.77,
+          "height": 26.63
+        }
+      },
+      {
+        "name": "Detail Panel",
+        "dimensions": {
+          "width": 47,
+          "height": 30.41
+        },
+        "content": ["IP Address", "Hostname"]
+      }
+    ],
+    
+    "controls": [
+      {
+        "name": "Color Picker",
+        "dimensions": {
+          "size": 16.05,
+          "withLabel": 41.10
+        },
+        "format": "hex"
+      },
+      {
+        "name": "Slider Control",
+        "dimensions": {
+          "heightRange": [15.25, 20.06],
+          "variableWidth": true
+        }
+      },
+      {
+        "name": "Toggle Switch",
+        "dimensions": {
+          "width": 80.26,
+          "sideWidth": 40.13
+        },
+        "states": 2
+      },
+      {
+        "name": "Dropdown Menu",
+        "dimensions": {
+          "width": 80.26,
+          "height": 16.05
+        }
+      }
+    ],
+    
+    "graphs": [
+      {
+        "name": "Circular Graph",
+        "variants": [
+          {"size": 365.97, "type": "3D radial"},
+          {"size": 240.77, "type": "audio"},
+          {"size": 648.53, "type": "audio expanded"}
+        ]
+      },
+      {
+        "name": "Linear Graph",
+        "dimensions": {
+          "width": 1069.01,
+          "height": 64.20
+        }
+      },
+      {
+        "name": "Marker Point",
+        "dimensions": {
+          "labelHeight": 14.45,
+          "labelWidth": 41.39
+        }
+      },
+      {
+        "name": "Segment Label",
+        "dimensions": {
+          "width": 46.54,
+          "height": 12.04
+        }
+      }
+    ],
+    
+    "utility": [
+      {
+        "name": "Badge Indicator",
+        "dimensions": {
+          "size": 13.64,
+          "textHeight": 11,
+          "padding": 4.41
+        }
+      },
+      {
+        "name": "Icon Button",
+        "dimensions": {
+          "icon": 16.05,
+          "container": {
+            "width": 48.15,
+            "height": 32.10
+          }
+        }
+      },
+      {
+        "name": "Audio Indicator",
+        "dimensions": {
+          "width": 19.26,
+          "height": 12.84
+        },
+        "layout": "two-line"
+      },
+      {
+        "name": "Page Counter",
+        "format": "1/6",
+        "dimensions": {
+          "textWidth": 16.80,
+          "containerWidth": 48.15,
+          "containerHeight": 32.10
+        }
+      },
+      {
+        "name": "Reticle/Tracker",
+        "variants": [
+          {"size": 8.03, "type": "small"},
+          {"size": 13.64, "type": "medium"},
+          {"size": 72.23, "type": "large"}
+        ]
+      }
+    ]
+  },
+  
+  "implementationSettings": {
+    "performance": {
+      "targetFPS": 120,
+      "minFPS": 60,
+      "vsyncEnabled": true
+    },
+    
+    "audio": {
+      "frequencyBands": {
+        "highs": {"min": 0.97, "max": 0.34},
+        "mids": {"min": 0.42, "max": 0.33},
+        "lows": {"min": 0.67, "max": 0.56}
+      },
+      "processing": {
+        "chunkSize": 17,
+        "delay": 39,
+        "oscilloscope": 0.28
+      }
+    },
+    
+    "materials": {
+      "types": ["Standard", "Physical", "Matcap"],
+      "properties": {
+        "roughness": {"default": 0.7, "range": [0, 2]},
+        "metalness": {"default": 0.7, "range": [0, 1]},
+        "opacity": {"default": 1, "range": [0, 1]}
+      },
+      "renderModes": ["Solid", "Flat", "Wireframe", "ToneMap"]
+    },
+    
+    "postProcessing": {
+      "effects": {
+        "interpolation": 0.84,
+        "smear": 1.16,
+        "threshold": 0.46,
+        "smooth": 0.3,
+        "strength": 0.3,
+        "radius": 0.2,
+        "chroma": 2.2,
+        "exposure": 0.99
+      }
+    },
+    
+    "physics": {
+      "gravity": {"default": 9.8, "range": [0, 20]},
+      "enabled": false
+    }
+  },
+  
+  "urlReferences": {
+    "spaceJs": "https://space.js.org/",
+    "alienJs": "https://alien.js.org/",
+    "threeJs": "https://threejs.org/",
+    "audioSource": "https://protonradio.com/",
+    "figmaFile": "https://www.figma.com/design/Q5UL8JFEzL4LZvY5JnAs2p/Smart-C"
+  },
+  
+  "metadata": {
+    "totalSections": 9,
+    "totalComponents": 19,
+    "totalGraphVariants": 6,
+    "documentationVersion": "1.0.0",
+    "generatedDate": "2025-12-08T15:19:41Z"
+  }
+}

@@ -21,7 +21,7 @@ const require = createRequire(import.meta.url);
 
 const app = express();
 const PORT = process.env.PORT || 3001;
-const MLX_SERVER_URL = process.env.MLX_SERVER_URL || 'http://localhost:8000';
+const TIER2_CHAT_BASE_URL = process.env.TIER2_CHAT_BASE_URL || 'http://localhost:8081/api';
 const VOICE_API_URL = process.env.VOICE_API_URL || process.env.VITE_VOICE_API_URL;
 const REPORT_DIR = join(__dirname, '../coverage/reports');
 
@@ -414,48 +414,57 @@ app.get('/health', async (req, res) => {
   const health = {
     status: 'ok',
     timestamp: new Date().toISOString(),
-    mlxServer: {
-      url: MLX_SERVER_URL,
+    tier2Server: {
+      url: TIER2_CHAT_BASE_URL,
       reachable: false
     }
   };
 
-  // Check MLX server connectivity
+  // Check Tier 2 server connectivity (use healthz or similar if available, or just check connectivity)
+  // Assuming Tier 2 has a reliable health endpoint, presumably /healthz or /api/healthz (standard express)
+  // But strictly speaking we just want to know if it's reachable.
+  // Tier 2 apiRouter has /healthz at root of the router.
+  // If mounted at /api, then /api/healthz.
+  // TIER2_CHAT_BASE_URL is .../api. So `${TIER2_CHAT_BASE_URL}/healthz` should work if mounted there.
+  // Actually apiRouter has router.get('/healthz'...) at line 46.
+  // So yes, /api/healthz is correct.
+
   try {
-    const mlxHealthCheck = await fetch(`${MLX_SERVER_URL}/health`, {
+    const mlxHealthCheck = await fetch(`${TIER2_CHAT_BASE_URL}/healthz`, {
       method: 'GET',
       signal: AbortSignal.timeout(2000) // 2 second timeout
     });
 
-    health.mlxServer.reachable = mlxHealthCheck.ok;
-    health.mlxServer.status = mlxHealthCheck.status;
+    health.tier2Server.reachable = mlxHealthCheck.ok;
+    health.tier2Server.status = mlxHealthCheck.status;
 
   } catch (error) {
-    health.mlxServer.error = error.message;
+    health.tier2Server.error = error.message;
   }
 
-  const statusCode = health.mlxServer.reachable ? 200 : 503;
+  const statusCode = health.tier2Server.reachable ? 200 : 503;
   res.status(statusCode).json(health);
 });
 
 /**
- * MLX server status endpoint
+ * MLX server status endpoint - DEPRECATED / PROXY TO TIER 2 MODELS
  */
 app.get('/api/mlx/status', async (req, res) => {
   try {
-    const modelsResponse = await fetch(`${MLX_SERVER_URL}/v1/models`, {
+    // Re-route to Tier 2 models endpoint
+    const modelsResponse = await fetch(`${TIER2_CHAT_BASE_URL}/v1/models`, {
       signal: AbortSignal.timeout(5000)
     });
 
     if (!modelsResponse.ok) {
-      throw new Error(`MLX server returned ${modelsResponse.status}`);
+      throw new Error(`Tier 2 server returned ${modelsResponse.status}`);
     }
 
     const modelsData = await modelsResponse.json();
 
     res.json({
       connected: true,
-      url: MLX_SERVER_URL,
+      url: TIER2_CHAT_BASE_URL,
       models: modelsData.data || [],
       timestamp: new Date().toISOString()
     });
@@ -463,7 +472,7 @@ app.get('/api/mlx/status', async (req, res) => {
   } catch (error) {
     res.status(503).json({
       connected: false,
-      url: MLX_SERVER_URL,
+      url: TIER2_CHAT_BASE_URL,
       error: error.message,
       timestamp: new Date().toISOString()
     });
@@ -511,7 +520,7 @@ app.get('/', (req, res) => {
       calendar: 'GET /api/integrations/calendar',
       health: 'GET /health'
     },
-    mlxServer: MLX_SERVER_URL,
+    tier2Server: TIER2_CHAT_BASE_URL,
     timestamp: new Date().toISOString()
   });
 });
@@ -529,18 +538,18 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
   console.log('');
   console.log('╔════════════════════════════════════════════════════════════╗');
-  console.log('║  Smart Campus MLX Proxy Server                             ║');
+  console.log('║  Smart Campus MLX Proxy Server (Tier 1 -> Tier 2)          ║');
   console.log('╚════════════════════════════════════════════════════════════╝');
   console.log('');
   console.log(`  🚀 Server running on http://localhost:${PORT}`);
-  console.log(`  🤖 MLX Server: ${MLX_SERVER_URL}`);
+  console.log(`  🤖 Tier 2 Server: ${TIER2_CHAT_BASE_URL}`);
   if (VOICE_API_URL) {
     console.log(`  🔊 Voice API proxy → ${VOICE_API_URL}`);
   }
   console.log('');
   console.log('  Endpoints:');
-  console.log(`    • POST   /api/mlx/chat              - Chat completions`);
-  console.log(`    • GET    /api/mlx/status            - MLX server status`);
+  console.log(`    • POST   /api/mlx/chat              - Chat completions (via Tier 2)`);
+  console.log(`    • GET    /api/mlx/status            - Tier 2 models`);
   console.log(`    • GET    /api/integrations/calendar - Calendar data`);
   console.log(`    • POST   /api/voice-chat            - Voice proxy`);
   console.log(`    • GET    /health                    - Health check`);
@@ -548,18 +557,18 @@ app.listen(PORT, () => {
   console.log('  Press Ctrl+C to stop');
   console.log('');
 
-  // Check MLX server on startup
-  fetch(`${MLX_SERVER_URL}/health`)
+  // Check Tier 2 server on startup
+  fetch(`${TIER2_CHAT_BASE_URL}/healthz`)
     .then(response => {
       if (response.ok) {
-        console.log('  ✓ MLX server is reachable');
+        console.log('  ✓ Tier 2 server is reachable');
       } else {
-        console.log(`  ⚠ MLX server returned ${response.status}`);
+        console.log(`  ⚠ Tier 2 server returned ${response.status}`);
       }
     })
     .catch(error => {
-      console.log(`  ✗ MLX server unreachable: ${error.message}`);
-      console.log(`    Make sure MLX server is running on ${MLX_SERVER_URL}`);
+      console.log(`  ✗ Tier 2 server unreachable: ${error.message}`);
+      console.log(`    Make sure Tier 2 Orchestrator is running on ${TIER2_CHAT_BASE_URL}`);
     });
 });
 

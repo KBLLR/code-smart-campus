@@ -1,0 +1,111 @@
+{
+  "a1": {
+    "occupancy": "binary_sensor.a1_occupancy"
+  },
+  "a2": {
+    "temperature": "sensor.jungle_temperature",
+    "co2": "sensor.jungle_co2",
+    "occupancy": "binary_sensor.jungle_motion",
+    "lighting": [
+      "light.jungle_main",
+      "light.jungle_ambient"
+    ]
+  },
+  "a3": {
+    "temperature": "sensor.ikea_of_sweden_vindstyrka_temperature_2",
+    "humidity": "sensor.ikea_of_sweden_vindstyrka_humidity_2",
+    "co2": "sensor.ikea_of_sweden_vindstyrka_pm2_5_2",
+    "occupancy": "binary_sensor.presence_sensor"
+  },
+  "a6": {
+    "temperature": "sensor.sonoff_snzb_02d_temperature_2",
+    "humidity": "sensor.sonoff_snzb_02d_humidity_2",
+    "occupancy": "binary_sensor.a6_occupancy_occupancy_4"
+  },
+  "a11": {
+    "occupancy": "binary_sensor.a11_occupancy"
+  },
+  "a14": {
+    "temperature": "sensor.sonoff_snzb_02d_temperature_4",
+    "humidity": "sensor.a12_climate",
+    "co2": "sensor.ikea_of_sweden_vindstyrka_pm2_5",
+    "occupancy": "binary_sensor.a12_occupancy"
+  },
+  "a23": {
+    "temperature": "sensor.sonoff_snzb_02d_temp_humidity_temperature",
+    "humidity": "sensor.sonoff_snzb_02d_temp_humidity_humidity"
+  },
+  "b3": {
+    "temperature": "sensor.ikea_aq_sensor_temperature",
+    "humidity": "sensor.ikea_aq_sensor_humidity",
+    "co2": "sensor.ikea_aq_sensor_pm2_5",
+    "occupancy": "binary_sensor.b3_occupancy_occupancy"
+  },
+  "b4": {
+    "temperature": "sensor.sonoff_snzb_02d_humid_temp_temperature",
+    "humidity": "sensor.sonoff_snzb_02d_humid_temp_humidity",
+    "occupancy": "binary_sensor.b4_occupancy_occupancy"
+  },
+  "b5": {
+    "temperature": "sensor.sonoff_snzb_02d_temp_humid_temperature",
+    "humidity": "sensor.sonoff_snzb_02d_temp_humid_humidity",
+    "occupancy": "binary_sensor.b5_occupancy"
+  },
+  "b6": {
+    "temperature": "sensor.sonoff_snzb_02d_temperature",
+    "humidity": "sensor.sonoff_snzb_02d_humidity",
+    "occupancy": "binary_sensor.b6_occupancy_occupancy_2"
+  },
+  "b7": {
+    "temperature": "sensor.sonoff_snzb_02d_humid_temp_temperature_2",
+    "humidity": "sensor.sonoff_snzb_02d_humid_temp_humidity_2",
+    "occupancy": "binary_sensor.b7_occupancy_occupancy_2"
+  },
+  "b10": {
+    "occupancy": "binary_sensor.unknown_occupancy_3"
+  },
+  "b12": {
+    "temperature": "sensor.sonoff_snzb_02d_humid_temp_temperature_3",
+    "humidity": "sensor.sonoff_snzb_02d_humid_temp_humidity_3",
+    "occupancy": "binary_sensor.b12_occupancy_occupancy_3"
+  },
+  "b14": {
+    "occupancy": "binary_sensor.b14_occupancy"
+  },
+  "b17": {
+    "temperature": "sensor.strategist_temperature",
+    "co2": "sensor.strategist_co2",
+    "occupancy": "binary_sensor.strategist_presence",
+    "lighting": [
+      "light.strategist_all"
+    ]
+  },
+  "c5": {
+    "temperature": "sensor.c5_temperature",
+    "occupancy": "binary_sensor.c5_motion"
+  },
+  "hydrogen": {
+    "temperature": "sensor.frient_a_s_aqszb_110_temperature",
+    "humidity": "sensor.frient_a_s_aqszb_110_humidity"
+  },
+  "kitchen": {
+    "temperature": "sensor.sonoff_snzb_02d_temperature_3",
+    "humidity": "sensor.sonoff_snzb_02d_humidity_3"
+  },
+  "lab_area": {},
+  "makerspace": {
+    "temperature": "sensor.aq_sensor_temperature",
+    "humidity": "sensor.aq_sensor_humidity",
+    "co2": "sensor.aq_sensor_pm2_5",
+    "occupancy": "binary_sensor.makerspace_occupancy_occupancy"
+  },
+  "phone_booth_1": {
+    "occupancy": "binary_sensor.phone_booth_1_occupancy"
+  },
+  "phone_booth_3": {
+    "occupancy": "binary_sensor.phone_booth_3_occupancy"
+  },
+  "phone_booth_4": {
+    "occupancy": "binary_sensor.phone_booth_4_occupancy"
+  }
+}

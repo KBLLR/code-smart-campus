@@ -52,7 +52,7 @@ export class CalendarTimeline extends Interface {
       border: '1px solid rgba(255, 255, 255, 0.1)',
       borderRadius: '12px',
       padding: '20px',
-      zIndex: 1500,
+      zIndex: 150,  // REDUCED: Dont block Space.js
       boxShadow: '0 8px 24px rgba(0, 0, 0, 0.4)',
       fontFamily: 'var(--ui-font-family)',
       color: 'var(--ui-color)'

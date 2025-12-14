@@ -27,6 +27,12 @@ This repository already runs. This annex adds an agent-friendly workflow without
 
 This annex is non-invasive: it standardizes process and docs. Code, build, and deploy remain as-is.
 
+### Environment & Secrets
+- Required for Home Assistant integration: `HA_BASE_URL`, `HA_ACCESS_TOKEN` (long-lived token).  
+- Preferred source: `.secretsbank` → `python .secretsbank/scripts/generate_shell_env.py --environment production` → `source ~/.htdi/secrets.sh`.  
+- Example placeholders live in `.env.example`; avoid committing real tokens.
+- Sanity check: `python .secretsbank/check_required_secrets.py --house tier1-smart-campus`.
+
 ### Files & Conventions
 
 - `tasks.yaml` is the single source of truth. `tasks.md` is generated.
@@ -188,3 +194,19 @@ npm run deploy:prod      # builds locally, uploads using --prebuilt --prod
 The `vercel.json` file pins the build output (`dist/`) and rewrites `/sensors` to `sensors.html` while keeping the rest of the SPA routed through `index.html`.
 
 For more detailed information on the project structure, building, and development conventions, please refer to `GEMINI.md`.
+
+## Home Assistant Configuration
+
+To connect this application to Home Assistant, you must configure the following environment variables (in `.env` for local dev):
+
+-   `HA_BASE_URL`: The URL of your Home Assistant instance (e.g., `http://homeassistant.local:8123` or `https://my-ha.com`).
+    *   **Dev Mode**: If using the Vite proxy (default), set this to `"/api"`. The application will normalize this path.
+    *   **Direct Mode**: If connecting directly (CORS must be configured on HA), set this to the absolute URL.
+-   `HA_ACCESS_TOKEN`: A Long-Lived Access Token generated in your Home Assistant profile.
+-   `VITE_API_PROXY_TARGET`: (Vite dev only) The *actual* URL of your HA instance to proxy requests to (e.g., `http://homeassistant.local:8123`).
+
+**URL Handling Rules:**
+1.  **REST**: The application constructs API URLs by appending `/api/...` to the normalized base URL. It avoids double prefixes (e.g., `/api/api/...`) automatically.
+2.  **WebSocket**: The application connects to `/api/websocket`.
+    *   If `HA_BASE_URL` is absolute, it derives the `wss://` or `ws://` URL from it.
+    *   If `HA_BASE_URL` is relative (e.g., `"/api"`), it connects to the current host origin (proxied by Vite in dev).

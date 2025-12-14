@@ -16,12 +16,18 @@ export default defineConfig({
   server: {
     open: true,
     proxy: {
-      "/api": {
-        // Phase-4 Mode: Proxy to genbooth orchestrator
-        // Dev Mode: Proxy to Home Assistant
-        target: process.env.VITE_API_PROXY_TARGET || "http://localhost:3001",
+      // 1. Tier 1 Backend Routes (MLX, Voice, Calendar) -> Port 3001
+      "^/api/(mlx|integrations|voice-chat|save-file)": {
+        target: process.env.VITE_BACKEND_URL || "http://localhost:3001",
         changeOrigin: true,
         secure: false,
+      },
+      // 2. Home Assistant Routes -> Port 8123 (Default)
+      "/api": {
+        target: process.env.VITE_HA_PROXY_TARGET || "http://localhost:8123",
+        changeOrigin: true,
+        secure: false,
+        ws: true,
         rewrite: (path) => path.replace(/^\/api/, "/api"),
         // Bypass proxy for classroom API routes when using local plugin
         bypass: (req, res, options) => {

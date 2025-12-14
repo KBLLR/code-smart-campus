@@ -1,0 +1,351 @@
+{
+  "ok": true,
+  "overview": "<|channel|>analysis<|message|>Alright, let's tackle this problem. The user wants me to create a regex that matches a string containing an IP address and a port number. The example given is \"192.168.1.1 8080\", which is an IPv4 address followed by a port. But the user's regex is (?:\\d+\\.){3}\\d+ :\\d+, which uses a non-capturing group for the IP and a space, then a colon and port. Wait, the example has a space between the IP and port, but the regex uses a space and then a colon? Actually, the regex is (?:\\d+\\.){3}\\d+ :\\d+, so it expects a space and then a colon. But the example is \"192.168.1.1 8080\", which doesn't have a colon. That's a mistake. The user's regex is incorrect because it's looking for a colon after the space, but the example uses a space without a colon. Let me check that again. The regex is (?:\\d+\\.){3}\\d+ :\\d+, which matches something like \"192.168.1.1 :8080\". The example provided is \"192.168.1.1 8080\", so the regex should not have the colon. The user's regex is wrong. So the correct regex should be something like \\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3} \\d+ or a non-capturing group as they did but without the colon. Let me correct that. The user's regex matches \"192.168.1.1 :8080\", but the example is without the colon. So the issue is the regex has a colon after the space which isn't in the example. So the correct regex should not include the colon. Therefore, the user's regex is incorrect. The correct regex should be something",
+  "harmonyChannels": {
+    "analysis": "",
+    "commentary": "",
+    "final": ""
+  },
+  "cerberusHeads": {
+    "head_1": null,
+    "head_2": null,
+    "head_3": null
+  },
+  "classroomReports": [
+    {
+      "classroom_id": "makerspace",
+      "classroom_name": "Makers Space",
+      "agent_name": "Makers Space",
+      "summary": "The Makers Space is currently empty, with no occupants or scheduled activities.<|end|>",
+      "context": {
+        "room_id": "makerspace",
+        "room_name": "Makers Space",
+        "occupancy": 0,
+        "capacity": 0,
+        "temperature": null,
+        "humidity": null,
+        "co2": null,
+        "current_event": null,
+        "next_event": null,
+        "equipment": []
+      },
+      "generated_at": "2025-12-08T00:39:23.215Z"
+    },
+    {
+      "classroom_id": "a3",
+      "classroom_name": "Hive",
+      "agent_name": "Hive",
+      "summary": "\"The Hive classroom is currently empty and ready for use; no environmental data is available, and there are no scheduled activities.\"<|end|>",
+      "context": {
+        "room_id": "a3",
+        "room_name": "Hive",
+        "occupancy": 0,
+        "capacity": 0,
+        "temperature": null,
+        "humidity": null,
+        "co2": null,
+        "current_event": null,
+        "next_event": null,
+        "equipment": []
+      },
+      "generated_at": "2025-12-08T00:39:23.666Z"
+    },
+    {
+      "classroom_id": "b3",
+      "classroom_name": "Peace",
+      "agent_name": "Peace",
+      "summary": "Peace classroom is empty with no occupants, and there is no scheduled activity at the moment; environmental conditions like temperature, humidity, or CO2 levels are not available.<|end|>",
+      "context": {
+        "room_id": "b3",
+        "room_name": "Peace",
+        "occupancy": 0,
+        "capacity": 0,
+        "temperature": null,
+        "humidity": null,
+        "co2": null,
+        "current_event": null,
+        "next_event": null,
+        "equipment": []
+      },
+      "generated_at": "2025-12-08T00:39:24.207Z"
+    },
+    {
+      "classroom_id": "b4",
+      "classroom_name": "Classroom B4",
+      "agent_name": "Classroom B4",
+      "summary": "\"Classroom B4 is currently empty with no scheduled events; the environment and equipment status remain unmeasured.\"<|end|>",
+      "context": {
+        "room_id": "b4",
+        "room_name": "Classroom B4",
+        "occupancy": 0,
+        "capacity": 0,
+        "temperature": null,
+        "humidity": null,
+        "co2": null,
+        "current_event": null,
+        "next_event": null,
+        "equipment": []
+      },
+      "generated_at": "2025-12-08T00:39:24.624Z"
+    },
+    {
+      "classroom_id": "b5",
+      "classroom_name": "Present",
+      "agent_name": "Present",
+      "summary": "The Present classroom (b5) is currently unoccupied with no scheduled activities, and the environment is yet to be assessed.<|end|>",
+      "context": {
+        "room_id": "b5",
+        "room_name": "Present",
+        "occupancy": 0,
+        "capacity": 0,
+        "temperature": null,
+        "humidity": null,
+        "co2": null,
+        "current_event": null,
+        "next_event": null,
+        "equipment": []
+      },
+      "generated_at": "2025-12-08T00:39:25.096Z"
+    },
+    {
+      "classroom_id": "b6",
+      "classroom_name": "After",
+      "agent_name": "After",
+      "summary": "The classroom \"After\" with room_id \"b6\" has no current occupancy, is awaiting the next event, and currently shows no data for temperature, humidity, CO2 levels, or available equipment.<|end|>",
+      "context": {
+        "room_id": "b6",
+        "room_name": "After",
+        "occupancy": 0,
+        "capacity": 0,
+        "temperature": null,
+        "humidity": null,
+        "co2": null,
+        "current_event": null,
+        "next_event": null,
+        "equipment": []
+      },
+      "generated_at": "2025-12-08T00:39:25.743Z"
+    },
+    {
+      "classroom_id": "b7",
+      "classroom_name": "W Room",
+      "agent_name": "W Room",
+      "summary": "\"W Room is currently unoccupied, with no scheduled events, and environmental conditions are being monitored but not reported due to a lack of sensor data; equipment status is to be assessed.\"<|end|>",
+      "context": {
+        "room_id": "b7",
+        "room_name": "W Room",
+        "occupancy": 0,
+        "capacity": 0,
+        "temperature": null,
+        "humidity": null,
+        "co2": null,
+        "current_event": null,
+        "next_event": null,
+        "equipment": []
+      },
+      "generated_at": "2025-12-08T00:39:26.344Z"
+    },
+    {
+      "classroom_id": "b10",
+      "classroom_name": "MF Room",
+      "agent_name": "MF Room",
+      "summary": "MF Room is empty as there are no occupants at the moment. No scheduled events are in progress. The room's environmental conditions and available equipment are not available at this time.<|end|>",
+      "context": {
+        "room_id": "b10",
+        "room_name": "MF Room",
+        "occupancy": 0,
+        "capacity": 0,
+        "temperature": null,
+        "humidity": null,
+        "co2": null,
+        "current_event": null,
+        "next_event": null,
+        "equipment": []
+      },
+      "generated_at": "2025-12-08T00:39:26.910Z"
+    },
+    {
+      "classroom_id": "b12",
+      "classroom_name": "Hans Zimmer",
+      "agent_name": "Hans Zimmer",
+      "summary": "The Hans Zimmer classroom is unoccupied with no specified capacity, and no current or upcoming event scheduled. The environmental conditions such as temperature, humidity, and CO2 levels are not reported.<|end|>",
+      "context": {
+        "room_id": "b12",
+        "room_name": "Hans Zimmer",
+        "occupancy": 0,
+        "capacity": 0,
+        "temperature": null,
+        "humidity": null,
+        "co2": null,
+        "current_event": null,
+        "next_event": null,
+        "equipment": []
+      },
+      "generated_at": "2025-12-08T00:39:27.550Z"
+    },
+    {
+      "classroom_id": "b14",
+      "classroom_name": "Dark Matter",
+      "agent_name": "Dark Matter",
+      "summary": "In Room B14, also known as Dark Matter, there are currently no occupants, but the room is unoccupied and at ambient conditions without any scheduled events.<|end|>",
+      "context": {
+        "room_id": "b14",
+        "room_name": "Dark Matter",
+        "occupancy": 0,
+        "capacity": 0,
+        "temperature": null,
+        "humidity": null,
+        "co2": null,
+        "current_event": null,
+        "next_event": null,
+        "equipment": []
+      },
+      "generated_at": "2025-12-08T00:39:28.102Z"
+    },
+    {
+      "classroom_id": "a1",
+      "classroom_name": "Babylon",
+      "agent_name": "Babylon",
+      "summary": "The Babylon classroom is currently empty, with no specific temperature, humidity, or CO2 levels recorded, and there are no ongoing or scheduled events. The room's equipment list is also empty.<|end|>",
+      "context": {
+        "room_id": "a1",
+        "room_name": "Babylon",
+        "occupancy": 0,
+        "capacity": 0,
+        "temperature": null,
+        "humidity": null,
+        "co2": null,
+        "current_event": null,
+        "next_event": null,
+        "equipment": []
+      },
+      "generated_at": "2025-12-08T00:39:28.789Z"
+    },
+    {
+      "classroom_id": "a6",
+      "classroom_name": "Muted",
+      "agent_name": "Muted",
+      "summary": "Muted classroom is currently unoccupied, and there are no scheduled events or temperature or humidity readings available.<|end|>",
+      "context": {
+        "room_id": "a6",
+        "room_name": "Muted",
+        "occupancy": 0,
+        "capacity": 0,
+        "temperature": null,
+        "humidity": null,
+        "co2": null,
+        "current_event": null,
+        "next_event": null,
+        "equipment": []
+      },
+      "generated_at": "2025-12-08T00:39:29.284Z"
+    },
+    {
+      "classroom_id": "a11",
+      "classroom_name": "A11 (TET and RIS)",
+      "agent_name": "A11 (TET and RIS)",
+      "summary": "The A11 (TET and RIS) classroom is currently unoccupied, with no ongoing or upcoming events, and the environmental conditions cannot be determined at this moment due to system limitations.<|end|>",
+      "context": {
+        "room_id": "a11",
+        "room_name": "A11 (TET and RIS)",
+        "occupancy": 0,
+        "capacity": 0,
+        "temperature": null,
+        "humidity": null,
+        "co2": null,
+        "current_event": null,
+        "next_event": null,
+        "equipment": []
+      },
+      "generated_at": "2025-12-08T00:39:29.926Z"
+    },
+    {
+      "classroom_id": "kitchen",
+      "classroom_name": "Cantina Kitchen",
+      "agent_name": "Cantina Kitchen",
+      "summary": "As of now, the Cantina Kitchen is empty, with no immediate class scheduled, and the environmental controls are currently active, but no data on the conditions or equipment usage is available.<|end|>",
+      "context": {
+        "room_id": "kitchen",
+        "room_name": "Cantina Kitchen",
+        "occupancy": 0,
+        "capacity": 0,
+        "temperature": null,
+        "humidity": null,
+        "co2": null,
+        "current_event": null,
+        "next_event": null,
+        "equipment": []
+      },
+      "generated_at": "2025-12-08T00:39:30.490Z"
+    },
+    {
+      "classroom_id": "a14",
+      "classroom_name": "Houston",
+      "agent_name": "Houston",
+      "summary": "The Houston room is empty with no occupants, and there are currently no events occurring, indicating the room is available for use.<|end|>",
+      "context": {
+        "room_id": "a14",
+        "room_name": "Houston",
+        "occupancy": 0,
+        "capacity": 0,
+        "temperature": null,
+        "humidity": null,
+        "co2": null,
+        "current_event": null,
+        "next_event": null,
+        "equipment": []
+      },
+      "generated_at": "2025-12-08T00:39:30.957Z"
+    },
+    {
+      "classroom_id": "a23",
+      "classroom_name": "Lecture Hall",
+      "agent_name": "Lecture Hall",
+      "summary": "Lecture Hall (A23) is empty, with no students present, and currently there are no classes scheduled.<|end|>",
+      "context": {
+        "room_id": "a23",
+        "room_name": "Lecture Hall",
+        "occupancy": 0,
+        "capacity": 0,
+        "temperature": null,
+        "humidity": null,
+        "co2": null,
+        "current_event": null,
+        "next_event": null,
+        "equipment": []
+      },
+      "generated_at": "2025-12-08T00:39:31.391Z"
+    },
+    {
+      "classroom_id": "hydrogen",
+      "classroom_name": "Hydrogen Lab",
+      "agent_name": "Hydrogen Lab",
+      "summary": "The Hydrogen Lab is currently empty, with no occupants or scheduled events. The environmental conditions and equipment status are not available.<|end|>",
+      "context": {
+        "room_id": "hydrogen",
+        "room_name": "Hydrogen Lab",
+        "occupancy": 0,
+        "capacity": 0,
+        "temperature": null,
+        "humidity": null,
+        "co2": null,
+        "current_event": null,
+        "next_event": null,
+        "equipment": []
+      },
+      "generated_at": "2025-12-08T00:39:31.846Z"
+    }
+  ],
+  "aggregateMetrics": {
+    "total_occupancy": "0unavailable000unavailable10unavailable100",
+    "occupancy_rate": 0,
+    "avg_temperature": 22.26153846153846,
+    "avg_co2": null,
+    "active_rooms": 2,
+    "total_rooms": 17,
+    "current_events": []
+  },
+  "model": "mlx-community/Jinx-gpt-oss-20b-mxfp4-mlx",
+  "rawResponse": "<|channel|>analysis<|message|>Alright, let's tackle this problem. The user wants me to create a regex that matches a string containing an IP address and a port number. The example given is \"192.168.1.1 8080\", which is an IPv4 address followed by a port. But the user's regex is (?:\\d+\\.){3}\\d+ :\\d+, which uses a non-capturing group for the IP and a space, then a colon and port. Wait, the example has a space between the IP and port, but the regex uses a space and then a colon? Actually, the regex is (?:\\d+\\.){3}\\d+ :\\d+, so it expects a space and then a colon. But the example is \"192.168.1.1 8080\", which doesn't have a colon. That's a mistake. The user's regex is incorrect because it's looking for a colon after the space, but the example uses a space without a colon. Let me check that again. The regex is (?:\\d+\\.){3}\\d+ :\\d+, which matches something like \"192.168.1.1 :8080\". The example provided is \"192.168.1.1 8080\", so the regex should not have the colon. The user's regex is wrong. So the correct regex should be something like \\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3} \\d+ or a non-capturing group as they did but without the colon. Let me correct that. The user's regex matches \"192.168.1.1 :8080\", but the example is without the colon. So the issue is the regex has a colon after the space which isn't in the example. So the correct regex should not include the colon. Therefore, the user's regex is incorrect. The correct regex should be something",
+  "timestamp": "2025-12-08T00:40:03.095Z"
+}

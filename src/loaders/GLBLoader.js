@@ -44,14 +44,15 @@ export class GLBLoader {
       // Process and add to scene
       this.scene.add(modelScene);
 
-      // Extract room meshes
-      const rooms = this._extractRooms(modelScene);
+      // Extract features (rooms, buttons)
+      const { rooms, buttons } = this._extractFeatures(modelScene);
 
-      console.log(`[GLBLoader] ✓ Found ${rooms.length} room meshes`);
+      console.log(`[GLBLoader] ✓ Found ${rooms.length} rooms and ${buttons.length} buttons`);
 
       return {
         scene: modelScene,
         rooms,
+        buttons, // Export buttons
         gltf,
       };
     } catch (error) {
@@ -61,29 +62,59 @@ export class GLBLoader {
   }
 
   /**
-   * Extract room meshes from the loaded model
+   * Extract rooms and buttons from the loaded model
    */
-  _extractRooms(modelScene) {
+  _extractFeatures(modelScene) {
     const rooms = [];
-    const skipObjects = ['projection_live', 'projectionlive', 'walls', 'floor'];
+    const buttons = [];
+    // Objects to hide or ignore
+    const skipObjects = ['projection_live', 'projectionlive', 'walls'];
 
     modelScene.traverse((object) => {
       if (object.isMesh) {
         const meshName = object.name || 'unnamed';
-        const normId = meshName.toLowerCase().replace(/[^a-z0-9]/g, '');
+        const lowerName = meshName.toLowerCase();
+        const normId = lowerName.replace(/[^a-z0-9]/g, '');
 
-        // Skip non-room objects
+        // 1. Skip ignored objects
         if (skipObjects.includes(normId)) {
           console.log(`[GLBLoader] Hiding: ${meshName}`);
           object.visible = false;
           return;
         }
 
-        // Enable shadows
+        // 2. Identify Buttons (prefix "bttn")
+        if (lowerName.startsWith('bttn')) {
+          object.castShadow = true;
+          object.receiveShadow = true;
+          object.userData.isButton = true;
+          object.userData.buttonId = meshName; // e.g. "bttn - learning - units"
+
+          buttons.push({
+            id: meshName,
+            name: meshName, // Keep original name for parsing later
+            mesh: object
+          });
+          console.log(`[GLBLoader] Button found: ${meshName}`);
+          return;
+        }
+
+        // 3. Identify Rooms
+        // We assume anything else interesting in the "rooms" collection or named appropriately is a room.
+        // The user tree shows a "rooms" folder. In GLTF, this is an object.
+        // We can check if the parent is "rooms" OR just treat remaining meshes as rooms (safest for now).
+        // Let's exclude "floormap" explicitly from being a "room" but keep it visible.
+
+        if (normId === 'floormap') {
+          object.castShadow = false; // Floor usually receives shadow
+          object.receiveShadow = true;
+          console.log(`[GLBLoader] Floor map found: ${meshName}`);
+          return;
+        }
+
+        // It is a room
         object.castShadow = true;
         object.receiveShadow = true;
-
-        // Store room data
         object.userData.roomId = normId;
         object.userData.roomName = meshName;
 
@@ -93,10 +124,11 @@ export class GLBLoader {
           mesh: object,
         });
 
-        console.log(`[GLBLoader] Room found: ${meshName} → ${normId}`);
+        // Debug
+        // console.log(`[GLBLoader] Room found: ${meshName} → ${normId}`);
       }
     });
 
-    return rooms;
+    return { rooms, buttons };
   }
 }

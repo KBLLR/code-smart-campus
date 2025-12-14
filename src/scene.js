@@ -11,6 +11,13 @@ import { MoonController } from "@lib/MoonController.js";
 import { SITE_COORDINATES } from "@utils/location.js";
 import { materialRegistry } from "@registries/materialsRegistry.js";
 import { RoomsManager } from "@/modules/RoomsManager.js";
+import unified_rooms from "./data/personalities/unified_rooms_data.js";
+
+const getAgentForRoom = (roomId) => {
+  const room = unified_rooms.find((r) => r.id === roomId);
+  return room?.agentData?.id || null;
+};
+
 
 // 🔧 Globals
 
@@ -69,7 +76,7 @@ const labelManager = {
   getAnchor: (entityId) => roomsManager?.getLabelAnchor(entityId) || null,
   updateLabel: (entityId, value) => roomsManager?.updateLabel(entityId, value),
   useSprites: false,
-  updateLabelPositions: () => {}, // No-op for anchor-based labels
+  updateLabelPositions: () => { }, // No-op for anchor-based labels
 };
 const sunController = new SunController();
 const sunTelemetry = new SunTelemetry();
@@ -284,8 +291,15 @@ const setSelectedEntity = (entityId) => {
   const applied = applyRoomHighlight(normalizedKey);
   if (applied) {
     selectedRoomKey = normalizedKey;
-scene.userData?.hud?.manager?.selectEntity(entityId);
- }
+    scene.userData?.hud?.manager?.selectEntity(entityId);
+
+    // T2 Integration: Emit ROOM_ENTER
+    const agentId = getAgentForRoom(normalizedKey);
+    window.parent?.postMessage({
+      type: 'SMARTCAMPUS_ROOM_ENTER',
+      payload: { roomId: normalizedKey, agentId }
+    }, '*');
+  }
   return applied;
 };
 
@@ -294,8 +308,15 @@ const clearSelectedEntity = () => {
   if (selectedRoomKey !== hoveredRoomKey) {
     removeRoomHighlight(selectedRoomKey);
   }
+  const leavingRoom = selectedRoomKey;
   selectedRoomKey = null;
   scene.userData?.hud?.manager?.clearSelection({ silent: true });
+
+  // T2 Integration: Emit ROOM_LEAVE
+  window.parent?.postMessage({
+    type: 'SMARTCAMPUS_ROOM_LEAVE',
+    payload: { roomId: leavingRoom }
+  }, '*');
 };
 
 const highlightRoomByKey = (roomKey) => {
@@ -431,8 +452,53 @@ function attachSetup({ cam, re, orbCtrls }) {
         if (!scene.background) {
           scene.background = null;
         }
+
+        // Add listener for parent window messages
+        window.addEventListener('message', (event) => {
+          if (event.origin !== window.location.origin && event.origin !== 'null') { // Ensure messages are from expected origins or local
+            // console.log('[SmartCampus] Message received:', event.data.type, event.data.payload);
+
+            if (event.data.type === 'EMERGENCE_APP_ACTIVE') {
+              // ... handle app active visual indication if needed ...
+              console.log('[SmartCampus] App Active:', event.data.payload);
+            }
+
+            if (event.data.type === 'EMERGENCE_UI_HIDDEN') {
+              const isHidden = event.data.payload;
+              if (isHidden) {
+                // Create Return Button
+                let btn = document.getElementById('sc-return-btn');
+                if (!btn) {
+                  btn = document.createElement('button');
+                  btn.id = 'sc-return-btn';
+                  btn.textContent = 'Return to App';
+                  btn.style.position = 'absolute';
+                  btn.style.top = '20px';
+                  btn.style.right = '20px'; // Changed to right to avoid sidebar collision
+                  btn.style.zIndex = '1000';
+                  btn.style.padding = '10px 20px';
+                  btn.style.background = 'rgba(0, 0, 0, 0.7)';
+                  btn.style.color = '#fff';
+                  btn.style.border = '1px solid #fff';
+                  btn.style.borderRadius = '20px';
+                  btn.style.cursor = 'pointer';
+                  btn.style.fontFamily = 'sans-serif';
+                  btn.style.backdropFilter = 'blur(5px)';
+
+                  btn.onclick = () => {
+                    window.parent.postMessage({ type: 'SMARTCAMPUS_RETURN_TO_APP' }, '*');
+                    btn.remove();
+                  };
+                  document.body.appendChild(btn);
+                }
+              } else {
+                const btn = document.getElementById('sc-return-btn');
+                if (btn) btn.remove();
+              }
+            }
+          }
+        });
       }
-      materialRegistry.refresh();
     })
     .catch((error) => {
       console.warn("[Scene] Material registry initialisation failed:", error);

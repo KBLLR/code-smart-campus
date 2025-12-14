@@ -1,4 +1,5 @@
 import classroomsWithSensors from '../data/classrooms/classrooms-with-sensors.js';
+import { SensorConfig } from '../config/SensorConfig.js';
 
 /**
  * SensorManager - Central hub for all sensor data
@@ -117,6 +118,13 @@ export class SensorManager {
   }
 
   /**
+   * Get specific connector by name
+   */
+  getConnector(name) {
+    return this.connectors.get(name);
+  }
+
+  /**
    * Map an entity to a room and sensor type
    */
   mapEntityToRoom(entityId, roomId, sensorType) {
@@ -130,6 +138,13 @@ export class SensorManager {
     }
 
     console.log(`[SensorManager] Mapped ${entityId} → ${roomId}/${sensorType}`);
+  }
+
+  /**
+   * Get specific sensor by ID
+   */
+  getSensor(entityId) {
+    return this.discoveredSensors.get(entityId);
   }
 
   /**
@@ -287,23 +302,38 @@ export class SensorManager {
       if (typeMap[deviceClass]) return typeMap[deviceClass];
     }
 
+    // Check domains
+    if (sensor.domain === 'sun') return 'celestial';
+    if (entityId.includes('moon')) return 'celestial';
+    if (entityId.includes('sun_next')) return 'celestial';
+
     // Check by unit
     if (unit) {
       if (unit === '°C' || unit === '°F') return 'temperature';
-      if (unit === '%') return 'humidity';
-      if (unit === 'lux' || unit === 'lx') return 'light';
+      if (unit === '%') {
+        // Disambiguate Humidity vs Battery based on Entity ID
+        if (entityId.includes('battery')) return 'battery';
+        // Default to humidity if unsure, but usually humidity
+        return 'humidity';
+      }
+      if (unit === 'lux' || unit === 'lx') return 'illuminance';
       if (unit === 'ppm') return 'co2';
-      if (unit === 'kW' || unit === 'W') return 'energy';
+      if (unit === 'kW' || unit === 'W') return 'power';
     }
 
     // Check by entity ID keywords
     if (entityId.includes('temp')) return 'temperature';
     if (entityId.includes('humidity') || entityId.includes('humid')) return 'humidity';
-    if (entityId.includes('light') || entityId.includes('illuminance')) return 'light';
-    if (entityId.includes('motion') || entityId.includes('occupancy')) return 'motion';
+    if (entityId.includes('light') || entityId.includes('illuminance')) return 'illuminance';
+    if (entityId.includes('motion') || entityId.includes('occupancy')) return 'occupancy';
     if (entityId.includes('co2') || entityId.includes('carbon')) return 'co2';
-    if (entityId.includes('energy') || entityId.includes('power')) return 'energy';
+    if (entityId.includes('pm2_5') || entityId.includes('pm25')) return 'pm25';
+    if (entityId.includes('voc')) return 'voc';
+    if (entityId.includes('energy') || entityId.includes('power')) return 'power';
     if (entityId.includes('people') || entityId.includes('count')) return 'occupancy';
+    if (entityId.includes('battery') || entityId.includes('bat')) return 'battery';
+    if (entityId.includes('printer') || entityId.includes('octoprint')) return 'equipment';
+    if (entityId.includes('job') || entityId.includes('tool')) return 'equipment';
 
     return 'unknown';
   }
@@ -585,11 +615,105 @@ export class SensorManager {
   /**
    * Cleanup
    */
+  // ...
   dispose() {
     this.stopAll();
     this.sensorData.clear();
     this.listeners.clear();
     this.rawListeners.clear();
     this.connectors.clear();
+  }
+
+  // ============================================
+  // UI Helpers (Formatted for Space.js Panels)
+  // ============================================
+
+  /**
+   * Get formatted sensor data for a specific room
+   * @param {string} roomId 
+   * @returns {Array} Array of sensor objects ready for display
+   */
+  getSensorsForRoom(roomId) {
+    const sensors = [];
+
+    // 1. Get sensors from static mapping
+    const mappedEntityIds = SensorConfig.mappings[roomId] || [];
+
+    mappedEntityIds.forEach(entityId => {
+      // Find the sensor in discovered sensors or entity mappings
+      // We need to find the Type. 
+      // Check if we have it in discoveredSensors
+      const sensor = this.discoveredSensors.get(entityId);
+
+      if (sensor) {
+        const type = this._detectSensorType(sensor); // Use existing helper
+        const config = SensorConfig.get(type);
+
+        // Parse value
+        const rawVal = parseFloat(sensor.state);
+        const val = isNaN(rawVal) ? sensor.state : rawVal;
+
+        // Determine status manually or via helper
+        // We can mock status or use existing _calculateStatus logic if we had metadata for this specific instance
+        // For now, simple format
+
+        sensors.push({
+          key: entityId, // Unique Key
+          label: config.label === 'Sensor' ? sensor.friendlyName : config.label, // Use friendly name if specific, or generic label + override
+          // Actually better: Use Friendly Name always if available, fallback to Config Label
+          label: sensor.attributes?.friendly_name || config.label,
+          value: config.format(val),
+          unit: sensor.unit || config.unit,
+          color: config.color(val),
+          icon: config.icon,
+          status: 'normal' // default
+        });
+      }
+    });
+
+    // 2. Also include any legacy mapped sensors (from this.sensorData)
+    // allowing hybrid approach if some are dynamic
+    const roomSensors = this.getRoomSensors(roomId);
+    Object.entries(roomSensors).forEach(([type, reading]) => {
+      // Avoid duplicates if already added via mapping
+      // Logic: if we implemented mapping, we likely prefer that. 
+      // But let's keep this for backward compatibility with 'create_unified_data' flows if any.
+    });
+
+    return sensors;
+  }
+
+  /**
+   * Get all sensors that are NOT mapped to any room
+   * Grouped and formatted for a general "Campus" panel
+   */
+  getUngroupedSensorsFormatted() {
+    const allSensors = Array.from(this.discoveredSensors.values());
+    const mappedIds = new Set();
+
+    // Collect all mapped entity IDs
+    this.entityMappings.forEach((mapping, entityId) => {
+      mappedIds.add(entityId);
+    });
+
+    return allSensors
+      .filter(s => !mappedIds.has(s.entityId))
+      .map(sensor => {
+        const typeKey = this._detectSensorType(sensor);
+        const config = SensorConfig.get(typeKey);
+
+        // Parse value safely
+        const rawVal = parseFloat(sensor.state);
+        const val = isNaN(rawVal) ? sensor.state : rawVal;
+
+        return {
+          key: sensor.entityId,
+          label: sensor.attributes?.friendly_name || sensor.entityId,
+          value: config.format(val),
+          unit: sensor.unit || config.unit,
+          color: config.color(val),
+          icon: config.icon
+        };
+      });
   }
 }
