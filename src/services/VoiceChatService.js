@@ -5,7 +5,7 @@ export class VoiceChatService {
     this.baseUrl = baseUrl;
   }
 
-  async sendAudio({ roomId, agentId, voiceId, audioBlob, chatModel = 'mlx-community/Jinx-gpt-oss-20b-mxfp4-mlx' }) {
+  async sendAudio({ roomId, agentId, voiceId, audioBlob, chatModel = '/Users/davidcaballero/core-x-kbllr_0/model-zoo/models/text/qwen3-4b-instruct-2507-4bit' }) {
     const formData = new FormData();
     formData.append('voice_id', voiceId || 'af_bella');
     // formData.append('room_id', roomId); // Metadata for context (optional)

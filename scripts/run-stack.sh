@@ -41,9 +41,9 @@ uv sync
 echo "📦 Upgrading mlx-lm for GPT-OSS support..."
 uv pip install --upgrade mlx-lm
 
-# Start MLX server (GPT-OSS 20B) in background
+# Start MLX server (Qwen3 4B Instruct) in background
 echo "▶️  Starting MLX server on $MLX_PORT..."
-nohup mlx_lm.server --model mlx-community/Jinx-gpt-oss-20b-mxfp4-mlx --host 127.0.0.1 --port "$MLX_PORT" > "$TIER3B_DIR/mlx_server.log" 2>&1 &
+nohup mlx_lm.server --model /Users/davidcaballero/core-x-kbllr_0/model-zoo/models/text/qwen3-4b-instruct-2507-4bit --host 127.0.0.1 --port "$MLX_PORT" > "$TIER3B_DIR/mlx_server.log" 2>&1 &
 MLX_PID=$!
 echo "   MLX PID: $MLX_PID"
 

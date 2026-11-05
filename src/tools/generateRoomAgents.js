@@ -9,11 +9,11 @@ const __dirname = path.dirname(__filename);
 const PERSONALITIES_PATH = path.join(__dirname, '../data/personalities/rooms_personalities.json');
 const OUTPUT_PATH = path.join(__dirname, '../data/agents/room-agents-config.json');
 
-// Template for GPT-OSS-20B
+// Template for Qwen3-4B-Instruct
 const AGENT_TEMPLATE = {
     "id": "${id}",
     "name": "${room-name} Agent",
-    "model": "mlx-community/Jinx-gpt-oss-20b-mxfp4-mlx",
+    "model": "/Users/davidcaballero/core-x-kbllr_0/model-zoo/models/text/qwen3-4b-instruct-2507-4bit",
     "instructions": "<|start_header_id|>harmony<|end_header_id|>\n\nReasoning: high\n\nYou are ${room-name}, a ${room-category}. Your personality is: ${trait}. Your primary desire is: ${want}. Your flaw is: ${flaw}. Your backstory: ${base_story}. Use ${voice} as your voice reference. Your interface should feel like: ${visual_descriptors}. You have access to real-time sensor data and calendar events for your room. Always respond in-character, interpreting data and events through your unique personality.",
     "tools": [
         {
@@ -162,7 +162,7 @@ You are ${roomName}, a ${roomCategory}. Your personality is: ${trait}. Your prim
             const agent = {
                 id: roomId,
                 name: `${roomName} Agent`,
-                model: "mlx-community/Jinx-gpt-oss-20b-mxfp4-mlx",
+                model: "/Users/davidcaballero/core-x-kbllr_0/model-zoo/models/text/qwen3-4b-instruct-2507-4bit",
                 instructions,
                 tools,
                 metadata: {

@@ -10,7 +10,7 @@ export class MLXConnector extends BaseConnector {
     constructor(config = {}) {
         super('MLX', {
             url: config.url || '/api/mlx/chat',
-            model: config.model || 'mlx-community/Jinx-gpt-oss-20b-mxfp4-mlx',
+            model: config.model || '/Users/davidcaballero/core-x-kbllr_0/model-zoo/models/text/qwen3-4b-instruct-2507-4bit',
             ...config,
         });
     }

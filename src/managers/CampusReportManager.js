@@ -17,9 +17,9 @@ export class CampusReportManager {
     this.snapshotService = snapshotService;
     this.sensorManager = sensorManager;
 
-    // Model configuration (use locally available MLX models from tier3b-mlx-rag)
-    this.cerberusModel = 'mlx-community/Jinx-gpt-oss-20b-mxfp4-mlx';  // Cerberus (Harmony)
-    this.classroomModel = 'mlx-community/Phi-3-mini-4k-instruct-4bit';  // Default classroom model (check if supported by MLXConnector)
+    // Model configuration (use locally available MLX models from model-zoo)
+    this.cerberusModel = '/Users/davidcaballero/core-x-kbllr_0/model-zoo/models/text/qwen3-4b-instruct-2507-4bit';  // Cerberus
+    this.classroomModel = '/Users/davidcaballero/core-x-kbllr_0/model-zoo/models/text/qwen3-4b-instruct-2507-4bit';  // Default classroom model
 
     // Cache for classroom reports
     this.reportCache = new Map();
