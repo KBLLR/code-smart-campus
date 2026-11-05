@@ -60,7 +60,7 @@ export function deriveRoomTelemetry(room, { source, readings = new Map(), now = 
   const sourceState = Object.values(SOURCE_STATES).includes(source) ? source : SOURCE_STATES.UNCONFIGURED;
 
   const rows = declared.map((sensor) => {
-    const base = { key: sensor.key, type: sensor.type, label: sensor.label, entityId: sensor.entityId, unit: sensor.unit };
+    const base = { key: sensor.key, type: sensor.type, label: sensor.label, entityId: sensor.entityId, unit: sensor.unit, primary: Boolean(sensor.primary) };
 
     if (sourceState !== SOURCE_STATES.LIVE && sourceState !== SOURCE_STATES.PREVIEW) {
       return { ...base, state: sourceState === SOURCE_STATES.CONNECTING ? READING_STATES.UNKNOWN : READING_STATES.OFFLINE, display: null, updatedAt: null };

@@ -67,6 +67,9 @@ function compareRooms(a, b) {
   return a.name.localeCompare(b.name, 'en', { numeric: true });
 }
 
+/** Room-environment sensor types shown first in the classroom workspace. */
+export const PRIMARY_SENSOR_TYPES = Object.freeze(['occupancy', 'temperature', 'humidity', 'co2', 'pm25', 'aqi', 'illuminance', 'noise']);
+
 function sensorLabel(type) {
   const t = String(type || 'sensor').replace(/[_-]+/g, ' ').trim();
   if (t === 'pm25') return 'PM2.5';
@@ -148,7 +151,8 @@ export function buildRoomIndex({ meshIds = [], unifiedRooms = [], classrooms = [
           type: s.type || 'unknown',
           entityId: s.entity_id,
           unit: s.unit || '',
-          label: sensorLabel(s.type),
+          label: s.friendly_name || sensorLabel(s.type),
+          primary: PRIMARY_SENSOR_TYPES.includes(s.type),
         }))),
     }));
   }

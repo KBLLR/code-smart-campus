@@ -31,6 +31,7 @@ export function loadClassrooms() {
       id: `${room.id}-${sensor.type}-${index}`,
       type: sensor.type,
       entity_id: sensor.entityId,
+      friendly_name: sensor.friendlyName || null,
       unit: sensor.unit || '',
     })),
   }));
