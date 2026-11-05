@@ -10,8 +10,8 @@ echo ""
 # Test MLX Server
 echo "1️⃣  Testing MLX Server (port 8000)..."
 MLX_RESULT=$(curl -s http://localhost:8000/v1/models 2>&1)
-if echo "$MLX_RESULT" | grep -q "mlx-community/Jinx-gpt-oss-20b"; then
-  echo "   ✅ MLX Server: GPT-OSS 20B model available"
+if echo "$MLX_RESULT" | grep -q "qwen3-4b-instruct-2507-4bit"; then
+  echo "   ✅ MLX Server: Qwen3 4B Instruct model available"
 else
   echo "   ❌ MLX Server: Not responding or wrong model"
   echo "   Response: $MLX_RESULT"
@@ -45,7 +45,7 @@ echo "4️⃣  Testing MLX Chat Endpoint..."
 MLX_CHAT_RESULT=$(curl -s -X POST http://localhost:3001/api/mlx/chat \
   -H "Content-Type: application/json" \
   -d '{
-    "model": "mlx-community/Jinx-gpt-oss-20b-mxfp4-mlx",
+    "model": "/Users/davidcaballero/core-x-kbllr_0/model-zoo/models/text/qwen3-4b-instruct-2507-4bit",
     "messages": [{"role": "user", "content": "Say hello in 3 words"}],
     "maxTokens": 50
   }' 2>&1)

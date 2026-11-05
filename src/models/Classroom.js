@@ -41,7 +41,7 @@ export class Classroom {
     this.agent = {
       id: data.agent?.id || `agent_${this.id}_2025`,
       name: data.agent?.name || this.name,
-      model: data.agent?.model || 'gpt-4.5-turbo',
+      model: data.agent?.model || '/Users/davidcaballero/core-x-kbllr_0/model-zoo/models/text/qwen3-4b-instruct-2507-4bit',
       description: data.agent?.description || '',
 
       // Personality

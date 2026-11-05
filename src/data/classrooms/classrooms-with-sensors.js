@@ -32,7 +32,7 @@ const classroomsWithSensors = (sensorMappingData.rooms || []).map((room) => {
     agent: {
       id: `agent-${room.id}`,
       name: `${room.name} Agent`,
-      model: 'mlx-community/gemma-2-9b-it-4bit',
+      model: '/Users/davidcaballero/core-x-kbllr_0/model-zoo/models/text/qwen3-4b-instruct-2507-4bit',
       description: 'On-campus room agent',
       personality: {
         name: room.name,
