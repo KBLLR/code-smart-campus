@@ -14,13 +14,14 @@ export class GLBLoader {
   /**
    * Load a GLB file and return the processed model
    */
-  async load(url) {
+  async load(url, onProgress) {
     console.log(`[GLBLoader] Loading model from: ${url}`);
 
     try {
       const gltf = await this.loader.loadAsync(url, (progress) => {
-        const percent = (progress.loaded / progress.total) * 100;
-        console.log(`[GLBLoader] Progress: ${percent.toFixed(1)}%`);
+        // total is 0 when the server sends no Content-Length; report indeterminate then.
+        const fraction = progress.total ? progress.loaded / progress.total : NaN;
+        if (typeof onProgress === 'function') onProgress(fraction);
       });
 
       console.log('[GLBLoader] Model loaded successfully');

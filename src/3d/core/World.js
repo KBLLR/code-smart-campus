@@ -2,14 +2,20 @@
 import * as THREE from 'three';
 
 export class World {
-    constructor() {
+    /**
+     * @param {{ legacyLighting?: boolean }} [options]
+     *   legacyLighting: keep the original dark-scene fog and light rig. The Core-X
+     *   shell passes false and installs src/scene/lighting.js once the campus
+     *   bounds are known.
+     */
+    constructor({ legacyLighting = true } = {}) {
         this.scene = new THREE.Scene();
-        this.scene.fog = new THREE.FogExp2(0x13243d, 0.0009);
-
         this.updatables = new Set();
 
-        // Default Lighting
-        this._setupLighting();
+        if (legacyLighting) {
+            this.scene.fog = new THREE.FogExp2(0x13243d, 0.0009);
+            this._setupLighting();
+        }
     }
 
     _setupLighting() {

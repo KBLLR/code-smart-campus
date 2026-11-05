@@ -2,7 +2,7 @@
 import * as THREE from 'three';
 
 export class Renderer {
-    constructor({ canvas, width, height, pixelRatio = window.devicePixelRatio }) {
+    constructor({ canvas, width, height, pixelRatio = window.devicePixelRatio, toneMapping = THREE.ACESFilmicToneMapping }) {
         this.renderer = new THREE.WebGLRenderer({
             canvas: canvas,
             antialias: true,
@@ -13,11 +13,23 @@ export class Renderer {
         this.renderer.autoClear = false;
         this.renderer.shadowMap.enabled = true;
         this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-        this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        this.renderer.toneMapping = toneMapping;
         this.renderer.toneMappingExposure = 1.0;
 
         this.setSize(width, height);
         this.setPixelRatio(pixelRatio);
+    }
+
+    /** WebGL availability check that does not leave a context behind. */
+    static isWebGLAvailable() {
+        try {
+            const probe = document.createElement('canvas');
+            const gl = probe.getContext('webgl2') || probe.getContext('webgl');
+            gl?.getExtension('WEBGL_lose_context')?.loseContext();
+            return Boolean(gl);
+        } catch {
+            return false;
+        }
     }
 
     setSize(width, height) {
