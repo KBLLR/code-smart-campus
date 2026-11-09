@@ -45,7 +45,8 @@ export class HomeAssistantConnector extends BaseConnector {
            state: newState.state,
            unit: attributes.unit_of_measurement || '',
            friendlyName: attributes.friendly_name || entityId,
-           attributes: attributes
+           attributes: attributes,
+           lastUpdated: newState.last_updated || newState.last_changed || null
          });
       });
 
@@ -81,7 +82,8 @@ export class HomeAssistantConnector extends BaseConnector {
             state: entity.state,
             unit: entity.attributes?.unit_of_measurement || '',
             attributes: entity.attributes,
-            domain: entity.entity_id.split('.')[0]
+            domain: entity.entity_id.split('.')[0],
+            lastUpdated: entity.last_updated || entity.last_changed || null
          });
          count++;
       }

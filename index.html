@@ -4,21 +4,88 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Smart Campus 3D</title>
+  <meta name="color-scheme" content="light" />
+  <title>Smart Campus · Core-X</title>
   <link rel="icon" type="image/x-icon" href="/ico.jpg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- Core-X type families (Chakra Petch / Inter / Fira Code), as loaded by the Core-X DS colors_and_type.css -->
   <link rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Fira+Code:wght@400;500&family=Inter:wght@400;500;600&display=swap" />
 </head>
 
-<body>
-  <!-- Three.js canvas -->
-  <canvas id="canvas" aria-label="Campus 3D visualization"></canvas>
+<body class="sc-app corex-design-system" data-corex-design-system="kbllr" data-level="overview" data-render="pending">
+  <a class="sc-skip" href="#sc-room-list">Skip to room list</a>
 
-  <!-- All UI components (Space.js) append dynamically to document.body -->
-  <!-- - CampusHeader, HeaderBar, CampusMetrics, RoomHoverPanel -->
-  <!-- - Point3D labels, panels, trackers -->
-  <!-- - RoomDetailView, ClassroomPicker -->
-  <!-- - SceneControls -->
+  <header class="sc-topbar sc-surface" role="banner">
+    <div class="sc-brand">
+      <button class="sc-btn sc-btn-icon sc-rooms-toggle" id="sc-rooms-toggle" type="button" aria-controls="sc-rail"
+        aria-expanded="false" aria-label="Show room list">
+        <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h12M2 8h12M2 12h12" /></svg>
+      </button>
+      <span class="sc-brand-tag" aria-hidden="true">SC</span>
+      <div>
+        <div class="sc-brand-name">Smart Campus</div>
+        <div class="sc-brand-sub">Core-X · House · Academic</div>
+      </div>
+    </div>
+    <nav class="sc-crumbs" aria-label="Location">
+      <ol id="sc-crumbs"></ol>
+    </nav>
+    <div class="sc-topbar-actions">
+      <ul class="sc-lanes" id="sc-lanes" aria-label="Core-X services"></ul>
+    </div>
+  </header>
+
+  <section class="sc-lanes-panel sc-surface" id="sc-lanes-panel" aria-labelledby="sc-lanes-title" hidden>
+    <h2 class="sc-label" id="sc-lanes-title">Core-X services</h2>
+    <div id="sc-lanes-rows"></div>
+    <p class="sc-note">Smart Campus consumes shared Core-X services; it does not start its own copies. LLM requests use
+      Gateway <code class="sc-mono">POST /v1/responses</code>. There is no cloud fallback.</p>
+  </section>
+
+  <aside class="sc-rail sc-surface" id="sc-rail" aria-label="Campus rooms">
+    <div class="sc-rail-head">
+      <div class="sc-row">
+        <h2 class="sc-label" id="sc-rooms-title">Rooms</h2>
+        <span class="sc-meta" id="sc-rooms-count"></span>
+      </div>
+      <label class="sc-visually-hidden" for="sc-search">Filter rooms</label>
+      <input class="sc-input" id="sc-search" type="search" placeholder="Filter by name, id or use" autocomplete="off"
+        spellcheck="false" />
+    </div>
+    <div class="sc-room-list" id="sc-room-list" tabindex="-1" aria-labelledby="sc-rooms-title"></div>
+    <div class="sc-legend" id="sc-legend">
+      <h2 class="sc-label" id="sc-legend-title">Room use</h2>
+      <ul aria-labelledby="sc-legend-title"></ul>
+    </div>
+  </aside>
+
+  <main class="sc-stage" id="sc-stage">
+    <canvas id="canvas" tabindex="0"
+      aria-label="3D campus model. Drag to orbit, scroll to zoom. Use the room list to select rooms by keyboard."></canvas>
+    <div class="sc-labels" id="sc-labels"></div>
+
+    <div class="sc-stage-status sc-surface" id="sc-stage-status" role="status" aria-live="polite">
+      <h2 id="sc-stage-status-title">Loading campus</h2>
+      <p id="sc-stage-status-text">Loading campus.glb…</p>
+      <div class="sc-progress" id="sc-stage-progress" data-indeterminate="true"><span></span></div>
+    </div>
+
+    <div class="sc-viewbar sc-surface" role="toolbar" aria-label="View">
+      <button class="sc-btn" type="button" id="sc-view-overview" title="Campus overview">Overview</button>
+      <button class="sc-btn" type="button" id="sc-view-labels" aria-pressed="true">Labels</button>
+      <button class="sc-btn sc-btn-icon" type="button" id="sc-view-prev" aria-label="Previous room ([)">‹</button>
+      <button class="sc-btn sc-btn-icon" type="button" id="sc-view-next" aria-label="Next room (])">›</button>
+      <span class="sc-kbd sc-meta"><kbd>[</kbd> <kbd>]</kbd> rooms · <kbd>Esc</kbd> back</span>
+    </div>
+
+    <div class="sc-preview-banner" id="sc-preview-banner" role="note" hidden>Preview · fixture telemetry · not live data</div>
+  </main>
+
+  <section class="sc-workspace sc-surface" id="sc-workspace" aria-labelledby="sc-ws-title" hidden></section>
+
+  <div class="sc-visually-hidden" id="sc-announcer" aria-live="polite"></div>
 
   <script type="module" src="/src/main-minimal.js"></script>
 </body>

@@ -54,6 +54,7 @@ const classroomsWithSensors = (sensorMappingData.rooms || []).map((room) => {
       id: `${room.id}-${sensor.type}-${index}`,
       type: sensor.type,
       entity_id: sensor.entityId,
+      friendly_name: sensor.friendlyName || null,
       source: 'HomeAssistant',
       unit: sensor.unit || '',
       current_value: null,

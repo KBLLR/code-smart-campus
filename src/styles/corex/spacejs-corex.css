@@ -1,0 +1,74 @@
+/*
+ * Space.js theme → Core-X tokens.
+ * Space.js components read --ui-* custom properties from :root (Stage.rootStyle).
+ * Values below only reference Core-X tokens (see PROVENANCE.md); they replace the
+ * previous dark Space.js example theme (Roboto Mono / Gothic A1 on #060606).
+ */
+:root {
+  --bg-color: #d1d1d0; /* --bg */
+  --ui-font-family: "Fira Code", "SFMono-Regular", Consolas, monospace;
+  --ui-font-weight: 400;
+  --ui-font-size: 10px;
+  --ui-line-height: 15px;
+  --ui-letter-spacing: 0.05em;
+  --ui-number-letter-spacing: 0.05em;
+  --ui-title-font-size: 11px;
+  --ui-title-line-height: 18px;
+  --ui-title-letter-spacing: 0.08em;
+  --ui-secondary-font-size: 10px;
+  --ui-secondary-letter-spacing: 0.05em;
+  --ui-secondary-color: #6b6560;
+  --ui-name-font-family: "Chakra Petch", "Avenir Next Condensed", sans-serif;
+  --ui-name-font-weight: 600;
+  --ui-name-font-size: 13px;
+  --ui-name-line-height: 18px;
+  --ui-name-letter-spacing: 0.08em;
+  --ui-caption-font-family: "Inter", "Helvetica Neue", sans-serif;
+  --ui-caption-font-weight: 400;
+  --ui-caption-font-size: 11px;
+  --ui-caption-line-height: 16px;
+  --ui-caption-letter-spacing: 0;
+  --ui-link-font-family: "Chakra Petch", sans-serif;
+  --ui-link-font-weight: 600;
+  --ui-link-font-size: 11px;
+  --ui-link-line-height: 18px;
+  --ui-link-letter-spacing: 0.08em;
+  --ui-info-font-family: "Chakra Petch", sans-serif;
+  --ui-info-font-weight: 600;
+  --ui-info-font-size: 10px;
+  --ui-info-line-height: 20px;
+  --ui-info-letter-spacing: 0.1em;
+  --ui-info-color: #6b6560;
+  --ui-color: #2d2824; /* --fg1 */
+  --ui-color-triplet: 45 40 36;
+  --ui-color-line-opacity: 0.55;
+  --ui-color-divider-line-opacity: 0.2;
+  --ui-color-graph-bottom-line-opacity: 0.2;
+  --ui-invert-light-color: #2d2824;
+  --ui-invert-light-color-triplet: 45 40 36;
+  --ui-invert-dark-color: #d1d1d0;
+  --ui-invert-dark-color-triplet: 209 209 208;
+  --ui-color-line: rgb(var(--ui-color-triplet) / var(--ui-color-line-opacity));
+  --ui-color-divider-line: rgb(var(--ui-color-triplet) / var(--ui-color-divider-line-opacity));
+  --ui-color-graph-bottom-line: rgb(var(--ui-color-triplet) / var(--ui-color-graph-bottom-line-opacity));
+}
+
+/* Point3D label readability on top of the model: a token surface behind the name. */
+.sc-labels .point .info .name {
+  text-transform: uppercase;
+  background: rgba(209, 209, 208, 0.82); /* --mat-4-fill */
+  padding: 0 4px;
+}
+
+.sc-labels .point .info .type {
+  color: #6b6560;
+  background: rgba(209, 209, 208, 0.82);
+  padding: 0 4px;
+  font-family: "Fira Code", monospace;
+  font-size: 10px;
+  letter-spacing: 0.05em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sc-labels * { transition-duration: 1ms !important; animation-duration: 1ms !important; }
+}

@@ -1,0 +1,63 @@
+/*
+ * Core-X Wave 0 token adapter.
+ * Source mapping and byte digests: ../provenance.json
+ * Scope is opt-in so B1 decides where shell authority begins.
+ */
+:where(.corex-design-system, [data-corex-design-system="kbllr"]) {
+  color: var(--fg1);
+  background: var(--bg);
+  color-scheme: light;
+
+  --bg: #d1d1d0;
+  --bg-surface: rgba(209, 209, 208, 0.75);
+  --bg-elevated: rgba(195, 195, 193, 0.7);
+  --bg-input: rgba(255, 255, 255, 0.35);
+
+  --fg1: #2d2824;
+  --fg2: #6b6560;
+  --fg3: #9a9a9a;
+  --fg-dim: #b5b5b3;
+  --border: #9a9a9a;
+  --border-light: #b5b5b3;
+
+  --accent: #ff7a3d;
+  --accent-hover: #e06020;
+  --accent-fg: #0c1413;
+
+  --status-green: #3d7a45;
+  --status-yellow: #8a7420;
+  --status-red: #8a3030;
+  --status-amber: #b58106;
+  --status-blue: #3d6e96;
+
+  --font-heading: "Chakra Petch", "Avenir Next Condensed", sans-serif;
+  --font-body: Inter, "Helvetica Neue", sans-serif;
+  --font-mono: "Fira Code", "SFMono-Regular", Consolas, monospace;
+
+  --blur-md: 12px;
+  --blur-lg: 16px;
+  --shadow-1: 0 1px 2px rgba(16, 18, 16, 0.06);
+  --shadow-2: 0 4px 8px rgba(16, 18, 16, 0.08);
+  --shadow-3: 0 12px 24px rgba(16, 18, 16, 0.12);
+  --edge-lip: inset 0 1px 0 rgba(255, 255, 255, 0.45);
+  --mat-2-fill: rgba(209, 209, 208, 0.42);
+  --mat-3-fill: rgba(209, 209, 208, 0.62);
+  --mat-4-fill: rgba(209, 209, 208, 0.82);
+
+  --z-rail: 90;
+  --dur-fast: 150ms;
+  --dur-slow: 320ms;
+  --ease-out: cubic-bezier(0.25, 1, 0.5, 1);
+  --t-hover:
+    color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out),
+    background var(--dur-fast) var(--ease-out);
+
+  --corex-breakpoint-wide: 1680px;
+  --corex-breakpoint-desktop: 1280px;
+  --corex-breakpoint-compact: 1024px;
+  --corex-breakpoint-narrow: 768px;
+  --corex-rail-width: 64px;
+  --corex-head-spine-width: 13px;
+  --corex-dock-spine-height: 26px;
+}

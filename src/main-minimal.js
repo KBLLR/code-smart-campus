@@ -4,8 +4,10 @@
  */
 
 import { CampusApp } from './core/CampusApp.js';
-import './styles/main.css';
-import './styles/spacejs.css';
+import './styles/corex/kbllr.tokens.css';
+import './styles/corex/motion.css';
+import './styles/corex/spacejs-corex.css';
+import './styles/campus-shell.css';
 
 // Initialize app when DOM is ready
 document.addEventListener('DOMContentLoaded', async () => {
@@ -15,6 +17,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const app = new CampusApp({
       canvas: document.getElementById('canvas'),
       modelPath: '/models/campus.glb',
+      env: import.meta.env,
     });
 
     await app.init();

@@ -21,10 +21,11 @@
     "deploy:prod": "npm run build && vercel deploy --prebuilt --prod",
     "new:session": "node scripts/new-session.mjs",
     "tasks:export": "node scripts/tasks-export.mjs",
-    "check": "npm run lint && npm run test:sun",
+    "check": "npm run lint && npm run test:sun && npm run test:campus",
     "generateLabelRegistry": "node src/tools/generateLabelRegistry.js",
     "generateRoomRegistry": "node src/tools/generateRoomRegistry.js",
-    "test:sun": "node --test tests/sunTelemetry.test.js"
+    "test:sun": "node --test tests/sunTelemetry.test.js",
+    "test:campus": "node --test tests/campus/*.test.js"
   },
   "dependencies": {
     "@alienkitty/alien.js": "^1.2.0",
