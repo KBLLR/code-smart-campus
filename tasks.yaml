@@ -33,6 +33,16 @@ in_progress:
       - "three.js geometry center bounding box"
       - "label placement best practices"
 
-review: []
+review:
+  - id: CAMPUS-204
+    title: "Redact leaked Home Assistant token and add gitleaks"
+    description: "Replace the long-lived access token and token identifier in the history API session note, stop tracking .env.local, and scan only new commits with gitleaks. History is not rewritten; the token must be revoked in Home Assistant (Profile > Security > Long-Lived Access Tokens) because history and an existing fork still contain it."
+    priority: high
+    owner: "@agent"
+    started: "2026-11-17T13:50:00Z"
+    research:
+      - "https://github.com/gitleaks/gitleaks/releases/tag/v8.30.1"
+      - "https://github.com/gitleaks/gitleaks/blob/v8.30.1/.pre-commit-hooks.yaml"
+      - "https://www.home-assistant.io/docs/authentication/"
 
 done: []

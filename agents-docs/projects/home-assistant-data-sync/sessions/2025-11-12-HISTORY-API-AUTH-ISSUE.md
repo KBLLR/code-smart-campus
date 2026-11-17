@@ -40,7 +40,7 @@ failed (401): 401: Unauthorized
 **Environment Variables** (`.env`):
 ```env
 VITE_HA_URL="/api"
-VITE_HA_TOKEN="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIwMDUxY2E0Yzc0Y2Q0ZDAzOTEyZTk5NzIyYWUxYzZlNSIsImlhdCI6MTc0NDEzMjk2MywiZXhwIjoyMDU5NDkyOTYzfQ.68NLZ-DF5oal5neOyXPKCsL5zCBesaAed-ImFMR-5YA"
+VITE_HA_TOKEN="<REDACTED>"
 ```
 
 **Vite Proxy** (`vite.config.js`):
@@ -58,7 +58,7 @@ proxy: {
 **Token Details** (JWT decoded):
 ```json
 {
-  "iss": "00051ca4c74cd4d039122e99722ae1c6e5",
+  "iss": "<REDACTED>",
   "iat": 1744132963,
   "exp": 2059492963
 }
@@ -178,7 +178,7 @@ fetch('/api/history/period/2025-11-12T09:00:00?filter_entity_id=sensor.sun_next_
 
 1. Log into Home Assistant
 2. Go to **Profile** → **Security** → **Long-Lived Access Tokens**
-3. Find token: `00051ca4c74cd4d039122e99722ae1c6e5`
+3. Find token: `<REDACTED>`
 4. Check permissions:
    - ✅ Required: `history:read` or `read` (global)
    - ❌ If missing: Token needs regeneration
@@ -275,7 +275,7 @@ export async function fetchEntityHistory(entityId, options) {
 ```http
 GET /api/history/period/2025-11-12T09:41:21.768Z?filter_entity_id=sensor.sun_next_dusk&minimal_response=true&no_attributes=true HTTP/1.1
 Host: localhost:5175
-Authorization: Bearer eyJhbGci...
+Authorization: Bearer <REDACTED>
 Content-Type: application/json
 ```
 

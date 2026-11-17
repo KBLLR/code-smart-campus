@@ -1,7 +1,10 @@
 # Node.js
 node_modules/
 dist/
+# Local secrets. .env.example is the committed template (empty placeholders).
 .env
+.env.*
+!.env.example
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*

@@ -1,0 +1,7 @@
+# Blocks staged secrets before they are committed.
+# Hook definition: https://github.com/gitleaks/gitleaks/blob/v8.30.1/.pre-commit-hooks.yaml
+repos:
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.30.1
+    hooks:
+      - id: gitleaks
