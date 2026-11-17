@@ -1,0 +1,17 @@
+# Default gitleaks rules, plus allowlists for known non-credentials.
+# Rule source: https://github.com/gitleaks/gitleaks/blob/v8.30.1/config/gitleaks.toml
+
+title = "smart-campus"
+
+[extend]
+useDefault = true
+
+# generic-api-key matches the public Figma fileKey in
+# docs/HUD-design-system/Smart-C_Design_System_Data.json (and the same id in
+# nearby design-system docs). The value identifies a Figma file; it is not
+# an API credential. Match the secret exactly so the rest of that file is
+# still scanned.
+[[allowlists]]
+description = "Public Figma file key from docs/HUD-design-system/Smart-C_Design_System_Data.json"
+regexes = ['''^Q5UL8JFEzL4LZvY5JnAs2p$''']
+regexTarget = "secret"

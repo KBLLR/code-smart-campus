@@ -19,7 +19,7 @@ Intent: **Maintain Type-1 workflow across Smart Campus deliverables**
 ## Review / QA
 | ID | Title | Priority | Owner | Notes |
 |----|-------|----------|-------|-------|
-| — | — | — | — | — |
+| CAMPUS-204 | Redact leaked Home Assistant token and add gitleaks | high | @agent | Replace the long-lived access token and token identifier in the history API session note, stop tracking .env.local, and scan only new commits with gitleaks. History is not rewritten; the token must be revoked in Home Assistant (Profile > Security > Long-Lived Access Tokens) because history and an existing fork still contain it. (Research: https://github.com/gitleaks/gitleaks/releases/tag/v8.30.1, https://github.com/gitleaks/gitleaks/blob/v8.30.1/.pre-commit-hooks.yaml, https://www.home-assistant.io/docs/authentication/) |
 
 ## Done
 | ID | Title | Priority | Owner | Notes |

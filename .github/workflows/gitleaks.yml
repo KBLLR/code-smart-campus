@@ -1,0 +1,72 @@
+# Scan only commits introduced by this push or pull request.
+# A full-history scan would fail on secrets that are already in older commits
+# and in forks. Those remain a rotation problem, not a CI gate.
+name: gitleaks
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  gitleaks:
+    name: Scan new commits
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install gitleaks
+        run: |
+          set -euo pipefail
+          version=8.30.1
+          tarball="gitleaks_${version}_linux_x64.tar.gz"
+          curl -sSfL "https://github.com/gitleaks/gitleaks/releases/download/v${version}/${tarball}" -o "${tarball}"
+          tar -xzf "${tarball}" gitleaks
+          sudo install gitleaks /usr/local/bin/gitleaks
+          gitleaks version
+
+      - name: Resolve new-commit range
+        id: range
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            base="${{ github.event.pull_request.base.sha }}"
+            head="${{ github.event.pull_request.head.sha }}"
+          else
+            head="${{ github.sha }}"
+            before="${{ github.event.before }}"
+            if [ -z "${before}" ] || [ "${before}" = "0000000000000000000000000000000000000000" ]; then
+              default_branch="${{ github.event.repository.default_branch }}"
+              git fetch --no-tags origin "${default_branch}"
+              base="$(git merge-base "origin/${default_branch}" "${head}")"
+            else
+              base="${before}"
+            fi
+          fi
+          git cat-file -e "${base}^{commit}"
+          git cat-file -e "${head}^{commit}"
+          merge_base="$(git merge-base "${base}" "${head}")"
+          range="${merge_base}..${head}"
+          echo "range=${range}" >> "${GITHUB_OUTPUT}"
+          count="$(git rev-list --count "${range}")"
+          echo "new_commits=${count}" >> "${GITHUB_OUTPUT}"
+          echo "Scanning ${range} (${count} commits)"
+
+      - name: Run gitleaks on new commits
+        if: steps.range.outputs.new_commits != '0'
+        run: |
+          set -euo pipefail
+          # --log-opts limits git log to this range. Do not drop it: without it,
+          # `gitleaks git` walks the entire history.
+          gitleaks git . \
+            --config .gitleaks.toml \
+            --log-opts="${{ steps.range.outputs.range }}" \
+            --redact \
+            --verbose \
+            --exit-code 1
